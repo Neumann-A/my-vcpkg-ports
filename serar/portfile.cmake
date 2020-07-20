@@ -1,0 +1,27 @@
+#set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_from_github(
+    OUT_SOURCE_PATH SOURCE_PATH
+    #GITHUB_HOST  ssh://git@github.com:
+    AUTHORIZATION_TOKEN ac08b9d9bf859498cbf0b66bd33512efa315a2fc
+    REPO Neumann-A/SerAr
+    REF 875a14256b80057f5a133be7e6ff660751716ea6 
+    SHA512  28a3d2d37ba3b93ee5a7b67b98ec03fde3a02aa39793388d65308e4157ce74493e63956a15f6f614519f455341b55c4fe93a52c1d776a59211ebbc8476459788
+    HEAD_REF dev
+)
+
+vcpkg_configure_cmake(
+    SOURCE_PATH ${SOURCE_PATH}
+    PREFER_NINJA
+    OPTIONS
+        #--trace-expand
+        -DCMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT=OFF
+)
+vcpkg_install_cmake()
+
+vcpkg_fixup_cmake_targets(NO_IMPORT_PREFIX_CORRECTION)
+
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
+
+# Handle copyright
+file(INSTALL ${SOURCE_PATH}/LICENSE.md DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
