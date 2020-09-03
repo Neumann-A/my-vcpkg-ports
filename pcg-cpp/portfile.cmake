@@ -16,7 +16,7 @@ VCPKG_CONFIGURE_CMAKE(
 vcpkg_install_cmake()
 
 if("${VCPKG_CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-vcpkg_fixup_cmake_targets(CONFIG_PATH "lib/cmake")
+vcpkg_fixup_cmake_targets(CONFIG_PATH "lib/cmake" TARGET_PATH "share")
 else()
 vcpkg_fixup_cmake_targets(CONFIG_PATH "cmake")
 endif()

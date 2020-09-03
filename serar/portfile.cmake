@@ -5,8 +5,8 @@ vcpkg_from_github(
     #GITHUB_HOST  ssh://git@github.com:
     AUTHORIZATION_TOKEN ac08b9d9bf859498cbf0b66bd33512efa315a2fc
     REPO Neumann-A/SerAr
-    REF 875a14256b80057f5a133be7e6ff660751716ea6 
-    SHA512  28a3d2d37ba3b93ee5a7b67b98ec03fde3a02aa39793388d65308e4157ce74493e63956a15f6f614519f455341b55c4fe93a52c1d776a59211ebbc8476459788
+    REF 204d7a64722c879709cf04bfb5d0a7e0209201ee 
+    SHA512  3e9e7b98c638d35b592f78621676ffbdc018dede886748fbf05f03607cf64120ed2a44217cb52c270d01cd919ebadac2b4f07f9d19e4a598957ddc9fc20e4640
     HEAD_REF dev
 )
 
@@ -14,8 +14,12 @@ vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
     OPTIONS
-        #--trace-expand
+        #--trace
+        #--log-level=TRACE
         -DCMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT=OFF
+        -DSerAr_WITH_HDF5=OFF
+        #-DMATLAB_FIND_DEBUG=ON
+        ${OPTIONS}
 )
 vcpkg_install_cmake()
 
