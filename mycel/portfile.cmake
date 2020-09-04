@@ -16,6 +16,8 @@ vcpkg_configure_cmake(
     OPTIONS
         #-DCMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT=OFF
         -DCMAKE_MESSAGE_LOG_LEVEL=TRACE
+        -DCMAKE_CXX_VISIBILITY_PRESET=hidden
+        -DCMAKE_C_VISIBILITY_PRESET=hidden
 )
 vcpkg_install_cmake()
 
