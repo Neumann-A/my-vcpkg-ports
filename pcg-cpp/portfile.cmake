@@ -22,7 +22,7 @@ vcpkg_fixup_cmake_targets(CONFIG_PATH "cmake")
 endif()
 
 # Put the licence file where vcpkg expects it
-file(COPY ${SOURCE_PATH}/license-mit.txt DESTINATION ${CURRENT_PACKAGES_DIR}/share/pcg-cpp)
+file(COPY ${SOURCE_PATH}/LICENSE-MIT.txt DESTINATION ${CURRENT_PACKAGES_DIR}/share/pcg-cpp)
 file(RENAME ${CURRENT_PACKAGES_DIR}/share/pcg-cpp/LICENSE-MIT.txt ${CURRENT_PACKAGES_DIR}/share/pcg-cpp/copyright)
 
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug)
