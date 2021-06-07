@@ -1,0 +1,24 @@
+{
+  "default": {
+    "cmakecs": {
+      "baseline": "0.1",
+      "port-version": 0
+    },
+    "eigen3": {
+      "baseline": "3.3.8.X",
+      "port-version": 1
+    },
+    "mycel": {
+      "baseline": "0.1",
+      "port-version": 0
+    },
+    "pcg-cpp": {
+      "baseline": "0.98.1",
+      "port-version": 0
+    },
+    "serar": {
+      "baseline": "0.1",
+      "port-version": 0
+    }
+  }
+}
