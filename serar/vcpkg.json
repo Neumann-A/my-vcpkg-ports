@@ -1,0 +1,17 @@
+{
+  "name": "serar",
+  "version-string": "0.1",
+  "description": "SerializationArchive (SerAr) is a c++ interface wrapper library around different serialization possibilities to ensure a common interface for data",
+  "homepage": "https://github.com/Neumann-A/SerAr",
+  "dependencies": [
+    "boost-program-options",
+    {
+      "name": "cmakecs",
+      "default-features": false
+    },
+    {
+      "name": "mycel",
+      "default-features": false
+    }
+  ]
+}

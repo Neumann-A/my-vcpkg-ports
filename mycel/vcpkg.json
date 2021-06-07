@@ -1,0 +1,12 @@
+{
+  "name": "mycel",
+  "version-string": "0.1",
+  "description": "My C++ Extension Library (MyCEL). MyCEL is a C++ utility/toolbox library extending common standard library capabilities.",
+  "homepage": "https://github.com/Neumann-A/MyCEL",
+  "dependencies": [
+    {
+      "name": "cmakecs",
+      "default-features": false
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "name": "pcg-cpp",
+  "version-string": "0.98.1",
+  "description": "C++ PCG random number generator"
+}

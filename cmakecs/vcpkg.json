@@ -1,0 +1,10 @@
+{
+  "name": "cmakecs",
+  "version-string": "0.1",
+  "description": "Common CMake scripts to setup projects, tests, dependencies (via package managers) and other stuff",
+  "homepage": "https://github.com/Neumann-A/CMakeCommonSetup",
+  "dependencies": [
+    "benchmark",
+    "gtest"
+  ]
+}

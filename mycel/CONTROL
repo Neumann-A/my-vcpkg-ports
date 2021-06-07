@@ -1,5 +1,0 @@
-Source: mycel
-Version: 0.1
-Homepage: https://github.com/Neumann-A/MyCEL
-Description: My C++ Extension Library (MyCEL). MyCEL is a C++ utility/toolbox library extending common standard library capabilities.
-Build-Depends: cmakecs[core]
