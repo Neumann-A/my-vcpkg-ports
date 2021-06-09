@@ -3,15 +3,83 @@
   "version-string": "0.1",
   "description": "SerializationArchive (SerAr) is a c++ interface wrapper library around different serialization possibilities to ensure a common interface for data",
   "homepage": "https://github.com/Neumann-A/SerAr",
+  "default-features": ["json", "qt", "program-options", "config"],
   "dependencies": [
-    "boost-program-options",
     {
-      "name": "cmakecs",
+      "name": "cmakejson",
       "default-features": false
     },
     {
       "name": "mycel",
       "default-features": false
+    },
+    "fmt",
+    "eigen3",
+    "vcpkg-cmake",
+    "vcpkg-cmake-config"
+  ],
+  "features": {
+    "hdf5" : {
+      "description": "Build with HDF5 support",
+      "dependencies": [ 
+        {
+          "name": "hdf5",
+          "default-features": false
+        }
+      ]
+    },
+    "matlab" : {
+      "description": "Build with MATLAB support",
+      "dependencies": [ 
+        {
+          "name": "matlab",
+          "default-features": false
+        }
+      ]
+    },
+    "json" : {
+      "description": "Build with JSON support",
+      "dependencies": [ 
+        {
+          "name": "nlohmann-json",
+          "default-features": false
+        }
+      ]
+    },
+    "qt" : {
+      "description": "Build with Qt User Interface support",
+      "dependencies": [ 
+        {
+          "name": "qtbase",
+          "default-features": false
+        },
+        {
+          "name": "qttools",
+          "default-features": false
+        }
+      ]
+    },
+    "cereal" : {
+      "description": "Build with Cereal Wrappers",
+      "dependencies": [ 
+        {
+          "name": "cereal",
+          "default-features": false
+        }
+      ]
+    },
+    "config" : {
+      "description": "Build with config file support",
+      "dependencies": [ ]
+    },
+    "program-options" : {
+      "description": "Build with Boost program options wrapper",
+      "dependencies": [ 
+        {
+          "name": "boost-program-options",
+          "default-features": false
+        }
+      ]
     }
-  ]
+  }
 }

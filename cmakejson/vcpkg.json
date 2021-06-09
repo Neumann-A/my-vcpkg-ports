@@ -1,0 +1,13 @@
+{
+  "name": "cmakejson",
+  "version-string": "0.1",
+  "description": "CMakeJSON provides a way to declare CMake projects and targets via *.json files",
+  "homepage": "https://github.com/Neumann-A/CMakeJSON",
+  "dependencies": [ "vcpkg-cmake-config", "vcpkg-cmake" ],
+  "features": {
+    "examples" : {
+      "description": "build examples and tests",
+      "dependencies": []
+    }
+  }
+}

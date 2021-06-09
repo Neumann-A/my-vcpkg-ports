@@ -5,8 +5,9 @@
   "homepage": "https://github.com/Neumann-A/MyCEL",
   "dependencies": [
     {
-      "name": "cmakecs",
+      "name": "cmakejson",
       "default-features": false
-    }
+    },
+    "magic-enum"
   ]
 }
