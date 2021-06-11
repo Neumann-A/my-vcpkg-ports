@@ -6,8 +6,8 @@ vcpkg_from_github(
     #GITHUB_HOST  ssh://git@github.com:
     AUTHORIZATION_TOKEN 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
     REPO Neumann-A/SerAr
-    REF 35686e3d7df938d8c6e04da018ac386c4e89e14e 
-    SHA512  4a5ad4190447e6f8be1c23a8abe665d2b0cc4910d65388a07ebef4e05c7aba07710ac55a307ae6a834b3c53c44bdb969fcdfa53bb3dd3a01db1d7e8270d3e355
+    REF d796443f351ff2e376f62052ca6d17b234e29a5f 
+    SHA512  feabc2102549248642371382f8d079bcb189cb31ca4e526afaed154c6680a2075cddea5ea772e8ffcdf94eac1e5b95bedd1fcdc38909db593314cbff71603e52
     HEAD_REF master
 )
 
@@ -28,9 +28,7 @@ vcpkg_cmake_configure(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
     OPTIONS
-        #-DCMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT=OFF
-        #-DSerAr_WITH_HDF5=OFF
-        #-DMATLAB_FIND_DEBUG=ON
+        "-DCMakeJSON_INCLUDE_FILE=${CURRENT_INSTALLED_DIR}/share/CMakeJSON/CMakeJSON.cmake"
         ${FEATURE_OPTIONS}
 )
 vcpkg_cmake_install()

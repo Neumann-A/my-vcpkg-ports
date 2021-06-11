@@ -6,8 +6,8 @@ vcpkg_from_github(
     #GITHUB_HOST  ssh://git@github.com:
     AUTHORIZATION_TOKEN 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
     REPO Neumann-A/MyCEL
-    REF f22863750418ad3c67a02a63ac95d14a1148bce5 
-    SHA512 a32a9802e176e113e229e74997890bc8f9bd0d5e8f5579a1f12fc5fbb5550eacec9faf89be9736a3249a26b9ad04d1f9f8862c7948a2ed1013842f5e9ddeb74e
+    REF 598a442206cf00cb183135ef9a3b12d0c3c0499d 
+    SHA512 288403561316554b11dd895a07a413b0fa28a48e22cc37eadfdeadc8a0d512f05f13076532f5d4747f7370f60f8363f94dfd461c14379036829cd26d16601501
     HEAD_REF master
 )
 
@@ -15,7 +15,7 @@ vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
     OPTIONS
-        #--trace-expand
+        "-DCMakeJSON_INCLUDE_FILE=${CURRENT_INSTALLED_DIR}/share/CMakeJSON/CMakeJSON.cmake"
         -DCMAKE_MESSAGE_LOG_LEVEL=TRACE
 )
 vcpkg_install_cmake()
