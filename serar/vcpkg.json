@@ -51,6 +51,7 @@
       "dependencies": [ 
         {
           "name": "qtbase",
+          "features": [ "gui", "widgets", "zstd", "doubleconversion", "jpeg", "png", "pcre2", "freetype", "icu", "harfbuzz" ],
           "default-features": false
         },
         {
