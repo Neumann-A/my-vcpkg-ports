@@ -6,8 +6,8 @@ vcpkg_from_github(
     #GITHUB_HOST  ssh://git@github.com:
     AUTHORIZATION_TOKEN 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
     REPO Neumann-A/SerAr
-    REF 686393b3319796bb8b64a8f9684422b8a140e5eb 
-    SHA512  8adfc836509cbaa96bf8d41e51e84c56bc4cf38f0b133118264967b9e86f3ede951e1ae89a8e89d7e29b348d4a0801f581b99077276c79a4ec1637f07708ae3a
+    REF 256673776605535fdb6a2cba7029bd5d469e5203 
+    SHA512  dfbd1ce1d05c9dbddad0caf6eda69417f784c3215c79f25723fec8aa9ceccd71042c5404aa2820cd2ca4acaeaaf37640dda7e4447a5abe80c53e9397a6c2a3ad
     HEAD_REF master
 )
 
