@@ -1,0 +1,495 @@
+diff --git a/src/H5Adeprec.c b/src/H5Adeprec.c
+index e0a0f5533..ed7aca6b1 100644
+--- a/src/H5Adeprec.c
++++ b/src/H5Adeprec.c
+@@ -408,5 +409,12 @@ H5Aiterate1(hid_t loc_id, unsigned *attr_num, H5A_operator1_t op, void *op_data)
+ done:
+     FUNC_LEAVE_API(ret_value)
+ } /* H5Aiterate1() */
++
++
++#undef H5Acreate
++hid_t H5Acreate(hid_t loc_id, const char *name, hid_t type_id, hid_t space_id, hid_t acpl_id) {
++    return H5Acreate1(loc_id, *name, type_id, space_id, acpl_id);
++}
++
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+ 
+diff --git a/src/H5Apublic.h b/src/H5Apublic.h
+index 7162f6e44..6c9264df2 100644
+--- a/src/H5Apublic.h
++++ b/src/H5Apublic.h
+@@ -110,6 +110,13 @@ typedef herr_t (*H5A_operator1_t)(hid_t location_id/*in*/,
+ /* Function prototypes */
+ H5_DLL hid_t   H5Acreate1(hid_t loc_id, const char *name, hid_t type_id,
+     hid_t space_id, hid_t acpl_id);
++#define H5A_BACKUP H5Acreate
++#undef H5Acreate
++H5_DLL hid_t   H5Acreate(hid_t loc_id, const char *name, hid_t type_id,
++    hid_t space_id, hid_t acpl_id);
++#define H5Acreate H5A_BACKUP
++#undef H5A_BACKUP
++
+ H5_DLL hid_t   H5Aopen_name(hid_t loc_id, const char *name);
+ H5_DLL hid_t   H5Aopen_idx(hid_t loc_id, unsigned idx);
+ H5_DLL int     H5Aget_num_attrs(hid_t loc_id);
+diff --git a/src/H5Ddeprec.c b/src/H5Ddeprec.c
+index f4f422366..39c69a37f 100644
+--- a/src/H5Ddeprec.c
++++ b/src/H5Ddeprec.c
+@@ -352,5 +352,11 @@ done:
+     FUNC_LEAVE_API(ret_value)
+ }   /* end H5Dvlen_reclaim() */
+ 
++#undef H5Dcreate
++#undef H5Dopen1
++hid_t H5Dcreate(hid_t loc_id, const char *name, hid_t type_id, hid_t space_id, hid_t dcpl_id) { return H5Dcreate1(loc_id, name, type_id, space_id, dcpl_id); };
++hid_t H5Dopen(hid_t loc_id, const char *name) { return H5Dopen1(loc_id, name); };
++
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+ 
++
+diff --git a/src/H5Dpublic.h b/src/H5Dpublic.h
+index 281da812c..861eea72d 100644
+--- a/src/H5Dpublic.h
++++ b/src/H5Dpublic.h
+@@ -200,7 +200,20 @@ H5_DLL herr_t H5Dget_chunk_index_type(hid_t did, H5D_chunk_index_t *idx_type);
+ /* Function prototypes */
+ H5_DLL hid_t H5Dcreate1(hid_t file_id, const char *name, hid_t type_id,
+     hid_t space_id, hid_t dcpl_id);
++#define H5D_BACKUP H5Dcreate
++#undef H5Dcreate
++H5_DLL hid_t H5Dcreate(hid_t file_id, const char *name, hid_t type_id,
++    hid_t space_id, hid_t dcpl_id);
++#define H5Dcreate H5D_BACKUP
++#undef H5D_BACKUP
+ H5_DLL hid_t H5Dopen1(hid_t file_id, const char *name);
++#define H5D_BACKUP H5Dopen
++#undef H5Dopen
++H5_DLL hid_t H5Dopen(hid_t file_id, const char *name);
++#define H5Dopen H5D_BACKUP
++#undef H5D_BACKUP
++
++
+ H5_DLL herr_t H5Dextend(hid_t dset_id, const hsize_t size[]);
+ H5_DLL herr_t H5Dvlen_reclaim(hid_t type_id, hid_t space_id, hid_t plist_id, void *buf);
+ 
+diff --git a/src/H5Edeprec.c b/src/H5Edeprec.c
+index 44623037c..adec352d2 100644
+--- a/src/H5Edeprec.c
++++ b/src/H5Edeprec.c
+@@ -433,5 +433,19 @@ H5Eset_auto1(H5E_auto1_t func, void *client_data)
+ done:
+     FUNC_LEAVE_API(ret_value)
+ } /* end H5Eset_auto1() */
++
++#undef H5Eprint
++herr_t H5Eprint(FILE *stream) { return H5Eprint1(stream); }
++#undef H5Eclear
++herr_t H5Eclear(void) {return H5Eclear1(); }
++#undef H5Epush
++herr_t H5Epush(const char *file, const char *func, unsigned line, H5E_major_t maj, H5E_minor_t min, const char *str) { return H5Epush1(file, func, line, maj, min, str); }
++#undef H5Ewalk
++herr_t H5Ewalk(H5E_direction_t direction, H5E_walk1_t func, void *client_data) { return H5Ewalk1(direction, func, client_data);}
++#undef H5Eget_auto
++herr_t H5Eget_auto(H5E_auto1_t *func, void **client_data) {return H5Eget_auto1(func, client_data);}
++#undef H5Eset_auto
++herr_t H5Eset_auto(H5E_auto1_t func, void *client_data) { return H5Eset_auto1(func, client_data);}
++
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+ 
+diff --git a/src/H5Epublic.h b/src/H5Epublic.h
+index ed142177c..a9c56bfa6 100644
+--- a/src/H5Epublic.h
++++ b/src/H5Epublic.h
+@@ -207,13 +207,53 @@ typedef herr_t (*H5E_auto1_t)(void *client_data);
+ 
+ /* Function prototypes */
+ H5_DLL herr_t H5Eclear1(void);
++#define H5E_BACKUP H5Eclear
++#undef H5Eclear
++H5_DLL herr_t H5Eclear(void);
++#define H5Eclear H5E_BACKUP
++#undef H5E_BACKUP
++
+ H5_DLL herr_t H5Eget_auto1(H5E_auto1_t *func, void **client_data);
++#define H5E_BACKUP H5Eget_auto
++#undef H5Eget_auto
++H5_DLL herr_t H5Eget_auto(H5E_auto1_t *func, void **client_data);
++#define H5Eget_auto H5E_BACKUP
++#undef H5E_BACKUP
++
+ H5_DLL herr_t H5Epush1(const char *file, const char *func, unsigned line,
+     H5E_major_t maj, H5E_minor_t min, const char *str);
++#define H5E_BACKUP H5Epush
++#undef H5Epush
++H5_DLL herr_t H5Epush(const char *file, const char *func, unsigned line,
++    H5E_major_t maj, H5E_minor_t min, const char *str);
++#define H5Epush H5E_BACKUP
++#undef H5E_BACKUP
++
+ H5_DLL herr_t H5Eprint1(FILE *stream);
++#define H5E_BACKUP H5Eprint
++#undef H5Eprint
++H5_DLL herr_t H5Eprint(FILE *stream);
++#define H5Eprint H5E_BACKUP
++#undef H5E_BACKUP
++
++
+ H5_DLL herr_t H5Eset_auto1(H5E_auto1_t func, void *client_data);
++#define H5E_BACKUP H5Eset_auto
++#undef H5Eset_auto
++H5_DLL herr_t H5Eset_auto(H5E_auto1_t func, void *client_data);
++#define H5Eset_auto H5E_BACKUP
++#undef H5E_BACKUP
++
+ H5_DLL herr_t H5Ewalk1(H5E_direction_t direction, H5E_walk1_t func,
+     void *client_data);
++#define H5E_BACKUP H5Ewalk
++#undef H5Ewalk
++H5_DLL herr_t H5Ewalk(H5E_direction_t direction, H5E_walk1_t func,
++    void *client_data);
++#define H5Ewalk H5E_BACKUP
++#undef H5E_BACKUP
++
++
+ H5_DLL char *H5Eget_major(H5E_major_t maj);
+ H5_DLL char *H5Eget_minor(H5E_minor_t min);
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+diff --git a/src/H5Fdeprec.c b/src/H5Fdeprec.c
+index a04716111..b9d435c17 100644
+--- a/src/H5Fdeprec.c
++++ b/src/H5Fdeprec.c
+@@ -233,5 +233,11 @@ H5Fset_latest_format(hid_t file_id, hbool_t latest_format)
+ done:
+     FUNC_LEAVE_API(ret_value)
+ } /* end H5Fset_latest_format() */
++
++#undef H5Fget_info
++herr_t H5Fget_info(hid_t obj_id, H5F_info1_t *finfo) { return H5Fget_info1(obj_id, finfo);}
++#undef H5F_info_t
++H5F_info1_t H5F_info_t;
++
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+ 
+diff --git a/src/H5Fpublic.h b/src/H5Fpublic.h
+index 49c8b4b6f..874ff1549 100644
+--- a/src/H5Fpublic.h
++++ b/src/H5Fpublic.h
+@@ -308,6 +308,12 @@ typedef struct H5F_info1_t {
+ 
+ /* Function prototypes */
+ H5_DLL herr_t H5Fget_info1(hid_t obj_id, H5F_info1_t *finfo);
++#define H5F_BACKUP H5Fget_info
++#undef H5Fget_info
++H5_DLL herr_t H5Fget_info(hid_t obj_id, H5F_info1_t *finfo);
++#define H5Fget_info H5F_BACKUP
++#undef H5F_BACKUP
++
+ H5_DLL herr_t H5Fset_latest_format(hid_t file_id, hbool_t latest_format);
+ H5_DLL htri_t H5Fis_hdf5(const char *filename);
+ 
+diff --git a/src/H5Gdeprec.c b/src/H5Gdeprec.c
+index 126456bcd..25b5a00a6 100644
+--- a/src/H5Gdeprec.c
++++ b/src/H5Gdeprec.c
+@@ -1232,5 +1232,11 @@ H5Gget_objtype_by_idx(hid_t loc_id, hsize_t idx)
+ done:
+     FUNC_LEAVE_API(ret_value)
+ } /* end H5Gget_objtype_by_idx() */
++
++#undef H5Gcreate
++hid_t H5Gcreate(hid_t loc_id, const char *name, size_t size_hint) {return H5Gcreate1(loc_id, name, size_hint);}
++#undef H5Gopen
++hid_t H5Gopen(hid_t loc_id, const char *name) {return H5Gopen1(loc_id, name);}
++
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+ 
+diff --git a/src/H5Gpublic.h b/src/H5Gpublic.h
+index 170b74dfe..73888275f 100644
+--- a/src/H5Gpublic.h
++++ b/src/H5Gpublic.h
+@@ -147,6 +147,16 @@ typedef struct H5G_stat_t {
+ /* Function prototypes */
+ H5_DLL hid_t H5Gcreate1(hid_t loc_id, const char *name, size_t size_hint);
+ H5_DLL hid_t H5Gopen1(hid_t loc_id, const char *name);
++#define H5G_BACKUP H5Gcreate
++#undef H5Gcreate
++H5_DLL hid_t H5Gcreate(hid_t loc_id, const char *name, size_t size_hint);
++#define H5Gcreate H5G_BACKUP
++#undef H5G_BACKUP
++#define H5G_BACKUP H5Gopen
++#undef H5Gopen
++H5_DLL hid_t H5Gopen(hid_t loc_id, const char *name);
++#define H5Gopen H5G_BACKUP
++#undef H5G_BACKUP
+ H5_DLL herr_t H5Glink(hid_t cur_loc_id, H5G_link_t type, const char *cur_name,
+     const char *new_name);
+ H5_DLL herr_t H5Glink2(hid_t cur_loc_id, const char *cur_name, H5G_link_t type,
+diff --git a/src/H5Ldeprec.c b/src/H5Ldeprec.c
+index 8b83230d7..a34c3b88d 100644
+--- a/src/H5Ldeprec.c
++++ b/src/H5Ldeprec.c
+@@ -624,5 +624,31 @@ done:
+     FUNC_LEAVE_API(ret_value)
+ } /* end H5Lvisit_by_name1() */
+ 
++#undef H5Literate
++herr_t
++H5Literate(hid_t group_id, H5_index_t idx_type, H5_iter_order_t order, hsize_t *idx_p, H5L_iterate1_t op, void *op_data) {
++    return H5Literate1(group_id, idx_type, order, idx_p, op, op_data);
++}
++#undef H5Literate_by_name
++herr_t H5Literate_by_name(hid_t loc_id, const char *group_name, H5_index_t idx_type, H5_iter_order_t order, hsize_t *idx_p, H5L_iterate1_t op, void *op_data, hid_t lapl_id) {
++    return H5Literate_by_name1(loc_id, group_name, idx_type, order, idx_p, op, op_data, lapl_id);
++}
++#undef H5Lget_info
++herr_t H5Lget_info(hid_t loc_id, const char *name, H5L_info1_t *linfo /*out*/, hid_t lapl_id)
++{
++    return H5Lget_info1(loc_id, name, linfo, lapl_id);
++}
++#undef H5Lget_info_by_idx
++herr_t H5Lget_info_by_idx(hid_t loc_id, const char *group_name, H5_index_t idx_type, H5_iter_order_t order, hsize_t n, H5L_info1_t *linfo /*out*/, hid_t lapl_id) {
++    return H5Lget_info_by_idx1(loc_id, group_name, idx_type, order, n, linfo, lapl_id);
++}
++#undef H5Lvisit
++herr_t H5Lvisit(hid_t group_id, H5_index_t idx_type, H5_iter_order_t order, H5L_iterate1_t op, void *op_data) {
++    return H5Lvisit1(group_id, idx_type, order, op, op_data);
++}
++#undef H5Lvisit_by_name
++herr_t H5Lvisit_by_name(hid_t loc_id, const char *group_name, H5_index_t idx_type, H5_iter_order_t order, H5L_iterate1_t op, void *op_data, hid_t lapl_id) {
++    return H5Lvisit_by_name1(loc_id, group_name, idx_type, order, op, op_data, lapl_id);
++}
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+ 
+diff --git a/src/H5Lpublic.h b/src/H5Lpublic.h
+index 3bac5ac44..b9b9e2be2 100644
+--- a/src/H5Lpublic.h
++++ b/src/H5Lpublic.h
+@@ -248,19 +248,64 @@ typedef herr_t (*H5L_iterate1_t)(hid_t group, const char *name, const H5L_info1_
+ /* Function prototypes */
+ H5_DLL herr_t H5Lget_info1(hid_t loc_id, const char *name,
+     H5L_info1_t *linfo /*out*/, hid_t lapl_id);
++#define H5L_BACKUP H5Lget_info
++#undef H5Lget_info
++H5_DLL herr_t H5Lget_info(hid_t loc_id, const char *name,
++    H5L_info1_t *linfo /*out*/, hid_t lapl_id);
++#define H5Lget_info H5L_BACKUP
++#undef H5L_BACKUP
++
+ H5_DLL herr_t H5Lget_info_by_idx1(hid_t loc_id, const char *group_name,
+     H5_index_t idx_type, H5_iter_order_t order, hsize_t n,
+     H5L_info1_t *linfo /*out*/, hid_t lapl_id);
++#define H5L_BACKUP H5Lget_info_by_idx
++#undef H5Lget_info_by_idx
++H5_DLL herr_t H5Lget_info_by_idx(hid_t loc_id, const char *group_name,
++    H5_index_t idx_type, H5_iter_order_t order, hsize_t n,
++    H5L_info1_t *linfo /*out*/, hid_t lapl_id);
++#define H5Lget_info_by_idx H5L_BACKUP
++#undef H5L_BACKUP
++
++H5_DLL herr_t H5Literate1(hid_t grp_id, H5_index_t idx_type,
++    H5_iter_order_t order, hsize_t *idx, H5L_iterate1_t op, void *op_data);
++#define H5L_BACKUP H5Literate
++#undef H5Literate
+ H5_DLL herr_t H5Literate1(hid_t grp_id, H5_index_t idx_type,
+     H5_iter_order_t order, hsize_t *idx, H5L_iterate1_t op, void *op_data);
++#define H5Literate H5L_BACKUP
++#undef H5L_BACKUP
++
+ H5_DLL herr_t H5Literate_by_name1(hid_t loc_id, const char *group_name,
+     H5_index_t idx_type, H5_iter_order_t order, hsize_t *idx,
+     H5L_iterate1_t op, void *op_data, hid_t lapl_id);
++#define H5L_BACKUP H5Literate_by_name
++#undef H5Literate_by_name
++H5_DLL herr_t H5Literate_by_name(hid_t loc_id, const char *group_name,
++    H5_index_t idx_type, H5_iter_order_t order, hsize_t *idx,
++    H5L_iterate1_t op, void *op_data, hid_t lapl_id);
++#define H5Literate_by_name H5L_BACKUP
++#undef H5L_BACKUP
++
+ H5_DLL herr_t H5Lvisit1(hid_t grp_id, H5_index_t idx_type, H5_iter_order_t order,
+     H5L_iterate1_t op, void *op_data);
++#define H5L_BACKUP H5Lvisit
++#undef H5Lvisit
++H5_DLL herr_t H5Lvisit(hid_t grp_id, H5_index_t idx_type, H5_iter_order_t order,
++    H5L_iterate1_t op, void *op_data);
++#define H5Lvisit H5L_BACKUP
++#undef H5L_BACKUP
++
++
+ H5_DLL herr_t H5Lvisit_by_name1(hid_t loc_id, const char *group_name,
+     H5_index_t idx_type, H5_iter_order_t order, H5L_iterate1_t op,
+     void *op_data, hid_t lapl_id);
++#define H5L_BACKUP H5Lvisit_by_name
++#undef H5Lvisit_by_name
++H5_DLL herr_t H5Lvisit_by_name(hid_t loc_id, const char *group_name,
++    H5_index_t idx_type, H5_iter_order_t order, H5L_iterate1_t op,
++    void *op_data, hid_t lapl_id);
++#define H5Lvisit_by_name H5L_BACKUP
++#undef H5L_BACKUP
+ 
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+ 
+diff --git a/src/H5Rdeprec.c b/src/H5Rdeprec.c
+index 4e446838a..2a6290685 100644
+--- a/src/H5Rdeprec.c
++++ b/src/H5Rdeprec.c
+@@ -204,6 +204,14 @@ done:
+     FUNC_LEAVE_API(ret_value)
+ }   /* end H5Rdereference1() */
+ 
++#undef H5Rget_obj_type
++H5G_obj_t H5Rget_obj_type(hid_t id, H5R_type_t ref_type, const void *ref) {
++    return H5Rget_obj_type1(id, ref_type, ref);
++}
++#undef H5Rdereference
++hid_t H5Rdereference(hid_t obj_id, H5R_type_t ref_type, const void *ref) {
++    return H5Rdereference1(obj_id, ref_type, ref);
++}
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+ 
+ 
+diff --git a/src/H5Rpublic.h b/src/H5Rpublic.h
+index 13d82d7a1..3b15d657c 100644
+--- a/src/H5Rpublic.h
++++ b/src/H5Rpublic.h
+@@ -138,7 +138,19 @@ H5_DLL ssize_t  H5Rget_attr_name(const H5R_ref_t *ref_ptr, char *buf, size_t siz
+ #ifndef H5_NO_DEPRECATED_SYMBOLS
+ 
+ H5_DLL H5G_obj_t H5Rget_obj_type1(hid_t id, H5R_type_t ref_type, const void *ref);
++#define H5R_BACKUP H5Rget_obj_type
++#undef H5Rget_obj_type
++H5_DLL H5G_obj_t H5Rget_obj_type(hid_t id, H5R_type_t ref_type, const void *ref);
++#define H5Rget_obj_type H5R_BACKUP
++#undef H5R_BACKUP
++
++
+ H5_DLL hid_t H5Rdereference1(hid_t obj_id, H5R_type_t ref_type, const void *ref);
++#define H5R_BACKUP H5Rdereference
++#undef H5Rdereference
++H5_DLL hid_t H5Rdereference(hid_t obj_id, H5R_type_t ref_type, const void *ref);
++#define H5Rdereference H5R_BACKUP
++#undef H5R_BACKUP
+ 
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+ 
+diff --git a/src/H5Sdeprec.c b/src/H5Sdeprec.c
+index e4ec1b073..9ee2efd2c 100644
+--- a/src/H5Sdeprec.c
++++ b/src/H5Sdeprec.c
+@@ -117,5 +117,8 @@ H5Sencode1(hid_t obj_id, void *buf, size_t *nalloc)
+ done:
+     FUNC_LEAVE_API(ret_value)
+ } /* H5Sencode1() */
++
++#undef H5Sencode
++herr_t H5Sencode(hid_t obj_id, void *buf, size_t *nalloc) { return H5Sencode1(obj_id, buf, nalloc); }
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+ 
+diff --git a/src/H5Spublic.h b/src/H5Spublic.h
+index f7c5ae701..ff7fc1432 100644
+--- a/src/H5Spublic.h
++++ b/src/H5Spublic.h
+@@ -188,6 +188,12 @@ H5_DLL herr_t H5Ssel_iter_close(hid_t sel_iter_id);
+ /* Function prototypes */
+ H5_DLL herr_t H5Sencode1(hid_t obj_id, void *buf, size_t *nalloc);
+ 
++#define H5S_BACKUP H5Sencode
++#undef H5Sencode
++H5_DLL herr_t H5Sencode(hid_t obj_id, void *buf, size_t *nalloc);
++#define H5Sencode H5S_BACKUP
++#undef H5S_BACKUP
++
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+ 
+ #ifdef __cplusplus
+diff --git a/src/H5Tarray.c b/src/H5Tarray.c
+index 60b3d437c..2d6f06261 100644
+--- a/src/H5Tarray.c
++++ b/src/H5Tarray.c
+@@ -421,5 +421,20 @@ H5Tget_array_dims1(hid_t type_id, hsize_t dims[], int H5_ATTR_UNUSED perm[])
+ done:
+     FUNC_LEAVE_API(ret_value)
+ }   /* end H5Tget_array_dims1() */
++
++#undef H5Tarray_create
++hid_t
++H5Tarray_create(hid_t base_id, int ndims, const hsize_t dim[/* ndims */],
++    const int H5_ATTR_UNUSED perm[/* ndims */]) {
++    return H5Tarray_create1(base_id, ndims, dim, perm);
++}
++
++#undef H5Tget_array_dims
++int
++H5Tget_array_dims(hid_t type_id, hsize_t dims[], int H5_ATTR_UNUSED perm[])
++{
++    return H5Tget_array_dims1(type_id, dims, perm); 
++}
++    
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+ 
+diff --git a/src/H5Tdeprec.c b/src/H5Tdeprec.c
+index 2c98dc020..9dbb6d62b 100644
+--- a/src/H5Tdeprec.c
++++ b/src/H5Tdeprec.c
+@@ -210,5 +210,17 @@ done:
+ 
+     FUNC_LEAVE_API(ret_value)
+ } /* end H5Topen1() */
++#undef H5Tcommit
++herr_t
++H5Tcommit(hid_t loc_id, const char *name, hid_t type_id)
++{
++    return H5Tcommit1(loc_id, name, type_id);
++}
++#undef H5Topen
++herr_t
++H5Topen(hid_t loc_id, const char *name)
++{
++    return H5Topen1(loc_id, name);
++}
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+ 
+diff --git a/src/H5Tpublic.h b/src/H5Tpublic.h
+index 0ec0c7314..0f9f6c004 100644
+--- a/src/H5Tpublic.h
++++ b/src/H5Tpublic.h
+@@ -609,11 +609,37 @@ H5_DLL herr_t H5Treclaim(hid_t type_id, hid_t space_id, hid_t plist_id, void *bu
+ 
+ /* Function prototypes */
+ H5_DLL herr_t H5Tcommit1(hid_t loc_id, const char *name, hid_t type_id);
++#define H5T_BACKUP H5Tcommit
++#undef H5Tcommit
++H5_DLL herr_t H5Tcommit(hid_t loc_id, const char *name, hid_t type_id);
++#define H5Tcommit H5T_BACKUP
++#undef H5T_BACKUP
++
+ H5_DLL hid_t H5Topen1(hid_t loc_id, const char *name);
++#define H5T_BACKUP H5Topen
++#undef H5Topen
++H5_DLL herr_t H5Topen(hid_t loc_id, const char *name);
++#define H5Topen H5T_BACKUP
++#undef H5T_BACKUP
++
++
+ H5_DLL hid_t H5Tarray_create1(hid_t base_id, int ndims,
+             const hsize_t dim[/* ndims */],
+             const int perm[/* ndims */]);
++#define H5T_BACKUP H5Tarray_create
++#undef H5Tarray_create
++H5_DLL hid_t H5Tarray_create(hid_t base_id, int ndims,
++            const hsize_t dim[/* ndims */],
++            const int perm[/* ndims */]);
++#define H5Tarray_create H5T_BACKUP
++#undef H5T_BACKUP
++
+ H5_DLL int H5Tget_array_dims1(hid_t type_id, hsize_t dims[], int perm[]);
++#define H5T_BACKUP H5Tget_array_dims
++#undef H5Tget_array_dims
++H5_DLL int H5Tget_array_dims(hid_t type_id, hsize_t dims[], int perm[]);
++#define H5Tget_array_dims H5T_BACKUP
++#undef H5T_BACKUP
+ 
+ #endif /* H5_NO_DEPRECATED_SYMBOLS */
+ 
