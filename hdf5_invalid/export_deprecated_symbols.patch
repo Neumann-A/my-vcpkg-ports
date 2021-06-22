@@ -1,3 +1,15 @@
+diff --git a/src/H5Ipublic.h b/df5-1_12_0-1df77f2dd9/src/H5Ipublic.h
+index 34a408f79..495334a4c 100644
+--- a/src/H5Ipublic.h
++++ b/src/H5Ipublic.h
+@@ -53,6 +53,7 @@ typedef enum H5I_type_t {
+ 
+ /* Type of atoms to return to users */
+ typedef int64_t hid_t;
++typedef int32_t hid32_t;
+ #define H5_SIZEOF_HID_T         H5_SIZEOF_INT64_T
+ 
+ /* An invalid object ID. This is also negative for error return. */
 diff --git a/src/H5Adeprec.c b/src/H5Adeprec.c
 index e0a0f5533..ed7aca6b1 100644
 --- a/src/H5Adeprec.c
