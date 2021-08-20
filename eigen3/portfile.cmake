@@ -14,24 +14,23 @@ vcpkg_configure_cmake(
         -DBUILD_TESTING=OFF
         -DEIGEN_BUILD_PKGCONFIG=ON
     OPTIONS_RELEASE
-        -DCMAKEPACKAGE_INSTALL_DIR=share/eigen3
-        -DPKGCONFIG_INSTALL_DIR=lib/pkgconfig
+        "-DCMAKEPACKAGE_INSTALL_DIR:PATH=share/eigen3"
+        "-DPKGCONFIG_INSTALL_DIR:PATH=lib/pkgconfig"
     OPTIONS_DEBUG
-        -DCMAKEPACKAGE_INSTALL_DIR=debug/share/eigen3
-        -DPKGCONFIG_INSTALL_DIR=lib/pkgconfig
+        "-DCMAKEPACKAGE_INSTALL_DIR:PATH=debug/share/eigen3"
+        "-DPKGCONFIG_INSTALL_DIR:PATH=lib/pkgconfig"
 )
-
 vcpkg_install_cmake()
 
-file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include ${CURRENT_PACKAGES_DIR}/debug/share)
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include" "${CURRENT_PACKAGES_DIR}/debug/share")
 
-vcpkg_replace_string(${CURRENT_PACKAGES_DIR}/share/eigen3/Eigen3Targets.cmake
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/eigen3/Eigen3Targets.cmake"
     "set(_IMPORT_PREFIX " "get_filename_component(_IMPORT_PREFIX \"\${CMAKE_CURRENT_LIST_DIR}/../..\" ABSOLUTE) #"
 )
 
 vcpkg_fixup_pkgconfig()
 
-file(GLOB INCLUDES ${CURRENT_PACKAGES_DIR}/include/eigen3/*)
-file(COPY ${INCLUDES} DESTINATION ${CURRENT_PACKAGES_DIR}/include)
+file(GLOB INCLUDES "${CURRENT_PACKAGES_DIR}/include/eigen3/*")
+file(COPY ${INCLUDES} DESTINATION "${CURRENT_PACKAGES_DIR}/include")
 
-file(INSTALL ${SOURCE_PATH}/COPYING.README DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
+file(INSTALL "${SOURCE_PATH}/COPYING.README" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
