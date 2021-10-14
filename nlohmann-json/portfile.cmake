@@ -1,8 +1,8 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO nlohmann/json
-    REF v3.10.3
-    SHA512 92d438e9c23480ebc3f335213c77b0872524530f1118f9bba269ac4ec500c485e18e5e774bd0cf3c428db2f344c39a42b98dcc7e83121be0adcee301e415a0ea
+    REF v3.10.2
+    SHA512 9a399dfc8aab19c9fc12470e8087895b1c05d48a9bcc731b483d8670c361cffb2adc3ccced822b7f17255e88387a441d619c4e1f1afeb702d1d035ad24fe22ed
     HEAD_REF master
     PATCHES fix_serializer.patch
 )
