@@ -1,6 +1,6 @@
 {
   "name": "matlab",
-  "version-string": "2019b",
+  "version-string": "2021b",
   "description": "Matlab stub port to check if MATLAB is find_package able",
   "homepage": "",
   "dependencies": []

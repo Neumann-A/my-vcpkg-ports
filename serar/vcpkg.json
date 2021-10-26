@@ -3,7 +3,7 @@
   "version-string": "0.1",
   "description": "SerializationArchive (SerAr) is a c++ interface wrapper library around different serialization possibilities to ensure a common interface for data",
   "homepage": "https://github.com/Neumann-A/SerAr",
-  "default-features": ["json", "qt", "program-options", "config"],
+  "default-features": ["json", "qt", "program-options", "config", "toml"],
   "dependencies": [
     {
       "name": "cmakejson",
@@ -42,6 +42,15 @@
       "dependencies": [ 
         {
           "name": "nlohmann-json",
+          "default-features": false
+        }
+      ]
+    },
+    "toml" : {
+      "description": "Build with TOML support",
+      "dependencies": [ 
+        {
+          "name": "toml11",
           "default-features": false
         }
       ]

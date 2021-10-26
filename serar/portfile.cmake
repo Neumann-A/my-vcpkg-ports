@@ -6,8 +6,8 @@ vcpkg_from_github(
     #GITHUB_HOST  ssh://git@github.com:
     AUTHORIZATION_TOKEN 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
     REPO Neumann-A/SerAr
-    REF e3bd64d099afeb2e31bb27d23c4c1c2a576ee8e9
-    SHA512  8dc3ee08a45936c0e2bc97bcfcef07b3dc483a79ed6e348158337b662726e40031585ae307809967693f33460270a5cc216f80dda11cf6bf5918ec7891fbe04b
+    REF 41dd2ff57247a6d989911e89491f0cdcf9199a27
+    SHA512  93b274ac792d861183d2737cdf06c9718ced8ba8035bd35da8b02ece6daa965a81cec3628405c7796c8a06708f8849db7c502f0ddf2ef4a9ed0b978ed38e25d0
     HEAD_REF master
 )
 
@@ -19,6 +19,7 @@ vcpkg_check_features(
     "matlab"            SERAR_WITH_MATLAB
     "qt"                SERAR_WITH_QTUI
     "json"              SERAR_WITH_JSON
+    "toml"              SERAR_WITH_TOML
     "program-options"   SERAR_WITH_PROGRAMOPTIONS
     "cereal"            SERAR_WITH_CEREAL
     "config"            SERAR_WITH_CONFIGFILE

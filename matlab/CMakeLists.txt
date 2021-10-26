@@ -6,4 +6,4 @@ endif()
 
 project(MATLAB-find-package)
 set(MATLAB_FIND_DEBUG)
-find_package(Matlab COMPONENTS ${COMPONENTS} REQUIRED)
+find_package(Matlab 9.11 COMPONENTS ${COMPONENTS} REQUIRED)
