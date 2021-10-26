@@ -6,4 +6,5 @@ endif()
 
 project(MATLAB-find-package)
 set(MATLAB_FIND_DEBUG)
+set(MATLAB_ADDITIONAL_VERSIONS "2021b=9.11")
 find_package(Matlab 9.11 COMPONENTS ${COMPONENTS} REQUIRED)
