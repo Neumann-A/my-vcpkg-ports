@@ -5,4 +5,5 @@ SET(VCPKG_POLICY_EMPTY_PACKAGE enabled)
 
 # Make sure MATLAB can be found
 vcpkg_configure_cmake(SOURCE_PATH ${CMAKE_CURRENT_LIST_DIR}
-                      OPTIONS "-DCOMPONENTS=${COMPONENTS}")
+                      OPTIONS "-DCOMPONENTS=${COMPONENTS}"
+                              "-DMATLAB_ADDITIONAL_VERSIONS=\"2021b=9.11\"")
