@@ -5,4 +5,8 @@ SET(VCPKG_POLICY_EMPTY_PACKAGE enabled)
 
 # Make sure MATLAB can be found
 vcpkg_configure_cmake(SOURCE_PATH ${CMAKE_CURRENT_LIST_DIR}
-                      OPTIONS "-DCOMPONENTS=${COMPONENTS}")
+                      OPTIONS 
+                      --trace-expand
+                      "-DMatlab_MAIN_PROGRAM=-NOTFOUND"
+                      "-D_matlab_main_tmp=-NOTFOUND"
+                      "-DCOMPONENTS=${COMPONENTS}")
