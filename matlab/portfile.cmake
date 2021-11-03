@@ -6,7 +6,6 @@ SET(VCPKG_POLICY_EMPTY_PACKAGE enabled)
 vcpkg_configure_cmake(SOURCE_PATH "${CMAKE_CURRENT_LIST_DIR}"
                       OPTIONS 
                       --trace-expand
-                      "-DMatlab_MAIN_PROGRAM=-NOTFOUND"
                       "-D_matlab_main_tmp=-NOTFOUND"
                       "-DCOMPONENTS=${COMPONENTS}")
 
