@@ -1,9 +1,9 @@
 vcpkg_from_gitlab(
     GITLAB_URL https://gitlab.com
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO cantonios/eigen
-    REF f0f1d7938b7083800ff75fe88e15092f08a4e67e
-    SHA512 1b161c20732fdbbae0e2baf1bd2e685878094bff5bb02ca75bf7d07ef94838cfc4c18fb3afff600cf9f95a8dfd58423405653e4b26c1e442eff59c1e5c03e28f 
+    REPO libeigen/eigen
+    REF f04fd8b1686fdcaca35a5eb8d4b3b1ff50fc4636
+    SHA512 5948b042d10ae6e147d93c73833227e557535cc01413b00242135bb1801312e90aafe0c8bbe3defc59408256d5b818b349db18eb30bd8318c40ba645d5af9da7 
     HEAD_REF master
 )
 
