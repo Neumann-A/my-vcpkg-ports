@@ -1,0 +1,12 @@
+diff --git a/tools/meson/mesonbuild/linkers/detect.py b/tools/meson/mesonbuild/linkers/detect.py
+index 0bfd708..323801d 100644
+--- a/tools/meson/mesonbuild/linkers/detect.py	
++++ b/tools/meson/mesonbuild/linkers/detect.py
+@@ -72,6 +72,7 @@ def guess_win_linker(env: 'Environment', compiler: T.List[str], comp_class: T.Ty
+     override = []  # type: T.List[str]
+     value = env.lookup_binary_entry(for_machine, comp_class.language + '_ld')
+     if value is not None:
++        compiler = value
+         override = comp_class.use_linker_args(value[0])
+         check_args += override
+ 

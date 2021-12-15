@@ -31,3 +31,4 @@ endif()
 
 # Handle copyright
 file(INSTALL "${SOURCE_PATH}/COPYING" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
+configure_file("${CMAKE_CURRENT_LIST_DIR}/qwt-config.cmake" "${CURRENT_PACKAGES_DIR}/share/${PORT}/qwt-config.cmake" @ONLY)
