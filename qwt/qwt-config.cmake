@@ -1,33 +1,49 @@
+find_dependency(Qt6 COMPONENTS Svg Widgets Gui Concurrent PrintSupport OpenGL)
 
 # Compute the installation prefix relative to this file.
-get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_FILE}" PATH)
-get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
-get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
+get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)
+get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" DIRECTORY)
+get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" DIRECTORY)
 if(_IMPORT_PREFIX STREQUAL "/")
   set(_IMPORT_PREFIX "")
 endif()
 
-find_dependency(Qt6 COMPONENTS Svg Widgets Gui Concurrent PrintSupport OpenGL)
+set(qwt_INCLUDE_DIR "${_IMPORT_PREFIX}/include")
+find_library(qwt_LIBRARY_RELEASE NAMES qwt NAMES_PER_DIR PATHS "${_IMPORT_PREFIX}/lib" NO_DEFAULT_PATHS)
+find_library(qwt_LIBRARY_DEBUG NAMES qwtd qwt_debug qwt NAMES_PER_DIR PATHS "${_IMPORT_PREFIX}/debug/lib" NO_DEFAULT_PATHS)
+select_library_configurations(qwt)
 
-add_library(qwt::qwt UNKNOWN IMPORTED)
-
-set_target_properties(qwt::qwt PROPERTIES
-  COMPATIBLE_INTERFACE_STRING "QT_MAJOR_VERSION;QT_COORD_TYPE"
-  INTERFACE_COMPILE_DEFINITIONS ""
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "Qt6::Gui;Qt6::Svg;Qt6::Widgets;Qt6::Concurrent;Qt6::PrintSupport;Qt6::OpenGL"
-)
-
-find_library(QWT_RELEASE NAMES qwt PATHS "${_IMPORT_PREFIX}/lib" NO_DEFAULT_PATHS)
-set_property(TARGET qwt::qwt APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
-set_target_properties(qwt::qwt PROPERTIES
-    IMPORTED_LOCATION_RELEASE "${QWT_RELEASE}"
-)
-
-if(NOT "@VCPKG_BUILD_TYPE@")
-    find_library(QWT_DEBUG NAMES qwt qwtd qwt_debug PATHS "${_IMPORT_PREFIX}/debug/lib" NO_DEFAULT_PATHS)
-    set_property(TARGET qwt::qwt APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
-    set_target_properties(qwt::qwt PROPERTIES
-      IMPORTED_LOCATION_DEBUG "${QWT_DEBUG}"
-    )
+if(NOT EXISTS "${qwt_INCLUDE_DIR}")
+  message(FATAL_ERROR "qwt include dir not existing! qwt_INCLUDE_DIR: ${qwt_INCLUDE_DIR}; CMAKE_CURRENT_LIST_FILE:${CMAKE_CURRENT_LIST_FILE}")
 endif()
+if(NOT TARGET qwt::qwt)
+  add_library(qwt::qwt UNKNOWN IMPORTED)
+  set_target_properties(qwt::qwt PROPERTIES
+    INTERFACE_COMPILE_DEFINITIONS ""
+    INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+    INTERFACE_LINK_LIBRARIES "Qt6::Gui;Qt6::Svg;Qt6::Widgets;Qt6::Concurrent;Qt6::PrintSupport;Qt6::OpenGL"
+  )
+  if(qwt_LIBRARY_RELEASE)
+      set_property(TARGET qwt::qwt APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+      set_target_properties(qwt::qwt PROPERTIES
+          IMPORTED_LOCATION_RELEASE "${qwt_LIBRARY_RELEASE}"
+      )
+  endif()
+  if(qwt_LIBRARY_DEBUG)
+      set_property(TARGET qwt::qwt APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+      set_target_properties(qwt::qwt PROPERTIES
+        IMPORTED_LOCATION_DEBUG "${qwt_LIBRARY_DEBUG}"
+      )
+  endif()
+endif()
+
+if(qwt_LIBRARIES AND qwt_INCLUDE_DIR)
+  set(qwt_FOUND TRUE)
+  set(QWT_FOUND TRUE)
+  set(Qwt_FOUND TRUE)
+else()
+  set(qwt_FOUND FALSE)
+  set(QWT_FOUND FALSE)
+  set(Qwt_FOUND FALSE)
+endif()
+
