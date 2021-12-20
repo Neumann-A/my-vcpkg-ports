@@ -7,9 +7,9 @@ vcpkg_from_git(
         fix_dll_install.patch
 )
 
-string(COMPARE EQUAL  "${VCPKG_LIBRARY_LINKAGE}" "dynamic" IS_STATIC)
+string(COMPARE EQUAL  "${VCPKG_LIBRARY_LINKAGE}" "dynamic" IS_DYNAMIC)
 set(OPTIONS "")
-if(IS_STATIC)
+if(IS_DYNAMIC)
     set(OPTIONS "QWT_CONFIG+=QwtDll")
 endif()
 vcpkg_qmake_configure(
@@ -31,4 +31,3 @@ endif()
 
 # Handle copyright
 file(INSTALL "${SOURCE_PATH}/COPYING" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
-configure_file("${CMAKE_CURRENT_LIST_DIR}/qwt-config.cmake" "${CURRENT_PACKAGES_DIR}/share/${PORT}/qwt-config.cmake" @ONLY)
