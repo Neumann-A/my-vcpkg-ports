@@ -1,0 +1,17 @@
+{
+  "name": "qcustomplot",
+  "version": "2.1.0",
+  "description": "QCustomPlot is a Qt C++ widget for plotting and data visualization.",
+  "dependencies": [
+    {
+      "name": "qtbase",
+      "default-features": false,
+      "features" : [ "gui", "widgets"]
+    },
+    {
+      "name": "vcpkg-qmake",
+      "host": true,
+      "default-features": false
+    }
+  ]
+}
