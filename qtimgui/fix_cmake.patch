@@ -1,0 +1,81 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 481894f..4423452 100644
+--- a/CMakeLists.txt	
++++ b/CMakeLists.txt
+@@ -5,6 +5,6 @@ cmake_minimum_required (VERSION 3.8.1)
+ project(qtimgui_sln)
+ 
+ # goto subs
+-add_subdirectory(examples)
+-add_subdirectory(modules)
++# add_subdirectory(examples)
++# add_subdirectory(modules)
+ add_subdirectory(src)
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 1f44de1..48fdc2b 100644
+--- a/src/CMakeLists.txt	
++++ b/src/CMakeLists.txt
+@@ -1,31 +1,31 @@
+-cmake_minimum_required (VERSION 3.8.1)
++cmake_minimum_required (VERSION 3.21)
+ project(qtimgui)
+ 
+ set(CMAKE_AUTOMOC ON)
+ set(CMAKE_AUTORCC ON)
+ set(CMAKE_AUTOUIC ON)
+-find_package(Qt5 COMPONENTS Core Quick Gui Widgets REQUIRED)
++find_package(Qt${QT_MAJOR_VERSION} COMPONENTS Core Quick Gui Widgets REQUIRED)
++find_package(imgui REQUIRED)
+ 
+-set(
+-    qt_imgui_sources
+-    ImGuiRenderer.h
+-    ImGuiRenderer.cpp
+-    QtImGui.h
+-    QtImGui.cpp
++set(qt_imgui_sources
++    	ImGuiRenderer.h
++    	ImGuiRenderer.cpp
++    	QtImGui.h
++    	QtImGui.cpp
+ )
+ 
+ # qt_imgui_quick: library with a qt renderer for Qml / QtQuick applications
+ add_library(qt_imgui_quick STATIC ${qt_imgui_sources})
+-target_include_directories(qt_imgui_quick PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
++target_include_directories(qt_imgui_quick PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+ target_link_libraries(
+     qt_imgui_quick
+     PUBLIC
+-    imgui
+-    Qt5::Gui
++    imgui::imgui
++    Qt${QT_MAJOR_VERSION}::Gui
+     )
+-if (ANDROID)
+-    target_link_libraries(qt_imgui_quick PUBLIC log dl GLESv2 z)
+-endif()
++#if (ANDROID)
++#    target_link_libraries(qt_imgui_quick PUBLIC log dl GLESv2 z)
++#endif()
+ 
+ # qt_imgui_widget: library with a qt renderer for classic Qt Widget applications
+ add_library(qt_imgui_widgets STATIC ${qt_imgui_sources})
+@@ -32,11 +32,11 @@ 
+-target_include_directories(qt_imgui_widgets PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
++target_include_directories(qt_imgui_widgets PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+ target_link_libraries(
+     qt_imgui_widgets
+     PUBLIC
+-    imgui
+-    Qt5::Widgets
++    imgui::imgui
++    Qt${QT_MAJOR_VERSION}::Widgets
+     )
+-if (ANDROID)
+-    target_link_libraries(qt_imgui_widgets PUBLIC log dl GLESv2 z)
+-endif()
++#if (ANDROID)
++#    target_link_libraries(qt_imgui_widgets PUBLIC log dl GLESv2 z)
++#endif()
+ target_compile_definitions(qt_imgui_widgets PUBLIC QT_WIDGETS_LIB)

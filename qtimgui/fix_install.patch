@@ -1,0 +1,13 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 48fdc2b..5d9da12 100644
+--- a/src/CMakeLists.txt	
++++ b/src/CMakeLists.txt
+@@ -40,3 +40,7 @@ target_link_libraries(
+ #    target_link_libraries(qt_imgui_widgets PUBLIC log dl GLESv2 z)
+ #endif()
+ target_compile_definitions(qt_imgui_widgets PUBLIC QT_WIDGETS_LIB)
++
++set_target_properties(qt_imgui_quick qt_imgui_widgets PROPERTIES PUBLIC_HEADER "QtImGui.h;ImGuiRenderer.h")
++install(TARGETS qt_imgui_quick qt_imgui_widgets EXPORT qtimgui)
++install(EXPORT qtimgui DESTINATION share/qtimgui)
+\ No newline at end of file
