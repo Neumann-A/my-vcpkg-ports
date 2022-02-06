@@ -1,0 +1,21 @@
+diff --git a/qtpropertybrowser/src/qteditorfactory.cpp b/qtpropertybrowser/src/qteditorfactory.cpp
+index 749746db8..1c7c01229 100644
+--- a/qtpropertybrowser/src/qteditorfactory.cpp
++++ b/qtpropertybrowser/src/qteditorfactory.cpp
+@@ -1501,15 +1308,16 @@ void QtDateTimeEditFactory::connectPropertyManager(QtDateTimePropertyManager *ma
+     Reimplemented from the QtAbstractEditorFactory class.
+ */
+ QWidget *QtDateTimeEditFactory::createEditor(QtDateTimePropertyManager *manager,
+         QtProperty *property, QWidget *parent)
+ {
+   QDateTimeEdit *editor = d_ptr->createEditor(property, parent);
+   editor->setDateTime(manager->value(property));
++  editor->setDisplayFormat(manager->format());
+ 
+     connect(editor, SIGNAL(dateTimeChanged(const QDateTime &)),
+                 this, SLOT(slotSetValue(const QDateTime &)));
+     connect(editor, SIGNAL(destroyed(QObject *)),
+                 this, SLOT(slotEditorDestroyed(QObject *)));
+   return editor;
+ }
+ 

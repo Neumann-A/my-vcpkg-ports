@@ -39,7 +39,12 @@ INSTALLS     += headers
 ]])
 file(WRITE "${pro_file}" "${pro_string}")
 
-vcpkg_qmake_configure(SOURCE_PATH "${SOURCE_PATH}/qcustomplot-sharedlib/sharedlib-compilation")
+vcpkg_qmake_configure(SOURCE_PATH 
+                        "${SOURCE_PATH}/qcustomplot-sharedlib/sharedlib-compilation" 
+                      QMAKE_OPTIONS 
+                        "QT+=opengl"
+                        "CONFIG+=create_prl"
+                        "DEFINES+=QCUSTOMPLOT_USE_OPENGL")
 vcpkg_qmake_install()
 
 vcpkg_copy_pdbs()

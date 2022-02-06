@@ -1,0 +1,17 @@
+{
+  "name": "qt-solutions-propertybrowser",
+  "version-date": "2022-01-10",
+  "description": "Qtpropertybroswer from QtSolutions archive.",
+  "dependencies": [
+    {
+      "name": "qtbase",
+      "default-features": false,
+      "features" : [ "gui", "widgets"]
+    },
+    {
+      "name": "vcpkg-qmake",
+      "host": true,
+      "default-features": false
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "qtscript",
+  "version-date": "2021-10-26",
+  "description": "Qt Script (JSC based)",
+  "homepage": "https://www.qt.io/",
+  "dependencies": [
+    {
+      "name": "qtbase",
+      "default-features": false
+    },
+    {
+      "name": "qttools",
+      "default-features": false
+    },
+    {
+      "name": "vcpkg-qmake",
+      "host": true,
+      "default-features": false
+    }
+  ]
+}

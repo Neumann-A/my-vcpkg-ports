@@ -1,0 +1,353 @@
+diff --git a/qtpropertybrowser/src/qtpropertybrowser.cpp b/qtpropertybrowser/src/qtpropertybrowser.cpp
+index 28316d3ed..e930ec928 100644
+--- a/qtpropertybrowser/src/qtpropertybrowser.cpp
++++ b/qtpropertybrowser/src/qtpropertybrowser.cpp
+@@ -69,8 +69,9 @@ public:
+     QString m_statusTip;
+     QString m_whatsThis;
+     QString m_name;
++    QString m_id;
+     bool m_enabled;
+     bool m_modified;
+ 
+     QtAbstractPropertyManager * const m_manager;
+ };
+@@ -209,6 +200,13 @@ QtAbstractPropertyManager *QtProperty::propertyManager() const
++
++/*!
++    Returns the property's id.
++
++    \sa setPropertyId()
++*/
++QString QtProperty::propertyId() const { return d_ptr->m_id; }
+ 
+ /*!
+     Returns whether the property is enabled.
+ 
+     \sa setEnabled()
+ */
+@@ -295,10 +295,24 @@ QIcon QtProperty::valueIcon() const
+ 
+     \sa QtAbstractPropertyManager::valueText()
+ */
+ QString QtProperty::valueText() const
+ {
+     return d_ptr->m_manager->valueText(this);
+ }
+ 
++/*!
++    Returns True if this property is equal to \a otherProperty
++    The list of parent or sub properties are not considered in the comparison.
++*/
++bool QtProperty::compare(QtProperty *otherProperty) const {
++  return (this->propertyId() == otherProperty->propertyId() &&
++          this->propertyName() == otherProperty->propertyName() &&
++          this->toolTip() == otherProperty->toolTip() &&
++          this->statusTip() == otherProperty->statusTip() &&
++          this->whatsThis() == otherProperty->whatsThis() &&
++          this->isEnabled() == otherProperty->isEnabled() &&
++          this->isModified() == otherProperty->isModified());
++}
++ 
+ /*!
+     Returns the display text according to the echo-mode set on the editor.
+@@ -362,43 +362,61 @@ void QtProperty::setWhatsThis(const QString &text)
+ 
+     \sa propertyName()
+ */
+ void QtProperty::setPropertyName(const QString &text)
+ {
+     if (d_ptr->m_name == text)
+         return;
+ 
+   d_ptr->m_name = text;
+   propertyChanged();
+ }
+ 
++/*!
++    \fn void QtProperty::setPropertyId(const QString &id)
++
++    Sets the property's  id to the given \a id.
++
++    \sa propertyId()
++*/
++void QtProperty::setPropertyId(const QString &text) {
++  if (d_ptr->m_id == text) return;
++
++  d_ptr->m_id = text;
++}
++
+ /*!
+     Enables or disables the property according to the passed \a enable value.
+ 
+     \sa isEnabled()
+ */
+ void QtProperty::setEnabled(bool enable)
+ {
+     if (d_ptr->m_enabled == enable)
+         return;
+ 
+   d_ptr->m_enabled = enable;
+   propertyChanged();
+ }
+ 
+ /*!
+     Sets the property's modified state according to the passed \a modified value.
+ 
+     \sa isModified()
+ */
+ void QtProperty::setModified(bool modified)
+ {
+     if (d_ptr->m_modified == modified)
+         return;
+ 
+   d_ptr->m_modified = modified;
+   propertyChanged();
+ }
+ 
++/*!
++    Returns whether the property is sub property.
++*/
++bool QtProperty::isSubProperty() const { return d_ptr->m_parentItems.count(); }
++
+ /*!
+     Appends the given \a property to this property's subproperties.
+ 
+@@ -783,6 +724,20 @@ QtProperty *QtAbstractPropertyManager::addProperty(const QString &name)
+   return property;
+ }
+ 
++/*!
++    Return the QtProperty object matching \a id or Null if any.
++
++    \sa addProperty(), setPropertyId(const QString&), properties()
++*/
++QtProperty *QtAbstractPropertyManager::qtProperty(const QString &id) const {
++  foreach (QtProperty *prop, d_ptr->m_properties) {
++    if (prop->propertyId() == id) {
++      return prop;
++    }
++  }
++  return 0;
++}
++
+ /*!
+     Creates a property.
+ 
+diff --git a/qtpropertybrowser/src/qtpropertybrowser.h b/qtpropertybrowser/src/qtpropertybrowser.h
+index d66655285..4fc90e4cd 100644
+--- a/qtpropertybrowser/src/qtpropertybrowser.h
++++ b/qtpropertybrowser/src/qtpropertybrowser.h
+@@ -84,19 +79,23 @@ public:
+     QString statusTip() const;
+     QString whatsThis() const;
+     QString propertyName() const;
++    QString propertyId() const;
+     bool isEnabled() const;
+     bool isModified() const;
+ 
+     bool hasValue() const;
+     QIcon valueIcon() const;
+     QString valueText() const;
+     QString displayText() const;
++    virtual bool compare(QtProperty *otherProperty) const;
+ 
+     void setToolTip(const QString &text);
+     void setStatusTip(const QString &text);
+     void setWhatsThis(const QString &text);
+     void setPropertyName(const QString &text);
++    void setPropertyId(const QString &text);
+     void setEnabled(bool enable);
+     void setModified(bool modified);
+ 
++    bool isSubProperty() const;
+     void addSubProperty(QtProperty *property);
+     void insertSubProperty(QtProperty *property, QtProperty *afterProperty);
+diff --git a/qtpropertybrowser/src/qtpropertybrowser.h b/qtpropertybrowser/src/qtpropertybrowser.h
+index d66655285..4fc90e4cd 100644
+--- a/qtpropertybrowser/src/qtpropertybrowser.h
++++ b/qtpropertybrowser/src/qtpropertybrowser.h
+@@ -128,4 +128,5 @@ public:
+     void clear() const;
+ 
+     QtProperty *addProperty(const QString &name = QString());
++    QtProperty *qtProperty(const QString &id) const;
+ Q_SIGNALS:
+diff --git a/qtpropertybrowser/src/qtpropertymanager.cpp b/qtpropertybrowser/src/qtpropertymanager.cpp
+index aaaf53301..d00e130f9 100644
+--- a/qtpropertybrowser/src/qtpropertymanager.cpp
++++ b/qtpropertybrowser/src/qtpropertymanager.cpp
+@@ -2184,11 +1959,15 @@ QtDateTimePropertyManager::~QtDateTimePropertyManager()
+ void QtDateTimePropertyManager::setValue(QtProperty *property, const QDateTime &val)
+ {
+     setSimpleValue<const QDateTime &, QDateTime, QtDateTimePropertyManager>(d_ptr->m_values, this,
+                 &QtDateTimePropertyManager::propertyChanged,
+                 &QtDateTimePropertyManager::valueChanged,
+                 property, val);
++}
++
++void QtDateTimePropertyManager::setFormat(const QString &frmt) {
++  d_ptr->m_format = frmt;
+ }
+ 
+ /*!
+     \reimp
+ */
+@@ -2184,8 +1959,10 @@ QtDateTimePropertyManager::~QtDateTimePropertyManager()
+ QDateTime QtDateTimePropertyManager::value(const QtProperty *property) const
+ {
+     return d_ptr->m_values.value(property, QDateTime());
+ }
+ 
++QString QtDateTimePropertyManager::format() const { return d_ptr->m_format; }
++
+ /*!
+     \reimp
+ */
+diff --git a/qtpropertybrowser/src/qtpropertymanager.h b/qtpropertybrowser/src/qtpropertymanager.h
+index 1b05c5088..00fae43fc 100644
+--- a/qtpropertybrowser/src/qtpropertymanager.h
++++ b/qtpropertybrowser/src/qtpropertymanager.h
+@@ -269,9 +261,11 @@ private:
+     QtDateTimePropertyManager(QObject *parent = 0);
+     ~QtDateTimePropertyManager();
+ 
+     QDateTime value(const QtProperty *property) const;
++    QString format() const;
+ 
+ public Q_SLOTS:
+     void setValue(QtProperty *property, const QDateTime &val);
++    void setFormat(const QString &frmt);
+ Q_SIGNALS:
+     void valueChanged(QtProperty *property, const QDateTime &val);
+diff --git a/qtpropertybrowser/src/qtvariantproperty.cpp b/qtpropertybrowser/src/qtvariantproperty.cpp
+index 75e74b968..c41730c8e 100644
+--- a/qtpropertybrowser/src/qtvariantproperty.cpp
++++ b/qtpropertybrowser/src/qtvariantproperty.cpp
+@@ -265,6 +264,19 @@ int QtVariantProperty::propertyType() const
+     return d_ptr->manager->propertyType(this);
+ }
+ 
++bool QtVariantProperty::compare(QtProperty* otherProperty)const
++{
++  bool baseEqual = QtProperty::compare(otherProperty);
++  if (!baseEqual)
++    {
++    return false;
++    }
++  const QtVariantProperty* otherVariantProperty
++      = dynamic_cast<const QtVariantProperty*>(otherProperty);
++  return (this->value() == otherVariantProperty->value()
++          && this->valueType() == otherVariantProperty->valueType());
++}
++
+ /*!
+     Sets the value of this property to \a value.
+ 
+@@ -1359,6 +1320,58 @@ QtVariantProperty *QtVariantPropertyManager::addProperty(int propertyType, const
+     return variantProperty(property);
+ }
+ 
++namespace{
++void addPropertyRecusively(QtVariantPropertyManager * manager,
++                           QtVariantProperty * prop, QtVariantProperty * newProp = 0)
++  {
++  if (!newProp)
++    {
++    newProp = manager->addProperty(prop->propertyType(), prop->propertyName());
++    }
++  // Copy values
++  QStringList attributes = manager->attributes(prop->propertyType());
++  foreach(const QString& attribute, attributes)
++    {
++    newProp->setAttribute(attribute, prop->attributeValue(attribute));
++    }
++  newProp->setPropertyId(prop->propertyId());
++  newProp->setStatusTip(prop->statusTip());
++  newProp->setWhatsThis(prop->whatsThis());
++  newProp->setModified(prop->isModified());
++  newProp->setEnabled(prop->isEnabled());
++  newProp->setValue(prop->value());
++
++  foreach(QtProperty * subProp, prop->subProperties())
++    {
++    QtVariantProperty * variantSubProp = dynamic_cast<QtVariantProperty*>(subProp);
++    Q_ASSERT(variantSubProp);
++    QtVariantProperty * newVariantSubProp =
++        manager->addProperty(variantSubProp->propertyType(), variantSubProp->propertyName());
++    newProp->addSubProperty(newVariantSubProp);
++    addPropertyRecusively(manager, variantSubProp, newVariantSubProp);
++    }
++  }
++}
++
++/*!
++    Set properties used by this manager.
++
++    \sa properties(), addProperty()
++*/
++void QtVariantPropertyManager::setProperties(QSet<QtProperty *> properties)
++{
++  this->clear();
++  foreach(QtProperty * prop, properties)
++    {
++    QtVariantProperty * variantProp = dynamic_cast<QtVariantProperty*>(prop);
++    if (!variantProp){ continue; }
++    if (!variantProp->isSubProperty())
++      {
++      addPropertyRecusively(this, variantProp);
++      }
++    }
++}
++
+ /*!
+     Returns the given \a property's value.
+ 
+@@ -2226,6 +2211,17 @@ QWidget *QtVariantEditorFactory::createEditor(QtVariantPropertyManager *manager,
+     return factory->createEditor(wrappedProperty(property), parent);
+ }
+ 
++/*!
++    \internal
++
++    Reimplemented from the QtAbstractEditorFactory class.
++*/
++QWidget *QtVariantEditorFactory::createEditor(QtProperty *property, QWidget *parent)
++{
++  // Overlaoded to avoid "-Woverloaded-virtual" warning
++  return this->QtAbstractEditorFactory<QtVariantPropertyManager>::createEditor(property, parent);
++}
++
+ /*!
+     \internal
+ 
+diff --git a/qtpropertybrowser/src/qtvariantproperty.h b/qtpropertybrowser/src/qtvariantproperty.h
+index 948f8d335..5fb83d6a6 100644
+--- a/qtpropertybrowser/src/qtvariantproperty.h
++++ b/qtpropertybrowser/src/qtvariantproperty.h
+@@ -64,6 +63,8 @@ public:
+     int valueType() const;
+     int propertyType() const;
+ 
++    virtual bool compare(QtProperty* otherProperty)const;
++
+     void setValue(const QVariant &value);
+     void setAttribute(const QString &attribute, const QVariant &value);
+ protected:
+@@ -84,6 +85,8 @@ public:
+ 
+     virtual QtVariantProperty *addProperty(int propertyType, const QString &name = QString());
+ 
++    void setProperties(QSet<QtProperty *> properties);
++
+     int propertyType(const QtProperty *property) const;
+     int valueType(const QtProperty *property) const;
+     QtVariantProperty *variantProperty(const QtProperty *property) const;
+@@ -172,6 +173,7 @@ protected:
+     void connectPropertyManager(QtVariantPropertyManager *manager);
+     QWidget *createEditor(QtVariantPropertyManager *manager, QtProperty *property,
+                 QWidget *parent);
++    QWidget *createEditor(QtProperty *property, QWidget *parent);
+     void disconnectPropertyManager(QtVariantPropertyManager *manager);
+ private:
+     QtVariantEditorFactoryPrivate *d_ptr;

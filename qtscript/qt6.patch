@@ -1,0 +1,781 @@
+diff --git a/.qmake.conf b/.qmake.conf
+index 3ace1d0eb..cac2fc118 100644
+--- a/.qmake.conf
++++ b/.qmake.conf
+@@ -3,4 +3,4 @@ android|boot2qt: CONFIG -= headersclean
+ 
+ DEFINES += QT_NO_FOREACH QT_NO_JAVA_STYLE_ITERATORS
+ 
+-MODULE_VERSION = 6.0.0
++MODULE_VERSION = 6.2.2
+diff --git a/src/script/api/qscriptable.h b/src/script/api/qscriptable.h
+index b12d4c5c1..f744dc9b4 100644
+--- a/src/script/api/qscriptable.h
++++ b/src/script/api/qscriptable.h
+@@ -42,7 +42,7 @@
+ 
+ #include <QtCore/qobjectdefs.h>
+ 
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ #include <QtScript/qtscriptglobal.h>
+ 
+ QT_BEGIN_NAMESPACE
+diff --git a/src/script/api/qscriptclass.h b/src/script/api/qscriptclass.h
+index fcc126bab..6e55800b7 100644
+--- a/src/script/api/qscriptclass.h
++++ b/src/script/api/qscriptclass.h
+@@ -43,7 +43,7 @@
+ #include <QtCore/qstring.h>
+ 
+ #include <QtCore/qvariant.h>
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ #include <QtScript/qscriptvalue.h>
+ 
+ QT_BEGIN_NAMESPACE
+diff --git a/src/script/api/qscriptclasspropertyiterator.h b/src/script/api/qscriptclasspropertyiterator.h
+index 60b3b9852..7f6990066 100644
+--- a/src/script/api/qscriptclasspropertyiterator.h
++++ b/src/script/api/qscriptclasspropertyiterator.h
+@@ -42,7 +42,7 @@
+ 
+ #include <QtCore/qstring.h>
+ 
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ #include <QtScript/qscriptvalue.h>
+ 
+ QT_BEGIN_NAMESPACE
+diff --git a/src/script/api/qscriptengine.cpp b/src/script/api/qscriptengine.cpp
+index afee20836..a4ca9873a 100644
+--- a/src/script/api/qscriptengine.cpp
++++ b/src/script/api/qscriptengine.cpp
+@@ -96,6 +96,8 @@
+ #include "qscriptextensioninterface.h"
+ #endif
+ 
++#include <QtCore/QRegularExpression>
++
+ #include <stdlib.h>
+ 
+ Q_DECLARE_METATYPE(QScriptValue)
+@@ -1719,16 +1721,16 @@ void QScriptEnginePrivate::detachAllRegisteredScriptStrings()
+ 
+ #ifndef QT_NO_REGEXP
+ 
+-Q_CORE_EXPORT QString qt_regexp_toCanonical(const QString &, QRegExp::PatternSyntax);
++Q_CORE_EXPORT QString qt_regexp_toCanonical(const QString &, QRegularExpression::PatternOptions);
+ 
+-JSC::JSValue QScriptEnginePrivate::newRegExp(JSC::ExecState *exec, const QRegExp &regexp)
++JSC::JSValue QScriptEnginePrivate::newRegExp(JSC::ExecState *exec, const QRegularExpression &regexp)
+ {
+     JSC::JSValue buf[2];
+     JSC::ArgList args(buf, sizeof(buf));
+ 
+     //convert the pattern to a ECMAScript pattern
+-    QString pattern = qt_regexp_toCanonical(regexp.pattern(), regexp.patternSyntax());
+-    if (regexp.isMinimal()) {
++    QString pattern = qt_regexp_toCanonical(regexp.pattern(), regexp.patternOptions());
++    {
+         QString ecmaPattern;
+         int len = pattern.length();
+         ecmaPattern.reserve(len);
+@@ -1765,7 +1767,7 @@ JSC::JSValue QScriptEnginePrivate::newRegExp(JSC::ExecState *exec, const QRegExp
+ 
+     JSC::UString jscPattern = pattern;
+     QString flags;
+-    if (regexp.caseSensitivity() == Qt::CaseInsensitive)
++    if (regexp.patternOptions() & QRegularExpression::CaseInsensitiveOption)
+         flags.append(QLatin1Char('i'));
+     JSC::UString jscFlags = flags;
+     buf[0] = JSC::jsString(exec, jscPattern);
+@@ -1824,15 +1826,15 @@ JSC::JSValue QScriptEnginePrivate::newVariant(JSC::JSValue objectValue,
+ 
+ #ifndef QT_NO_REGEXP
+ 
+-QRegExp QScriptEnginePrivate::toRegExp(JSC::ExecState *exec, JSC::JSValue value)
++QRegularExpression QScriptEnginePrivate::toRegExp(JSC::ExecState *exec, JSC::JSValue value)
+ {
+     if (!isRegExp(value))
+-        return QRegExp();
++        return QRegularExpression();
+     QString pattern = toString(exec, property(exec, value, "source", QScriptValue::ResolvePrototype));
+-    Qt::CaseSensitivity kase = Qt::CaseSensitive;
++    QRegularExpression::PatternOptions kase = QRegularExpression::NoPatternOption;
+     if (toBool(exec, property(exec, value, "ignoreCase", QScriptValue::ResolvePrototype)))
+-        kase = Qt::CaseInsensitive;
+-    return QRegExp(pattern, kase, QRegExp::RegExp2);
++        kase = QRegularExpression::CaseInsensitiveOption;
++    return QRegularExpression(pattern, kase);
+ }
+ 
+ #endif
+@@ -2208,7 +2210,7 @@ QScriptValue QScriptEngine::newFunction(QScriptEngine::FunctionSignature fun,
+ 
+   \sa QScriptValue::toRegExp()
+ */
+-QScriptValue QScriptEngine::newRegExp(const QRegExp &regexp)
++QScriptValue QScriptEngine::newRegExp(const QRegularExpression &regexp)
+ {
+     Q_D(QScriptEngine);
+     QScript::APIShim shim(d);
+@@ -3159,8 +3161,8 @@ JSC::JSValue QScriptEnginePrivate::create(JSC::ExecState *exec, int type, const
+             break;
+         default:
+ #ifndef QT_NO_REGEXP
+-            if (type == qMetaTypeId<QRegExp>()) {
+-                result = newRegExp(exec, *reinterpret_cast<const QRegExp *>(ptr));
++            if (type == qMetaTypeId<QRegularExpression>()) {
++                result = newRegExp(exec, *reinterpret_cast<const QRegularExpression *>(ptr));
+                 break;
+             }
+ #endif
+@@ -3307,9 +3309,9 @@ bool QScriptEnginePrivate::convertValue(JSC::ExecState *exec, JSC::JSValue value
+         return true;
+     default:
+ #ifndef QT_NO_REGEXP
+-        if (type == qMetaTypeId<QRegExp>()) {
++        if (type == qMetaTypeId<QRegularExpression>()) {
+             if (isRegExp(value)) {
+-                *reinterpret_cast<QRegExp *>(ptr) = toRegExp(exec, value);
++                *reinterpret_cast<QRegularExpression *>(ptr) = toRegExp(exec, value);
+                 return true;
+             }
+             break;
+diff --git a/src/script/api/qscriptengine.h b/src/script/api/qscriptengine.h
+index ccb58f76b..fab97a090 100644
+--- a/src/script/api/qscriptengine.h
++++ b/src/script/api/qscriptengine.h
+@@ -75,7 +75,7 @@ inline QScriptValue qscriptQMetaObjectConstructor(QScriptContext *, QScriptEngin
+ #endif // QT_NO_QOBJECT
+ 
+ #ifndef QT_NO_REGEXP
+-class QRegExp;
++class QRegularExpression;
+ #endif
+ 
+ template <typename T>
+@@ -187,7 +187,7 @@ public:
+     QScriptValue newVariant(const QScriptValue &object, const QVariant &value);
+ 
+ #ifndef QT_NO_REGEXP
+-    QScriptValue newRegExp(const QRegExp &regexp);
++    QScriptValue newRegExp(const QRegularExpression &regexp);
+ #endif
+ 
+     QScriptValue newObject();
+diff --git a/src/script/api/qscriptengine_p.h b/src/script/api/qscriptengine_p.h
+index 42b4683c8..15190bc87 100644
+--- a/src/script/api/qscriptengine_p.h
++++ b/src/script/api/qscriptengine_p.h
+@@ -59,11 +59,11 @@
+ #include <QtCore/qset.h>
+ #include <QtCore/qstringlist.h>
+ 
+-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+-#include <QtCore5Compat/qregexp.h>
+-#else
+-#include <QtCore/qregexp.h>
+-#endif
++//#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++//#include <QtCore5Compat/QRegularExpression.h>
++//#else
++#include <QtCore/QRegularExpression>
++//#endif
+ 
+ #include "qscriptvalue_p.h"
+ #include "qscriptstring_p.h"
+@@ -203,7 +203,7 @@ public:
+ 
+     static inline QDateTime toDateTime(JSC::ExecState *, JSC::JSValue);
+ #ifndef QT_NO_REGEXP
+-    static QRegExp toRegExp(JSC::ExecState*, JSC::JSValue);
++    static QRegularExpression toRegExp(JSC::ExecState*, JSC::JSValue);
+ #endif
+     static QVariant toVariant(JSC::ExecState *, JSC::JSValue);
+     static inline QObject *toQObject(JSC::ExecState *, JSC::JSValue);
+@@ -334,7 +334,7 @@ public:
+     inline JSC::JSValue newObject();
+ 
+ #ifndef QT_NO_REGEXP
+-    static JSC::JSValue newRegExp(JSC::ExecState *, const QRegExp &);
++    static JSC::JSValue newRegExp(JSC::ExecState *, const QRegularExpression &);
+ #endif
+ 
+     static JSC::JSValue newRegExp(JSC::ExecState *, const QString &pattern, const QString &flags);
+diff --git a/src/script/api/qscriptengineagent.h b/src/script/api/qscriptengineagent.h
+index 3cf007957..c86c3c550 100644
+--- a/src/script/api/qscriptengineagent.h
++++ b/src/script/api/qscriptengineagent.h
+@@ -43,7 +43,7 @@
+ #include <QtCore/qobjectdefs.h>
+ 
+ #include <QtCore/qvariant.h>
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ #include <QtScript/qtscriptglobal.h>
+ 
+ QT_BEGIN_NAMESPACE
+diff --git a/src/script/api/qscriptvalue.cpp b/src/script/api/qscriptvalue.cpp
+index 37730c45d..9cb5e0bc1 100644
+--- a/src/script/api/qscriptvalue.cpp
++++ b/src/script/api/qscriptvalue.cpp
+@@ -1288,17 +1288,17 @@ QDateTime QScriptValue::toDateTime() const
+ 
+ #ifndef QT_NO_REGEXP
+ /*!
+-  Returns the QRegExp representation of this value.
++  Returns the QRegularExpression representation of this value.
+   If this QScriptValue is not a regular expression, an empty
+-  QRegExp is returned.
++  QRegularExpression is returned.
+ 
+   \sa isRegExp()
+ */
+-QRegExp QScriptValue::toRegExp() const
++QRegularExpression QScriptValue::toRegExp() const
+ {
+     Q_D(const QScriptValue);
+     if (!d || !d->engine)
+-         return QRegExp();
++         return QRegularExpression();
+     QScript::APIShim shim(d->engine);
+     return QScriptEnginePrivate::toRegExp(d->engine->currentFrame, d->jscValue);
+ }
+diff --git a/src/script/api/qscriptvalue.h b/src/script/api/qscriptvalue.h
+index 0e8313913..b6003988f 100644
+--- a/src/script/api/qscriptvalue.h
++++ b/src/script/api/qscriptvalue.h
+@@ -58,7 +58,7 @@ class QObject;
+ struct QMetaObject;
+ class QDateTime;
+ #ifndef QT_NO_REGEXP
+-class QRegExp;
++class QRegularExpression;
+ #endif
+ 
+ typedef QList<QScriptValue> QScriptValueList;
+@@ -161,7 +161,7 @@ public:
+     QScriptValue toObject() const;
+     QDateTime toDateTime() const;
+ #ifndef QT_NO_REGEXP
+-    QRegExp toRegExp() const;
++    QRegularExpression toRegExp() const;
+ #endif
+ 
+     bool instanceOf(const QScriptValue &other) const;
+diff --git a/src/script/api/qscriptvalueiterator.h b/src/script/api/qscriptvalueiterator.h
+index 5d7fcc258..893b7c452 100644
+--- a/src/script/api/qscriptvalueiterator.h
++++ b/src/script/api/qscriptvalueiterator.h
+@@ -42,7 +42,7 @@
+ 
+ #include <QtScript/qscriptvalue.h>
+ 
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+diff --git a/src/script/bridge/qscriptqobject.cpp b/src/script/bridge/qscriptqobject.cpp
+index 6cbd7b44f..b10e44366 100644
+--- a/src/script/bridge/qscriptqobject.cpp
++++ b/src/script/bridge/qscriptqobject.cpp
+@@ -702,7 +702,7 @@ static JSC::JSValue delegateQtMethod(JSC::ExecState *exec, QMetaMethod::MethodTy
+                         break;
+                     }
+                 } else if (QScriptEnginePrivate::isRegExp(actual)) {
+-                    if (tid == qMetaTypeId<QRegExp>()) {
++                    if (tid == qMetaTypeId<QRegularExpression>()) {
+                         // perfect
+                     } else {
+                         matchDistance += 10;
+diff --git a/src/script/doc/src/qtscript-index.qdoc b/src/script/doc/src/qtscript-index.qdoc
+index f5d036f75..a37a047aa 100644
+--- a/src/script/doc/src/qtscript-index.qdoc
++++ b/src/script/doc/src/qtscript-index.qdoc
+@@ -490,7 +490,7 @@
+                or undefined; QScriptValue::toString() otherwise.
+     \row    \li QDateTime \li QScriptValue::toDateTime()
+     \row    \li QDate \li QScriptValue::toDateTime().date()
+-    \row    \li QRegExp \li QScriptValue::toRegExp()
++    \row    \li QRegularExpression \li QScriptValue::toRegExp()
+     \row    \li QObject* \li QScriptValue::toQObject()
+     \row    \li QWidget* \li QScriptValue::toQObject()
+     \row    \li QVariant \li QScriptValue::toVariant()
+@@ -571,7 +571,7 @@
+     \row    \li QChar \li QScriptValue(this, value.unicode())
+     \row    \li QDateTime \li \l{QScriptEngine::newDate()}{QScriptEngine::newDate}(value)
+     \row    \li QDate \li \l{QScriptEngine::newDate()}{QScriptEngine::newDate}(value)
+-    \row    \li QRegExp \li \l{QScriptEngine::newRegExp()}{QScriptEngine::newRegExp}(value)
++    \row    \li QRegularExpression \li \l{QScriptEngine::newRegExp()}{QScriptEngine::newRegExp}(value)
+     \row    \li QObject* \li \l{QScriptEngine::newQObject()}{QScriptEngine::newQObject}(value)
+     \row    \li QWidget* \li \l{QScriptEngine::newQObject()}{QScriptEngine::newQObject}(value)
+     \row    \li QVariant \li \l{QScriptEngine::newVariant()}{QScriptEngine::newVariant}(value)
+diff --git a/src/scripttools/debugging/qscriptbreakpointdata_p.h b/src/scripttools/debugging/qscriptbreakpointdata_p.h
+index 5c2abccde..a9733d08d 100644
+--- a/src/scripttools/debugging/qscriptbreakpointdata_p.h
++++ b/src/scripttools/debugging/qscriptbreakpointdata_p.h
+@@ -52,7 +52,7 @@
+ //
+ 
+ #include <QtCore/qobjectdefs.h>
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ #include <QtCore/qmap.h>
+ 
+ QT_BEGIN_NAMESPACE
+diff --git a/src/scripttools/debugging/qscriptbreakpointswidget.cpp b/src/scripttools/debugging/qscriptbreakpointswidget.cpp
+index cea17c5ab..82938a750 100644
+--- a/src/scripttools/debugging/qscriptbreakpointswidget.cpp
++++ b/src/scripttools/debugging/qscriptbreakpointswidget.cpp
+@@ -81,8 +81,8 @@ public:
+ 
+         fileNameEdit = new QLineEdit();
+         setFocusProxy(fileNameEdit);
+-        QRegExp locationRegExp(QString::fromLatin1(".+:[0-9]+"));
+-        QRegExpValidator *validator = new QRegExpValidator(locationRegExp, fileNameEdit);
++        QRegularExpression locationRegExp(QString::fromLatin1(".+:[0-9]+"));
++        QRegularExpressionValidator *validator = new QRegularExpressionValidator(locationRegExp, fileNameEdit);
+         fileNameEdit->setValidator(validator);
+         hboxLayout->addWidget(fileNameEdit);
+ 
+diff --git a/src/scripttools/debugging/qscriptcompletiontask.cpp b/src/scripttools/debugging/qscriptcompletiontask.cpp
+index b73c731ae..a34f95cc2 100644
+--- a/src/scripttools/debugging/qscriptcompletiontask.cpp
++++ b/src/scripttools/debugging/qscriptcompletiontask.cpp
+@@ -230,15 +230,16 @@ void QScriptCompletionTask::start()
+     d->type = NoCompletion;
+     // see if we're typing a command
+     // ### don't hardcode the command prefix
+-    QRegExp cmdRx(QString::fromLatin1("^\\s*\\.([a-zA-Z]*)"));
+-    int cmdIndex = cmdRx.indexIn(d->contents);
++    QRegularExpression cmdRx(QString::fromLatin1("^\\s*\\.([a-zA-Z]*)"));
++    auto maybe_match = cmdRx.match(d->contents);
++    int cmdIndex = maybe_match.capturedStart();
+     if ((cmdIndex != -1) && d->console) {
+-        int len = cmdRx.matchedLength();
+-        QString prefix = cmdRx.capturedTexts().at(1);
++        int len = maybe_match.capturedLength();
++        QString prefix = maybe_match.capturedTexts().at(1);
+         if ((d->cursorPosition >= cmdIndex) && (d->cursorPosition <= (cmdIndex+len))) {
+             // editing command --> get command completions
+             d->results = d->console->commandManager()->completions(prefix);
+-            d->position = cmdRx.pos(1);
++            d->position = maybe_match.capturedStart(1);
+             d->length = prefix.length();
+             d->type = CommandNameCompletion;
+             d->appendix = QString::fromLatin1(" ");
+diff --git a/src/scripttools/debugging/qscriptdebuggerbackend_p.h b/src/scripttools/debugging/qscriptdebuggerbackend_p.h
+index 4c2ebdd2e..7cc73df0a 100644
+--- a/src/scripttools/debugging/qscriptdebuggerbackend_p.h
++++ b/src/scripttools/debugging/qscriptdebuggerbackend_p.h
+@@ -52,7 +52,7 @@
+ //
+ 
+ #include <QtCore/qobjectdefs.h>
+-
++#include <QtCore/QStringList>
+ #include <QtCore/qpair.h>
+ 
+ #include "qscriptbreakpointdata_p.h"
+@@ -67,7 +67,6 @@ class QScriptDebuggerEvent;
+ class QScriptValue;
+ class QScriptValueIterator;
+ class QScriptObjectSnapshot;
+-class QStringList;
+ 
+ typedef QPair<QList<qint64>, QList<qint64> > QScriptScriptsDelta;
+ typedef QPair<QList<qint64>, QList<qint64> > QScriptContextsDelta;
+diff --git a/src/scripttools/debugging/qscriptdebuggercodeviewinterface_p.h b/src/scripttools/debugging/qscriptdebuggercodeviewinterface_p.h
+index 2eaa4c06e..ce6cf3314 100644
+--- a/src/scripttools/debugging/qscriptdebuggercodeviewinterface_p.h
++++ b/src/scripttools/debugging/qscriptdebuggercodeviewinterface_p.h
+@@ -52,11 +52,12 @@
+ //
+ 
+ #include <QtWidgets/qwidget.h>
++#include <QtCore/QStringList>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+ class QPoint;
+-class QStringList;
++
+ 
+ class QScriptDebuggerCodeViewInterfacePrivate;
+ class Q_AUTOTEST_EXPORT QScriptDebuggerCodeViewInterface:
+diff --git a/src/scripttools/debugging/qscriptdebuggercommand_p.h b/src/scripttools/debugging/qscriptdebuggercommand_p.h
+index d2da1b7b6..2fe18cfa0 100644
+--- a/src/scripttools/debugging/qscriptdebuggercommand_p.h
++++ b/src/scripttools/debugging/qscriptdebuggercommand_p.h
+@@ -52,7 +52,7 @@
+ //
+ 
+ #include <QtCore/qobjectdefs.h>
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ #include <QtCore/qhash.h>
+ #include <QtCore/qvariant.h>
+ 
+diff --git a/src/scripttools/debugging/qscriptdebuggercommandexecutor.cpp b/src/scripttools/debugging/qscriptdebuggercommandexecutor.cpp
+index 723fcb663..08db3c1d3 100644
+--- a/src/scripttools/debugging/qscriptdebuggercommandexecutor.cpp
++++ b/src/scripttools/debugging/qscriptdebuggercommandexecutor.cpp
+@@ -53,6 +53,7 @@
+ #include <QtScript/qscriptcontextinfo.h>
+ #include <QtScript/qscriptvalueiterator.h>
+ #include <QtCore/qdebug.h>
++#include <QtCore/QStringList>
+ 
+ #include <algorithm>
+ 
+diff --git a/src/scripttools/debugging/qscriptdebuggercommandexecutor_p.h b/src/scripttools/debugging/qscriptdebuggercommandexecutor_p.h
+index fd1c16cc9..74be5644d 100644
+--- a/src/scripttools/debugging/qscriptdebuggercommandexecutor_p.h
++++ b/src/scripttools/debugging/qscriptdebuggercommandexecutor_p.h
+@@ -52,7 +52,7 @@
+ //
+ 
+ #include <QtCore/qobjectdefs.h>
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+diff --git a/src/scripttools/debugging/qscriptdebuggerconsole_p.h b/src/scripttools/debugging/qscriptdebuggerconsole_p.h
+index 95f143bea..5d05ae8dc 100644
+--- a/src/scripttools/debugging/qscriptdebuggerconsole_p.h
++++ b/src/scripttools/debugging/qscriptdebuggerconsole_p.h
+@@ -52,7 +52,7 @@
+ //
+ 
+ #include <QtCore/qobjectdefs.h>
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ 
+ #include "qscriptdebuggerconsolehistorianinterface_p.h"
+ 
+diff --git a/src/scripttools/debugging/qscriptdebuggerconsolecommand.cpp b/src/scripttools/debugging/qscriptdebuggerconsolecommand.cpp
+index fdb6a1ebd..88c649061 100644
+--- a/src/scripttools/debugging/qscriptdebuggerconsolecommand.cpp
++++ b/src/scripttools/debugging/qscriptdebuggerconsolecommand.cpp
+@@ -41,6 +41,7 @@
+ #include "qscriptdebuggerconsolecommand_p_p.h"
+ 
+ #include <QtCore/qstringlist.h>
++#include <QtCore/QStringList>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+diff --git a/src/scripttools/debugging/qscriptdebuggerconsolecommand_p.h b/src/scripttools/debugging/qscriptdebuggerconsolecommand_p.h
+index 211a5b282..543c420b6 100644
+--- a/src/scripttools/debugging/qscriptdebuggerconsolecommand_p.h
++++ b/src/scripttools/debugging/qscriptdebuggerconsolecommand_p.h
+@@ -52,13 +52,13 @@
+ //
+ 
+ #include <QtCore/qobjectdefs.h>
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ #include <QtCore/qlist.h>
++#include <QtCore/QStringList>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+ class QString;
+-class QStringList;
+ class QScriptDebuggerConsole;
+ class QScriptDebuggerConsoleCommandJob;
+ class QScriptMessageHandlerInterface;
+diff --git a/src/scripttools/debugging/qscriptdebuggerconsolecommandgroupdata.cpp b/src/scripttools/debugging/qscriptdebuggerconsolecommandgroupdata.cpp
+index ae16f22af..3abbf8cc3 100644
+--- a/src/scripttools/debugging/qscriptdebuggerconsolecommandgroupdata.cpp
++++ b/src/scripttools/debugging/qscriptdebuggerconsolecommandgroupdata.cpp
+@@ -99,7 +99,7 @@ QScriptDebuggerConsoleCommandGroupData::~QScriptDebuggerConsoleCommandGroupData(
+ QScriptDebuggerConsoleCommandGroupData &QScriptDebuggerConsoleCommandGroupData::operator=(
+     const QScriptDebuggerConsoleCommandGroupData &other)
+ {
+-    d_ptr.assign(other.d_ptr.data());
++    d_ptr.reset(other.d_ptr.data());
+     return *this;
+ }
+ 
+diff --git a/src/scripttools/debugging/qscriptdebuggerconsolecommandgroupdata_p.h b/src/scripttools/debugging/qscriptdebuggerconsolecommandgroupdata_p.h
+index 614377bcf..ed669ec9f 100644
+--- a/src/scripttools/debugging/qscriptdebuggerconsolecommandgroupdata_p.h
++++ b/src/scripttools/debugging/qscriptdebuggerconsolecommandgroupdata_p.h
+@@ -52,7 +52,7 @@
+ //
+ 
+ #include <QtCore/qobjectdefs.h>
+-#include <QtCore/private/qscopedpointer_p.h>
++#include <QtCore/QSharedPointer>
+ #include <QtCore/qmap.h>
+ 
+ QT_BEGIN_NAMESPACE
+@@ -80,7 +80,7 @@ public:
+         const QScriptDebuggerConsoleCommandGroupData &other);
+ 
+ private:
+-    QScopedSharedPointer<QScriptDebuggerConsoleCommandGroupDataPrivate> d_ptr;
++    QSharedPointer<QScriptDebuggerConsoleCommandGroupDataPrivate> d_ptr;
+ 
+ private:
+     Q_DECLARE_PRIVATE(QScriptDebuggerConsoleCommandGroupData)
+diff --git a/src/scripttools/debugging/qscriptdebuggerconsolecommandmanager_p.h b/src/scripttools/debugging/qscriptdebuggerconsolecommandmanager_p.h
+index 9ef67651f..331f5689f 100644
+--- a/src/scripttools/debugging/qscriptdebuggerconsolecommandmanager_p.h
++++ b/src/scripttools/debugging/qscriptdebuggerconsolecommandmanager_p.h
+@@ -52,16 +52,16 @@
+ //
+ 
+ #include <QtCore/qobjectdefs.h>
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ #include <QtCore/qmap.h>
+ #include <QtCore/qlist.h>
++#include <QtCore/QStringList>
+ 
+ #include "qscriptdebuggerconsolecommandgroupdata_p.h"
+ 
+ QT_BEGIN_NAMESPACE
+ 
+ class QScriptDebuggerConsoleCommand;
+-class QStringList;
+ 
+ class QScriptDebuggerConsoleCommandManagerPrivate;
+ class Q_AUTOTEST_EXPORT QScriptDebuggerConsoleCommandManager
+diff --git a/src/scripttools/debugging/qscriptdebuggerevent_p.h b/src/scripttools/debugging/qscriptdebuggerevent_p.h
+index 79144a257..66e3157f1 100644
+--- a/src/scripttools/debugging/qscriptdebuggerevent_p.h
++++ b/src/scripttools/debugging/qscriptdebuggerevent_p.h
+@@ -55,7 +55,7 @@
+ #include <QtCore/qcoreevent.h>
+ #include <QtCore/qhash.h>
+ #include <QtCore/qvariant.h>
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+diff --git a/src/scripttools/debugging/qscriptdebuggerfrontend_p.h b/src/scripttools/debugging/qscriptdebuggerfrontend_p.h
+index 11bbe20e2..2dd781aa6 100644
+--- a/src/scripttools/debugging/qscriptdebuggerfrontend_p.h
++++ b/src/scripttools/debugging/qscriptdebuggerfrontend_p.h
+@@ -52,7 +52,7 @@
+ //
+ 
+ #include <QtCore/qobjectdefs.h>
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ #include <QtCore/qstring.h>
+ 
+ #include "qscriptdebuggercommandschedulerinterface_p.h"
+diff --git a/src/scripttools/debugging/qscriptdebuggerjob_p.h b/src/scripttools/debugging/qscriptdebuggerjob_p.h
+index 574410534..ba63af9ce 100644
+--- a/src/scripttools/debugging/qscriptdebuggerjob_p.h
++++ b/src/scripttools/debugging/qscriptdebuggerjob_p.h
+@@ -52,7 +52,7 @@
+ //
+ 
+ #include <QtCore/qobjectdefs.h>
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+diff --git a/src/scripttools/debugging/qscriptdebuggerresponse_p.h b/src/scripttools/debugging/qscriptdebuggerresponse_p.h
+index 3b0b13a78..fdc37d400 100644
+--- a/src/scripttools/debugging/qscriptdebuggerresponse_p.h
++++ b/src/scripttools/debugging/qscriptdebuggerresponse_p.h
+@@ -52,7 +52,7 @@
+ //
+ 
+ #include <QtCore/qobjectdefs.h>
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ #include <QtCore/qmap.h>
+ #include <QtCore/qvariant.h>
+ 
+diff --git a/src/scripttools/debugging/qscriptdebuggervalue.cpp b/src/scripttools/debugging/qscriptdebuggervalue.cpp
+index f257e4e26..8b52291e4 100644
+--- a/src/scripttools/debugging/qscriptdebuggervalue.cpp
++++ b/src/scripttools/debugging/qscriptdebuggervalue.cpp
+@@ -165,7 +165,7 @@ QScriptDebuggerValue::~QScriptDebuggerValue()
+ 
+ QScriptDebuggerValue &QScriptDebuggerValue::operator=(const QScriptDebuggerValue &other)
+ {
+-    d_ptr.assign(other.d_ptr.data());
++    d_ptr.reset(other.d_ptr.data());
+     return *this;
+ }
+ 
+diff --git a/src/scripttools/debugging/qscriptdebuggervalue_p.h b/src/scripttools/debugging/qscriptdebuggervalue_p.h
+index 6da344382..b0d074a1d 100644
+--- a/src/scripttools/debugging/qscriptdebuggervalue_p.h
++++ b/src/scripttools/debugging/qscriptdebuggervalue_p.h
+@@ -52,7 +52,7 @@
+ //
+ 
+ #include <QtCore/qobjectdefs.h>
+-#include <QtCore/private/qscopedpointer_p.h>
++#include <QtCore/QSharedPointer>
+ #include <QtCore/qlist.h>
+ 
+ QT_BEGIN_NAMESPACE
+@@ -101,7 +101,7 @@ public:
+     bool operator!=(const QScriptDebuggerValue &other) const;
+ 
+ private:
+-    QScopedSharedPointer<QScriptDebuggerValuePrivate> d_ptr;
++    QSharedPointer<QScriptDebuggerValuePrivate> d_ptr;
+ 
+     Q_DECLARE_PRIVATE(QScriptDebuggerValue)
+ };
+diff --git a/src/scripttools/debugging/qscriptdebuggervalueproperty.cpp b/src/scripttools/debugging/qscriptdebuggervalueproperty.cpp
+index 2eb527fc1..a31f10f38 100644
+--- a/src/scripttools/debugging/qscriptdebuggervalueproperty.cpp
++++ b/src/scripttools/debugging/qscriptdebuggervalueproperty.cpp
+@@ -119,7 +119,7 @@ QScriptDebuggerValueProperty::~QScriptDebuggerValueProperty()
+ */
+ QScriptDebuggerValueProperty &QScriptDebuggerValueProperty::operator=(const QScriptDebuggerValueProperty &other)
+ {
+-    d_ptr.assign(other.d_ptr.data());
++    d_ptr.reset(other.d_ptr.data());
+     return *this;
+ }
+ 
+diff --git a/src/scripttools/debugging/qscriptdebuggervalueproperty_p.h b/src/scripttools/debugging/qscriptdebuggervalueproperty_p.h
+index 7e2a3bb38..379dbfc5e 100644
+--- a/src/scripttools/debugging/qscriptdebuggervalueproperty_p.h
++++ b/src/scripttools/debugging/qscriptdebuggervalueproperty_p.h
+@@ -53,7 +53,7 @@
+ 
+ #include <QtCore/qobjectdefs.h>
+ #include <QtCore/qlist.h>
+-#include <QtCore/private/qscopedpointer_p.h>
++#include <QtCore/QSharedPointer>
+ #include <QtScript/qscriptvalue.h>
+ 
+ QT_BEGIN_NAMESPACE
+@@ -84,7 +84,7 @@ public:
+     bool isValid() const;
+ 
+ private:
+-    QScopedSharedPointer<QScriptDebuggerValuePropertyPrivate> d_ptr;
++    QSharedPointer<QScriptDebuggerValuePropertyPrivate> d_ptr;
+ 
+     Q_DECLARE_PRIVATE(QScriptDebuggerValueProperty)
+ };
+diff --git a/src/scripttools/debugging/qscriptscriptdata.cpp b/src/scripttools/debugging/qscriptscriptdata.cpp
+index dd90d340a..198556fbe 100644
+--- a/src/scripttools/debugging/qscriptscriptdata.cpp
++++ b/src/scripttools/debugging/qscriptscriptdata.cpp
+@@ -106,7 +106,7 @@ QScriptScriptData::~QScriptScriptData()
+ 
+ QScriptScriptData &QScriptScriptData::operator=(const QScriptScriptData &other)
+ {
+-    d_ptr.assign(other.d_ptr.data());
++    d_ptr.reset(other.d_ptr.data());
+     return *this;
+ }
+ 
+diff --git a/src/scripttools/debugging/qscriptscriptdata_p.h b/src/scripttools/debugging/qscriptscriptdata_p.h
+index fdf774eb8..d8e002952 100644
+--- a/src/scripttools/debugging/qscriptscriptdata_p.h
++++ b/src/scripttools/debugging/qscriptscriptdata_p.h
+@@ -52,15 +52,16 @@
+ //
+ 
+ #include <QtCore/qobjectdefs.h>
+-#include <QtCore/private/qscopedpointer_p.h>
++#include <QtCore/QSharedPointer>
+ #include <QtCore/qdatetime.h>
+ #include <QtCore/qmap.h>
++#include <QtCore/QStringList>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+ class QDataStream;
+ class QString;
+-class QStringList;
++
+ 
+ class QScriptScriptDataPrivate;
+ class Q_AUTOTEST_EXPORT QScriptScriptData
+@@ -89,7 +90,7 @@ public:
+     bool operator!=(const QScriptScriptData &other) const;
+ 
+ private:
+-    QScopedSharedPointer<QScriptScriptDataPrivate> d_ptr;
++    QSharedPointer<QScriptScriptDataPrivate> d_ptr;
+ 
+     Q_DECLARE_PRIVATE(QScriptScriptData)
+ };
+diff --git a/src/scripttools/debugging/qscriptstdmessagehandler_p.h b/src/scripttools/debugging/qscriptstdmessagehandler_p.h
+index edf0a452b..4321b9e8b 100644
+--- a/src/scripttools/debugging/qscriptstdmessagehandler_p.h
++++ b/src/scripttools/debugging/qscriptstdmessagehandler_p.h
+@@ -51,7 +51,7 @@
+ // We mean it.
+ //
+ 
+-#include <QtCore/qscopedpointer.h>
++#include <QtCore/QSharedPointer>
+ 
+ #include "qscriptmessagehandlerinterface_p.h"
+ 
+diff --git a/src/scripttools/debugging/qscripttooltipproviderinterface_p.h b/src/scripttools/debugging/qscripttooltipproviderinterface_p.h
+index b974396b6..c7aeacd69 100644
+--- a/src/scripttools/debugging/qscripttooltipproviderinterface_p.h
++++ b/src/scripttools/debugging/qscripttooltipproviderinterface_p.h
+@@ -52,11 +52,11 @@
+ //
+ 
+ #include <QtCore/qobjectdefs.h>
++#include <QtCore/QStringList>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+ class QPoint;
+-class QStringList;
+ 
+ class Q_AUTOTEST_EXPORT QScriptToolTipProviderInterface
+ {
+diff --git a/src/scripttools/debugging/qscriptvalueproperty.cpp b/src/scripttools/debugging/qscriptvalueproperty.cpp
+index 59f39a377..b17437149 100644
+--- a/src/scripttools/debugging/qscriptvalueproperty.cpp
++++ b/src/scripttools/debugging/qscriptvalueproperty.cpp
+@@ -108,7 +108,7 @@ QScriptValueProperty::~QScriptValueProperty()
+ */
+ QScriptValueProperty &QScriptValueProperty::operator=(const QScriptValueProperty &other)
+ {
+-    d_ptr.assign(other.d_ptr.data());
++    d_ptr.reset(other.d_ptr.data());
+     return *this;
+ }
+ 
+diff --git a/src/scripttools/debugging/qscriptvalueproperty_p.h b/src/scripttools/debugging/qscriptvalueproperty_p.h
+index 24c7e16a3..6c5f0a08f 100644
+--- a/src/scripttools/debugging/qscriptvalueproperty_p.h
++++ b/src/scripttools/debugging/qscriptvalueproperty_p.h
+@@ -53,7 +53,7 @@
+ 
+ #include <QtCore/qobjectdefs.h>
+ #include <QtCore/qlist.h>
+-#include <QtCore/private/qscopedpointer_p.h>
++#include <QtCore/QSharedPointer>
+ #include <QtScript/qscriptvalue.h>
+ 
+ QT_BEGIN_NAMESPACE
+@@ -80,7 +80,7 @@ public:
+     bool isValid() const;
+ 
+ private:
+-    QScopedSharedPointer<QScriptValuePropertyPrivate> d_ptr;
++    QSharedPointer<QScriptValuePropertyPrivate> d_ptr;
+ 
+     Q_DECLARE_PRIVATE(QScriptValueProperty)
+ };
