@@ -44,10 +44,16 @@ vcpkg_qmake_configure(SOURCE_PATH
                       QMAKE_OPTIONS 
                         "QT+=opengl"
                         "CONFIG+=create_prl"
-                        "DEFINES+=QCUSTOMPLOT_USE_OPENGL")
+                        "DEFINES+=QCUSTOMPLOT_USE_OPENGL"
+                        )
 vcpkg_qmake_install()
 
 vcpkg_copy_pdbs()
 
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/qcustomplot.h" "#ifdef QCUSTOMPLOT_USE_OPENGL" "#define QCUSTOMPLOT_USE_OPENGL\n#ifdef QCUSTOMPLOT_USE_OPENGL")
+if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/qcustomplot.h" "#if defined(QT_STATIC_BUILD)" "#if 1")
+endif()
+#if defined(QT_STATIC_BUILD)
 # Handle copyright
 configure_file("${SOURCE_PATH}/GPL.txt" "${CURRENT_PACKAGES_DIR}/share/${PORT}/copyright" COPYONLY)
