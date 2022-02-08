@@ -1,0 +1,125 @@
+diff --git a/alphaplot/alphaplot.pro b/alphaplot/alphaplot.pro
+index 9f9a1f6..fa14a9c 100644
+--- a/alphaplot/alphaplot.pro
++++ b/alphaplot/alphaplot.pro
+@@ -64,7 +64,14 @@ MOC_DIR         = ../tmp/alphaplot
+ OBJECTS_DIR     = ../tmp/alphaplot
+ DESTDIR         = ./
+ 
+-INSTALLS        += target
++
++win32 {
++    dlltarget.path = $$[QT_INSTALL_BINS]
++    INSTALLS += dlltarget
++}
++target.path    = $$[QT_INSTALL_LIBS]
++!static: target.CONFIG = no_dll
++INSTALLS     += target 
+ 
+ ###################### STYLES ###############################################
+ RESOURCES      += ../data/styles/style.qrc
+diff --git a/fitPlugins/exp_saturation/exp_saturation.pro b/fitPlugins/exp_saturation/exp_saturation.pro
+index f7b6bd9..db648e8 100644
+--- a/fitPlugins/exp_saturation/exp_saturation.pro
++++ b/fitPlugins/exp_saturation/exp_saturation.pro
+@@ -9,7 +9,15 @@ CONFIG -= qt
+ # CONFIG += release
+ DESTDIR = ../
+ 
+-INSTALLS += target
++
++win32 {
++    dlltarget.path = $$[QT_INSTALL_BINS]
++    INSTALLS += dlltarget
++}
++target.path    = $$[QT_INSTALL_LIBS]
++!static: target.CONFIG = no_dll
++INSTALLS     += target 
++
+ unix:  target.path = /usr/lib$${libsuff}/AlphaPlot/plugins
+ win32: target.path = ../../output/plugins
+ 
+diff --git a/fitPlugins/explin/explin.pro b/fitPlugins/explin/explin.pro
+index ed9556e..b510f41 100644
+--- a/fitPlugins/explin/explin.pro
++++ b/fitPlugins/explin/explin.pro
+@@ -9,7 +9,15 @@ CONFIG -= qt
+ # CONFIG += release
+ DESTDIR = ../
+ 
+-INSTALLS += target
++
++win32 {
++    dlltarget.path = $$[QT_INSTALL_BINS]
++    INSTALLS += dlltarget
++}
++target.path    = $$[QT_INSTALL_LIBS]
++!static: target.CONFIG = no_dll
++INSTALLS     += target 
++
+ unix:  target.path = /usr/lib$${libsuff}/AlphaPlot/plugins
+ win32: target.path = ../../output/plugins
+ 
+diff --git a/fitPlugins/fitRational0/fitRational0.pro b/fitPlugins/fitRational0/fitRational0.pro
+index bc9684a..90bb20e 100644
+--- a/fitPlugins/fitRational0/fitRational0.pro
++++ b/fitPlugins/fitRational0/fitRational0.pro
+@@ -12,7 +12,15 @@ CONFIG           += dll
+ 
+ DESTDIR           = ../
+ 
+-INSTALLS += target
++
++win32 {
++    dlltarget.path = $$[QT_INSTALL_BINS]
++    INSTALLS += dlltarget
++}
++target.path    = $$[QT_INSTALL_LIBS]
++!static: target.CONFIG = no_dll
++INSTALLS     += target 
++
+ unix:target.path=/usr/lib$${libsuff}/AlphaPlot/plugins
+ win32: target.path = ../../output/plugins
+ 
+diff --git a/fitPlugins/fitRational1/fitRational1.pro b/fitPlugins/fitRational1/fitRational1.pro
+index 9a1be10..8004016 100644
+--- a/fitPlugins/fitRational1/fitRational1.pro
++++ b/fitPlugins/fitRational1/fitRational1.pro
+@@ -12,7 +12,15 @@ CONFIG           += dll
+ 
+ DESTDIR           = ../
+  
+-INSTALLS += target
++
++win32 {
++    dlltarget.path = $$[QT_INSTALL_BINS]
++    INSTALLS += dlltarget
++}
++target.path    = $$[QT_INSTALL_LIBS]
++!static: target.CONFIG = no_dll
++INSTALLS     += target 
++
+ # where to install the plugins
+ unix:target.path=/usr/lib$${libsuff}/AlphaPlot/plugins
+ win32: target.path = ../../output/plugins
+diff --git a/fitPlugins/planck_wavelength/planck_wavelength.pro b/fitPlugins/planck_wavelength/planck_wavelength.pro
+index e46fbf0..c56f297 100644
+--- a/fitPlugins/planck_wavelength/planck_wavelength.pro
++++ b/fitPlugins/planck_wavelength/planck_wavelength.pro
+@@ -9,7 +9,15 @@ CONFIG -= qt
+ # CONFIG += release
+ DESTDIR = ../
+ 
+-INSTALLS += target
++
++win32 {
++    dlltarget.path = $$[QT_INSTALL_BINS]
++    INSTALLS += dlltarget
++}
++target.path    = $$[QT_INSTALL_LIBS]
++!static: target.CONFIG = no_dll
++INSTALLS     += target 
++
+ unix:  target.path = /usr/lib$${libsuff}/AlphaPlot/plugins
+ win32: target.path = ../../output/plugins
+ 
