@@ -16,10 +16,10 @@ index 5d36ca60e..3ff0db54e 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
        // pen
 -      if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
          QPen basep = xmlreader->readPen(&ok);
          if (ok)
            setBasePen(basep);
@@ -28,10 +28,10 @@ index 5d36ca60e..3ff0db54e 100644
      // Loop through sub elements
      while (!xmlreader->atEnd()) {
 -      if (xmlreader->isEndElement() && xmlreader->name() == "axis") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("axis")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("axis")) == 0) break;
        // ticker
 -      if (xmlreader->isStartElement() && xmlreader->name() == "ticker") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("ticker")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("ticker")) == 0) {
          // Tick step strategy
          QString tickss =
              xmlreader->readAttributeString("tickstepstrategy", &ok);
@@ -40,11 +40,11 @@ index 5d36ca60e..3ff0db54e 100644
            case Axis2D::TickerType::Text:
              while (!xmlreader->atEnd()) {
 -              if (xmlreader->isEndElement() && xmlreader->name() == "ticker")
-+              if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("ticker")) == 0)
++              if (xmlreader->isEndElement() && xmlreader->name().compare(QString("ticker")) == 0)
                  break;
  
 -              if (xmlreader->isStartElement() && xmlreader->name() == "tick") {
-+              if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("tick")) == 0) {
++              if (xmlreader->isStartElement() && xmlreader->name().compare(QString("tick")) == 0) {
                  QString tkrtext = xmlreader->readAttributeString("value", &ok);
                  (ok) ? tickertext_->append(tkrtext)
                       : xmlreader->raiseWarning(
@@ -53,7 +53,7 @@ index 5d36ca60e..3ff0db54e 100644
        }
        // Label element
 -      if (xmlreader->isStartElement() && xmlreader->name() == "label") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("label")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("label")) == 0) {
          // Label text
          QString text = xmlreader->readAttributeString("text", &ok);
          if (ok)
@@ -63,8 +63,8 @@ index 5d36ca60e..3ff0db54e 100644
            xmlreader->readNext();
 -          if (xmlreader->isEndElement() && xmlreader->name() == "label") break;
 -          if (xmlreader->isStartElement() && xmlreader->name() == "font") {
-+          if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("label")) == 0) break;
-+          if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("font")) == 0) {
++          if (xmlreader->isEndElement() && xmlreader->name().compare(QString("label")) == 0) break;
++          if (xmlreader->isStartElement() && xmlreader->name().compare(QString("font")) == 0) {
              QPair<QFont, QColor> fontpair = xmlreader->readFont(&ok);
              if (ok) {
                setlabelfont_axis(fontpair.first);
@@ -73,7 +73,7 @@ index 5d36ca60e..3ff0db54e 100644
        }
        // Ticks element
 -      if (xmlreader->isStartElement() && xmlreader->name() == "ticks") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("ticks")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("ticks")) == 0) {
          // tick visible property
          bool tickvisible = xmlreader->readAttributeBool("visible", &ok);
          if (ok)
@@ -83,8 +83,8 @@ index 5d36ca60e..3ff0db54e 100644
            xmlreader->readNext();
 -          if (xmlreader->isEndElement() && xmlreader->name() == "ticks") break;
 -          if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+          if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("ticks")) == 0) break;
-+          if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++          if (xmlreader->isEndElement() && xmlreader->name().compare(QString("ticks")) == 0) break;
++          if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
              QPen p = xmlreader->readPen(&ok);
              if (ok) {
                setTickPen(p);
@@ -93,7 +93,7 @@ index 5d36ca60e..3ff0db54e 100644
        }
        // Sub Ticks element
 -      if (xmlreader->isStartElement() && xmlreader->name() == "subticks") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("subticks")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("subticks")) == 0) {
          // visible property
          bool subtickvisible = xmlreader->readAttributeBool("visible", &ok);
          if (ok)
@@ -102,10 +102,10 @@ index 5d36ca60e..3ff0db54e 100644
          while (!xmlreader->atEnd()) {
            xmlreader->readNext();
 -          if (xmlreader->isEndElement() && xmlreader->name() == "subticks")
-+          if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("subticks")) == 0)
++          if (xmlreader->isEndElement() && xmlreader->name().compare(QString("subticks")) == 0)
              break;
 -          if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+          if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++          if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
              QPen p = xmlreader->readPen(&ok);
              if (ok) {
                setSubTickPen(p);
@@ -114,7 +114,7 @@ index 5d36ca60e..3ff0db54e 100644
        }
        // Tick label element
 -      if (xmlreader->isStartElement() && xmlreader->name() == "ticklabels") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("ticklabels")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("ticklabels")) == 0) {
          // visible property
          bool ticklabelvisible = xmlreader->readAttributeBool("visible", &ok);
          if (ok)
@@ -123,10 +123,10 @@ index 5d36ca60e..3ff0db54e 100644
          while (!xmlreader->atEnd()) {
            xmlreader->readNext();
 -          if (xmlreader->isEndElement() && xmlreader->name() == "ticklabels")
-+          if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("ticklabels")) == 0)
++          if (xmlreader->isEndElement() && xmlreader->name().compare(QString("ticklabels")) == 0)
              break;
 -          if (xmlreader->isStartElement() && xmlreader->name() == "font") {
-+          if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("font")) == 0) {
++          if (xmlreader->isStartElement() && xmlreader->name().compare(QString("font")) == 0) {
              QPair<QFont, QColor> fontpair = xmlreader->readFont(&ok);
              if (ok) {
                setticklabelfont_axis(fontpair.first);
@@ -139,15 +139,15 @@ index 1364cfc6f..aceff4d59 100644
    QBrush scatterbrush2;
    // linespecialchannel
 -  if (xmlreader->isStartElement() && xmlreader->name() == "channel") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("channel")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("channel")) == 0) {
      xmlreader->readNextStartElement();
      while (!xmlreader->atEnd()) {
 -      if (xmlreader->isEndElement() && xmlreader->name() == "linespecial") {
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("linespecial")) == 0) {
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("linespecial")) == 0) {
          break;
        }
 -      if (xmlreader->isStartElement() && xmlreader->name() == "linespecial") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("linespecial")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("linespecial")) == 0) {
          int xax = xmlreader->readAttributeInt("xaxis", &ok);
          if (ok) {
            xaxis1 = getXAxis(xax);
@@ -156,7 +156,7 @@ index 1364cfc6f..aceff4d59 100644
          xmlreader->readNextStartElement();
          // line
 -        if (xmlreader->isStartElement() && xmlreader->name() == "line") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("line")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("line")) == 0) {
            // line style
            QString style = xmlreader->readAttributeString("style", &ok);
            if (ok) {
@@ -165,10 +165,10 @@ index 1364cfc6f..aceff4d59 100644
            while (!xmlreader->atEnd()) {
              xmlreader->readNext();
 -            if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+            if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++            if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
              // pen
 -            if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+            if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++            if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
                linepen1 = xmlreader->readPen(&ok);
                if (!ok)
                  xmlreader->raiseWarning(
@@ -177,11 +177,11 @@ index 1364cfc6f..aceff4d59 100644
            while (!xmlreader->atEnd()) {
              xmlreader->readNext();
 -            if (xmlreader->isEndElement() && xmlreader->name() == "brush")
-+            if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("brush")) == 0)
++            if (xmlreader->isEndElement() && xmlreader->name().compare(QString("brush")) == 0)
                break;
              // brush
 -            if (xmlreader->isStartElement() && xmlreader->name() == "brush") {
-+            if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("brush")) == 0) {
++            if (xmlreader->isStartElement() && xmlreader->name().compare(QString("brush")) == 0) {
                linebrush1 = xmlreader->readBrush(&ok);
                if (!ok)
                  xmlreader->raiseWarning(tr(
@@ -190,7 +190,7 @@ index 1364cfc6f..aceff4d59 100644
          xmlreader->readNext();
          // scatter
 -        if (xmlreader->isStartElement() && xmlreader->name() == "scatter") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("scatter")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("scatter")) == 0) {
            // scatter shape
            QString scattershape = xmlreader->readAttributeString("style", &ok);
            if (ok) {
@@ -199,10 +199,10 @@ index 1364cfc6f..aceff4d59 100644
            while (!xmlreader->atEnd()) {
              xmlreader->readNext();
 -            if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+            if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++            if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
              // pen
 -            if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+            if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++            if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
                scatterpen1 = xmlreader->readPen(&ok);
                if (!ok)
                  xmlreader->raiseWarning(tr(
@@ -211,11 +211,11 @@ index 1364cfc6f..aceff4d59 100644
            while (!xmlreader->atEnd()) {
              xmlreader->readNext();
 -            if (xmlreader->isEndElement() && xmlreader->name() == "brush")
-+            if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("brush")) == 0)
++            if (xmlreader->isEndElement() && xmlreader->name().compare(QString("brush")) == 0)
                break;
              // brush
 -            if (xmlreader->isStartElement() && xmlreader->name() == "brush") {
-+            if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("brush")) == 0) {
++            if (xmlreader->isStartElement() && xmlreader->name().compare(QString("brush")) == 0) {
                scatterbrush1 = xmlreader->readBrush(&ok);
                if (!ok)
                  xmlreader->raiseWarning(
@@ -224,10 +224,10 @@ index 1364cfc6f..aceff4d59 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "linespecial")
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("linespecial")) == 0)
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("linespecial")) == 0)
          break;
 -      if (xmlreader->isStartElement() && xmlreader->name() == "linespecial") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("linespecial")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("linespecial")) == 0) {
          int xax = xmlreader->readAttributeInt("xaxis", &ok);
          if (ok) {
            xaxis2 = getXAxis(xax);
@@ -236,7 +236,7 @@ index 1364cfc6f..aceff4d59 100644
          xmlreader->readNextStartElement();
          // line
 -        if (xmlreader->isStartElement() && xmlreader->name() == "line") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("line")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("line")) == 0) {
            // line style
            QString style = xmlreader->readAttributeString("style", &ok);
            if (ok) {
@@ -245,10 +245,10 @@ index 1364cfc6f..aceff4d59 100644
            while (!xmlreader->atEnd()) {
              xmlreader->readNext();
 -            if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+            if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++            if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
              // pen
 -            if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+            if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++            if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
                linepen2 = xmlreader->readPen(&ok);
                if (!ok)
                  xmlreader->raiseWarning(
@@ -257,11 +257,11 @@ index 1364cfc6f..aceff4d59 100644
            while (!xmlreader->atEnd()) {
              xmlreader->readNext();
 -            if (xmlreader->isEndElement() && xmlreader->name() == "brush")
-+            if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("brush")) == 0)
++            if (xmlreader->isEndElement() && xmlreader->name().compare(QString("brush")) == 0)
                break;
              // brush
 -            if (xmlreader->isStartElement() && xmlreader->name() == "brush") {
-+            if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("brush")) == 0) {
++            if (xmlreader->isStartElement() && xmlreader->name().compare(QString("brush")) == 0) {
                linebrush2 = xmlreader->readBrush(&ok);
                if (!ok)
                  xmlreader->raiseWarning(tr(
@@ -270,7 +270,7 @@ index 1364cfc6f..aceff4d59 100644
          xmlreader->readNext();
          // scatter
 -        if (xmlreader->isStartElement() && xmlreader->name() == "scatter") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("scatter")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("scatter")) == 0) {
            // scatter shape
            QString scattershape = xmlreader->readAttributeString("style", &ok);
            if (ok) {
@@ -279,10 +279,10 @@ index 1364cfc6f..aceff4d59 100644
            while (!xmlreader->atEnd()) {
              xmlreader->readNext();
 -            if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+            if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++            if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
              // pen
 -            if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+            if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++            if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
                scatterpen2 = xmlreader->readPen(&ok);
                if (!ok)
                  xmlreader->raiseWarning(tr(
@@ -291,11 +291,11 @@ index 1364cfc6f..aceff4d59 100644
            while (!xmlreader->atEnd()) {
              xmlreader->readNext();
 -            if (xmlreader->isEndElement() && xmlreader->name() == "brush")
-+            if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("brush")) == 0)
++            if (xmlreader->isEndElement() && xmlreader->name().compare(QString("brush")) == 0)
                break;
              // brush
 -            if (xmlreader->isStartElement() && xmlreader->name() == "brush") {
-+            if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("brush")) == 0) {
++            if (xmlreader->isStartElement() && xmlreader->name().compare(QString("brush")) == 0) {
                scatterbrush2 = xmlreader->readBrush(&ok);
                if (!ok)
                  xmlreader->raiseWarning(
@@ -304,7 +304,7 @@ index 1364cfc6f..aceff4d59 100644
  bool AxisRect2D::load(XmlStreamReader *xmlreader, QList<Table *> tabs,
                        QList<Matrix *> mats) {
 -  if (xmlreader->isStartElement() && xmlreader->name() == "layout") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("layout")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("layout")) == 0) {
      bool ok = false;
      // auto margins
      bool automar = xmlreader->readAttributeBool("automargin", &ok);
@@ -313,10 +313,10 @@ index 1364cfc6f..aceff4d59 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "brush") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("brush")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("brush")) == 0) break;
        // brush
 -      if (xmlreader->isStartElement() && xmlreader->name() == "brush") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("brush")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("brush")) == 0) {
          QBrush b = xmlreader->readBrush(&ok);
          if (ok)
            setBackground(b);
@@ -326,8 +326,8 @@ index 1364cfc6f..aceff4d59 100644
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "layout") break;
 -      if (xmlreader->isStartElement() && xmlreader->name() == "axis") {
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("layout")) == 0) break;
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("axis")) == 0) {
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("layout")) == 0) break;
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("axis")) == 0) {
          Axis2D::AxisOreantation type = Axis2D::AxisOreantation::Left;
          Axis2D::TickerType tickertype = Axis2D::TickerType::Value;
          // Type property
@@ -336,32 +336,32 @@ index 1364cfc6f..aceff4d59 100644
        } else
          // xgrid
 -        if (xmlreader->isStartElement() && xmlreader->name() == "xgrid") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("xgrid")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("xgrid")) == 0) {
            gridpair_.first.first->load(xmlreader, "xgrid");
          } else
            // ygrid
 -          if (xmlreader->isStartElement() && xmlreader->name() == "ygrid") {
-+          if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("ygrid")) == 0) {
++          if (xmlreader->isStartElement() && xmlreader->name().compare(QString("ygrid")) == 0) {
              gridpair_.second.first->load(xmlreader, "ygrid");
            } else
              // textitem
              if (xmlreader->isStartElement() &&
 -                xmlreader->name() == "textitem") {
-+                xmlreader->name().compare(QStringView("textitem")) == 0) {
++                xmlreader->name().compare(QString("textitem")) == 0) {
                TextItem2D *textitem = addTextItem2D("Text");
                textitem->load(xmlreader);
              } else
                // lineitem
                if (xmlreader->isStartElement() &&
 -                  xmlreader->name() == "lineitem") {
-+                  xmlreader->name().compare(QStringView("lineitem")) == 0) {
++                  xmlreader->name().compare(QString("lineitem")) == 0) {
                  LineItem2D *lineitem = addLineItem2D();
                  lineitem->load(xmlreader);
                } else
                  // imageitem
                  if (xmlreader->isStartElement() &&
 -                    xmlreader->name() == "imageitem") {
-+                    xmlreader->name().compare(QStringView("imageitem")) == 0) {
++                    xmlreader->name().compare(QString("imageitem")) == 0) {
                    // source property
                    QString file = xmlreader->readAttributeString("file", &ok);
                    if (ok && QFile(file).exists()) {
@@ -370,7 +370,7 @@ index 1364cfc6f..aceff4d59 100644
                    // curve
                    if (xmlreader->isStartElement() &&
 -                      xmlreader->name() == "curve") {
-+                      xmlreader->name().compare(QStringView("curve")) == 0) {
++                      xmlreader->name().compare(QString("curve")) == 0) {
                      Curve2D *curve = nullptr;
                      Axis2D *xaxis = nullptr;
                      Axis2D *yaxis = nullptr;
@@ -379,12 +379,12 @@ index 1364cfc6f..aceff4d59 100644
                          xmlreader->readNext();
                          if (xmlreader->isEndElement() &&
 -                            xmlreader->name() == "functiondata")
-+                            xmlreader->name().compare(QStringView("functiondata")) == 0)
++                            xmlreader->name().compare(QString("functiondata")) == 0)
                            break;
                          // pen
                          if (xmlreader->isStartElement() &&
 -                            xmlreader->name() == "data") {
-+                            xmlreader->name().compare(QStringView("data")) == 0) {
++                            xmlreader->name().compare(QString("data")) == 0) {
                            double xval =
                                xmlreader->readAttributeDouble("xdata", &ok);
                            bool xok = ok;
@@ -400,7 +400,7 @@ index 1364cfc6f..aceff4d59 100644
  
                        if (xmlreader->isStartElement() &&
 -                          xmlreader->name() == "errorbar") {
-+                          xmlreader->name().compare(QStringView("errorbar")) == 0) {
++                          xmlreader->name().compare(QString("errorbar")) == 0) {
                          Table *table = nullptr;
                          Column *column = nullptr;
                          QString type =
@@ -409,7 +409,7 @@ index 1364cfc6f..aceff4d59 100644
                      // linespecial
                      if (xmlreader->isStartElement() &&
 -                        xmlreader->name() == "linespecial") {
-+                        xmlreader->name().compare(QStringView("linespecial")) == 0) {
++                        xmlreader->name().compare(QString("linespecial")) == 0) {
                        LineSpecial2D *ls = nullptr;
                        Axis2D *xaxis = nullptr;
                        Axis2D *yaxis = nullptr;
@@ -425,7 +425,7 @@ index 1364cfc6f..aceff4d59 100644
  
                              if (xmlreader->isStartElement() &&
 -                                xmlreader->name() == "errorbar") {
-+                                xmlreader->name().compare(QStringView("errorbar")) == 0) {
++                                xmlreader->name().compare(QString("errorbar")) == 0) {
                                Table *table = nullptr;
                                Column *column = nullptr;
                                QString type =
@@ -434,14 +434,14 @@ index 1364cfc6f..aceff4d59 100644
                        // channel
                        if (xmlreader->isStartElement() &&
 -                          xmlreader->name() == "channel") {
-+                          xmlreader->name().compare(QStringView("channel")) == 0) {
++                          xmlreader->name().compare(QString("channel")) == 0) {
                          loadLineSpecialChannel2D(xmlreader, tabs);
                        } else
  
                          // bar
                          if (xmlreader->isStartElement() &&
 -                            xmlreader->name() == "bar") {
-+                            xmlreader->name().compare(QStringView("bar")) == 0) {
++                            xmlreader->name().compare(QString("bar")) == 0) {
                            Bar2D *bar = nullptr;
                            Axis2D *xaxis = nullptr;
                            Axis2D *yaxis = nullptr;
@@ -456,7 +456,7 @@ index 1364cfc6f..aceff4d59 100644
                              }
                              if (xmlreader->isStartElement() &&
 -                                xmlreader->name() == "errorbar") {
-+                                xmlreader->name().compare(QStringView("errorbar")) == 0) {
++                                xmlreader->name().compare(QString("errorbar")) == 0) {
                                Table *table = nullptr;
                                Column *column = nullptr;
                                QString type =
@@ -465,7 +465,7 @@ index 1364cfc6f..aceff4d59 100644
                            // vector
                            if (xmlreader->isStartElement() &&
 -                              xmlreader->name() == "vector") {
-+                              xmlreader->name().compare(QStringView("vector")) == 0) {
++                              xmlreader->name().compare(QString("vector")) == 0) {
                              Axis2D *xaxis = nullptr;
                              Axis2D *yaxis = nullptr;
                              Vector2D::VectorPlot type;
@@ -474,7 +474,7 @@ index 1364cfc6f..aceff4d59 100644
                              // pie
                              if (xmlreader->isStartElement() &&
 -                                xmlreader->name() == "pie") {
-+                                xmlreader->name().compare(QStringView("pie")) == 0) {
++                                xmlreader->name().compare(QString("pie")) == 0) {
                                Table *table = nullptr;
                                Column *xcolumn = nullptr;
                                Column *ycolumn = nullptr;
@@ -483,7 +483,7 @@ index 1364cfc6f..aceff4d59 100644
  
        // statbox
 -      if (xmlreader->isStartElement() && xmlreader->name() == "statbox") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("statbox")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("statbox")) == 0) {
          Axis2D *xaxis = nullptr;
          Axis2D *yaxis = nullptr;
  
@@ -492,7 +492,7 @@ index 1364cfc6f..aceff4d59 100644
  
          // colormap
 -        if (xmlreader->isStartElement() && xmlreader->name() == "colormap") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("colormap")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("colormap")) == 0) {
            Matrix *matrix = nullptr;
            QString matname = xmlreader->readAttributeString("matrix", &ok);
            if (ok) {
@@ -501,7 +501,7 @@ index 1364cfc6f..aceff4d59 100644
            }
          }
 -      if (xmlreader->isStartElement() && xmlreader->name() == "legend") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("legend")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("legend")) == 0) {
          getLegend()->load(xmlreader);
        }
      }
@@ -549,10 +549,10 @@ index f4fd76afc..aa80a7b5d 100644
    bool ok;
    while (!xmlreader->atEnd()) {
 -    if (xmlreader->isEndElement() && xmlreader->name() == "bar") break;
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("bar")) == 0) break;
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("bar")) == 0) break;
  
 -    if (xmlreader->isStartElement() && xmlreader->name() == "box") {
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("box")) == 0) {
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("box")) == 0) {
        // width
        double w = xmlreader->readAttributeDouble("width", &ok);
        (ok) ? setWidth(w)
@@ -561,10 +561,10 @@ index f4fd76afc..aa80a7b5d 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
          // pen
 -        if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
            QPen strokep = xmlreader->readPen(&ok);
            if (ok) {
              setPen(strokep);
@@ -573,10 +573,10 @@ index f4fd76afc..aa80a7b5d 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "brush") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("brush")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("brush")) == 0) break;
          // brush
 -        if (xmlreader->isStartElement() && xmlreader->name() == "brush") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("brush")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("brush")) == 0) {
            QBrush b = xmlreader->readBrush(&ok);
            if (ok) {
              setBrush(b);
@@ -589,10 +589,10 @@ index 5734cd769..c7912f30a 100644
  
    while (!xmlreader->atEnd()) {
 -    if (xmlreader->isEndElement() && xmlreader->name() == "colormap") break;
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("colormap")) == 0) break;
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("colormap")) == 0) break;
  
 -    if (xmlreader->isStartElement() && xmlreader->name() == "scale") {
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("scale")) == 0) {
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("scale")) == 0) {
        // color map scale visible
        bool mapv = xmlreader->readAttributeBool("mapscalevisible", &ok);
        (ok) ? getcolormapscale_colormap()->setVisible(mapv)
@@ -601,10 +601,10 @@ index 5734cd769..c7912f30a 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
          // pen
 -        if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
            QPen strokep = xmlreader->readPen(&ok);
            if (ok) {
              getcolormapscale_colormap()->axis()->setBasePen(strokep);
@@ -613,7 +613,7 @@ index 5734cd769..c7912f30a 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "label") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("label")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("label")) == 0) break;
          // label text
          QString lbltxt = xmlreader->readAttributeString("text", &ok);
          (ok) ? setname_colormap(lbltxt)
@@ -623,8 +623,8 @@ index 5734cd769..c7912f30a 100644
            xmlreader->readNext();
 -          if (xmlreader->isEndElement() && xmlreader->name() == "font") break;
 -          if (xmlreader->isStartElement() && xmlreader->name() == "font") {
-+          if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("font")) == 0) break;
-+          if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("font")) == 0) {
++          if (xmlreader->isEndElement() && xmlreader->name().compare(QString("font")) == 0) break;
++          if (xmlreader->isStartElement() && xmlreader->name().compare(QString("font")) == 0) {
              QPair<QFont, QColor> fontpair = xmlreader->readFont(&ok);
              if (ok) {
                getcolormapscale_colormap()->axis()->setLabelFont(fontpair.first);
@@ -633,7 +633,7 @@ index 5734cd769..c7912f30a 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "ticks") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("ticks")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("ticks")) == 0) break;
          // tick visible property
          bool tickvisible = xmlreader->readAttributeBool("visible", &ok);
          if (ok)
@@ -643,8 +643,8 @@ index 5734cd769..c7912f30a 100644
            xmlreader->readNext();
 -          if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
 -          if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+          if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
-+          if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++          if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
++          if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
              QPen p = xmlreader->readPen(&ok);
              if (ok) {
                getcolormapscale_colormap()->axis()->setTickPen(p);
@@ -653,7 +653,7 @@ index 5734cd769..c7912f30a 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "subticks") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("subticks")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("subticks")) == 0) break;
          // visible property
          bool subtickvisible = xmlreader->readAttributeBool("visible", &ok);
          (ok) ? getcolormapscale_colormap()->axis()->setSubTicks(subtickvisible)
@@ -663,8 +663,8 @@ index 5734cd769..c7912f30a 100644
            xmlreader->readNext();
 -          if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
 -          if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+          if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
-+          if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++          if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
++          if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
              QPen p = xmlreader->readPen(&ok);
              (ok) ? getcolormapscale_colormap()->axis()->setSubTickPen(p)
                   : xmlreader->raiseWarning(
@@ -673,7 +673,7 @@ index 5734cd769..c7912f30a 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "ticklabels")
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("ticklabels")) == 0)
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("ticklabels")) == 0)
            break;
  
          // visible property
@@ -683,8 +683,8 @@ index 5734cd769..c7912f30a 100644
            xmlreader->readNext();
 -          if (xmlreader->isEndElement() && xmlreader->name() == "font") break;
 -          if (xmlreader->isStartElement() && xmlreader->name() == "font") {
-+          if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("font")) == 0) break;
-+          if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("font")) == 0) {
++          if (xmlreader->isEndElement() && xmlreader->name().compare(QString("font")) == 0) break;
++          if (xmlreader->isStartElement() && xmlreader->name().compare(QString("font")) == 0) {
              QPair<QFont, QColor> fontpair = xmlreader->readFont(&ok);
              if (ok) {
                getcolormapscale_colormap()->axis()->setTickLabelFont(
@@ -697,11 +697,11 @@ index 719f9cf6a..53070cba6 100644
    bool ok;
    while (!xmlreader->atEnd()) {
 -    if (xmlreader->isEndElement() && xmlreader->name() == "curve") break;
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("curve")) == 0) break;
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("curve")) == 0) break;
  
      // line
 -    if (xmlreader->isStartElement() && xmlreader->name() == "line") {
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("line")) == 0) {
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("line")) == 0) {
        // line style
        QString style = xmlreader->readAttributeString("style", &ok);
        if (ok) {
@@ -710,10 +710,10 @@ index 719f9cf6a..53070cba6 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
          // pen
 -        if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
            QPen strokep = xmlreader->readPen(&ok);
            if (ok) {
              setlinestrokecolor_cplot(strokep.color());
@@ -722,10 +722,10 @@ index 719f9cf6a..53070cba6 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "brush") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("brush")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("brush")) == 0) break;
          // brush
 -        if (xmlreader->isStartElement() && xmlreader->name() == "brush") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("brush")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("brush")) == 0) {
            QBrush b = xmlreader->readBrush(&ok);
            if (ok) {
              setlinefillcolor_cplot(b.color());
@@ -734,7 +734,7 @@ index 719f9cf6a..53070cba6 100644
  
      // scatter
 -    if (xmlreader->isStartElement() && xmlreader->name() == "scatter") {
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("scatter")) == 0) {
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("scatter")) == 0) {
        // scatter shape
        QString scattershape = xmlreader->readAttributeString("style", &ok);
        if (ok) {
@@ -743,10 +743,10 @@ index 719f9cf6a..53070cba6 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
          // pen
 -        if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
            QPen strokep = xmlreader->readPen(&ok);
            if (ok) {
              setscatterstrokecolor_cplot(strokep.color());
@@ -755,10 +755,10 @@ index 719f9cf6a..53070cba6 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "brush") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("brush")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("brush")) == 0) break;
          // brush
 -        if (xmlreader->isStartElement() && xmlreader->name() == "brush") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("brush")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("brush")) == 0) {
            QBrush b = xmlreader->readBrush(&ok);
            if (ok) {
              setscatterfillcolor_cplot(b.color());
@@ -771,7 +771,7 @@ index 8e3fd92a4..1fcd2cffc 100644
  
  bool ErrorBar2D::load(XmlStreamReader *xmlreader) {
 -  if (xmlreader->isStartElement() && xmlreader->name() == "errorbar") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("errorbar")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("errorbar")) == 0) {
      bool ok;
  
      // whiskerwidth property
@@ -780,10 +780,10 @@ index 8e3fd92a4..1fcd2cffc 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
        // pen
 -      if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
          QPen strokep = xmlreader->readPen(&ok);
          if (ok)
            setPen(strokep);
@@ -792,10 +792,10 @@ index 8e3fd92a4..1fcd2cffc 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "brush") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("brush")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("brush")) == 0) break;
        // pen
 -      if (xmlreader->isStartElement() && xmlreader->name() == "brush") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("brush")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("brush")) == 0) {
          QBrush b = xmlreader->readBrush(&ok);
          if (ok)
            setBrush(b);
@@ -808,10 +808,10 @@ index 21c95269a..954f0180a 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "major") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("major")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("major")) == 0) break;
        // visible
 -      if (xmlreader->isStartElement() && xmlreader->name() == "major") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("major")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("major")) == 0) {
          bool visible = xmlreader->readAttributeBool("visible", &ok);
          (ok) ? setMajorGridVisible(visible)
               : xmlreader->raiseWarning(
@@ -820,10 +820,10 @@ index 21c95269a..954f0180a 100644
          while (!xmlreader->atEnd()) {
            xmlreader->readNext();
 -          if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+          if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++          if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
            // pen
 -          if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+          if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++          if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
              QPen strokep = xmlreader->readPen(&ok);
              if (ok) {
                setMajorGridColor(strokep.color());
@@ -832,10 +832,10 @@ index 21c95269a..954f0180a 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "zero") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("zero")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("zero")) == 0) break;
        // visible
 -      if (xmlreader->isStartElement() && xmlreader->name() == "zero") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("zero")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("zero")) == 0) {
          bool visible = xmlreader->readAttributeBool("visible", &ok);
          (ok) ? setZerothLineVisible(visible)
               : xmlreader->raiseWarning(
@@ -844,10 +844,10 @@ index 21c95269a..954f0180a 100644
          while (!xmlreader->atEnd()) {
            xmlreader->readNext();
 -          if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+          if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++          if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
            // pen
 -          if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+          if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++          if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
              QPen strokep = xmlreader->readPen(&ok);
              if (ok) {
                setZerothLineColor(strokep.color());
@@ -856,10 +856,10 @@ index 21c95269a..954f0180a 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "minor") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("minor")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("minor")) == 0) break;
        // visible
 -      if (xmlreader->isStartElement() && xmlreader->name() == "minor") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("minor")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("minor")) == 0) {
          bool visible = xmlreader->readAttributeBool("visible", &ok);
          (ok) ? setMinorGridVisible(visible)
               : xmlreader->raiseWarning(
@@ -868,10 +868,10 @@ index 21c95269a..954f0180a 100644
          while (!xmlreader->atEnd()) {
            xmlreader->readNext();
 -          if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+          if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++          if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
            // pen
 -          if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+          if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++          if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
              QPen strokep = xmlreader->readPen(&ok);
              if (ok) {
                setMinorGridColor(strokep.color());
@@ -884,7 +884,7 @@ index 44351e81b..5ca8e84c4 100644
  
  bool ImageItem2D::load(XmlStreamReader *xmlreader) {
 -  if (xmlreader->isStartElement() && xmlreader->name() == "imageitem") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("imageitem")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("imageitem")) == 0) {
      bool ok;
  
      double orix = xmlreader->readAttributeDouble("x", &ok);
@@ -893,10 +893,10 @@ index 44351e81b..5ca8e84c4 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
        // pen
 -      if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
          QPen strokep = xmlreader->readPen(&ok);
          if (ok)
            setPen(strokep);
@@ -937,7 +937,7 @@ index 43b362af1..066256da3 100644
  bool Layout2D::load(XmlStreamReader *xmlreader, QList<Table *> tabs,
                      QList<Matrix *> mats, bool setname) {
 -  if (xmlreader->isStartElement() && xmlreader->name() == "plot2d") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("plot2d")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("plot2d")) == 0) {
      bool ok = false;
  
      // read caption spec
@@ -961,8 +961,8 @@ index 43b362af1..066256da3 100644
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "canvas") break;
 -      if (xmlreader->isStartElement() && xmlreader->name() == "canvas") {
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("canvas")) == 0) break;
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("canvas")) == 0) {
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("canvas")) == 0) break;
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("canvas")) == 0) {
          double dpr = xmlreader->readAttributeDouble("devicepixelratio", &ok);
          if (ok)
            plot2dCanvas_->setBufferDevicePixelRatio(dpr);
@@ -972,8 +972,8 @@ index 43b362af1..066256da3 100644
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "plot2d") break;
 -      if (xmlreader->isStartElement() && xmlreader->name() == "layout") {
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("plot2d")) == 0) break;
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("layout")) == 0) {
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("plot2d")) == 0) break;
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("layout")) == 0) {
          // read index
          int index = xmlreader->readAttributeInt("index", &ok);
          if (!ok) {
@@ -991,7 +991,7 @@ index 43b362af1..066256da3 100644
      token = xmlreader->readNext();
      if (token == QXmlStreamReader::StartElement &&
 -        xmlreader->name() == "plot2d") {
-+        xmlreader->name().compare(QStringView("plot2d")) == 0) {
++        xmlreader->name().compare(QString("plot2d")) == 0) {
        load(xmlreader.get(), tables, matrixs, false);
      }
    }
@@ -1005,7 +1005,7 @@ index 6e5896889..1bf0c87c7 100644
  
  bool Legend2D::load(XmlStreamReader *xmlreader) {
 -  if (xmlreader->isStartElement() && xmlreader->name() == "legend") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("legend")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("legend")) == 0) {
      bool ok;
      double orix = xmlreader->readAttributeDouble("x", &ok);
      if (ok) {
@@ -1014,10 +1014,10 @@ index 6e5896889..1bf0c87c7 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "font") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("font")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("font")) == 0) break;
        // font
 -      if (xmlreader->isStartElement() && xmlreader->name() == "font") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("font")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("font")) == 0) {
          QPair<QFont, QColor> fontpair = xmlreader->readFont(&ok);
          if (ok) {
            setFont(fontpair.first);
@@ -1026,10 +1026,10 @@ index 6e5896889..1bf0c87c7 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
        // pen
 -      if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
          QPen basep = xmlreader->readPen(&ok);
          if (ok)
            setBorderPen(basep);
@@ -1039,8 +1039,8 @@ index 6e5896889..1bf0c87c7 100644
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "brush") break;
 -      if (xmlreader->isStartElement() && xmlreader->name() == "brush") {
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("brush")) == 0) break;
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("brush")) == 0) {
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("brush")) == 0) break;
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("brush")) == 0) {
          QBrush brush = xmlreader->readBrush(&ok);
          if (ok)
            setBrush(brush);
@@ -1049,10 +1049,10 @@ index 6e5896889..1bf0c87c7 100644
        xmlreader->readNext();
        if (xmlreader->isEndElement() &&
 -          (xmlreader->name() == "title" || xmlreader->name() == "legend"))
-+          (xmlreader->name().compare(QString("title")) || xmlreader->name().compare(QStringView("legend")) == 0))
++          (xmlreader->name().compare(QString("title")) || xmlreader->name().compare(QString("legend")) == 0))
          break;
 -      if (xmlreader->isStartElement() && xmlreader->name() == "title") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("title")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("title")) == 0) {
          // title visible
          bool titlevisible = xmlreader->readAttributeBool("visible", &ok);
          (ok) ? (titlevisible) ? addtitle_legend() : removetitle_legend()
@@ -1061,10 +1061,10 @@ index 6e5896889..1bf0c87c7 100644
          while (!xmlreader->atEnd()) {
            xmlreader->readNext();
 -          if (xmlreader->isEndElement() && xmlreader->name() == "font") break;
-+          if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("font")) == 0) break;
++          if (xmlreader->isEndElement() && xmlreader->name().compare(QString("font")) == 0) break;
            // font
 -          if (xmlreader->isStartElement() && xmlreader->name() == "font") {
-+          if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("font")) == 0) {
++          if (xmlreader->isStartElement() && xmlreader->name().compare(QString("font")) == 0) {
              QPair<QFont, QColor> fontpair = xmlreader->readFont(&ok);
              if (ok) {
                settitlefont_legend(fontpair.first);
@@ -1077,7 +1077,7 @@ index 5db62e38c..a47604e60 100644
  
  bool LineItem2D::load(XmlStreamReader *xmlreader) {
 -  if (xmlreader->isStartElement() && xmlreader->name() == "lineitem") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("lineitem")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("lineitem")) == 0) {
      bool ok;
  
      // position
@@ -1086,10 +1086,10 @@ index 5db62e38c..a47604e60 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
        // pen
 -      if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
          QPen strokep = xmlreader->readPen(&ok);
          if (ok)
            setPen(strokep);
@@ -1102,11 +1102,11 @@ index e8f16fb9a..6c302e901 100644
    bool ok;
    while (!xmlreader->atEnd()) {
 -    if (xmlreader->isEndElement() && xmlreader->name() == "linespecial") break;
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("linespecial")) == 0) break;
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("linespecial")) == 0) break;
  
      // line
 -    if (xmlreader->isStartElement() && xmlreader->name() == "line") {
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("line")) == 0) {
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("line")) == 0) {
        // line style
        QString style = xmlreader->readAttributeString("style", &ok);
        if (ok) {
@@ -1115,10 +1115,10 @@ index e8f16fb9a..6c302e901 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
          // pen
 -        if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
            QPen strokep = xmlreader->readPen(&ok);
            if (ok) {
              setlinestrokecolor_lsplot(strokep.color());
@@ -1127,10 +1127,10 @@ index e8f16fb9a..6c302e901 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "brush") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("brush")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("brush")) == 0) break;
          // brush
 -        if (xmlreader->isStartElement() && xmlreader->name() == "brush") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("brush")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("brush")) == 0) {
            QBrush b = xmlreader->readBrush(&ok);
            if (ok) {
              setlinefillcolor_lsplot(b.color());
@@ -1139,7 +1139,7 @@ index e8f16fb9a..6c302e901 100644
  
      // scatter
 -    if (xmlreader->isStartElement() && xmlreader->name() == "scatter") {
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("scatter")) == 0) {
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("scatter")) == 0) {
        // scatter shape
        QString scattershape = xmlreader->readAttributeString("style", &ok);
        if (ok) {
@@ -1148,10 +1148,10 @@ index e8f16fb9a..6c302e901 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
          // pen
 -        if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
            QPen strokep = xmlreader->readPen(&ok);
            if (ok) {
              setscatterstrokecolor_lsplot(strokep.color());
@@ -1160,10 +1160,10 @@ index e8f16fb9a..6c302e901 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "brush") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("brush")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("brush")) == 0) break;
          // brush
 -        if (xmlreader->isStartElement() && xmlreader->name() == "brush") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("brush")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("brush")) == 0) {
            QBrush b = xmlreader->readBrush(&ok);
            if (ok) {
              setscatterfillcolor_lsplot(b.color());
@@ -1176,7 +1176,7 @@ index 4852d19ee..983a966bd 100644
  
  bool Pie2D::load(XmlStreamReader *xmlreader) {
 -  if (xmlreader->isStartElement() && xmlreader->name() == "pie") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pie")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pie")) == 0) {
      bool ok;
  
      // style property
@@ -1185,10 +1185,10 @@ index 4852d19ee..983a966bd 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
        // pen
 -      if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
          QPen strokep = xmlreader->readPen(&ok);
          if (ok)
            setstrokepen_pieplot(strokep);
@@ -1202,11 +1202,11 @@ index b7c9f3030..d4065d415 100644
    bool ok;
    while (!xmlreader->atEnd()) {
 -    if (xmlreader->isEndElement() && xmlreader->name() == "statbox") break;
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("statbox")) == 0) break;
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("statbox")) == 0) break;
  
      // box
 -    if (xmlreader->isStartElement() && xmlreader->name() == "box") {
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("box")) == 0) {
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("box")) == 0) {
        // box fill status
        bool fill = xmlreader->readAttributeBool("fill", &ok);
        (ok) ? setfillstatus_statbox(fill)
@@ -1215,10 +1215,10 @@ index b7c9f3030..d4065d415 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
          // pen
 -        if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
            QPen boxpen = xmlreader->readPen(&ok);
            (ok) ? setPen(boxpen)
                 : xmlreader->raiseWarning(
@@ -1227,10 +1227,10 @@ index b7c9f3030..d4065d415 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "brush") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("brush")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("brush")) == 0) break;
          // brush
 -        if (xmlreader->isStartElement() && xmlreader->name() == "brush") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("brush")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("brush")) == 0) {
            QBrush boxbrush = xmlreader->readBrush(&ok);
            (ok) ? setBrush(boxbrush)
                 : xmlreader->raiseWarning(
@@ -1239,15 +1239,15 @@ index b7c9f3030..d4065d415 100644
  
      // median
 -    if (xmlreader->isStartElement() && xmlreader->name() == "median") {
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("median")) == 0) {
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("median")) == 0) {
        // box pen property
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
          // pen
 -        if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
            QPen mpen = xmlreader->readPen(&ok);
            (ok) ? setMedianPen(mpen)
                 : xmlreader->raiseWarning(
@@ -1256,7 +1256,7 @@ index b7c9f3030..d4065d415 100644
  
      // whisker
 -    if (xmlreader->isStartElement() && xmlreader->name() == "whisker") {
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("whisker")) == 0) {
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("whisker")) == 0) {
        // whisker antialias
        bool boxantialias = xmlreader->readAttributeBool("antialias", &ok);
        (ok) ? setWhiskerAntialiased(boxantialias)
@@ -1265,10 +1265,10 @@ index b7c9f3030..d4065d415 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
          // pen
 -        if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
            QPen wpen = xmlreader->readPen(&ok);
            (ok) ? setWhiskerPen(wpen)
                 : xmlreader->raiseWarning(
@@ -1277,7 +1277,7 @@ index b7c9f3030..d4065d415 100644
  
      // whiskerbar
 -    if (xmlreader->isStartElement() && xmlreader->name() == "whiskerbar") {
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("whiskerbar")) == 0) {
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("whiskerbar")) == 0) {
        // box style
        QString wstyle = xmlreader->readAttributeString("whiskerstyle", &ok);
        if (ok) {
@@ -1286,10 +1286,10 @@ index b7c9f3030..d4065d415 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
          // pen
 -        if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
            QPen wbpen = xmlreader->readPen(&ok);
            (ok) ? setWhiskerBarPen(wbpen)
                 : xmlreader->raiseWarning(
@@ -1298,7 +1298,7 @@ index b7c9f3030..d4065d415 100644
      // scatter
      // scatter show
 -    if (xmlreader->isStartElement() && xmlreader->name() == "scatter") {
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("scatter")) == 0) {
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("scatter")) == 0) {
        QString scattershow = xmlreader->readAttributeString("show", &ok);
        if (ok) {
          (scattershow == "all")       ? setOutlierScatter(Scatter::All)
@@ -1307,10 +1307,10 @@ index b7c9f3030..d4065d415 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
          // pen
 -        if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
            QPen strokep = xmlreader->readPen(&ok);
            if (ok) {
              setscatterstrokecolor_statbox(strokep.color());
@@ -1323,7 +1323,7 @@ index 3204b8520..4354fca6d 100644
  
  bool TextItem2D::load(XmlStreamReader *xmlreader) {
 -  if (xmlreader->isStartElement() && xmlreader->name() == "textitem") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("textitem")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("textitem")) == 0) {
      bool ok;
      QPointF itemposition;
      // item X position property
@@ -1332,10 +1332,10 @@ index 3204b8520..4354fca6d 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "margin") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("margin")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("margin")) == 0) break;
        // brush
 -      if (xmlreader->isStartElement() && xmlreader->name() == "margin") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("margin")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("margin")) == 0) {
          int left = xmlreader->readAttributeInt("left", &ok);
          if (ok) {
            int top = xmlreader->readAttributeInt("top", &ok);
@@ -1345,8 +1345,8 @@ index 3204b8520..4354fca6d 100644
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "font") break;
 -      if (xmlreader->isStartElement() && xmlreader->name() == "font") {
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("font")) == 0) break;
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("font")) == 0) {
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("font")) == 0) break;
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("font")) == 0) {
          QPair<QFont, QColor> fontpair = xmlreader->readFont(&ok);
          if (ok) {
            setFont(fontpair.first);
@@ -1355,10 +1355,10 @@ index 3204b8520..4354fca6d 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
        // pen
 -      if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
          QPen strokep = xmlreader->readPen(&ok);
          if (ok)
            setPen(strokep);
@@ -1367,10 +1367,10 @@ index 3204b8520..4354fca6d 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "brush") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("brush")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("brush")) == 0) break;
        // brush
 -      if (xmlreader->isStartElement() && xmlreader->name() == "brush") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("brush")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("brush")) == 0) {
          QBrush b = xmlreader->readBrush(&ok);
          (ok) ? setBrush(b)
               : xmlreader->raiseWarning(
@@ -1379,7 +1379,7 @@ index 3204b8520..4354fca6d 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "textitem") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("textitem")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("textitem")) == 0) break;
      }
    } else  // no element
      xmlreader->raiseError(tr("no text item element found"));
@@ -1392,7 +1392,7 @@ index 161070700..81f0cda2d 100644
  
  bool Vector2D::load(XmlStreamReader *xmlreader) {
 -  if (xmlreader->isStartElement() && xmlreader->name() == "vector") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("vector")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("vector")) == 0) {
      bool ok;
  
      // legend text
@@ -1401,10 +1401,10 @@ index 161070700..81f0cda2d 100644
      while (!xmlreader->atEnd()) {
        xmlreader->readNext();
 -      if (xmlreader->isEndElement() && xmlreader->name() == "pen") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("pen")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("pen")) == 0) break;
        // pen
 -      if (xmlreader->isStartElement() && xmlreader->name() == "pen") {
-+      if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("pen")) == 0) {
++      if (xmlreader->isStartElement() && xmlreader->name().compare(QString("pen")) == 0) {
          QPen strokep = xmlreader->readPen(&ok);
          if (ok) {
            setlinestrokecolor_vecplot(strokep.color());
@@ -1417,12 +1417,12 @@ index cb95ad20b..7d2e643ba 100644
                   QList<Matrix *> mats) {
    while (!xmlreader->atEnd()) {
 -    if (xmlreader->isEndElement() && xmlreader->name() == "bar") break;
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("bar")) == 0) break;
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("bar")) == 0) break;
      xmlreader->readNext();
 -    if (xmlreader->isEndElement() && xmlreader->name() == "bar") break;
 -    if (xmlreader->isStartElement() && xmlreader->name() == "bar") {
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("bar")) == 0) break;
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("bar")) == 0) {
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("bar")) == 0) break;
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("bar")) == 0) {
        bool ok = false;
        bool xrstatus = false;
        bool yrstatus = false;
@@ -1431,10 +1431,10 @@ index cb95ad20b..7d2e643ba 100644
                       QList<Matrix *> mats) {
    while (!xmlreader->atEnd()) {
 -    if (xmlreader->isEndElement() && xmlreader->name() == "plot") break;
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("plot")) == 0) break;
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("plot")) == 0) break;
      xmlreader->readNext();
 -    if (xmlreader->isEndElement() && xmlreader->name() == "plot") break;
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("plot")) == 0) break;
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("plot")) == 0) break;
      bool ok = false;
      // data
      QString data = xmlreader->readAttributeString("data", &ok);
@@ -1443,7 +1443,7 @@ index cb95ad20b..7d2e643ba 100644
    }
    xmlreader->readNext();
 -  if (xmlreader->isStartElement() && xmlreader->name() == "plot") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("plot")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("plot")) == 0) {
      loadplot(xmlreader, tabs, mats);
      counter_++;
    }
@@ -1634,7 +1634,7 @@ index c5bf79f00..b54e8d1b0 100644
                      QList<Matrix *> mats, ApplicationWindow *app,
                      bool setname) {
 -  if (xmlreader->isStartElement() && xmlreader->name() == "plot3d") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("plot3d")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("plot3d")) == 0) {
      bool ok = false;
  
      // read caption spec
@@ -1658,8 +1658,8 @@ index c5bf79f00..b54e8d1b0 100644
      xmlreader->readNext();
 -    if (xmlreader->isEndElement() && xmlreader->name() == "canvas") break;
 -    if (xmlreader->isStartElement() && xmlreader->name() == "canvas") {
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("canvas")) == 0) break;
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("canvas")) == 0) {
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("canvas")) == 0) break;
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("canvas")) == 0) {
        bool ok = false;
        Q3DTheme::Theme theme = Q3DTheme::Theme::ThemeQt;
        QString themename = xmlreader->readAttributeString("themename", &ok);
@@ -1669,8 +1669,8 @@ index c5bf79f00..b54e8d1b0 100644
      xmlreader->readNext();
 -    if (xmlreader->isEndElement() && xmlreader->name() == "theme") break;
 -    if (xmlreader->isStartElement() && xmlreader->name() == "theme") {
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("theme")) == 0) break;
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("theme")) == 0) {
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("theme")) == 0) break;
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("theme")) == 0) {
        bool ok = false;
        Q3DTheme *theme = graph_->activeTheme();
  
@@ -1679,10 +1679,10 @@ index c5bf79f00..b54e8d1b0 100644
        while (!xmlreader->atEnd()) {
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "background")
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("background")) == 0)
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("background")) == 0)
            break;
 -        if (xmlreader->isStartElement() && xmlreader->name() == "background") {
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("background")) == 0) {
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("background")) == 0) {
            bool ok = false;
  
            // background visible
@@ -1692,8 +1692,8 @@ index c5bf79f00..b54e8d1b0 100644
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "light") break;
 -        if (xmlreader->isStartElement() && xmlreader->name() == "light") {
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("light")) == 0) break;
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("light")) == 0) {
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("light")) == 0) break;
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("light")) == 0) {
            bool ok = false;
  
            // light color
@@ -1703,8 +1703,8 @@ index c5bf79f00..b54e8d1b0 100644
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "grid") break;
 -        if (xmlreader->isStartElement() && xmlreader->name() == "grid") {
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("grid")) == 0) break;
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("grid")) == 0) {
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("grid")) == 0) break;
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("grid")) == 0) {
            bool ok = false;
  
            // grid visible
@@ -1714,8 +1714,8 @@ index c5bf79f00..b54e8d1b0 100644
          xmlreader->readNext();
 -        if (xmlreader->isEndElement() && xmlreader->name() == "label") break;
 -        if (xmlreader->isStartElement() && xmlreader->name() == "label") {
-+        if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("label")) == 0) break;
-+        if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("label")) == 0) {
++        if (xmlreader->isEndElement() && xmlreader->name().compare(QString("label")) == 0) break;
++        if (xmlreader->isStartElement() && xmlreader->name().compare(QString("label")) == 0) {
            bool ok = false;
  
            // label background visible
@@ -1725,8 +1725,8 @@ index c5bf79f00..b54e8d1b0 100644
              xmlreader->readNext();
 -            if (xmlreader->isEndElement() && xmlreader->name() == "font") break;
 -            if (xmlreader->isStartElement() && xmlreader->name() == "font") {
-+            if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("font")) == 0) break;
-+            if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("font")) == 0) {
++            if (xmlreader->isEndElement() && xmlreader->name().compare(QString("font")) == 0) break;
++            if (xmlreader->isStartElement() && xmlreader->name().compare(QString("font")) == 0) {
                QPair<QFont, QColor> fontpair = xmlreader->readFont(&ok);
                if (ok) {
                  theme->setFont(fontpair.first);
@@ -1736,8 +1736,8 @@ index c5bf79f00..b54e8d1b0 100644
      xmlreader->readNext();
 -    if (xmlreader->isEndElement() && xmlreader->name() == "axis") break;
 -    if (xmlreader->isStartElement() && xmlreader->name() == "axis") {
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("axis")) == 0) break;
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("axis")) == 0) {
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("axis")) == 0) break;
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("axis")) == 0) {
        bool ok = false;
  
        // axis type
@@ -1747,8 +1747,8 @@ index c5bf79f00..b54e8d1b0 100644
      xmlreader->readNext();
 -    if (xmlreader->isEndElement() && xmlreader->name() == "axis") break;
 -    if (xmlreader->isStartElement() && xmlreader->name() == "axis") {
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("axis")) == 0) break;
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("axis")) == 0) {
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("axis")) == 0) break;
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("axis")) == 0) {
        bool ok = false;
  
        // axis type
@@ -1775,7 +1775,7 @@ index c5bf79f00..b54e8d1b0 100644
      token = xmlreader->readNext();
      if (token == QXmlStreamReader::StartElement &&
 -        xmlreader->name() == "plot3d") {
-+        xmlreader->name().compare(QStringView("plot3d")) == 0) {
++        xmlreader->name().compare(QString("plot3d")) == 0) {
        load(xmlreader.get(), tables, matrixs, app, false);
      }
    }
@@ -1801,12 +1801,12 @@ index cd6894584..95b3ad3d7 100644
                       QList<Matrix *> mats) {
    while (!xmlreader->atEnd()) {
 -    if (xmlreader->isEndElement() && xmlreader->name() == "scatter") break;
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("scatter")) == 0) break;
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("scatter")) == 0) break;
      xmlreader->readNext();
 -    if (xmlreader->isEndElement() && xmlreader->name() == "scatter") break;
 -    if (xmlreader->isStartElement() && xmlreader->name() == "scatter") {
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("scatter")) == 0) break;
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("scatter")) == 0) {
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("scatter")) == 0) break;
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("scatter")) == 0) {
        bool ok = false;
        bool xrstatus = false;
        bool yrstatus = false;
@@ -1815,10 +1815,10 @@ index cd6894584..95b3ad3d7 100644
                           QList<Matrix *> mats) {
    while (!xmlreader->atEnd()) {
 -    if (xmlreader->isEndElement() && xmlreader->name() == "plot") break;
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("plot")) == 0) break;
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("plot")) == 0) break;
      xmlreader->readNext();
 -    if (xmlreader->isEndElement() && xmlreader->name() == "plot") break;
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("plot")) == 0) break;
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("plot")) == 0) break;
      bool ok = false;
      // data
      QString data = xmlreader->readAttributeString("data", &ok);
@@ -1827,7 +1827,7 @@ index cd6894584..95b3ad3d7 100644
    }
    xmlreader->readNext();
 -  if (xmlreader->isStartElement() && xmlreader->name() == "plot") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("plot")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("plot")) == 0) {
      loadplot(xmlreader, tabs, mats);
      counter_++;
    }
@@ -1861,12 +1861,12 @@ index 928367008..a54a6ee64 100644
                       QList<Matrix *> mats, ApplicationWindow *app) {
    while (!xmlreader->atEnd()) {
 -    if (xmlreader->isEndElement() && xmlreader->name() == "surface") break;
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("surface")) == 0) break;
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("surface")) == 0) break;
      xmlreader->readNext();
 -    if (xmlreader->isEndElement() && xmlreader->name() == "surface") break;
 -    if (xmlreader->isStartElement() && xmlreader->name() == "surface") {
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("surface")) == 0) break;
-+    if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("surface")) == 0) {
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("surface")) == 0) break;
++    if (xmlreader->isStartElement() && xmlreader->name().compare(QString("surface")) == 0) {
        bool ok = false;
        bool xrstatus = false;
        bool yrstatus = false;
@@ -1875,10 +1875,10 @@ index 928367008..a54a6ee64 100644
                           QList<Matrix *> mats, ApplicationWindow *app) {
    while (!xmlreader->atEnd()) {
 -    if (xmlreader->isEndElement() && xmlreader->name() == "plot") break;
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("plot")) == 0) break;
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("plot")) == 0) break;
      xmlreader->readNext();
 -    if (xmlreader->isEndElement() && xmlreader->name() == "plot") break;
-+    if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("plot")) == 0) break;
++    if (xmlreader->isEndElement() && xmlreader->name().compare(QString("plot")) == 0) break;
      bool ok = false;
      // data
      QString data = xmlreader->readAttributeString("data", &ok);
@@ -1887,7 +1887,7 @@ index 928367008..a54a6ee64 100644
    }
    xmlreader->readNext();
 -  if (xmlreader->isStartElement() && xmlreader->name() == "plot") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("plot")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("plot")) == 0) {
      loadplot(xmlreader, tabs, mats, app);
      counter_++;
    }
@@ -2029,7 +2029,7 @@ index 61ecc4851..fec1cfbb3 100644
        token = xmlreader->readNext();
        if (token == QXmlStreamReader::StartElement &&
 -          xmlreader->name() == "update") {
-+          xmlreader->name().compare(QStringView("update")) == 0) {
++          xmlreader->name().compare(QString("update")) == 0) {
          QXmlStreamAttributes attributes = xmlreader->attributes();
          if (attributes.hasAttribute("application") &&
              attributes.hasAttribute("version") &&
@@ -2474,7 +2474,7 @@ index 3d843b98f..6a04eecd5 100644
  
  bool Note::load(XmlStreamReader* xmlreader) {
 -  if (xmlreader->isStartElement() && xmlreader->name() == "note") {
-+  if (xmlreader->isStartElement() && xmlreader->name().compare(QStringView("note")) == 0) {
++  if (xmlreader->isStartElement() && xmlreader->name().compare(QString("note")) == 0) {
      QString prefix(tr("XML read error: ", "prefix for XML error messages"));
      QString postfix(tr(" (non-critical)", "postfix for XML error messages"));
  
@@ -2495,11 +2495,11 @@ index 3d843b98f..6a04eecd5 100644
        xmlreader->readNext();
  
 -      if (xmlreader->isEndElement() && xmlreader->name() == "note") break;
-+      if (xmlreader->isEndElement() && xmlreader->name().compare(QStringView("note")) == 0) break;
++      if (xmlreader->isEndElement() && xmlreader->name().compare(QString("note")) == 0) break;
  
        if (xmlreader->isStartElement()) {
 -        if (xmlreader->name() == "content") {
-+        if (xmlreader->name().compare(QStringView("content")) == 0) {
++        if (xmlreader->name().compare(QString("content")) == 0) {
            QXmlStreamAttributes attribs = xmlreader->attributes();
            QString value =
                attribs.value(xmlreader->namespaceUri().toString(), "value")
@@ -2508,7 +2508,7 @@ index 3d843b98f..6a04eecd5 100644
          }
        } else if (xmlreader->isStartElement()) {
 -        if (xmlreader->name() == "geometry") {
-+        if (xmlreader->name().compare(QStringView("geometry")) == 0) {
++        if (xmlreader->name().compare(QString("geometry")) == 0) {
            QXmlStreamAttributes attribs = xmlreader->attributes();
            QString valuex1 =
                attribs.value(xmlreader->namespaceUri().toString(), "x1")
@@ -2717,27 +2717,27 @@ index ab2f526d6..9423f9651 100644
      token = xmlreader->readNext();
      if (token == QXmlStreamReader::StartElement &&
 -        xmlreader->name() == "table") {
-+        xmlreader->name().compare(QStringView("table")) == 0) {
++        xmlreader->name().compare(QString("table")) == 0) {
        QString name = xmlreader->readAttributeString("name", &ok);
        if (ok) windowlist << name;
      } else if (token == QXmlStreamReader::StartElement &&
 -               xmlreader->name() == "matrix") {
-+               xmlreader->name().compare(QStringView("matrix")) == 0) {
++               xmlreader->name().compare(QString("matrix")) == 0) {
        QString name = xmlreader->readAttributeString("name", &ok);
        if (ok) windowlist << name;
      } else if (token == QXmlStreamReader::StartElement &&
 -               xmlreader->name() == "note") {
-+               xmlreader->name().compare(QStringView("note")) == 0) {
++               xmlreader->name().compare(QString("note")) == 0) {
        QString name = xmlreader->readAttributeString("name", &ok);
        if (ok) windowlist << name;
      } else if (token == QXmlStreamReader::StartElement &&
 -               xmlreader->name() == "plot2d") {
-+               xmlreader->name().compare(QStringView("plot2d")) == 0) {
++               xmlreader->name().compare(QString("plot2d")) == 0) {
        QString name = xmlreader->readAttributeString("name", &ok);
        if (ok) windowlist << name;
      } else if (token == QXmlStreamReader::StartElement &&
 -               xmlreader->name() == "plot3d") {
-+               xmlreader->name().compare(QStringView("plot3d")) == 0) {
++               xmlreader->name().compare(QString("plot3d")) == 0) {
        QString name = xmlreader->readAttributeString("name", &ok);
        if (ok) windowlist << name;
      }
@@ -2748,7 +2748,7 @@ index ab2f526d6..9423f9651 100644
 -        (xmlreader->name() == "amt" || xmlreader->name() == "apt" ||
 -         xmlreader->name() == "att" || xmlreader->name() == "ast")) {
 +        (xmlreader->name().compare(QString("amt")) || xmlreader->name().compare(QString("apt")) ||
-+         xmlreader->name().compare(QString("att")) || xmlreader->name().compare(QStringView("ast")) == 0)) {
++         xmlreader->name().compare(QString("att")) || xmlreader->name().compare(QString("ast")) == 0)) {
        QXmlStreamAttributes attributes = xmlreader->attributes();
        istemplate = true;
      } else if (token == QXmlStreamReader::StartElement &&
@@ -2783,7 +2783,7 @@ index ab2f526d6..9423f9651 100644
      token = xmlreader->readNext();
      if (token == QXmlStreamReader::StartElement &&
 -        xmlreader->name() == "aproj") {
-+        xmlreader->name().compare(QStringView("aproj")) == 0) {
++        xmlreader->name().compare(QString("aproj")) == 0) {
        QXmlStreamAttributes attributes = xmlreader->attributes();
        if (attributes.hasAttribute("scripting")) {
          if (!app->setScriptingLang(attributes.value("scripting").toString(),
@@ -2792,7 +2792,7 @@ index ab2f526d6..9423f9651 100644
        rootitem->folder()->setName(fileinfo.baseName());
      } else if (token == QXmlStreamReader::StartElement &&
 -               xmlreader->name() == "folder") {
-+               xmlreader->name().compare(QStringView("folder")) == 0) {
++               xmlreader->name().compare(QString("folder")) == 0) {
        recursivecount_++;
        QXmlStreamAttributes attr = xmlreader->attributes();
        QString name = xmlreader->attributes().value("name").toString();
@@ -2801,7 +2801,7 @@ index ab2f526d6..9423f9651 100644
        if (current.trimmed() == "true") cfolder = folder;
      } else if (token == QXmlStreamReader::StartElement &&
 -               xmlreader->name() == "table") {
-+               xmlreader->name().compare(QStringView("table")) == 0) {
++               xmlreader->name().compare(QString("table")) == 0) {
        bool ok;
        QString time = xmlreader->readAttributeString("creation_time", &ok);
        Table *table = app->newTable("table", 1, 1);
@@ -2820,17 +2820,17 @@ index ab2f526d6..9423f9651 100644
        }
      } else if (token == QXmlStreamReader::StartElement &&
 -               xmlreader->name() == "matrix") {
-+               xmlreader->name().compare(QStringView("matrix")) == 0) {
++               xmlreader->name().compare(QString("matrix")) == 0) {
        Matrix *matrix = app->newMatrix("matrix", 1, 1);
        matrix->d_future_matrix->load(xmlreader.get());
      } else if (token == QXmlStreamReader::StartElement &&
 -               xmlreader->name() == "note") {
-+               xmlreader->name().compare(QStringView("note")) == 0) {
++               xmlreader->name().compare(QString("note")) == 0) {
        Note *note = app->newNote("caption");
        note->load(xmlreader.get());
      } else if (token == QXmlStreamReader::StartElement &&
 -               xmlreader->name() == "plot2d") {
-+               xmlreader->name().compare(QStringView("plot2d")) == 0) {
++               xmlreader->name().compare(QString("plot2d")) == 0) {
        Layout2D *plot2d = app->newGraph2D();
        plot2d->load(xmlreader.get(), tables(app), matrixs(app));
        // (hack) for some unknown reason this connection need to be manually set
@@ -2839,7 +2839,7 @@ index ab2f526d6..9423f9651 100644
        }
      } else if (token == QXmlStreamReader::StartElement &&
 -               xmlreader->name() == "plot3d") {
-+               xmlreader->name().compare(QStringView("plot3d")) == 0) {
++               xmlreader->name().compare(QString("plot3d")) == 0) {
        bool ok = false;
        Layout3D *plot = nullptr;
        QString ptype = xmlreader->readAttributeString("type", &ok);
@@ -2848,7 +2848,7 @@ index ab2f526d6..9423f9651 100644
          return nullptr;
      } else if (token == QXmlStreamReader::StartElement &&
 -               xmlreader->name() == "log") {
-+               xmlreader->name().compare(QStringView("log")) == 0) {
++               xmlreader->name().compare(QString("log")) == 0) {
        QXmlStreamAttributes attributes = xmlreader->attributes();
        if (attributes.hasAttribute("value")) {
          QString loginfo = attributes.value("value").toString();
@@ -2857,7 +2857,7 @@ index ab2f526d6..9423f9651 100644
                                      .arg("value"));
      } else if (token == QXmlStreamReader::EndElement &&
 -               xmlreader->name() == "folder") {
-+               xmlreader->name().compare(QStringView("folder")) == 0) {
++               xmlreader->name().compare(QString("folder")) == 0) {
        while (recursivecount_ > 0) {
          Folder *fl = static_cast<Folder *>(app->current_folder->parent());
          if (fl) {
@@ -3068,7 +3068,7 @@ index 6b4f70d5f..54b7bf278 100644
  
  bool AbstractAspect::readCommentElement(XmlStreamReader *reader) {
 -  Q_ASSERT(reader->isStartElement() && reader->name() == "comment");
-+  Q_ASSERT(reader->isStartElement() && reader->name().compare(QStringView("comment")) == 0);
++  Q_ASSERT(reader->isStartElement() && reader->name().compare(QString("comment")) == 0);
    QString temp = reader->readElementText();
    temp.replace("\\n", "\n");
    setComment(temp);
@@ -3114,7 +3114,7 @@ index 80134556e..23a9e396c 100644
  
  bool AbstractSimpleFilter::load(XmlStreamReader *reader) {
 -  if (reader->isStartElement() && reader->name() == "simple_filter") {
-+  if (reader->isStartElement() && reader->name().compare(QStringView("simple_filter")) == 0) {
++  if (reader->isStartElement() && reader->name().compare(QString("simple_filter")) == 0) {
      if (!readBasicAttributes(reader)) return false;
  
      QXmlStreamAttributes attribs = reader->attributes();
@@ -3123,7 +3123,7 @@ index 80134556e..23a9e396c 100644
  
        if (reader->isStartElement()) {
 -        if (reader->name() == "comment") {
-+        if (reader->name().compare(QStringView("comment")) == 0) {
++        if (reader->name().compare(QString("comment")) == 0) {
            if (!readCommentElement(reader)) return false;
          } else  // unknown element
          {
@@ -3175,7 +3175,7 @@ index cfaa93b86..c81a1ad4e 100644
      if (!reader->skipToNextTag()) return false;
  
 -    if (reader->name() == "AlphaPlot_project") {
-+    if (reader->name().compare(QStringView("AlphaPlot_project")) == 0) {
++    if (reader->name().compare(QString("AlphaPlot_project")) == 0) {
        bool ok = true;
        // int version = reader->readAttributeInt("version", &ok);
        if (!ok) {
@@ -3184,13 +3184,13 @@ index cfaa93b86..c81a1ad4e 100644
  
          if (reader->isStartElement()) {
 -          if (reader->name() == "project_root") {
-+          if (reader->name().compare(QStringView("project_root")) == 0) {
++          if (reader->name().compare(QString("project_root")) == 0) {
              if (!reader->skipToNextTag()) return false;
              if (!future::Folder::load(reader)) return false;
              if (!reader->skipToNextTag()) return false;
              Q_ASSERT(reader->isEndElement() &&
 -                     reader->name() == "project_root");
-+                     reader->name().compare(QStringView("project_root")) == 0);
++                     reader->name().compare(QString("project_root")) == 0);
            } else  // unknown element
            {
              reader->raiseWarning(
@@ -3203,7 +3203,7 @@ index 5e161976c..b4037052d 100644
  
  bool Column::load(XmlStreamReader* reader) {
 -  if (reader->isStartElement() && reader->name() == "column") {
-+  if (reader->isStartElement() && reader->name().compare(QStringView("column")) == 0) {
++  if (reader->isStartElement() && reader->name().compare(QString("column")) == 0) {
      if (!readBasicAttributes(reader)) return false;
  
      QXmlStreamAttributes attribs = reader->attributes();
@@ -3212,25 +3212,25 @@ index 5e161976c..b4037052d 100644
        if (reader->isStartElement()) {
          bool ret_val = true;
 -        if (reader->name() == "comment")
-+        if (reader->name().compare(QStringView("comment")) == 0)
++        if (reader->name().compare(QString("comment")) == 0)
            ret_val = readCommentElement(reader);
 -        else if (reader->name() == "numericDateTimeFilter")
-+        else if (reader->name().compare(QStringView("numericDateTimeFilter")) == 0)
++        else if (reader->name().compare(QString("numericDateTimeFilter")) == 0)
            ret_val = XmlReadNumericDateTimeFilter(reader);
 -        else if (reader->name() == "input_filter")
-+        else if (reader->name().compare(QStringView("input_filter")) == 0)
++        else if (reader->name().compare(QString("input_filter")) == 0)
            ret_val = XmlReadInputFilter(reader);
 -        else if (reader->name() == "output_filter")
-+        else if (reader->name().compare(QStringView("output_filter")) == 0)
++        else if (reader->name().compare(QString("output_filter")) == 0)
            ret_val = XmlReadOutputFilter(reader);
 -        else if (reader->name() == "mask")
-+        else if (reader->name().compare(QStringView("mask")) == 0)
++        else if (reader->name().compare(QString("mask")) == 0)
            ret_val = XmlReadMask(reader);
 -        else if (reader->name() == "formula")
-+        else if (reader->name().compare(QStringView("formula")) == 0)
++        else if (reader->name().compare(QString("formula")) == 0)
            ret_val = XmlReadFormula(reader);
 -        else if (reader->name() == "row")
-+        else if (reader->name().compare(QStringView("row")) == 0)
++        else if (reader->name().compare(QString("row")) == 0)
            ret_val = XmlReadRow(reader);
          else  // unknown element
          {
@@ -3239,40 +3239,40 @@ index 5e161976c..b4037052d 100644
  bool Column::XmlReadNumericDateTimeFilter(XmlStreamReader* reader) {
    Q_ASSERT(reader->isStartElement() &&
 -           reader->name() == "numericDateTimeFilter");
-+           reader->name().compare(QStringView("numericDateTimeFilter")) == 0);
++           reader->name().compare(QString("numericDateTimeFilter")) == 0);
    if (!reader->skipToNextTag()) return false;
    if (!d_column_private->getNumericDateTimeFilter()->load(reader)) return false;
    if (!reader->skipToNextTag()) return false;
 -  Q_ASSERT(reader->isEndElement() && reader->name() == "numericDateTimeFilter");
-+  Q_ASSERT(reader->isEndElement() && reader->name().compare(QStringView("numericDateTimeFilter")) == 0);
++  Q_ASSERT(reader->isEndElement() && reader->name().compare(QString("numericDateTimeFilter")) == 0);
    return true;
  }
  
  bool Column::XmlReadInputFilter(XmlStreamReader* reader) {
 -  Q_ASSERT(reader->isStartElement() && reader->name() == "input_filter");
-+  Q_ASSERT(reader->isStartElement() && reader->name().compare(QStringView("input_filter")) == 0);
++  Q_ASSERT(reader->isStartElement() && reader->name().compare(QString("input_filter")) == 0);
    if (!reader->skipToNextTag()) return false;
    if (!d_column_private->inputFilter()->load(reader)) return false;
    if (!reader->skipToNextTag()) return false;
 -  Q_ASSERT(reader->isEndElement() && reader->name() == "input_filter");
-+  Q_ASSERT(reader->isEndElement() && reader->name().compare(QStringView("input_filter")) == 0);
++  Q_ASSERT(reader->isEndElement() && reader->name().compare(QString("input_filter")) == 0);
    return true;
  }
  
  bool Column::XmlReadOutputFilter(XmlStreamReader* reader) {
 -  Q_ASSERT(reader->isStartElement() && reader->name() == "output_filter");
-+  Q_ASSERT(reader->isStartElement() && reader->name().compare(QStringView("output_filter")) == 0);
++  Q_ASSERT(reader->isStartElement() && reader->name().compare(QString("output_filter")) == 0);
    if (!reader->skipToNextTag()) return false;
    if (!outputFilter()->load(reader)) return false;
    if (!reader->skipToNextTag()) return false;
 -  Q_ASSERT(reader->isEndElement() && reader->name() == "output_filter");
-+  Q_ASSERT(reader->isEndElement() && reader->name().compare(QStringView("output_filter")) == 0);
++  Q_ASSERT(reader->isEndElement() && reader->name().compare(QString("output_filter")) == 0);
    return true;
  }
  
  bool Column::XmlReadMask(XmlStreamReader* reader) {
 -  Q_ASSERT(reader->isStartElement() && reader->name() == "mask");
-+  Q_ASSERT(reader->isStartElement() && reader->name().compare(QStringView("mask")) == 0);
++  Q_ASSERT(reader->isStartElement() && reader->name().compare(QString("mask")) == 0);
  
    bool ok1, ok2;
    int start, end;
@@ -3281,7 +3281,7 @@ index 5e161976c..b4037052d 100644
  
  bool Column::XmlReadFormula(XmlStreamReader* reader) {
 -  Q_ASSERT(reader->isStartElement() && reader->name() == "formula");
-+  Q_ASSERT(reader->isStartElement() && reader->name().compare(QStringView("formula")) == 0);
++  Q_ASSERT(reader->isStartElement() && reader->name().compare(QString("formula")) == 0);
  
    bool ok1, ok2;
    int start, end;
@@ -3290,7 +3290,7 @@ index 5e161976c..b4037052d 100644
  
  bool Column::XmlReadRow(XmlStreamReader* reader) {
 -  Q_ASSERT(reader->isStartElement() && reader->name() == "row");
-+  Q_ASSERT(reader->isStartElement() && reader->name().compare(QStringView("row")) == 0);
++  Q_ASSERT(reader->isStartElement() && reader->name().compare(QString("row")) == 0);
  
    QString str;
    int type_code;
@@ -3369,7 +3369,7 @@ index 305763761..78d3dec62 100644
  
  bool Folder::load(XmlStreamReader *reader) {
 -  if (reader->isStartElement() && reader->name() == "folder") {
-+  if (reader->isStartElement() && reader->name().compare(QStringView("folder")) == 0) {
++  if (reader->isStartElement() && reader->name().compare(QString("folder")) == 0) {
      setComment("");
      removeAllChildAspects();
  
@@ -3378,10 +3378,10 @@ index 305763761..78d3dec62 100644
  
        if (reader->isStartElement()) {
 -        if (reader->name() == "comment") {
-+        if (reader->name().compare(QStringView("comment")) == 0) {
++        if (reader->name().compare(QString("comment")) == 0) {
            if (!readCommentElement(reader)) return false;
 -        } else if (reader->name() == "child_aspect") {
-+        } else if (reader->name().compare(QStringView("child_aspect")) == 0) {
++        } else if (reader->name().compare(QString("child_aspect")) == 0) {
            if (!readChildAspectElement(reader)) return false;
          } else  // unknown element
          {
@@ -3390,11 +3390,11 @@ index 305763761..78d3dec62 100644
  bool Folder::readChildAspectElement(XmlStreamReader *reader) {
    bool loaded = false;
 -  Q_ASSERT(reader->isStartElement() && reader->name() == "child_aspect");
-+  Q_ASSERT(reader->isStartElement() && reader->name().compare(QStringView("child_aspect")) == 0);
++  Q_ASSERT(reader->isStartElement() && reader->name().compare(QString("child_aspect")) == 0);
  
    if (!reader->skipToNextTag()) return false;
 -  if (reader->isEndElement() && reader->name() == "child_aspect")
-+  if (reader->isEndElement() && reader->name().compare(QStringView("child_aspect")) == 0)
++  if (reader->isEndElement() && reader->name().compare(QString("child_aspect")) == 0)
      return true;  // empty element tag
    QString element_name = reader->name().toString();
 -  if (element_name == "folder") {
@@ -3416,7 +3416,7 @@ index 305763761..78d3dec62 100644
    }
    if (!reader->skipToNextTag()) return false;
 -  Q_ASSERT(reader->isEndElement() && reader->name() == "child_aspect");
-+  Q_ASSERT(reader->isEndElement() && reader->name().compare(QStringView("child_aspect")) == 0);
++  Q_ASSERT(reader->isEndElement() && reader->name().compare(QString("child_aspect")) == 0);
    return !reader->hasError();
  }
  
@@ -3429,7 +3429,7 @@ index 71553929d..260582e24 100644
  QPair<QFont, QColor> XmlStreamReader::readFont(bool* ok) {
    QPair<QFont, QColor> pair;
 -  if (isStartElement() && name() == "font") {
-+  if (isStartElement() && name().compare(QStringView("font")) == 0) {
++  if (isStartElement() && name().compare(QString("font")) == 0) {
      // family
      QString family = readAttributeString("family", ok);
      if (ok)
@@ -3447,7 +3447,7 @@ index 71553929d..260582e24 100644
  QPen XmlStreamReader::readPen(bool* ok) {
    QPen pen;
 -  if (isStartElement() && name() == "pen") {
-+  if (isStartElement() && name().compare(QStringView("pen")) == 0) {
++  if (isStartElement() && name().compare(QString("pen")) == 0) {
      // color
      QString color = readAttributeString("color", ok);
      if (ok)
@@ -3456,7 +3456,7 @@ index 71553929d..260582e24 100644
  QBrush XmlStreamReader::readBrush(bool* ok) {
    QBrush brush;
 -  if (isStartElement() && name() == "brush") {
-+  if (isStartElement() && name().compare(QStringView("brush")) == 0) {
++  if (isStartElement() && name().compare(QString("brush")) == 0) {
      // color
      QString color = readAttributeString("color", ok);
      if (ok)
@@ -3478,7 +3478,7 @@ index 65c576367..e3c5ea4e4 100644
  
  bool Matrix::load(XmlStreamReader *reader) {
 -  if (reader->isStartElement() && reader->name() == "matrix") {
-+  if (reader->isStartElement() && reader->name().compare(QStringView("matrix")) == 0) {
++  if (reader->isStartElement() && reader->name().compare(QString("matrix")) == 0) {
      setDimensions(0, 0);
      setComment("");
      setFormula("");
@@ -3487,25 +3487,25 @@ index 65c576367..e3c5ea4e4 100644
        if (reader->isStartElement()) {
          bool ret_val = true;
 -        if (reader->name() == "comment")
-+        if (reader->name().compare(QStringView("comment")) == 0)
++        if (reader->name().compare(QString("comment")) == 0)
            ret_val = readCommentElement(reader);
 -        else if (reader->name() == "formula")
-+        else if (reader->name().compare(QStringView("formula")) == 0)
++        else if (reader->name().compare(QString("formula")) == 0)
            ret_val = readFormulaElement(reader);
 -        else if (reader->name() == "display")
-+        else if (reader->name().compare(QStringView("display")) == 0)
++        else if (reader->name().compare(QString("display")) == 0)
            ret_val = readDisplayElement(reader);
 -        else if (reader->name() == "coordinates")
-+        else if (reader->name().compare(QStringView("coordinates")) == 0)
++        else if (reader->name().compare(QString("coordinates")) == 0)
            ret_val = readCoordinatesElement(reader);
 -        else if (reader->name() == "cell")
-+        else if (reader->name().compare(QStringView("cell")) == 0)
++        else if (reader->name().compare(QString("cell")) == 0)
            ret_val = readCellElement(reader);
 -        else if (reader->name() == "row_height")
-+        else if (reader->name().compare(QStringView("row_height")) == 0)
++        else if (reader->name().compare(QString("row_height")) == 0)
            ret_val = readRowHeightElement(reader);
 -        else if (reader->name() == "column_width")
-+        else if (reader->name().compare(QStringView("column_width")) == 0)
++        else if (reader->name().compare(QString("column_width")) == 0)
            ret_val = readColumnWidthElement(reader);
          else  // unknown element
          {
@@ -3514,7 +3514,7 @@ index 65c576367..e3c5ea4e4 100644
  
  bool Matrix::readDisplayElement(XmlStreamReader *reader) {
 -  Q_ASSERT(reader->isStartElement() && reader->name() == "display");
-+  Q_ASSERT(reader->isStartElement() && reader->name().compare(QStringView("display")) == 0);
++  Q_ASSERT(reader->isStartElement() && reader->name().compare(QString("display")) == 0);
    QXmlStreamAttributes attribs = reader->attributes();
  
    QString str =
@@ -3523,7 +3523,7 @@ index 65c576367..e3c5ea4e4 100644
  
  bool Matrix::readCoordinatesElement(XmlStreamReader *reader) {
 -  Q_ASSERT(reader->isStartElement() && reader->name() == "coordinates");
-+  Q_ASSERT(reader->isStartElement() && reader->name().compare(QStringView("coordinates")) == 0);
++  Q_ASSERT(reader->isStartElement() && reader->name().compare(QString("coordinates")) == 0);
  
    bool ok;
    int val;
@@ -3532,14 +3532,14 @@ index 65c576367..e3c5ea4e4 100644
  
  bool Matrix::readFormulaElement(XmlStreamReader *reader) {
 -  Q_ASSERT(reader->isStartElement() && reader->name() == "formula");
-+  Q_ASSERT(reader->isStartElement() && reader->name().compare(QStringView("formula")) == 0);
++  Q_ASSERT(reader->isStartElement() && reader->name().compare(QString("formula")) == 0);
    setFormula(reader->readElementText());
    return true;
  }
  
  bool Matrix::readRowHeightElement(XmlStreamReader *reader) {
 -  Q_ASSERT(reader->isStartElement() && reader->name() == "row_height");
-+  Q_ASSERT(reader->isStartElement() && reader->name().compare(QStringView("row_height")) == 0);
++  Q_ASSERT(reader->isStartElement() && reader->name().compare(QString("row_height")) == 0);
    bool ok;
    int row = reader->readAttributeInt("row", &ok);
    if (!ok) {
@@ -3548,7 +3548,7 @@ index 65c576367..e3c5ea4e4 100644
  
  bool Matrix::readColumnWidthElement(XmlStreamReader *reader) {
 -  Q_ASSERT(reader->isStartElement() && reader->name() == "column_width");
-+  Q_ASSERT(reader->isStartElement() && reader->name().compare(QStringView("column_width")) == 0);
++  Q_ASSERT(reader->isStartElement() && reader->name().compare(QString("column_width")) == 0);
    bool ok;
    int col = reader->readAttributeInt("column", &ok);
    if (!ok) {
@@ -3557,7 +3557,7 @@ index 65c576367..e3c5ea4e4 100644
  
  bool Matrix::readCellElement(XmlStreamReader *reader) {
 -  Q_ASSERT(reader->isStartElement() && reader->name() == "cell");
-+  Q_ASSERT(reader->isStartElement() && reader->name().compare(QStringView("cell")) == 0);
++  Q_ASSERT(reader->isStartElement() && reader->name().compare(QString("cell")) == 0);
  
    QString str;
    int row, col;
@@ -3666,7 +3666,7 @@ index 0b9b133cd..530d51a47 100644
  
  bool Table::load(XmlStreamReader *reader) {
 -  if (reader->isStartElement() && reader->name() == "table") {
-+  if (reader->isStartElement() && reader->name().compare(QStringView("table")) == 0) {
++  if (reader->isStartElement() && reader->name().compare(QString("table")) == 0) {
      setColumnCount(0);
      setRowCount(0);
      setComment("");
@@ -3675,10 +3675,10 @@ index 0b9b133cd..530d51a47 100644
  
        if (reader->isStartElement()) {
 -        if (reader->name() == "comment") {
-+        if (reader->name().compare(QStringView("comment")) == 0) {
++        if (reader->name().compare(QString("comment")) == 0) {
            if (!readCommentElement(reader)) return false;
 -        } else if (reader->name() == "column") {
-+        } else if (reader->name().compare(QStringView("column")) == 0) {
++        } else if (reader->name().compare(QString("column")) == 0) {
            Column *column = new Column(tr("Column %1").arg(1), AlphaPlot::Text);
            if (!column->load(reader)) {
              setColumnCount(0);
@@ -3687,7 +3687,7 @@ index 0b9b133cd..530d51a47 100644
            columns.append(column);
            appendColumns(columns);
 -        } else if (reader->name() == "column_width") {
-+        } else if (reader->name().compare(QStringView("column_width")) == 0) {
++        } else if (reader->name().compare(QString("column_width")) == 0) {
            if (!readColumnWidthElement(reader)) return false;
          } else  // unknown element
          {
@@ -3696,7 +3696,7 @@ index 0b9b133cd..530d51a47 100644
  
  bool Table::readColumnWidthElement(XmlStreamReader *reader) {
 -  Q_ASSERT(reader->isStartElement() && reader->name() == "column_width");
-+  Q_ASSERT(reader->isStartElement() && reader->name().compare(QStringView("column_width")) == 0);
++  Q_ASSERT(reader->isStartElement() && reader->name().compare(QString("column_width")) == 0);
    bool ok;
    int col = reader->readAttributeInt("column", &ok);
    if (!ok) {
