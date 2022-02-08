@@ -8,6 +8,7 @@ vcpkg_from_github(
     HEAD_REF master
     PATCHES qt6.patch
             ext_dep.patch
+            install.patch
             #muparser_wchar_t.patch
 )
 

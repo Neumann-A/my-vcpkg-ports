@@ -811,9 +811,8 @@ index 68268ba36..ab25d97d0 100644
  const QString MuParserScripting::mathFunctionDoc(const QString &name) const {
    for (const mathFunction *i = math_functions; i->name; i++)
 -    if (name == i->name) return i->description;
--  return QString::null;
 +    if (name == QString::fromWCharArray(i->name)) return i->description;
-+  return QString();
+   return QString();
  }
 diff --git a/alphaplot/src/scripting/MuParserScripting.h b/alphaplot/src/scripting/MuParserScripting.h
 index 56f8a8ae6..b5c3bce29 100644

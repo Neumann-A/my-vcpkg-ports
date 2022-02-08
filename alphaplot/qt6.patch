@@ -4072,3 +4072,21 @@ index 6ed6b7bd6..8401b9b52 100644
    ui->lineEdit->setValidator(validator);
    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, [=]() {
      if (!ui->lineEdit->text().trimmed().isEmpty()) {
+diff --git a/alphaplot/src/scripting/MuParserScripting.cpp b/alphaplot/src/scripting/MuParserScripting.cpp
+index 68268ba36..ab25d97d0 100644
+--- a/alphaplot/src/scripting/MuParserScripting.cpp
++++ b/alphaplot/src/scripting/MuParserScripting.cpp
+@@ -165,12 +165,12 @@ const MuParserScripting::mathFunction MuParserScripting::math_functions[] = {
+ 
+ const QStringList MuParserScripting::mathFunctions() const {
+   QStringList l;
+   for (const mathFunction *i = math_functions; i->name; i++) l << i->name;
+   return l;
+ }
+ 
+ const QString MuParserScripting::mathFunctionDoc(const QString &name) const {
+   for (const mathFunction *i = math_functions; i->name; i++)
+     if (name == i->name) return i->description;
+-  return QString::null;
++  return QString();
+ }
