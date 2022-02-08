@@ -7,6 +7,8 @@ vcpkg_from_github(
     SHA512 1a9dd647cd47e88155d7d056b4722d6fcba5ce017cadafc4a416ceacecf7492cd1b62557a4474976e4ebe5c202d036be529eae2e7cb8a1246e8f425893dd3f9c
     HEAD_REF master
     PATCHES qt6.patch
+            ext_dep.patch
+            #muparser_wchar_t.patch
 )
 
 vcpkg_qmake_configure(

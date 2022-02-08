@@ -1,0 +1,619 @@
+diff --git a/alphaplot/alphaplot.pro b/alphaplot/alphaplot.pro
+index eb37c07db..8e9618223 100644
+--- a/alphaplot/alphaplot.pro
++++ b/alphaplot/alphaplot.pro
+@@ -8,13 +8,24 @@ QT += core gui widgets opengl network svg
+ QT += script scripttools printsupport datavisualization
+ 
+ # enable C++11 support
+-CONFIG += c++11
++CONFIG += c++14
+ CONFIG += qt warn_on exceptions opengl thread
+ 
+-
++contains(CONFIG, debug) {
++    LIBS += -L$$[QT_INSTALL_PREFIX]/debug/lib
++    LIBS += -lqcustomplotd -lopengl32
++    LIBS += -lQtSolutions_PropertyBrowserd
++} else {
++    LIBS += -L$$[QT_INSTALL_PREFIX]/lib
++    LIBS += -lqcustomplot -lopengl32
++    LIBS += -lQtSolutions_PropertyBrowser
++}
++LIBS += -lmuparser # use pkg-config instead?
++INCLUDEPATH += $$[QT_INSTALL_PREFIX]/include
+ INCLUDEPATH += alphaplot alphaplot/src ../data/translations
+ 
+-include(muparser.pri)
++
++# include(muparser.pri)
+ include(sourcefiles.pri)
+ include(../config.pri)
+ 
+@@ -29,7 +40,7 @@ DEFINES += Q_BUILD_32
+ #############################################################################
+ ###################### BASIC PROJECT PROPERTIES #############################
+ #############################################################################
+-
++CONFIG += console
+ TARGET         = alphaplot
+ TEMPLATE       = app
+diff --git a/alphaplot/sourcefiles.pri b/alphaplot/sourcefiles.pri
+index 39607535b..a1df2c9f4 100644
+--- a/alphaplot/sourcefiles.pri
++++ b/alphaplot/sourcefiles.pri
+@@ -311,28 +311,28 @@ SOURCES     += src/future/core/AbstractAspect.cpp \
+ ####################### QCustomPlot ##########################
+ ##############################################################
+ 
+-HEADERS     += ../3rdparty/qcustomplot/qcustomplot.h
+-SOURCES     += ../3rdparty/qcustomplot/qcustomplot.cpp
++# HEADERS     += ../3rdparty/qcustomplot/qcustomplot.h
++# SOURCES     += ../3rdparty/qcustomplot/qcustomplot.cpp
+ 
+ ##############################################################
+ ####################### PropertyBrowser ######################
+ ##############################################################
+ 
+-    SOURCES += ../3rdparty/propertybrowser/qtpropertybrowser.cpp \
+-               ../3rdparty/propertybrowser/qtpropertymanager.cpp \
+-               ../3rdparty/propertybrowser/qteditorfactory.cpp \
+-               ../3rdparty/propertybrowser/qttreepropertybrowser.cpp \
+-               ../3rdparty/propertybrowser/qtpropertybrowserutils.cpp \
+-               ../3rdparty/propertybrowser/QtxDoubleSpinBox.cpp
++#    SOURCES += ../3rdparty/propertybrowser/qtpropertybrowser.cpp \
++#               ../3rdparty/propertybrowser/qtpropertymanager.cpp \
++#               ../3rdparty/propertybrowser/qteditorfactory.cpp \
++#               ../3rdparty/propertybrowser/qttreepropertybrowser.cpp \
++#               ../3rdparty/propertybrowser/qtpropertybrowserutils.cpp \
++#               ../3rdparty/propertybrowser/QtxDoubleSpinBox.cpp
+ 
+-    HEADERS += ../3rdparty/propertybrowser/qtpropertybrowser.h \
+-               ../3rdparty/propertybrowser/qtpropertymanager.h \
+-               ../3rdparty/propertybrowser/qteditorfactory.h \
+-               ../3rdparty/propertybrowser/qttreepropertybrowser.h \
+-               ../3rdparty/propertybrowser/qtpropertybrowserutils_p.h \
+-               ../3rdparty/propertybrowser/QtxDoubleSpinBox.h
++#    HEADERS += ../3rdparty/propertybrowser/qtpropertybrowser.h \
++#               ../3rdparty/propertybrowser/qtpropertymanager.h \
++#               ../3rdparty/propertybrowser/qteditorfactory.h \
++#               ../3rdparty/propertybrowser/qttreepropertybrowser.h \
++#               ../3rdparty/propertybrowser/qtpropertybrowserutils_p.h \
++#               ../3rdparty/propertybrowser/QtxDoubleSpinBox.h
+ 
+-    RESOURCES += ../3rdparty/propertybrowser/qtpropertybrowser.qrc
++#    RESOURCES += ../3rdparty/propertybrowser/qtpropertybrowser.qrc
+ 
+ ##############################################################
+ ####################### PlotCommon ###########################
+diff --git a/alphaplot/src/2Dplot/Axis2D.h b/alphaplot/src/2Dplot/Axis2D.h
+index b9ef8b975..5d55d206c 100644
+--- a/alphaplot/src/2Dplot/Axis2D.h
++++ b/alphaplot/src/2Dplot/Axis2D.h
+@@ -17,7 +17,7 @@
+ #ifndef AXIS2D_H
+ #define AXIS2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ #include "memory"
+ 
+ class Column;
+diff --git a/alphaplot/src/2Dplot/AxisRect2D.h b/alphaplot/src/2Dplot/AxisRect2D.h
+index 9c7f71b09..5d507740c 100644
+--- a/alphaplot/src/2Dplot/AxisRect2D.h
++++ b/alphaplot/src/2Dplot/AxisRect2D.h
+@@ -17,7 +17,7 @@
+ #ifndef AXISRECT2D_H
+ #define AXISRECT2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ #include "Axis2D.h"
+ #include "Bar2D.h"
+diff --git a/alphaplot/src/2Dplot/Bar2D.h b/alphaplot/src/2Dplot/Bar2D.h
+index 0a8a800b7..af918cff9 100644
+--- a/alphaplot/src/2Dplot/Bar2D.h
++++ b/alphaplot/src/2Dplot/Bar2D.h
+@@ -1,7 +1,7 @@
+ #ifndef BAR2D_H
+ #define BAR2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ #include "Axis2D.h"
+ #include "Graph2DCommon.h"
+diff --git a/alphaplot/src/2Dplot/ColorMap2D.h b/alphaplot/src/2Dplot/ColorMap2D.h
+index 7ee43168c..bda2825d2 100644
+--- a/alphaplot/src/2Dplot/ColorMap2D.h
++++ b/alphaplot/src/2Dplot/ColorMap2D.h
+@@ -1,7 +1,7 @@
+ #ifndef COLORMAP2D_H
+ #define COLORMAP2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ #include "Axis2D.h"
+ 
+ class Matrix;
+diff --git a/alphaplot/src/2Dplot/Curve2D.h b/alphaplot/src/2Dplot/Curve2D.h
+index 646c5fd69..8bf693aab 100644
+--- a/alphaplot/src/2Dplot/Curve2D.h
++++ b/alphaplot/src/2Dplot/Curve2D.h
+@@ -1,7 +1,7 @@
+ #ifndef CURVE2D_H
+ #define CURVE2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ #include "Axis2D.h"
+ #include "Graph2DCommon.h"
+ 
+diff --git a/alphaplot/src/2Dplot/DataManager2D.h b/alphaplot/src/2Dplot/DataManager2D.h
+index cadf9aabe..a8786e283 100644
+--- a/alphaplot/src/2Dplot/DataManager2D.h
++++ b/alphaplot/src/2Dplot/DataManager2D.h
+@@ -4,7 +4,7 @@
+ #include <QList>
+ #include <QVector>
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ #include "Graph2DCommon.h"
+ 
+ class Table;
+diff --git a/alphaplot/src/2Dplot/ErrorBar2D.h b/alphaplot/src/2Dplot/ErrorBar2D.h
+index 587a81ff2..4b9d764c3 100644
+--- a/alphaplot/src/2Dplot/ErrorBar2D.h
++++ b/alphaplot/src/2Dplot/ErrorBar2D.h
+@@ -1,7 +1,7 @@
+ #ifndef ERRORBAR2D_H
+ #define ERRORBAR2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ 
+ class Table;
+ class Column;
+diff --git a/alphaplot/src/2Dplot/Grid2D.h b/alphaplot/src/2Dplot/Grid2D.h
+index fc80a040e..ec8776700 100644
+--- a/alphaplot/src/2Dplot/Grid2D.h
++++ b/alphaplot/src/2Dplot/Grid2D.h
+@@ -17,7 +17,7 @@
+ #ifndef GRID2D_H
+ #define GRID2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ 
+ class Axis2D;
+ class XmlStreamReader;
+
+diff --git a/alphaplot/src/2Dplot/ImageItem2D.h b/alphaplot/src/2Dplot/ImageItem2D.h
+index cb2293bd5..229d68c4f 100644
+--- a/alphaplot/src/2Dplot/ImageItem2D.h
++++ b/alphaplot/src/2Dplot/ImageItem2D.h
+@@ -1,7 +1,7 @@
+ #ifndef IMAGEITEM2D_H
+ #define IMAGEITEM2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ 
+ class AxisRect2D;
+ class Plot2D;
+
+diff --git a/alphaplot/src/2Dplot/LayoutGrid2D.h b/alphaplot/src/2Dplot/LayoutGrid2D.h
+index 40526bf14..4d13dd6fe 100644
+--- a/alphaplot/src/2Dplot/LayoutGrid2D.h
++++ b/alphaplot/src/2Dplot/LayoutGrid2D.h
+@@ -1,7 +1,7 @@
+ #ifndef LAYOUTGRID2D_H
+ #define LAYOUTGRID2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ 
+ class LayoutGrid2D : public QCPLayoutGrid {
+   Q_OBJECT
+diff --git a/alphaplot/src/2Dplot/LayoutInset2D.h b/alphaplot/src/2Dplot/LayoutInset2D.h
+index 14358d27a..c4f38e4b0 100644
+--- a/alphaplot/src/2Dplot/LayoutInset2D.h
++++ b/alphaplot/src/2Dplot/LayoutInset2D.h
+@@ -1,7 +1,7 @@
+ #ifndef LAYOUTINSET2D_H
+ #define LAYOUTINSET2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ 
+ class AxisRect2D;
+ 
+diff --git a/alphaplot/src/2Dplot/Legend2D.h b/alphaplot/src/2Dplot/Legend2D.h
+index fb5f21192..1bdaad0ce 100644
+--- a/alphaplot/src/2Dplot/Legend2D.h
++++ b/alphaplot/src/2Dplot/Legend2D.h
+@@ -1,7 +1,7 @@
+ #ifndef LEGEND2D_H
+ #define LEGEND2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ 
+ class AxisRect2D;
+ class Curve2D;
+diff --git a/alphaplot/src/2Dplot/LineItem2D.h b/alphaplot/src/2Dplot/LineItem2D.h
+index c03a74fb7..87796e520 100644
+--- a/alphaplot/src/2Dplot/LineItem2D.h
++++ b/alphaplot/src/2Dplot/LineItem2D.h
+@@ -1,7 +1,7 @@
+ #ifndef LINEITEM2D_H
+ #define LINEITEM2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ 
+ class AxisRect2D;
+ class Plot2D;
+diff --git a/alphaplot/src/2Dplot/LineSpecial2D.h b/alphaplot/src/2Dplot/LineSpecial2D.h
+index 8864e1232..18a8da777 100644
+--- a/alphaplot/src/2Dplot/LineSpecial2D.h
++++ b/alphaplot/src/2Dplot/LineSpecial2D.h
+@@ -1,7 +1,7 @@
+ #ifndef LINESCATTER2D_H
+ #define LINESCATTER2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ #include "Graph2DCommon.h"
+ 
+ class Axis2D;
+diff --git a/alphaplot/src/2Dplot/Pie2D.h b/alphaplot/src/2Dplot/Pie2D.h
+index 4dc19cb4d..c96c8d857 100644
+--- a/alphaplot/src/2Dplot/Pie2D.h
++++ b/alphaplot/src/2Dplot/Pie2D.h
+@@ -19,7 +19,7 @@
+ 
+ #include <QObject>
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ #include "Graph2DCommon.h"
+ 
+ class AxisRect2D;
+diff --git a/alphaplot/src/2Dplot/Plot2D.h b/alphaplot/src/2Dplot/Plot2D.h
+index d0b033b7f..a0262c84a 100644
+--- a/alphaplot/src/2Dplot/Plot2D.h
++++ b/alphaplot/src/2Dplot/Plot2D.h
+@@ -17,7 +17,7 @@
+ #ifndef PLOT2D_H
+ #define PLOT2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ 
+ class Plot2D : public QCustomPlot {
+   Q_OBJECT
+diff --git a/alphaplot/src/2Dplot/StatBox2D.h b/alphaplot/src/2Dplot/StatBox2D.h
+index 8d2c3c48b..fe9480a22 100644
+--- a/alphaplot/src/2Dplot/StatBox2D.h
++++ b/alphaplot/src/2Dplot/StatBox2D.h
+@@ -1,7 +1,7 @@
+ #ifndef STATBOX2D_H
+ #define STATBOX2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ #include "Graph2DCommon.h"
+ 
+ class Axis2D;
+diff --git a/alphaplot/src/2Dplot/TextItem2D.h b/alphaplot/src/2Dplot/TextItem2D.h
+index 1b12480f3..1106d35e7 100644
+--- a/alphaplot/src/2Dplot/TextItem2D.h
++++ b/alphaplot/src/2Dplot/TextItem2D.h
+@@ -1,7 +1,7 @@
+ #ifndef TEXTITEM2D_H
+ #define TEXTITEM2D_H
+ 
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ 
+ class AxisRect2D;
+ class Plot2D;
+diff --git a/alphaplot/src/2Dplot/Vector2D.h b/alphaplot/src/2Dplot/Vector2D.h
+index 0427d1c42..0030484dd 100644
+--- a/alphaplot/src/2Dplot/Vector2D.h
++++ b/alphaplot/src/2Dplot/Vector2D.h
+@@ -1,6 +1,6 @@
+ #ifndef VECTOR2D_H
+ #define VECTOR2D_H
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ 
+ class Axis2D;
+ class Column;
+diff --git a/alphaplot/src/ApplicationWindow.h b/alphaplot/src/ApplicationWindow.h
+index 3db46a3a9..de74bb1b0 100644
+--- a/alphaplot/src/ApplicationWindow.h
++++ b/alphaplot/src/ApplicationWindow.h
+@@ -33,7 +33,7 @@
+ #include "Table.h"
+ 
+ // Scripting
+-#include "../3rdparty/qcustomplot/qcustomplot.h"
++#include <qcustomplot.h>
+ #include "2Dplot/Graph2DCommon.h"
+ #include "3Dplot/Graph3DCommon.h"
+ #include "scripting/Script.h"
+diff --git a/alphaplot/src/analysis/FitDialog.cpp b/alphaplot/src/analysis/FitDialog.cpp
+index 930d47e7e..5816946c0 100644
+--- a/alphaplot/src/analysis/FitDialog.cpp
++++ b/alphaplot/src/analysis/FitDialog.cpp
+@@ -28,7 +28,7 @@
+  ***************************************************************************/
+ #include "FitDialog.h"
+ 
+-#include <../3rdparty/muparser/muParserError.h>
++#include <muParserError.h>
+ #include <stdio.h>
+ 
+ #include <QCheckBox>
+diff --git a/alphaplot/src/scripting/MuParserScript.h b/alphaplot/src/scripting/MuParserScript.h
+index fbcd756bd..2fdc3f72a 100644
+--- a/alphaplot/src/scripting/MuParserScript.h
++++ b/alphaplot/src/scripting/MuParserScript.h
+@@ -32,7 +32,7 @@
+ 
+ #include "Script.h"
+ #include <QtCore/QMap>
+-#include <../../3rdparty/muparser/muParser.h>
++#include <muParser.h>
+ 
+ class QByteArray;
+ class Column;
+diff --git a/alphaplot/src/scripting/MuParserScripting.h b/alphaplot/src/scripting/MuParserScripting.h
+index 56f8a8ae6..b5c3bce29 100644
+--- a/alphaplot/src/scripting/MuParserScripting.h
++++ b/alphaplot/src/scripting/MuParserScripting.h
+@@ -37,7 +37,7 @@
+ #include "Script.h"
+ #include "MuParserScript.h"
+ 
+-#include <../../3rdparty/muparser/muParser.h>
++#include <muParser.h>
+ #include "math.h"
+ #include <gsl/gsl_sf.h>
+ #include <gsl/gsl_errno.h>
+diff --git a/alphaplot/src/scripting/MyParser.h b/alphaplot/src/scripting/MyParser.h
+index 733844ccc..70e3272b5 100644
+--- a/alphaplot/src/scripting/MyParser.h
++++ b/alphaplot/src/scripting/MyParser.h
+@@ -29,7 +29,9 @@
+ #ifndef MYPARSER_H
+ #define MYPARSER_H
+ 
+-#include <../3rdparty/muparser/muParser.h>
++#define _USE_MATH_DEFINES
++
++#include <muParser.h>
+ #include <gsl/gsl_math.h>
+ #include <gsl/gsl_sf.h>
+diff --git a/config.pri b/config.pri
+index 6f46619ca..f505d5733 100644
+--- a/config.pri
++++ b/config.pri
+@@ -95,30 +95,35 @@ contains(PRESET, linux_all_static) {
+   ### mostly static linking, for self-contained binaries
+   message(Build configuration: Linux all static)
+ 
+-  LIBS         += /usr/lib/libgsl.a /usr/lib/libgslcblas.a
++  # LIBS         += /usr/lib/libgsl.a /usr/lib/libgslcblas.a
+ }
+ 
+ contains(PRESET, osx_dist) {
+   # Uses HomeBrew supplied versions of the dependencies
+   message(Build configuration: OSX Distro)
+ 
+-  INCLUDEPATH  += /usr/local/include
+-  QMAKE_LIBDIR += /usr/local/lib
+-  LIBS         += -lgsl -lgslcblas
++  # INCLUDEPATH  += /usr/local/include
++  # QMAKE_LIBDIR += /usr/local/lib
++  # LIBS         += -lgsl -lgslcblas
+ }
+ 
+-win32: {
+-  !mxe {
+-    ### Static linking mostly.
+-    message(Build configuration: Win32)
+-
+-    isEmpty(LIBPATH): LIBPATH = ../3rdparty
+-
+-    INCLUDEPATH  += "$${LIBPATH}/gsl/include"
+-    LIBS         += "$${LIBPATH}/gsl/lib/libgsl.a"
+-    LIBS         += "$${LIBPATH}/gsl/lib/libgslcblas.a"
+-  }
++if(!debug_and_release|build_pass):CONFIG(debug, debug|release) {
++    LIBS += -lgsld -lgslcblasd
++} else {
++    LIBS += -lgsl -lgslcblas
+ }
++# win32: {
++#  !mxe {
++#    ### Static linking mostly.
++#    message(Build configuration: Win32)#
++#
++#    isEmpty(LIBPATH): LIBPATH = ../3rdparty#
++
++#    INCLUDEPATH  += "$${LIBPATH}/gsl/include"
++#    LIBS         += "$${LIBPATH}/gsl/lib/libgsl.a"
++#    LIBS         += "$${LIBPATH}/gsl/lib/libgslcblas.a"
++#  }
++#}
+ 
+ mxe {
+   ### Mingw cross compilation environment on Linux.
+diff --git a/fitPlugins/exp_saturation/exp_saturation.pro b/fitPlugins/exp_saturation/exp_saturation.pro
+index ac0d14469..f7b6bd95f 100644
+--- a/fitPlugins/exp_saturation/exp_saturation.pro
++++ b/fitPlugins/exp_saturation/exp_saturation.pro
+@@ -6,18 +6,22 @@ TARGET = exp_saturation
+ TEMPLATE = lib
+ CONFIG += dll
+ CONFIG -= qt
+-CONFIG += release
++# CONFIG += release
+ DESTDIR = ../
+ 
+ INSTALLS += target
+ unix:  target.path = /usr/lib$${libsuff}/AlphaPlot/plugins
+ win32: target.path = ../../output/plugins
+ 
+-win32:INCLUDEPATH += ../../3rdparty/gsl/include
+-win32:LIBS        += ../../3rdparty/gsl/lib/libgsl.a
+-win32:LIBS        += ../../3rdparty/gsl/lib/libgslcblas.a
++contains(CONFIG, debug) {
++    LIBS += -L$$[QT_INSTALL_PREFIX]/debug/lib
++    LIBS += -lgsld -lgslcblasd
++} else {
++    LIBS += -L$$[QT_INSTALL_PREFIX]/lib
++    LIBS += -lgsl -lgslcblas
++}
++INCLUDEPATH += $$[QT_INSTALL_PREFIX]/include
+ 
+-unix:LIBS += -L/usr/lib$${libsuff} -lgsl -lgslcblas
+ #unix:LIBS += /usr/lib/libgsl.a /usr/lib/libgslcblas.a
+ 
+ SOURCES = exp_saturation.c
+diff --git a/fitPlugins/explin/explin.pro b/fitPlugins/explin/explin.pro
+index 176d5a552..ed9556e78 100644
+--- a/fitPlugins/explin/explin.pro
++++ b/fitPlugins/explin/explin.pro
+@@ -6,19 +6,22 @@ TARGET = explin
+ TEMPLATE = lib
+ CONFIG += dll
+ CONFIG -= qt
+-CONFIG += release
++# CONFIG += release
+ DESTDIR = ../
+ 
+ INSTALLS += target
+ unix:  target.path = /usr/lib$${libsuff}/AlphaPlot/plugins
+ win32: target.path = ../../output/plugins
+ 
+-win32:INCLUDEPATH += ../../3rdparty/gsl/include
+-win32:LIBS        += ../../3rdparty/gsl/lib/libgsl.a
+-win32:LIBS        += ../../3rdparty/gsl/lib/libgslcblas.a
++contains(CONFIG, debug) {
++    LIBS += -L$$[QT_INSTALL_PREFIX]/debug/lib
++    LIBS += -lgsld -lgslcblasd
++} else {
++    LIBS += -L$$[QT_INSTALL_PREFIX]/lib
++    LIBS += -lgsl -lgslcblas
++}
++INCLUDEPATH += $$[QT_INSTALL_PREFIX]/include
+ 
+-unix:LIBS += -L/usr/lib$${libsuff} -lgsl -lgslcblas
+-#unix:LIBS += /usr/lib/libgsl.a /usr/lib/libgslcblas.a
+ 
+ SOURCES = explin.c
+ 
+diff --git a/fitPlugins/fitRational0/fitRational0.pro b/fitPlugins/fitRational0/fitRational0.pro
+index b0adbffdd..bc9684a14 100644
+--- a/fitPlugins/fitRational0/fitRational0.pro
++++ b/fitPlugins/fitRational0/fitRational0.pro
+@@ -7,7 +7,7 @@ TEMPLATE          = lib
+ 
+ CONFIG           += thread
+ CONFIG           += warn_on 
+-CONFIG           += release
++# CONFIG           += release
+ CONFIG           += dll 
+ 
+ DESTDIR           = ../
+@@ -16,11 +16,14 @@ INSTALLS += target
+ unix:target.path=/usr/lib$${libsuff}/AlphaPlot/plugins
+ win32: target.path = ../../output/plugins
+ 
+-win32:INCLUDEPATH += ../../3rdparty/gsl/include
+-win32:LIBS        += ../../3rdparty/gsl/lib/libgsl.a
+-win32:LIBS        += ../../3rdparty/gsl/lib/libgslcblas.a
++contains(CONFIG, debug) {
++    LIBS += -L$$[QT_INSTALL_PREFIX]/debug/lib
++    LIBS += -lgsld -lgslcblasd
++} else {
++    LIBS += -L$$[QT_INSTALL_PREFIX]/lib
++    LIBS += -lgsl -lgslcblas
++}
++INCLUDEPATH += $$[QT_INSTALL_PREFIX]/include
+ 
+-unix:LIBS += -L/usr/lib$${libsuff} -lgsl -lgslcblas
+-#unix:LIBS += /usr/lib/libgsl.a /usr/lib/libgslcblas.a
+ 
+ SOURCES += fitRational0.cpp
+diff --git a/fitPlugins/fitRational1/fitRational1.pro b/fitPlugins/fitRational1/fitRational1.pro
+index 190c2eece..9a1be1085 100644
+--- a/fitPlugins/fitRational1/fitRational1.pro
++++ b/fitPlugins/fitRational1/fitRational1.pro
+@@ -7,7 +7,7 @@ TEMPLATE          = lib
+ 
+ CONFIG           += thread
+ CONFIG           += warn_on 
+-CONFIG           += release
++# CONFIG           += release
+ CONFIG           += dll 
+ 
+ DESTDIR           = ../
+@@ -17,11 +17,14 @@ INSTALLS += target
+ unix:target.path=/usr/lib$${libsuff}/AlphaPlot/plugins
+ win32: target.path = ../../output/plugins
+ 
+-win32:INCLUDEPATH += ../../3rdparty/gsl/include
+-win32:LIBS        += ../../3rdparty/gsl/lib/libgsl.a
+-win32:LIBS        += ../../3rdparty/gsl/lib/libgslcblas.a
++contains(CONFIG, debug) {
++    LIBS += -L$$[QT_INSTALL_PREFIX]/debug/lib
++    LIBS += -lgsld -lgslcblasd
++} else {
++    LIBS += -L$$[QT_INSTALL_PREFIX]/lib
++    LIBS += -lgsl -lgslcblas
++}
++INCLUDEPATH += $$[QT_INSTALL_PREFIX]/include
+ 
+-unix:LIBS += -L/usr/lib$${libsuff} -lgsl -lgslcblas
+-#unix:LIBS += /usr/lib/libgsl.a /usr/lib/libgslcblas.a
+ 
+ SOURCES += fitRational1.cpp
+diff --git a/fitPlugins/planck_wavelength/planck_wavelength.pro b/fitPlugins/planck_wavelength/planck_wavelength.pro
+index d4e59b7e9..e46fbf0ed 100644
+--- a/fitPlugins/planck_wavelength/planck_wavelength.pro
++++ b/fitPlugins/planck_wavelength/planck_wavelength.pro
+@@ -6,19 +6,22 @@ TARGET = planck_wavelength
+ TEMPLATE = lib
+ CONFIG += dll
+ CONFIG -= qt
+-CONFIG += release
++# CONFIG += release
+ DESTDIR = ../
+ 
+ INSTALLS += target
+ unix:  target.path = /usr/lib$${libsuff}/AlphaPlot/plugins
+ win32: target.path = ../../output/plugins
+ 
+-win32:INCLUDEPATH += ../../3rdparty/gsl/include
+-win32:LIBS        += ../../3rdparty/gsl/lib/libgsl.a
+-win32:LIBS        += ../../3rdparty/gsl/lib/libgslcblas.a
++contains(CONFIG, debug) {
++    LIBS += -L$$[QT_INSTALL_PREFIX]/debug/lib
++    LIBS += -lgsld -lgslcblasd
++} else {
++    LIBS += -L$$[QT_INSTALL_PREFIX]/lib
++    LIBS += -lgsl -lgslcblas
++}
++INCLUDEPATH += $$[QT_INSTALL_PREFIX]/include
+ 
+-unix:LIBS += -L/usr/lib$${libsuff} -lgsl -lgslcblas
+-#unix:LIBS += /usr/lib/libgsl.a /usr/lib/libgslcblas.a
+ 
+ SOURCES = planck_wavelength.c
+ 

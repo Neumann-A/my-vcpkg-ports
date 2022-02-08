@@ -1,0 +1,877 @@
+diff --git a/alphaplot/src/2Dplot/widgets/Function2DDialog.cpp b/alphaplot/src/2Dplot/widgets/Function2DDialog.cpp
+index 2af25bf29..9fe4acfcd 100644
+--- a/alphaplot/src/2Dplot/widgets/Function2DDialog.cpp
++++ b/alphaplot/src/2Dplot/widgets/Function2DDialog.cpp
+@@ -98,21 +98,21 @@ bool Function2DDialog::acceptFunction() {
+   double start, end;
+   try {
+     MyParser parser;
+-    parser.SetExpr(from.toUtf8().constData());
++    parser.SetExpr(from.toStdWString().data());
+     start = parser.Eval();
+   } catch (mu::ParserError &error) {
+     QMessageBox::critical(nullptr, tr("Start limit error"),
+-                          QString::fromStdString(error.GetMsg()));
++                          QString::fromStdWString(error.GetMsg()));
+     ui_->normfromxLineEdit->setFocus();
+     return false;
+   }
+   try {
+     MyParser parser;
+-    parser.SetExpr(to.toUtf8().constData());
++    parser.SetExpr(to.toStdWString().data());
+     end = parser.Eval();
+   } catch (mu::ParserError &error) {
+     QMessageBox::critical(nullptr, tr("End limit error"),
+-                          QString::fromStdString(error.GetMsg()));
++                          QString::fromStdWString(error.GetMsg()));
+     ui_->normtoxLineEdit->setFocus();
+     return false;
+   }
+@@ -170,22 +170,22 @@ bool Function2DDialog::acceptParametric() {
+   double start, end;
+   try {
+     MyParser parser;
+-    parser.SetExpr(from.toUtf8().constData());
++    parser.SetExpr(from.toStdWString().data());
+     start = parser.Eval();
+   } catch (mu::ParserError &error) {
+     QMessageBox::critical(nullptr, tr("Start limit error"),
+-                          QString::fromStdString(error.GetMsg()));
++                          QString::fromStdWString(error.GetMsg()));
+     ui_->paramfromLineEdit->setFocus();
+     return false;
+   }
+ 
+   try {
+     MyParser parser;
+-    parser.SetExpr(to.toUtf8().constData());
++    parser.SetExpr(to.toStdWString().data());
+     end = parser.Eval();
+   } catch (mu::ParserError &error) {
+     QMessageBox::critical(nullptr, tr("End limit error"),
+-                          QString::fromStdString(error.GetMsg()));
++                          QString::fromStdWString(error.GetMsg()));
+     ui_->paramtoLineEdit->setFocus();
+     return false;
+   }
+diff --git a/alphaplot/src/3Dplot/SurfaceDialog.cpp b/alphaplot/src/3Dplot/SurfaceDialog.cpp
+index 6e4de2a96..d2f99d2d0 100644
+--- a/alphaplot/src/3Dplot/SurfaceDialog.cpp
++++ b/alphaplot/src/3Dplot/SurfaceDialog.cpp
+@@ -156,62 +156,62 @@ void SurfaceDialog::accept() {
+   double fromX, toX, fromY, toY, fromZ, toZ;
+   try {
+     MyParser parser;
+-    parser.SetExpr(Xfrom.toUtf8().constData());
++    parser.SetExpr(Xfrom.toStdWString().data());
+     fromX = parser.Eval();
+   } catch (mu::ParserError &e) {
+     QMessageBox::critical(nullptr, tr("X Start limit error"),
+-                          QString::fromStdString(e.GetMsg()));
++                          QString::fromStdWString(e.GetMsg()));
+     boxXFrom->setFocus();
+     return;
+   }
+   try {
+     MyParser parser;
+-    parser.SetExpr(Xto.toUtf8().constData());
++    parser.SetExpr(Xto.toStdWString().data());
+     toX = parser.Eval();
+   } catch (mu::ParserError &e) {
+     QMessageBox::critical(nullptr, tr("X End limit error"),
+-                          QString::fromStdString(e.GetMsg()));
++                          QString::fromStdWString(e.GetMsg()));
+     boxXTo->setFocus();
+     return;
+   }
+ 
+   try {
+     MyParser parser;
+-    parser.SetExpr(Yfrom.toUtf8().constData());
++    parser.SetExpr(Yfrom.toStdWString().data());
+     fromY = parser.Eval();
+   } catch (mu::ParserError &e) {
+     QMessageBox::critical(nullptr, tr("Y Start limit error"),
+-                          QString::fromStdString(e.GetMsg()));
++                          QString::fromStdWString(e.GetMsg()));
+     boxYFrom->setFocus();
+     return;
+   }
+   try {
+     MyParser parser;
+-    parser.SetExpr(Yto.toUtf8().constData());
++    parser.SetExpr(Yto.toStdWString().data());
+     toY = parser.Eval();
+   } catch (mu::ParserError &e) {
+     QMessageBox::critical(nullptr, tr("Y End limit error"),
+-                          QString::fromStdString(e.GetMsg()));
++                          QString::fromStdWString(e.GetMsg()));
+     boxYTo->setFocus();
+     return;
+   }
+   try {
+     MyParser parser;
+-    parser.SetExpr(Zfrom.toUtf8().constData());
++    parser.SetExpr(Zfrom.toStdWString().data());
+     fromZ = parser.Eval();
+   } catch (mu::ParserError &e) {
+     QMessageBox::critical(nullptr, tr("Z Start limit error"),
+-                          QString::fromStdString(e.GetMsg()));
++                          QString::fromStdWString(e.GetMsg()));
+     boxZFrom->setFocus();
+     return;
+   }
+   try {
+     MyParser parser;
+-    parser.SetExpr(Zto.toUtf8().constData());
++    parser.SetExpr(Zto.toStdWString().data());
+     toZ = parser.Eval();
+   } catch (mu::ParserError &e) {
+     QMessageBox::critical(nullptr, tr("Z End limit error"),
+-                          QString::fromStdString(e.GetMsg()));
++                          QString::fromStdWString(e.GetMsg()));
+     boxZTo->setFocus();
+     return;
+   }
+@@ -228,9 +228,9 @@ void SurfaceDialog::accept() {
+   bool error = false;
+   try {
+     MyParser parser;
+-    parser.DefineVar("x", &x);
+-    parser.DefineVar("y", &y);
+-    parser.SetExpr(formula.toUtf8().constData());
++    parser.DefineVar(L"x", &x);
++    parser.DefineVar(L"y", &y);
++    parser.SetExpr(formula.toStdWString().data());
+ 
+     x = fromX;
+     y = fromY;
+@@ -240,7 +240,7 @@ void SurfaceDialog::accept() {
+     parser.Eval();
+   } catch (mu::ParserError &e) {
+     QMessageBox::critical(nullptr, tr("Input function error"),
+-                          QString::fromStdString(e.GetMsg()));
++                          QString::fromStdWString(e.GetMsg()));
+     boxFunction->setFocus();
+     error = true;
+   }
+diff --git a/alphaplot/src/analysis/FFTDialog.cpp b/alphaplot/src/analysis/FFTDialog.cpp
+index 0afd87cbf..fda57fab2 100644
+--- a/alphaplot/src/analysis/FFTDialog.cpp
++++ b/alphaplot/src/analysis/FFTDialog.cpp
+@@ -128,11 +128,11 @@ void FFTDialog::accept() {
+   double sampling;
+   try {
+     MyParser parser;
+-    parser.SetExpr(boxSampling->text().toUtf8().constData());
++    parser.SetExpr(boxSampling->text().toStdWString().data());
+     sampling = parser.Eval();
+   } catch (mu::ParserError &e) {
+     QMessageBox::critical(this, tr("Sampling value error"),
+-                          QString::fromStdString(e.GetMsg()));
++                          QString::fromStdWString(e.GetMsg()));
+     boxSampling->setFocus();
+     return;
+   }
+diff --git a/alphaplot/src/analysis/FilterDialog.cpp b/alphaplot/src/analysis/FilterDialog.cpp
+index 9761b2bb5..9f05247b1 100644
+--- a/alphaplot/src/analysis/FilterDialog.cpp
++++ b/alphaplot/src/analysis/FilterDialog.cpp
+@@ -110,11 +110,11 @@ void FilterDialog::filter() {
+   double from = 0.0, to = 0.0;
+   try {
+     MyParser parser;
+-    parser.SetExpr(boxStart->text().replace(",", ".").toUtf8().constData());
++    parser.SetExpr(boxStart->text().replace(",", ".").toStdWString().data());
+     from = parser.Eval();
+   } catch (mu::ParserError &e) {
+     QMessageBox::critical(this, tr("Frequency input error"),
+-                          QString::fromStdString(e.GetMsg()));
++                          QString::fromStdWString(e.GetMsg()));
+     boxStart->setFocus();
+     return;
+   }
+@@ -129,11 +129,11 @@ void FilterDialog::filter() {
+   if (filter_type >= FFTFilter::BandPass) {
+     try {
+       MyParser parser;
+-      parser.SetExpr(boxEnd->text().replace(",", ".").toStdString());
++      parser.SetExpr(boxEnd->text().replace(",", ".").toStdWString());
+       to = parser.Eval();
+     } catch (mu::ParserError &e) {
+       QMessageBox::critical(this, tr("High Frequency input error"),
+-                            QString::fromStdString(e.GetMsg()));
++                            QString::fromStdWString(e.GetMsg()));
+       boxEnd->setFocus();
+       return;
+     }
+diff --git a/alphaplot/src/analysis/FitDialog.cpp b/alphaplot/src/analysis/FitDialog.cpp
+index 930d47e7e..5816946c0 100644
+--- a/alphaplot/src/analysis/FitDialog.cpp
++++ b/alphaplot/src/analysis/FitDialog.cpp
+@@ -1017,22 +1018,22 @@ void FitDialog::accept() {
+   double start, end, eps;
+   try {
+     MyParser parser;
+-    parser.SetExpr(CONFS(from).toUtf8().constData());
++    parser.SetExpr(CONFS(from).toStdWString().data());
+     start = parser.Eval();
+   } catch (mu::ParserError &e) {
+     QMessageBox::critical(this, tr("Start limit error"),
+-                          QString::fromStdString(e.GetMsg()));
++                          QString::fromStdWString(e.GetMsg()));
+     boxFrom->setFocus();
+     return;
+   }
+ 
+   try {
+     MyParser parser;
+-    parser.SetExpr(CONFS(to).toUtf8().constData());
++    parser.SetExpr(CONFS(to).toStdWString().data());
+     end = parser.Eval();
+   } catch (mu::ParserError &e) {
+     QMessageBox::critical(this, tr("End limit error"),
+-                          QString::fromStdString(e.GetMsg()));
++                          QString::fromStdWString(e.GetMsg()));
+     boxTo->setFocus();
+     return;
+   }
+@@ -1047,11 +1048,11 @@ void FitDialog::accept() {
+ 
+   try {
+     MyParser parser;
+-    parser.SetExpr(CONFS(tolerance).toUtf8().constData());
++    parser.SetExpr(CONFS(tolerance).toStdWString().data());
+     eps = parser.Eval();
+   } catch (mu::ParserError &e) {
+     QMessageBox::critical(0, tr("Tolerance input error"),
+-                          QString::fromStdString(e.GetMsg()));
++                          QString::fromStdWString(e.GetMsg()));
+     boxTolerance->setFocus();
+     return;
+   }
+@@ -1237,11 +1238,11 @@ bool FitDialog::validInitialValues() {
+ 
+     try {
+       MyParser parser;
+-      parser.SetExpr(CONFS(boxParams->item(i, 1)->text()).toUtf8().constData());
++      parser.SetExpr(CONFS(boxParams->item(i, 1)->text()).toStdWString().data());
+       parser.Eval();
+     } catch (mu::ParserError &e) {
+       QMessageBox::critical(app_, tr("Start limit error"),
+-                            QString::fromStdString(e.GetMsg()));
++                            QString::fromStdWString(e.GetMsg()));
+       boxParams->setCurrentCell(i, 1);
+       return false;
+     }
+diff --git a/alphaplot/src/analysis/IntDialog.cpp b/alphaplot/src/analysis/IntDialog.cpp
+index 4c563c9ce..fb31a4621 100644
+--- a/alphaplot/src/analysis/IntDialog.cpp
++++ b/alphaplot/src/analysis/IntDialog.cpp
+@@ -128,7 +128,7 @@ void IntDialog::accept() {
+   } else {
+     try {
+       MyParser parser;
+-      parser.SetExpr((boxStart->text()).toUtf8().constData());
++      parser.SetExpr((boxStart->text()).toStdWString().data());
+       start = parser.Eval();
+       start = boxStart->text().toDouble();
+ 
+@@ -154,7 +154,7 @@ void IntDialog::accept() {
+       }
+     } catch (mu::ParserError &e) {
+       QMessageBox::critical(app_, tr("Start limit error"),
+-                            QString::fromStdString(e.GetMsg()));
++                            QString::fromStdWString(e.GetMsg()));
+       boxStart->clear();
+       boxStart->setFocus();
+       return;
+@@ -172,7 +172,7 @@ void IntDialog::accept() {
+   } else {
+     try {
+       MyParser parser;
+-      parser.SetExpr((boxEnd->text()).toUtf8().constData());
++      parser.SetExpr((boxEnd->text()).toStdWString().data());
+       stop = parser.Eval();
+       stop = boxEnd->text().toDouble();
+       if (stop > maxx) {
+@@ -200,7 +200,7 @@ void IntDialog::accept() {
+       }
+     } catch (mu::ParserError &e) {
+       QMessageBox::critical(app_, tr("End limit error"),
+-                            QString::fromStdString(e.GetMsg()));
++                            QString::fromStdWString(e.GetMsg()));
+       boxEnd->clear();
+       boxEnd->setFocus();
+       return;
+diff --git a/alphaplot/src/analysis/InterpolationDialog.cpp b/alphaplot/src/analysis/InterpolationDialog.cpp
+index 5ee907dbd..cba5fd3ed 100644
+--- a/alphaplot/src/analysis/InterpolationDialog.cpp
++++ b/alphaplot/src/analysis/InterpolationDialog.cpp
+@@ -132,22 +132,22 @@ void InterpolationDialog::interpolate() {
+   double from, to;
+   try {
+     MyParser parser;
+-    parser.SetExpr(boxStart->text().replace(",", ".").toUtf8().constData());
++    parser.SetExpr(boxStart->text().replace(",", ".").toStdWString().data());
+     from = parser.Eval();
+   } catch (mu::ParserError &e) {
+     QMessageBox::critical(this, tr("Start limit error"),
+-                          QString::fromStdString(e.GetMsg()));
++                          QString::fromStdWString(e.GetMsg()));
+     boxStart->setFocus();
+     return;
+   }
+ 
+   try {
+     MyParser parser;
+-    parser.SetExpr(boxEnd->text().replace(",", ".").toUtf8().constData());
++    parser.SetExpr(boxEnd->text().replace(",", ".").toStdWString().data());
+     to = parser.Eval();
+   } catch (mu::ParserError &e) {
+     QMessageBox::critical(this, tr("End limit error"),
+-                          QString::fromStdString(e.GetMsg()));
++                          QString::fromStdWString(e.GetMsg()));
+     boxEnd->setFocus();
+     return;
+   }
+diff --git a/alphaplot/src/scripting/MuParserScript.cpp b/alphaplot/src/scripting/MuParserScript.cpp
+index 0ca979cd0..9de67e8d1 100644
+--- a/alphaplot/src/scripting/MuParserScript.cpp
++++ b/alphaplot/src/scripting/MuParserScript.cpp
+@@ -194,9 +194,9 @@ MuParserScript::MuParserScript(ScriptingEnv *environment, const QString &code,
+   m_parser.SetVarFactory(variableFactory, this);
+ 
+   // redefine characters for operators to include ";"
+-  static const char opChars[] =
++  static const wchar_t opChars[] =
+       // standard operator chars as defined in mu::Parser::InitCharSets()
+-      "abcdefghijklmnopqrstuvwxyz"
++      L"abcdefghijklmnopqrstuvwxyz"
+       "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+       "+-*^/?<>=#!$%&|~'_"
+       // our additions
+@@ -209,14 +209,14 @@ MuParserScript::MuParserScript(ScriptingEnv *environment, const QString &code,
+   // statement separation needs lower precedence than everything else;
+   // assignment has precedence
+   // -1, everything else defined in mu::Parser has non-negative precedence
+-  m_parser.DefineOprt(";", statementSeparator, -2);
++  m_parser.DefineOprt(L";", statementSeparator, -2);
+ 
+   // aliases for _pi and _e
+-  m_parser.DefineConst("pi", M_PI);
+-  m_parser.DefineConst("Pi", M_PI);
+-  m_parser.DefineConst("PI", M_PI);
+-  m_parser.DefineConst("e", M_E);
+-  m_parser.DefineConst("E", M_E);
++  m_parser.DefineConst(L"pi", M_PI);
++  m_parser.DefineConst(L"Pi", M_PI);
++  m_parser.DefineConst(L"PI", M_PI);
++  m_parser.DefineConst(L"e", M_E);
++  m_parser.DefineConst(L"E", M_E);
+ 
+   // tell parser about mathematical functions
+   for (const MuParserScripting::mathFunction *i =
+@@ -231,13 +231,13 @@ MuParserScript::MuParserScript(ScriptingEnv *environment, const QString &code,
+ 
+   // tell parser about table/matrix access functions
+   if (Context && Context->inherits("Table")) {
+-    m_parser.DefineFun("column", tableColumnFunction, false);
+-    m_parser.DefineFun("column_", tableColumn_Function, false);
+-    m_parser.DefineFun("column__", tableColumn__Function, false);
+-    m_parser.DefineFun("cell", tableCellFunction);
+-    m_parser.DefineFun("cell_", tableCell_Function);
++    m_parser.DefineFun(L"column", tableColumnFunction, false);
++    m_parser.DefineFun(L"column_", tableColumn_Function, false);
++    m_parser.DefineFun(L"column__", tableColumn__Function, false);
++    m_parser.DefineFun(L"cell", tableCellFunction);
++    m_parser.DefineFun(L"cell_", tableCell_Function);
+   } else if (Context && Context->inherits("Matrix"))
+-    m_parser.DefineFun("cell", matrixCellFunction);
++    m_parser.DefineFun(L"cell", matrixCellFunction);
+ }
+ 
+ /**
+@@ -249,9 +249,9 @@ MuParserScript::MuParserScript(ScriptingEnv *environment, const QString &code,
+  * memory location
+  * is returned to muParser. New variables are initialized with NaN.
+  */
+-double *MuParserScript::variableFactory(const char *name, void *self) {
++double *MuParserScript::variableFactory(const wchar_t *name, void *self) {
+   MuParserScript *me = static_cast<MuParserScript *>(self);
+-  return me->m_variables.insert(QByteArray(name), NAN).operator->();
++  return me->m_variables.insert(QByteArray(QString::fromWCharArray(name).toUtf8()), NAN).operator->();
+ }
+ 
+ /**
+@@ -262,8 +262,8 @@ double *MuParserScript::variableFactory(const char *name, void *self) {
+  *
+  * \sa m_variables
+  */
+-bool MuParserScript::setDouble(double value, const char *name) {
+-  QByteArray baName(name);
++bool MuParserScript::setDouble(double value, const wchar_t *name) {
++  QByteArray baName(QString::fromWCharArray(name).toUtf8());
+   QMap<QByteArray, double>::iterator entry = m_variables.find(baName);
+   if (entry == m_variables.end()) {
+     // variable is not known yet
+@@ -272,7 +272,7 @@ bool MuParserScript::setDouble(double value, const char *name) {
+       m_parser.DefineVar(name, entry.operator->());
+     } catch (mu::ParserError &e) {
+       m_variables.erase(entry);
+-      emit_error(QString::fromLocal8Bit(e.GetMsg().c_str()), 0);
++      emit_error(QString::fromWCharArray(e.GetMsg().c_str(),e.GetMsg().length()), 0);
+       return false;
+     }
+   } else
+@@ -308,9 +308,9 @@ double MuParserScript::statementSeparator(double a, double b) {
+  *
+  * \sa tableCellFunction()
+  */
+-double MuParserScript::tableColumnFunction(const char *columnPath) {
++double MuParserScript::tableColumnFunction(const wchar_t *columnPath) {
+   Column *column =
+-      s_currentInstance->resolveColumnPath(QString::fromUtf8(columnPath));
++      s_currentInstance->resolveColumnPath(QString::fromWCharArray(columnPath));
+   if (!column) return NAN;  // failsafe, shouldn't happen
+   int row = qRound(s_currentInstance->m_variables["i"]) - 1;
+   if (column->isInvalid(row)) throw new EmptySourceError();
+@@ -338,11 +338,11 @@ double MuParserScript::tableColumn_Function(double columnIndex) {
+     // improving the error message would break translations
+     // TODO: change col() to column() for next minor release
+     throw mu::Parser::exception_type(
+-        qPrintable(tr("col() works only on tables!")));
++        qUtf16Printable(tr("col() works only on tables!")));
+   Column *column = thisTable->d_future_table->column(qRound(columnIndex) - 1);
+   if (!column)
+     throw mu::Parser::exception_type(
+-        qPrintable(tr("There's no column %1 in table %2!")
++        qUtf16Printable(tr("There's no column %1 in table %2!")
+                        .arg(qRound(columnIndex))
+                        .arg(thisTable->objectName())));
+   int row = qRound(s_currentInstance->m_variables["i"]) - 1;
+@@ -371,23 +371,23 @@ double MuParserScript::tableColumn_Function(double columnIndex) {
+  * tableCellFunction() for how
+  * to get a specific cell with the column specified by name.
+  */
+-double MuParserScript::tableColumn__Function(const char *tableName,
++double MuParserScript::tableColumn__Function(const wchar_t *tableName,
+                                              double columnIndex) {
+   Table *thisTable = qobject_cast<Table *>(s_currentInstance->Context);
+   if (!thisTable)
+     // improving the error message would break translations
+     // TODO: change tablecol() to column() for next minor release
+     throw mu::Parser::exception_type(
+-        qPrintable(tr("tablecol() works only on tables!")));
++        qUtf16Printable(tr("tablecol() works only on tables!")));
+   Table *targetTable =
+-      thisTable->folder()->rootFolder()->table(tableName, true);
++      thisTable->folder()->rootFolder()->table(QString::fromWCharArray(tableName), true);
+   if (!targetTable)
+     throw mu::Parser::exception_type(
+-        qPrintable(tr("Couldn't find a table named %1.").arg(tableName)));
++        qUtf16Printable(tr("Couldn't find a table named %1.").arg(tableName)));
+   Column *column = targetTable->d_future_table->column(qRound(columnIndex) - 1);
+   if (!column)
+     throw mu::Parser::exception_type(
+-        qPrintable(tr("There's no column %1 in table %2!")
++        qUtf16Printable(tr("There's no column %1 in table %2!")
+                        .arg(qRound(columnIndex))
+                        .arg(tableName)));
+   int row = qRound(s_currentInstance->m_variables["i"]) - 1;
+@@ -404,10 +404,10 @@ double MuParserScript::tableColumn__Function(const char *tableName,
+  *
+  * \sa tableColumnFunction()
+  */
+-double MuParserScript::tableCellFunction(const char *columnPath,
++double MuParserScript::tableCellFunction(const wchar_t *columnPath,
+                                          double rowIndex) {
+   Column *column =
+-      s_currentInstance->resolveColumnPath(QString::fromUtf8(columnPath));
++      s_currentInstance->resolveColumnPath(QString::fromWCharArray(columnPath));
+   if (!column) return NAN;  // failsafe, shouldn't happen
+   int row = qRound(rowIndex) - 1;
+   if (column->isInvalid(row)) throw new EmptySourceError();
+@@ -430,11 +430,11 @@ double MuParserScript::tableCell_Function(double columnIndex, double rowIndex) {
+   Table *thisTable = qobject_cast<Table *>(s_currentInstance->Context);
+   if (!thisTable)
+     throw mu::Parser::exception_type(
+-        qPrintable(tr("cell() works only on tables and matrices!")));
++        qUtf16Printable(tr("cell() works only on tables and matrices!")));
+   Column *column = thisTable->d_future_table->column(qRound(columnIndex) - 1);
+   if (!column)
+     throw mu::Parser::exception_type(
+-        qPrintable(tr("There's no column %1 in table %2!")
++        qUtf16Printable(tr("There's no column %1 in table %2!")
+                        .arg(qRound(columnIndex))
+                        .arg(thisTable->objectName())));
+   int row = qRound(rowIndex) - 1;
+@@ -452,17 +452,17 @@ double MuParserScript::matrixCellFunction(double rowIndex, double columnIndex) {
+   Matrix *thisMatrix = qobject_cast<Matrix *>(s_currentInstance->Context);
+   if (!thisMatrix)
+     throw mu::Parser::exception_type(
+-        qPrintable(tr("cell() works only on tables and matrices!")));
++        qUtf16Printable(tr("cell() works only on tables and matrices!")));
+   int row = qRound(rowIndex) - 1;
+   int column = qRound(columnIndex) - 1;
+   if (row < 0 || row >= thisMatrix->numRows())
+     throw mu::Parser::exception_type(
+-        qPrintable(tr("There's no row %1 in matrix %2!")
++        qUtf16Printable(tr("There's no row %1 in matrix %2!")
+                        .arg(qRound(rowIndex))
+                        .arg(thisMatrix->objectName())));
+   if (column < 0 || column >= thisMatrix->numCols())
+     throw mu::Parser::exception_type(
+-        qPrintable(tr("There's no column %1 in matrix %2!")
++        qUtf16Printable(tr("There's no column %1 in matrix %2!")
+                        .arg(qRound(columnIndex))
+                        .arg(thisMatrix->objectName())));
+   return thisMatrix->cell(row, column);
+@@ -516,13 +516,13 @@ Column *MuParserScript::resolveColumnPath(const QString &path) {
+     // only column name specified, read from this table
+     table = qobject_cast<Table *>(Context);
+     if (!table)
+-      throw mu::Parser::exception_type(qPrintable(tr(
++      throw mu::Parser::exception_type(qUtf16Printable(tr(
+           "Accessing table values is not (yet) supported in this context.")));
+   } else {
+     // look up the table containing the column
+     MyWidget *myContext = qobject_cast<MyWidget *>(Context);
+     if (!myContext)
+-      throw mu::Parser::exception_type(qPrintable(tr(
++      throw mu::Parser::exception_type(qUtf16Printable(tr(
+           "Accessing table values is not (yet) supported in this context.")));
+     QString tableName = pathComponents.takeLast();
+     if (pathComponents.isEmpty())
+@@ -541,7 +541,7 @@ Column *MuParserScript::resolveColumnPath(const QString &path) {
+       else
+         // invalid path
+         throw mu::Parser::exception_type(
+-            qPrintable(tr("Couldn't find a table named %1.")
++            qUtf16Printable(tr("Couldn't find a table named %1.")
+                            .arg(pathComponents.join("/") + "/" + tableName)));
+       pathComponents.removeFirst();
+       foreach (QString f, pathComponents) {
+@@ -551,14 +551,14 @@ Column *MuParserScript::resolveColumnPath(const QString &path) {
+           folder = folder->findSubfolder(f);
+         if (!folder)
+           throw mu::Parser::exception_type(
+-              qPrintable(tr("Couldn't find a table named %1.")
++              qUtf16Printable(tr("Couldn't find a table named %1.")
+                              .arg(pathComponents.join("/") + "/" + tableName)));
+       }
+       table = folder->table(tableName);
+     }
+     if (!table)
+       throw mu::Parser::exception_type(
+-          qPrintable(tr("Couldn't find a table named %1.")
++          qUtf16Printable(tr("Couldn't find a table named %1.")
+                          .arg(pathComponents.join("/") + "/" + tableName)));
+   }
+ 
+@@ -566,7 +566,7 @@ Column *MuParserScript::resolveColumnPath(const QString &path) {
+   result = table->d_future_table->column(columnName, false);
+   if (!result)
+     throw mu::Parser::exception_type(
+-        qPrintable(tr("There's no column named %1 in table %2!")
++        qUtf16Printable(tr("There's no column named %1 in table %2!")
+                        .arg(columnName)
+                        .arg(table->d_future_table->path())));
+ 
+@@ -788,8 +790,8 @@ bool MuParserScript::compile(bool asFunction) {
+     if (!translateLegacyFunctions(intermediate)) return false;
+ 
+   try {
+-    m_parser.SetExpr(qPrintable(intermediate));
++    m_parser.SetExpr(qUtf16Printable(intermediate));
+   } catch (mu::ParserError &e) {
+-    emit_error(QString::fromLocal8Bit(e.GetMsg().c_str()), 0);
++    emit_error(QString::fromWCharArray(e.GetMsg().c_str(),e.GetMsg().length()), 0);
+     return false;
+   }
+ 
+@@ -815,7 +817,7 @@ QVariant MuParserScript::eval() {
+     // formula tried to access a table cell marked as invalid
+     return "";
+   } catch (mu::ParserError &e) {
+-    emit_error(QString::fromLocal8Bit(e.GetMsg().c_str()), 0);
++    emit_error(QString::fromWCharArray(e.GetMsg().c_str(),e.GetMsg().length()), 0);
+     return QVariant();
+   }
+ }
+diff --git a/alphaplot/src/scripting/MuParserScript.h b/alphaplot/src/scripting/MuParserScript.h
+index fbcd756bd..2fdc3f72a 100644
+--- a/alphaplot/src/scripting/MuParserScript.h
++++ b/alphaplot/src/scripting/MuParserScript.h
+@@ -53,19 +53,19 @@ class MuParserScript : public Script {
+     Q_UNUSED(name);
+     return false;
+   }
+-  bool setDouble(double value, const char *name);
+-  bool setInt(int value, const char *name) {
++  bool setDouble(double value, const wchar_t *name);
++  bool setInt(int value, const wchar_t *name) {
+     return setDouble(static_cast<double>(value), name);
+   }
+ 
+  private:
+-  static double *variableFactory(const char *name, void *self);
++  static double *variableFactory(const wchar_t *name, void *self);
+   static double statementSeparator(double a, double b);
+-  static double tableColumnFunction(const char *columnPath);
++  static double tableColumnFunction(const wchar_t *columnPath);
+   static double tableColumn_Function(double columnIndex);
+-  static double tableColumn__Function(const char *tableName,
++  static double tableColumn__Function(const wchar_t *tableName,
+                                       double columnIndex);
+-  static double tableCellFunction(const char *columnPath, double rowIndex);
++  static double tableCellFunction(const wchar_t *columnPath, double rowIndex);
+   static double tableCell_Function(double columnIndex, double rowIndex);
+   static double matrixCellFunction(double rowIndex, double columnIndex);
+ 
+diff --git a/alphaplot/src/scripting/MuParserScripting.cpp b/alphaplot/src/scripting/MuParserScripting.cpp
+index 68268ba36..ab25d97d0 100644
+--- a/alphaplot/src/scripting/MuParserScripting.cpp
++++ b/alphaplot/src/scripting/MuParserScripting.cpp
+@@ -45,117 +45,117 @@ const char *MuParserScripting::langName = "muParser";
+ // implemented
+ // in mu::Parser
+ const MuParserScripting::mathFunction MuParserScripting::math_functions[] = {
+-    {"abs", 1, NULL, NULL, NULL, QT_TR_NOOP("abs(x):\n Absolute value of x.")},
+-    {"acos", 1, NULL, NULL, NULL,
++    {L"abs", 1, NULL, NULL, NULL, QT_TR_NOOP("abs(x):\n Absolute value of x.")},
++    {L"acos", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("acos(x):\n Inverse cos function.")},
+-    {"acosh", 1, NULL, NULL, NULL,
++    {L"acosh", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("acosh(x):\n Hyperbolic inverse cos function.")},
+-    {"asin", 1, NULL, NULL, NULL,
++    {L"asin", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("asin(x):\n Inverse sin function.")},
+-    {"asinh", 1, NULL, NULL, NULL,
++    {L"asinh", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("asinh(x):\n Hyperbolic inverse sin function.")},
+-    {"atan", 1, NULL, NULL, NULL,
++    {L"atan", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("atan(x):\n Inverse tan function.")},
+-    {"atanh", 1, NULL, NULL, NULL,
++    {L"atanh", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("atanh(x):\n  Hyperbolic inverse tan function.")},
+-    {"avg", -1, NULL, NULL, NULL,
++    {L"avg", -1, NULL, NULL, NULL,
+      QT_TR_NOOP("avg(x,y,...):\n  Mean value of all arguments.")},
+-    {"bessel_j0", 1, bessel_J0, NULL, NULL,
++    {L"bessel_j0", 1, bessel_J0, NULL, NULL,
+      QT_TR_NOOP("bessel_j0(x):\n  Regular cylindrical Bessel function of "
+                 "zeroth order, J_0(x).")},
+-    {"bessel_j1", 1, bessel_J1, NULL, NULL,
++    {L"bessel_j1", 1, bessel_J1, NULL, NULL,
+      QT_TR_NOOP("bessel_j1(x):\n  Regular cylindrical Bessel function of first "
+                 "order, J_1(x).")},
+-    {"bessel_jn", 2, NULL, bessel_Jn, NULL,
++    {L"bessel_jn", 2, NULL, bessel_Jn, NULL,
+      QT_TR_NOOP("bessel_jn(double x, int n):\n Regular cylindrical Bessel "
+                 "function of order n, J_n(x).")},
+-    {"bessel_jn_zero", 2, NULL, bessel_Jn_zero, NULL,
++    {L"bessel_jn_zero", 2, NULL, bessel_Jn_zero, NULL,
+      QT_TR_NOOP("bessel_jn_zero(double n, unsigned int s):\n s-th positive "
+                 "zero x_s of regular cylindrical Bessel function of order n, "
+                 "J_n(x_s)=0")},
+-    {"bessel_y0", 1, bessel_Y0, NULL, NULL,
++    {L"bessel_y0", 1, bessel_Y0, NULL, NULL,
+      QT_TR_NOOP("bessel_y0(x):\n Irregular cylindrical Bessel function of "
+                 "zeroth order, Y_0(x), for x>0.")},
+-    {"bessel_y1", 1, bessel_Y1, NULL, NULL,
++    {L"bessel_y1", 1, bessel_Y1, NULL, NULL,
+      QT_TR_NOOP("bessel_y1(x):\n Irregular cylindrical Bessel function of "
+                 "first order, Y_1(x), for x>0.")},
+-    {"bessel_yn", 2, NULL, bessel_Yn, NULL,
++    {L"bessel_yn", 2, NULL, bessel_Yn, NULL,
+      QT_TR_NOOP("bessel_yn(double x, int n):\n Irregular cylindrical Bessel "
+                 "function of order n, Y_n(x), for x>0.")},
+-    {"beta", 2, NULL, beta, NULL,
++    {L"beta", 2, NULL, beta, NULL,
+      QT_TR_NOOP("beta(a,b):\n Computes the Beta Function, B(a,b) = "
+                 "Gamma(a)*Gamma(b)/Gamma(a+b) for a > 0, b > 0.")},
+-    {"ceil", 1, ceil, NULL, NULL,
++    {L"ceil", 1, ceil, NULL, NULL,
+      QT_TR_NOOP("ceil(x):\n Round to the next larger integer,\n smallest "
+                 "integer larger or equal to x.")},
+-    {"cos", 1, NULL, NULL, NULL, QT_TR_NOOP("cos(x):\n Calculate cosine.")},
+-    {"cosh", 1, NULL, NULL, NULL,
++    {L"cos", 1, NULL, NULL, NULL, QT_TR_NOOP("cos(x):\n Calculate cosine.")},
++    {L"cosh", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("cosh(x):\n Hyperbolic cos function.")},
+-    {"erf", 1, erf, NULL, NULL, QT_TR_NOOP("erf(x):\n  The error function.")},
+-    {"erfc", 1, erfc, NULL, NULL,
++    {L"erf", 1, erf, NULL, NULL, QT_TR_NOOP("erf(x):\n  The error function.")},
++    {L"erfc", 1, erfc, NULL, NULL,
+      QT_TR_NOOP(
+          "erfc(x):\n Complementary error function erfc(x) = 1 - erf(x).")},
+-    {"erfz", 1, erf_Z, NULL, NULL,
++    {L"erfz", 1, erf_Z, NULL, NULL,
+      QT_TR_NOOP("erfz(x):\n The Gaussian probability density function Z(x).")},
+-    {"erfq", 1, erf_Q, NULL, NULL,
++    {L"erfq", 1, erf_Q, NULL, NULL,
+      QT_TR_NOOP("erfq(x):\n The upper tail of the Gaussian probability "
+                 "function Q(x).")},
+-    {"exp", 1, NULL, NULL, NULL,
++    {L"exp", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("exp(x):\n Exponential function: e raised to the power of x.")},
+-    {"floor", 1, floor, NULL, NULL,
++    {L"floor", 1, floor, NULL, NULL,
+      QT_TR_NOOP("floor(x):\n Round to the next smaller integer,\n largest "
+                 "integer smaller or equal to x.")},
+-    {"gamma", 1, gamma, NULL, NULL,
++    {L"gamma", 1, gamma, NULL, NULL,
+      QT_TR_NOOP("gamma(x):\n Computes the Gamma function, subject to x not "
+                 "being a negative integer.")},
+-    {"gammaln", 1, lngamma, NULL, NULL,
++    {L"gammaln", 1, lngamma, NULL, NULL,
+      QT_TR_NOOP("gammaln(x):\n Computes the logarithm of the Gamma function, "
+                 "subject to x not a being negative integer. For x<0, "
+                 "log(|Gamma(x)|) is returned.")},
+-    {"hazard", 1, hazard, NULL, NULL,
++    {L"hazard", 1, hazard, NULL, NULL,
+      QT_TR_NOOP("hazard(x):\n Computes the hazard function for the normal "
+                 "distribution h(x) = erfz(x)/erfq(x).")},
+-    {"if", 3, NULL, NULL, NULL,
++    {L"if", 3, NULL, NULL, NULL,
+      QT_TR_NOOP("if(e1, e2, e3):\n if e1 then e2 else e3.")},
+-    {"ln", 1, NULL, NULL, NULL,
++    {L"ln", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("ln(x):\n Calculate natural logarithm log_e.")},
+-    {"log", 1, NULL, NULL, NULL,
++    {L"log", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("log(x):\n Calculate decimal logarithm log_10.")},
+-    {"log10", 1, NULL, NULL, NULL,
++    {L"log10", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("log10(x):\n Calculate decimal logarithm log_10.")},
+-    {"log2", 1, NULL, NULL, NULL,
++    {L"log2", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("log2(x):\n Calculate binary logarithm log_2.")},
+-    {"min", -1, NULL, NULL, NULL,
++    {L"min", -1, NULL, NULL, NULL,
+      QT_TR_NOOP("min(x,y,...):\n Calculate minimum of all arguments.")},
+-    {"max", -1, NULL, NULL, NULL,
++    {L"max", -1, NULL, NULL, NULL,
+      QT_TR_NOOP("max(x,y,...):\n Calculate maximum of all arguments.")},
+-    {"mod", 2, NULL, mod, NULL,
++    {L"mod", 2, NULL, mod, NULL,
+      QT_TR_NOOP(
+          "mod(x,y):\n Calculate rest of integer division x/y,\n x modulo y.")},
+-    {"pow", 2, NULL, mypow, NULL,
++    {L"pow", 2, NULL, mypow, NULL,
+      QT_TR_NOOP("pow(x,y):\n Raise x to the power of y, x^y.")},
+-    {"rint", 1, NULL, NULL, NULL,
++    {L"rint", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("rint(x):\n Round to nearest integer.")},
+-    {"sign", 1, NULL, NULL, NULL,
++    {L"sign", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("sign(x):\n Sign function: -1 if x<0; 1 if x>0.")},
+-    {"sin", 1, NULL, NULL, NULL, QT_TR_NOOP("sin(x):\n Calculate sine.")},
+-    {"sinh", 1, NULL, NULL, NULL,
++    {L"sin", 1, NULL, NULL, NULL, QT_TR_NOOP("sin(x):\n Calculate sine.")},
++    {L"sinh", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("sinh(x):\n Hyperbolic sin function.")},
+-    {"sqrt", 1, NULL, NULL, NULL,
++    {L"sqrt", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("sqrt(x):\n Square root function.")},
+-    {"sum", -1, NULL, NULL, NULL,
++    {L"sum", -1, NULL, NULL, NULL,
+      QT_TR_NOOP("sum(x,y,...):\n Calculate sum of all arguments.")},
+-    {"tan", 1, NULL, NULL, NULL,
++    {L"tan", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("tan(x):\n Calculate tangent function.")},
+-    {"tanh", 1, NULL, NULL, NULL,
++    {L"tanh", 1, NULL, NULL, NULL,
+      QT_TR_NOOP("tanh(x):\n Hyperbolic tan function.")},
+-    {"w0", 1, lambert_W0, NULL, NULL,
++    {L"w0", 1, lambert_W0, NULL, NULL,
+      QT_TR_NOOP("w0(x):\n Compute the principal branch of Lambert's W "
+                 "function, W_0(x).\n W is defined as a solution to the "
+                 "equation W(x)*exp(W(x))=x.\n For x<0, there are two "
+                 "real-valued branches; this function computes the one where "
+                 "W>-1 for x<0 (also see wm1(x)).")},
+-    {"wm1", 1, lambert_Wm1, NULL, NULL,
++    {L"wm1", 1, lambert_Wm1, NULL, NULL,
+      QT_TR_NOOP("wm1(x):\n Compute the secondary branch of Lambert's W "
+                 "function, W_{-1}(x).\n W is defined as a solution to the "
+                 "equation W(x)*exp(W(x))=x.\n For x<0, there are two "
+@@ -165,12 +165,12 @@ const MuParserScripting::mathFunction MuParserScripting::math_functions[] = {
+ 
+ const QStringList MuParserScripting::mathFunctions() const {
+   QStringList l;
+-  for (const mathFunction *i = math_functions; i->name; i++) l << i->name;
++  for (const mathFunction *i = math_functions; i->name; i++) l << QString::fromWCharArray(i->name);
+   return l;
+ }
+ 
+ const QString MuParserScripting::mathFunctionDoc(const QString &name) const {
+   for (const mathFunction *i = math_functions; i->name; i++)
+-    if (name == i->name) return i->description;
+-  return QString::null;
++    if (name == QString::fromWCharArray(i->name)) return i->description;
++  return QString();
+ }
+diff --git a/alphaplot/src/scripting/MuParserScripting.h b/alphaplot/src/scripting/MuParserScripting.h
+index 56f8a8ae6..b5c3bce29 100644
+--- a/alphaplot/src/scripting/MuParserScripting.h
++++ b/alphaplot/src/scripting/MuParserScripting.h
+@@ -72,7 +72,7 @@ class MuParserScripting : public ScriptingEnv {
+   const QString mathFunctionDoc(const QString &name) const;
+ 
+   struct mathFunction {
+-    const char *name;
++    const wchar_t *name;
+     int numargs;
+     double (*fun1)(double);
+     double (*fun2)(double, double);
+diff --git a/alphaplot/src/scripting/MyParser.cpp b/alphaplot/src/scripting/MyParser.cpp
+index 4a98bd8da..7ac793df7 100644
+--- a/alphaplot/src/scripting/MyParser.cpp
++++ b/alphaplot/src/scripting/MyParser.cpp
+@@ -28,25 +28,25 @@
+  ***************************************************************************/
+ #include "MyParser.h"
+ 
+ MyParser::MyParser() : Parser() {
+-  DefineConst("pi", M_PI);
+-  DefineConst("Pi", M_PI);
+-  DefineConst("PI", M_PI);
++  DefineConst(L"pi", M_PI);
++  DefineConst(L"Pi", M_PI);
++  DefineConst(L"PI", M_PI);
+ 
+-  DefineFun("bessel_j0", bessel_J0);
+-  DefineFun("bessel_j1", bessel_J1);
+-  DefineFun("bessel_jn", bessel_Jn);
+-  DefineFun("bessel_y0", bessel_Y0);
+-  DefineFun("bessel_y1", bessel_Y1);
+-  DefineFun("bessel_yn", bessel_Yn);
+-  DefineFun("beta", beta);
+-  DefineFun("erf", erf);
+-  DefineFun("erfc", erfc);
+-  DefineFun("erfz", erfz);
+-  DefineFun("erfq", erfq);
+-  DefineFun("gamma", gamma);
+-  DefineFun("gammaln", gammaln);
+-  DefineFun("hazard", hazard);
++  DefineFun(L"bessel_j0", &MyParser::bessel_J0);
++  DefineFun(L"bessel_j1", &MyParser::bessel_J1);
++  DefineFun(L"bessel_jn", &MyParser::bessel_Jn);
++  DefineFun(L"bessel_y0", &MyParser::bessel_Y0);
++  DefineFun(L"bessel_y1", &MyParser::bessel_Y1);
++  DefineFun(L"bessel_yn", &MyParser::bessel_Yn);
++  DefineFun(L"beta", &MyParser::beta);
++  DefineFun(L"erf", &MyParser::erf);
++  DefineFun(L"erfc", &MyParser::erfc);
++  DefineFun(L"erfz", &MyParser::erfz);
++  DefineFun(L"erfq", &MyParser::erfq);
++  DefineFun(L"gamma", &MyParser::gamma);
++  DefineFun(L"gammaln", &MyParser::gammaln);
++  DefineFun(L"hazard", &MyParser::hazard);
+ }
+ 
+ QStringList MyParser::functionsList() {
