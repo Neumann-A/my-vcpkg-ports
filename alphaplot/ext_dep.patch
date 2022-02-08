@@ -30,7 +30,7 @@ index eb37c07db..8e9618223 100644
  include(sourcefiles.pri)
  include(../config.pri)
  
-@@ -29,7 +40,7 @@ DEFINES += Q_BUILD_32
+@@ -29,6 +40,6 @@ DEFINES += Q_BUILD_32
  #############################################################################
  ###################### BASIC PROJECT PROPERTIES #############################
  #############################################################################
@@ -103,7 +103,7 @@ diff --git a/alphaplot/src/2Dplot/AxisRect2D.h b/alphaplot/src/2Dplot/AxisRect2D
 index 9c7f71b09..5d507740c 100644
 --- a/alphaplot/src/2Dplot/AxisRect2D.h
 +++ b/alphaplot/src/2Dplot/AxisRect2D.h
-@@ -17,7 +17,7 @@
+@@ -17,6 +17,6 @@
  #ifndef AXISRECT2D_H
  #define AXISRECT2D_H
  
@@ -115,7 +115,7 @@ diff --git a/alphaplot/src/2Dplot/Bar2D.h b/alphaplot/src/2Dplot/Bar2D.h
 index 0a8a800b7..af918cff9 100644
 --- a/alphaplot/src/2Dplot/Bar2D.h
 +++ b/alphaplot/src/2Dplot/Bar2D.h
-@@ -1,7 +1,7 @@
+@@ -1,6 +1,6 @@
  #ifndef BAR2D_H
  #define BAR2D_H
  
@@ -388,7 +388,7 @@ diff --git a/alphaplot/src/scripting/MyParser.h b/alphaplot/src/scripting/MyPars
 index 733844ccc..70e3272b5 100644
 --- a/alphaplot/src/scripting/MyParser.h
 +++ b/alphaplot/src/scripting/MyParser.h
-@@ -29,7 +29,9 @@
+@@ -29,6 +29,8 @@
  #ifndef MYPARSER_H
  #define MYPARSER_H
  

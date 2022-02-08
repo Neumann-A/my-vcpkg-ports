@@ -509,7 +509,7 @@ diff --git a/alphaplot/src/2Dplot/AxisRect2D.h b/alphaplot/src/2Dplot/AxisRect2D
 index 9c7f71b09..5d507740c 100644
 --- a/alphaplot/src/2Dplot/AxisRect2D.h
 +++ b/alphaplot/src/2Dplot/AxisRect2D.h
-@@ -23,10 +23,14 @@
+@@ -23,11 +23,15 @@
  #include "Graph2DCommon.h"
  #include "StatBox2D.h"
  #include "Vector2D.h"
@@ -527,7 +527,11 @@ index 9c7f71b09..5d507740c 100644
  class TextItem2D;
  class StatBox2D;
  class LineItem2D;
-@@ -39,7 +45,7 @@ class Pie2D;
+diff --git a/alphaplot/src/2Dplot/AxisRect2D.h b/alphaplot/src/2Dplot/AxisRect2D.h
+index 9c7f71b09..5d507740c 100644
+--- a/alphaplot/src/2Dplot/AxisRect2D.h
++++ b/alphaplot/src/2Dplot/AxisRect2D.h
+@@ -37,7 +41,7 @@ class Pie2D;
  class Plot2D;
  class Grid2D;
  class Curve2D;
@@ -2595,7 +2599,7 @@ index 930d47e7e..5816946c0 100644
    int parameters = paramList.count();
    boxParams->setRowCount(parameters);
    boxParams->hideColumn(2);
-@@ -1269,7 +1270,7 @@ void FitDialog::setSrcTables(QList<QMdiSubWindow *> *tables) {
+@@ -1269,6 +1270,6 @@ void FitDialog::setSrcTables(QList<QMdiSubWindow *> *tables) {
      tableNamesBox->addItem(i->objectName());
  
    tableNamesBox->setCurrentIndex(tableNamesBox->findText(
@@ -3817,7 +3821,7 @@ index 0ca979cd0..9de67e8d1 100644
    }  // while (functionStart != -1)
    return true;
  }
-@@ -788,8 +790,8 @@ bool MuParserScript::compile(bool asFunction) {
+@@ -788,7 +790,7 @@ bool MuParserScript::compile(bool asFunction) {
      intermediate.remove(commentStart, intermediate.size() - commentStart);
  
    // simplify statement separators
