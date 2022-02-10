@@ -2,18 +2,13 @@ diff --git a/alphaplot/alphaplot.pro b/alphaplot/alphaplot.pro
 index 9f9a1f6..fa14a9c 100644
 --- a/alphaplot/alphaplot.pro
 +++ b/alphaplot/alphaplot.pro
-@@ -64,7 +64,14 @@ MOC_DIR         = ../tmp/alphaplot
+@@ -64,7 +64,9 @@ MOC_DIR         = ../tmp/alphaplot
  OBJECTS_DIR     = ../tmp/alphaplot
  DESTDIR         = ./
  
 -INSTALLS        += target
 +
-+win32 {
-+    dlltarget.path = $$[QT_INSTALL_BINS]
-+    INSTALLS += dlltarget
-+}
-+target.path    = $$[QT_INSTALL_LIBS]
-+!static: target.CONFIG = no_dll
++target.path    = $$[QT_INSTALL_BINS]
 +INSTALLS     += target 
  
  ###################### STYLES ###############################################
@@ -29,10 +24,10 @@ index f7b6bd9..db648e8 100644
 -INSTALLS += target
 +
 +win32 {
-+    dlltarget.path = $$[QT_INSTALL_BINS]
++    dlltarget.path = $$[QT_INSTALL_PLUGINS]
 +    INSTALLS += dlltarget
 +}
-+target.path    = $$[QT_INSTALL_LIBS]
++target.path    = $$[QT_INSTALL_PLUGINS]
 +!static: target.CONFIG = no_dll
 +INSTALLS     += target 
 +
@@ -50,10 +45,10 @@ index ed9556e..b510f41 100644
 -INSTALLS += target
 +
 +win32 {
-+    dlltarget.path = $$[QT_INSTALL_BINS]
++    dlltarget.path = $$[QT_INSTALL_PLUGINS]
 +    INSTALLS += dlltarget
 +}
-+target.path    = $$[QT_INSTALL_LIBS]
++target.path    = $$[QT_INSTALL_PLUGINS]
 +!static: target.CONFIG = no_dll
 +INSTALLS     += target 
 +
@@ -71,10 +66,10 @@ index bc9684a..90bb20e 100644
 -INSTALLS += target
 +
 +win32 {
-+    dlltarget.path = $$[QT_INSTALL_BINS]
++    dlltarget.path = $$[QT_INSTALL_PLUGINS]
 +    INSTALLS += dlltarget
 +}
-+target.path    = $$[QT_INSTALL_LIBS]
++target.path    = $$[QT_INSTALL_PLUGINS]
 +!static: target.CONFIG = no_dll
 +INSTALLS     += target 
 +
@@ -92,10 +87,10 @@ index 9a1be10..8004016 100644
 -INSTALLS += target
 +
 +win32 {
-+    dlltarget.path = $$[QT_INSTALL_BINS]
++    dlltarget.path = $$[QT_INSTALL_PLUGINS]
 +    INSTALLS += dlltarget
 +}
-+target.path    = $$[QT_INSTALL_LIBS]
++target.path    = $$[QT_INSTALL_PLUGINS]
 +!static: target.CONFIG = no_dll
 +INSTALLS     += target 
 +
@@ -113,10 +108,10 @@ index e46fbf0..c56f297 100644
 -INSTALLS += target
 +
 +win32 {
-+    dlltarget.path = $$[QT_INSTALL_BINS]
++    dlltarget.path = $$[QT_INSTALL_PLUGINS]
 +    INSTALLS += dlltarget
 +}
-+target.path    = $$[QT_INSTALL_LIBS]
++target.path    = $$[QT_INSTALL_PLUGINS]
 +!static: target.CONFIG = no_dll
 +INSTALLS     += target 
 +
