@@ -1,0 +1,77 @@
+From 0c59d22c57f627586b6ee6baeef496399714d53b Mon Sep 17 00:00:00 2001
+From: Fabian Kosmale <fabian.kosmale@qt.io>
+Date: Wed, 16 Feb 2022 15:16:08 +0100
+Subject: [PATCH] typeNameForCast: use add_pointer instead of string manipulation
+
+Relying on string manipulation leads to -Wredundant-parens warnings in
+the best case, and to non-compiling code (when using typedefs) in the
+worst case.
+We can avoid both issues by simply generating code that uses
+add_pointer, which takes care of reference types (even typedef'd ones),
+and creates no warnings about parens (as we don't write any anymore).
+
+Fixes: QTBUG-100915
+Change-Id: Ic5b1cbfda20d920d11f51beeb62e9479261d5f00
+Reviewed-by: Ulf Hermann <ulf.hermann@qt.io>
+(cherry picked from commit 8079361852417f57b5db8e47994870c4c8d63e3f)
+Reviewed-by: Qt Cherry-pick Bot <cherrypick_bot@qt-project.org>
+---
+
+diff --git a/src/tools/moc/moc.cpp b/src/tools/moc/moc.cpp
+index 39550e2..3bb47dd 100644
+--- a/src/tools/moc/moc.cpp
++++ b/src/tools/moc/moc.cpp
+@@ -320,7 +320,7 @@
+             arg.rightType += lexem();
+         }
+         arg.normalizedType = normalizeType(QByteArray(arg.type.name + ' ' + arg.rightType));
+-        arg.typeNameForCast = normalizeType(QByteArray(noRef(arg.type.name) + "(*)" + arg.rightType));
++        arg.typeNameForCast = QByteArray("std::add_pointer_t<"+arg.normalizedType+">");
+         if (test(EQ))
+             arg.isDefault = true;
+         def->arguments += arg;
+diff --git a/tests/auto/tools/moc/tst_moc.cpp b/tests/auto/tools/moc/tst_moc.cpp
+index 752c539..be6b7a9 100644
+--- a/tests/auto/tools/moc/tst_moc.cpp
++++ b/tests/auto/tools/moc/tst_moc.cpp
+@@ -338,6 +338,8 @@
+ QT_WARNING_DISABLE_CLANG("-Wignored-qualifiers")
+ QT_WARNING_DISABLE_GCC("-Wignored-qualifiers")
+ 
++using ObjectCRef = const QObject &;
++
+ class TestClass : public MyNamespace::TestSuperClass, public DONT_CONFUSE_MOC(MyStruct),
+                   public DONT_CONFUSE_MOC_EVEN_MORE(MyStruct2, dummy, ignored)
+ {
+@@ -533,6 +535,7 @@
+ //
+ public slots:
+     void const slotWithSillyConst() {}
++    void slotTakingCRefViaTypedef(ObjectCRef o) { this->setObjectName(o.objectName()); }
+ 
+ public:
+     Q_INVOKABLE void const slotWithSillyConst2() {}
+@@ -661,6 +664,7 @@
+     void preprocessorConditionals();
+     void blackslashNewlines();
+     void slotWithSillyConst();
++    void slotTakingCRefViaTypedef();
+     void testExtraData();
+     void testExtraDataForEnum();
+     void namespaceTypeProperty();
+@@ -1040,6 +1044,15 @@
+     QVERIFY(mobj->indexOfSlot("slotWithVoidStar(void*)") != -1);
+ }
+ 
++void tst_Moc::slotTakingCRefViaTypedef()
++{
++    TestClass tst;
++    QObject obj;
++    obj.setObjectName("works");
++    QMetaObject::invokeMethod(&tst, "slotTakingCRefViaTypedef", Q_ARG(ObjectCRef, obj));
++    QCOMPARE(obj.objectName(), "works");
++}
++
+ void tst_Moc::testExtraData()
+ {
+     const QMetaObject *mobj = &PropertyTestClass::staticMetaObject;

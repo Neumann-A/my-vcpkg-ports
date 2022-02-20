@@ -17,7 +17,8 @@ set(${PORT}_PATCHES
         fix_cmake_build.patch
         harfbuzz.patch
         fix_egl.patch
-        moc_warning.patch # Qt 6.4?
+        0c59d22.diff
+        d49f575.diff
         )
 
 if(NOT VCPKG_USE_HEAD_VERSION AND NOT QT_IS_LATEST)
