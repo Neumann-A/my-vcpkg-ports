@@ -8,6 +8,6 @@
       "name": "qtbase",
       "default-features": false
     },
-    "vcpkg-cmake"
+    "vcpkg-cmake-get-vars"
   ]
 }
