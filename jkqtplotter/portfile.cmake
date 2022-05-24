@@ -1,0 +1,26 @@
+
+vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
+string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "dynamic" JKQtPlotter_BUILD_SHARED_LIBS)
+string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static"  JKQtPlotter_BUILD_STATIC_LIBS)
+
+vcpkg_from_github(
+    OUT_SOURCE_PATH SOURCE_PATH
+    REPO jkriege2/JKQtPlotter
+    REF 5fae11472c21a2ffbcd0adba3abadc18a82dc8c7 # d45083ee9bdd96de1a381ad0d63c4ba8ef547e5c
+    SHA512 0d868090fd0c9fef00e45a8735be2f89db335f0b62f498c6999aa96eed41711f838ffb6dd999b5eb14d613b5d11d067d06afc6cf76cdffa67b94b3037a11f411 #78757737bf0baffcb6bb8df7b3b0944298e0861901f88ecfda46b0f4e59a8c5e0d6c455f59969aedf424e5fa84577f47b0d9bd3d82847e5b89a08ef307ad003d
+    HEAD_REF master
+)
+
+vcpkg_cmake_configure(
+    SOURCE_PATH "${SOURCE_PATH}"
+    OPTIONS
+        -DJKQtPlotter_BUILD_SHARED_LIBS=${JKQtPlotter_BUILD_SHARED_LIBS}
+        -DJKQtPlotter_BUILD_STATIC_LIBS=${JKQtPlotter_BUILD_STATIC_LIBS}
+        -DJKQtPlotter_BUILD_EXAMPLES=ON
+        -DQT_VERSION_MAJOR=6
+)
+vcpkg_cmake_install()
+
+vcpkg_copy_pdbs()
+
+file(INSTALL "${SOURCE_PATH}/LICENSE" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
