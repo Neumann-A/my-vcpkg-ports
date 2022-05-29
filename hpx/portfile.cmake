@@ -1,6 +1,8 @@
-string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" HPX_WITH_STATIC_LINKING)
 
-vcpkg_check_linkage(ONLY_DYNAMIC_CRT)
+
+#vcpkg_check_linkage(ONLY_DYNAMIC_CRT)
+vcpkg_check_linkage(ONLY_DYNAMIC_LIBRARY)
+string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" HPX_WITH_STATIC_LINKING)
 set(VCPKG_POLICY_DLLS_IN_STATIC_LIBRARY "enabled")
 
 vcpkg_from_github(
@@ -12,6 +14,8 @@ vcpkg_from_github(
     PATCHES
         fix-dependency-hwloc.patch
         fix_pkg_generation.patch
+        format.patch
+        tbb.patch
 )
 
 set(HPX_WITH_MALLOC system)
@@ -20,13 +24,14 @@ if(VCPKG_TARGET_IS_LINUX)
     # https://github.com/microsoft/vcpkg/pull/21673#issuecomment-979904882
     # It must match when gperftools is treated as a dependency of this port.
     set(HPX_WITH_MALLOC tcmalloc)
+elseif(VCPKG_TARGET_IS_WINDOWS)
+    set(HPX_WITH_MALLOC system)
 endif()
 
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
-        --trace-expand
         -DHPX_WITH_VCPKG=ON
         -DHPX_WITH_TESTS=OFF
         -DHPX_WITH_EXAMPLES=OFF
@@ -40,8 +45,19 @@ vcpkg_cmake_configure(
         -DHPX_WITH_PKGCONFIG=OFF
         -DHPX_WITH_STATIC_LINKING=${HPX_WITH_STATIC_LINKING}
         "-DHPX_WITH_MALLOC=${HPX_WITH_MALLOC}"
+        #-DHPX_WITH_APEX=ON
+        -DHPX_WITH_TOOLS=ON
+        -DHPX_WITH_PARCELPORT_MPI=ON
+        #-DHPX_WITH_PARCELPORT_TCP=ON
+    OPTIONS_DEBUG
+        -DHPX_WITH_COROUTINE_COUNTERS=ON
+        -DHPX_WITH_SPINLOCK_DEADLOCK_DETECTION=ON
 )
-
+# 
+# HPX_WITH_MALLOC should be set
+# HPX_WITH_APEX
+# HPX_WITH_GENERIC_CONTEXT_COROUTINES for ARM
+# HPX_WITH_MAX_CPU_COUNT default 64
 vcpkg_cmake_install()
 
 # post build cleanup

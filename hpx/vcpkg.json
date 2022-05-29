@@ -28,7 +28,12 @@
       "name": "gperftools",
       "platform": "linux"
     },
+    {
+      "name": "onetbb",
+      "platform": "windows"
+    },
     "hwloc",
+    "mpi",
     {
       "name": "vcpkg-cmake",
       "host": true
