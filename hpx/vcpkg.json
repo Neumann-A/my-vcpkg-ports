@@ -41,9 +41,50 @@
     {
       "name": "vcpkg-cmake-config",
       "host": true
-    },
+    }
+  ],
+  "default-features" : [
     "zlib",
+    "snappy",
     "bzip2",
-    "snappy"
-  ]
+    "mpi"
+  ],
+  "features": {
+    "zlib" : {
+      "description": "Build with zlib compression",
+      "dependencies": [ 
+        "zlib"
+      ]
+    },
+    "bzip2" : {
+      "description": "Build with bzip2 compression",
+      "dependencies": [ 
+        "bzip2"
+      ]
+    },
+    "snappy" : {
+      "description": "Build with snappy compression",
+      "dependencies": [ 
+        "snappy"
+      ]
+    },
+    "cuda" : {
+      "description": "Build with CUDA support",
+      "dependencies": [ 
+        "cuda"
+      ]
+    },
+    "jemalloc" : {
+      "description": "Build with jemalloc instead of system malloc",
+      "dependencies": [ 
+        "jemalloc"
+      ]
+    },
+    "mpi" : {
+      "description": "Build with MPI parcelport",
+      "dependencies": [ 
+        "mpi"
+      ]
+    }
+  }
 }
