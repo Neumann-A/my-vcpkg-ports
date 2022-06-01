@@ -1,7 +1,7 @@
 
 
 #vcpkg_check_linkage(ONLY_DYNAMIC_CRT)
-vcpkg_check_linkage(ONLY_DYNAMIC_LIBRARY)
+#vcpkg_check_linkage(ONLY_DYNAMIC_LIBRARY)
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" HPX_WITH_STATIC_LINKING)
 set(VCPKG_POLICY_DLLS_IN_STATIC_LIBRARY "enabled")
 
@@ -17,6 +17,7 @@ vcpkg_from_github(
         format.patch
         tbb.patch
         fix-export.patch
+        fix-dup-symbols.patch
 )
 
 
