@@ -18,12 +18,6 @@ vcpkg_from_github(
         tbb.patch
 )
 
-set(HPX_WITH_MALLOC system)
-if("jemalloc" IN_LIST FEATURES)
-    # jemalloc is preferred to tcmalloc according to the tutorial materials
-    # and since it supports more platforms. 
-    set(HPX_WITH_MALLOC jemalloc) # To avoid memory fragmentation in highly task based applications. 
-endif()
 
 vcpkg_check_features(
     OUT_FEATURE_OPTIONS FEATURE_OPTIONS
@@ -35,6 +29,12 @@ vcpkg_check_features(
     "mpi"               HPX_WITH_PARCELPORT_MPI
     "mpi"               HPX_WITH_PARCELPORT_MPI_MULTITHREADED
 )
+
+if("jemalloc" IN_LIST FEATURES)
+    # jemalloc is preferred to tcmalloc according to the tutorial materials
+    # and since it supports more platforms. 
+    list(APPEND FEATURE_OPTIONS "-DHPX_WITH_MALLOC:STRING=jemalloc")
+endif()
 
 if(NOT VCPKG_TARGET_ARCHITECTURE MATCHES "(x64|x86)")
     list(APPEND FEATURE_OPTIONS "-DHPX_WITH_GENERIC_CONTEXT_COROUTINES=ON")
@@ -53,8 +53,7 @@ vcpkg_cmake_configure(
         -DHPX_USE_CMAKE_CXX_STANDARD=ON
         ${FEATURE_OPTIONS}
         -DHPX_WITH_PKGCONFIG=OFF
-        -DHPX_WITH_STATIC_LINKING=${HPX_WITH_STATIC_LINKING}
-        "-DHPX_WITH_MALLOC:STRING=${HPX_WITH_MALLOC}"
+        -DHPX_WITH_STATIC_LINKING=${HPX_WITH_STATIC_LINKING}        
         #-DHPX_WITH_APEX=ON
         -DHPX_WITH_PARCELPORT_TCP=ON
         -DHPX_WITH_THREAD_TARGET_ADDRESS=ON
