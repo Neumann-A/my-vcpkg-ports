@@ -18,6 +18,7 @@ vcpkg_from_github(
         tbb.patch
         fix-export.patch
         fix-dup-symbols.patch
+        fix-static-definition.patch
 )
 
 
