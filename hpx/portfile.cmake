@@ -13,15 +13,15 @@ vcpkg_from_github(
     HEAD_REF stable
     PATCHES
         fix-dependency-hwloc.patch
-        fix_pkg_generation.patch
+        #fix_pkg_generation.patch
         format.patch
         tbb.patch
         fix-export.patch
-        fix-dup-symbols.patch
+        fix-debug.patch
+        fix_output_name_clash.patch
+        #fix-dup-symbols.patch
         #fix-static-definition.patch
 )
-
-
 vcpkg_check_features(
     OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES
@@ -51,7 +51,7 @@ vcpkg_cmake_configure(
         -DHPX_WITH_VCPKG=ON
         -DHPX_WITH_TESTS=OFF
         -DHPX_WITH_EXAMPLES=OFF
-        -DHPX_WITH_TOOLS=ON
+        -DHPX_WITH_TOOLS=OFF
         -DHPX_WITH_RUNTIME=OFF
         -DHPX_USE_CMAKE_CXX_STANDARD=ON
         ${FEATURE_OPTIONS}
