@@ -2,8 +2,8 @@ vcpkg_from_gitlab(
     GITLAB_URL https://gitlab.com
     OUT_SOURCE_PATH SOURCE_PATH
     REPO libeigen/eigen
-    REF f04fd8b1686fdcaca35a5eb8d4b3b1ff50fc4636
-    SHA512 5948b042d10ae6e147d93c73833227e557535cc01413b00242135bb1801312e90aafe0c8bbe3defc59408256d5b818b349db18eb30bd8318c40ba645d5af9da7 
+    REF c5b896c5a3eb35ed0c08a9be5e6f10cc0a465b81
+    SHA512 0e21a8aa12acecaef707681591a166aaf52678db2f15cdc75bb7183f002b1a47a477ab3050774abfd61bfc0dc7da7cd366d73421ab5fcbb8fc16d740bc5f7c0a 
     HEAD_REF master
 )
 
