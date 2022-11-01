@@ -49,7 +49,7 @@ function(boost_modular_build)
             set(BOOST_LIB_DEBUG_SUFFIX -vc120-mt-gd.lib)
         else()
             set(BOOST_LIB_RELEASE_SUFFIX .lib)
-            set(BOOST_LIB_DEBUG_SUFFIX d.lib)
+            set(BOOST_LIB_DEBUG_SUFFIX .lib)
         endif()
     else()
         set(BOOST_LIB_PREFIX lib)
@@ -153,7 +153,7 @@ function(boost_modular_build)
         string(REPLACE "-vc141-" "-vc140-" NEW_FILENAME ${NEW_FILENAME}) # To merge VS2017 and VS2015 binaries
         string(REPLACE "-vc142-" "-vc140-" NEW_FILENAME ${NEW_FILENAME}) # To merge VS2019 and VS2015 binaries
         string(REPLACE "-vc143-" "-vc140-" NEW_FILENAME ${NEW_FILENAME}) # To merge VS2022 and VS2015 binaries
-        string(REGEX REPLACE "-clangw14[0-9]-m(t|d)(-gy?)?" "" NEW_FILENAME "${NEW_FILENAME}")
+        string(REGEX REPLACE "-clangw14[0-9]-m(t|d)(-gy?)?d?" "" NEW_FILENAME "${NEW_FILENAME}")
         string(REPLACE "-sgd-" "-gd-" NEW_FILENAME ${NEW_FILENAME}) # For Debug libs
         string(REPLACE "-sgyd-" "-gyd-" NEW_FILENAME ${NEW_FILENAME}) # For Debug libs
         string(REPLACE "-gyd-" "-gd-" NEW_FILENAME ${NEW_FILENAME}) # For Debug libs with python debugging
