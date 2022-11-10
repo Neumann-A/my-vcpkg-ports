@@ -8,7 +8,7 @@
   "dependencies": [
     {
       "name": "boost-uninstall",
-      "version>=": "1.80.0#1"
+      "version>=": "1.80.0#2"
     },
     {
       "name": "vcpkg-cmake",
@@ -16,7 +16,8 @@
     },
     {
       "name": "vcpkg-cmake-get-vars",
-      "host": true
+      "host": true,
+      "version>=": "2022-11-07"
     }
   ]
 }
