@@ -1,9 +1,9 @@
 {
   "name": "qwt",
-  "version-semver": "6.2.0",
-  "port-version": 3,
+  "version": "6.2.0+20220616",
   "description": "qt widgets library for technical applications",
   "homepage": "https://sourceforge.net/projects/qwt",
+  "license": null,
   "dependencies": [
     {
       "name": "qtbase",
@@ -11,17 +11,11 @@
       "features": [
         "concurrent",
         "gui",
-        "widgets"
+        "widgets",
+        "opengl"
       ]
     },
     "qtsvg",
-    {
-      "name": "qttools",
-      "default-features": false,
-      "features": [
-        "designer"
-      ]
-    },
     {
       "name": "vcpkg-qmake",
       "host": true,
