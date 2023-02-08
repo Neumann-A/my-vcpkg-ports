@@ -1,0 +1,31 @@
+diff --git a/src/ImGuiRenderer.cpp b/src/ImGuiRenderer.cpp
+index f55130d..105d0ba 100644
+--- a/src/ImGuiRenderer.cpp	
++++ b/src/ImGuiRenderer.cpp
+@@ -22,7 +22,7 @@ namespace QtImGui {
+ namespace {
+ 
+ // Keyboard mapping. Dear ImGui use those indices to peek into the io.KeysDown[] array.
+-const QHash<int, ImGuiKey> keyMap = {
++const QHash<int, int> keyMap = { {
+     { Qt::Key_Tab, ImGuiKey_Tab },
+     { Qt::Key_Left, ImGuiKey_LeftArrow },
+     { Qt::Key_Right, ImGuiKey_RightArrow },
+@@ -46,7 +46,7 @@ const QHash<int, ImGuiKey> keyMap = {
+     { Qt::Key_Y, ImGuiKey_Y },
+     { Qt::Key_Z, ImGuiKey_Z },
+     { Qt::MiddleButton, ImGuiMouseButton_Middle }
+-};
++} };
+ 
+ #ifndef QT_NO_CURSOR
+ const QHash<ImGuiMouseCursor, Qt::CursorShape> cursorMap = {
+@@ -82,7 +82,7 @@ void ImGuiRenderer::initialize(WindowWrapper *window) {
+     io.BackendPlatformName = "qtimgui";
+     
+     // Setup keyboard mapping
+-    for (ImGuiKey key : keyMap.values()) {
++    for (int key : keyMap.values()) {
+         io.KeyMap[key] = key;
+     }
+     

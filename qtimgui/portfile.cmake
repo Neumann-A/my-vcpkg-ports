@@ -8,6 +8,7 @@ vcpkg_from_github(
     HEAD_REF master
     PATCHES fix_cmake.patch
             fix_install.patch
+            fix_build.patch
 )
 
 vcpkg_cmake_configure(
