@@ -1,0 +1,21 @@
+{
+  "name": "sleipnir",
+  "version-date": "2023-01-31",
+  "description": "A linearity-exploiting sparse nonlinear constrained optimization problem solver that uses the interior-point method.",
+  "homepage": "https://github.com/SleipnirGroup/Sleipnir/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "fmt",
+    "eigen3",
+    "intel-mkl",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+
+  ]
+}
