@@ -2,8 +2,8 @@ vcpkg_from_gitlab(
     GITLAB_URL https://gitlab.com
     OUT_SOURCE_PATH SOURCE_PATH
     REPO libeigen/eigen
-    REF 0e490d452d86b557be6034d0fec3845a316118e1
-    SHA512 3bcb13380611aabcf553eab36bed0f80f5366eeaa996c439b8424000877d89e380db9f530b6c6bf5beb1ae69e5390b6e017e6bb06eb7f4763e1c6c593176d146
+    REF 2b513ca2a00100a891219ba6472960d18b49afba
+    SHA512 40a7e534c61e877e14dbbc76b0fa493fb167be60e208b8a59d00d08237c80c8164c415422afdabf4f513adc0f7c44f0e76a9311c44289e55146c17c8a8990a23
     HEAD_REF master
 )
 
@@ -29,6 +29,8 @@ vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/eigen3/Eigen3Targets.cmake"
 )
 
 vcpkg_fixup_pkgconfig()
+
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/eigen3/src/Core/util/MKL_support.h" "#ifdef EIGEN_USE_MKL_ALL" "#if 1")
 
 file(GLOB INCLUDES "${CURRENT_PACKAGES_DIR}/include/eigen3/*")
 file(COPY ${INCLUDES} DESTINATION "${CURRENT_PACKAGES_DIR}/include")
