@@ -30,7 +30,7 @@ vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/eigen3/Eigen3Targets.cmake"
 
 vcpkg_fixup_pkgconfig()
 
-vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/eigen3/src/Core/util/MKL_support.h" "#ifdef EIGEN_USE_MKL_ALL" "#if 1")
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/eigen3/Eigen/src/Core/util/MKL_support.h" "#ifdef EIGEN_USE_MKL_ALL" "#if 1")
 
 file(GLOB INCLUDES "${CURRENT_PACKAGES_DIR}/include/eigen3/*")
 file(COPY ${INCLUDES} DESTINATION "${CURRENT_PACKAGES_DIR}/include")
