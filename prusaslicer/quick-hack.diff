@@ -1,0 +1,155 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b8f488d..0527466 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -325,7 +325,7 @@ if(WIN32)
+     add_definitions(-D_USE_MATH_DEFINES -D_WIN32 -D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
+     if(MSVC)
+         # BOOST_ALL_NO_LIB: Avoid the automatic linking of Boost libraries on Windows. Rather rely on explicit linking.
+-        add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_USE_WINAPI_VERSION=0x601 -DBOOST_SYSTEM_USE_UTF8 )
++        add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_SYSTEM_USE_UTF8 )
+         # Force the source code encoding to UTF-8. See PrusaSlicer GH pull request #5583
+         add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+         add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 6681d45..805e9a8 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -282,7 +282,8 @@ endif ()
+ # Slic3r binary install target
+ if (WIN32)
+     install(TARGETS PrusaSlicer RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+-                                ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
++                                ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
++                                LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+     if (MSVC)
+         install(TARGETS PrusaSlicer_app_gui RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
+         install(TARGETS PrusaSlicer_app_console RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
+diff --git a/src/PrusaSlicer.cpp b/src/PrusaSlicer.cpp
+index e100b17..abc2ef8 100644
+--- a/src/PrusaSlicer.cpp
++++ b/src/PrusaSlicer.cpp
+@@ -1,6 +1,6 @@
+ #ifdef WIN32
+     // Why?
+-    #define _WIN32_WINNT 0x0502
++    //#define _WIN32_WINNT 0x0502
+     // The standard Windows includes.
+     #define WIN32_LEAN_AND_MEAN
+     #define NOMINMAX
+diff --git a/src/PrusaSlicer_app_msvc.cpp b/src/PrusaSlicer_app_msvc.cpp
+index 90bd2d8..6d7c2fc 100644
+--- a/src/PrusaSlicer_app_msvc.cpp
++++ b/src/PrusaSlicer_app_msvc.cpp
+@@ -1,5 +1,5 @@
+ // Why?
+-#define _WIN32_WINNT 0x0502
++//#define _WIN32_WINNT 0x0502
+ // The standard Windows includes.
+ #define WIN32_LEAN_AND_MEAN
+ #define NOMINMAX
+diff --git a/src/clipper/CMakeLists.txt b/src/clipper/CMakeLists.txt
+index 3cb7cb6..d8d167b 100644
+--- a/src/clipper/CMakeLists.txt
++++ b/src/clipper/CMakeLists.txt
+@@ -1,6 +1,8 @@
+ cmake_minimum_required(VERSION 2.8.12)
+ project(clipper)
+ 
++find_package(Eigen3 REQUIRED)
++
+ add_library(clipper STATIC
+ # We are using ClipperLib compiled as part of the libslic3r project using Slic3r::Point as its base type.
+ #    clipper.cpp
+@@ -8,3 +10,6 @@ add_library(clipper STATIC
+     clipper_z.cpp
+     clipper_z.hpp
+ )
++
++target_link_libraries(clipper PUBLIC Eigen3::Eigen)
++target_include_directories(clipper PUBLIC "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
+diff --git a/src/libslic3r/CMakeLists.txt b/src/libslic3r/CMakeLists.txt
+index cfed90a..09e7c9b 100644
+--- a/src/libslic3r/CMakeLists.txt
++++ b/src/libslic3r/CMakeLists.txt
+@@ -467,6 +467,9 @@ target_include_directories(libslic3r PUBLIC ${EXPAT_INCLUDE_DIRS})
+ 
+ find_package(JPEG REQUIRED)
+ 
++find_package(LAPACK REQUIRED)
++find_package(blosc CONFIG REQUIRED)
++
+ target_link_libraries(libslic3r
+     libnest2d
+     admesh
+@@ -481,6 +484,7 @@ target_link_libraries(libslic3r
+     semver
+     TBB::tbb
+     libslic3r_cgal
++    LAPACK::LAPACK
+     ${CMAKE_DL_LIBS}
+     PNG::PNG
+     ZLIB::ZLIB
+@@ -494,7 +498,7 @@ if (APPLE)
+ endif ()
+ 
+ if (TARGET OpenVDB::openvdb)
+-    target_link_libraries(libslic3r OpenVDB::openvdb)
++    target_link_libraries(libslic3r OpenVDB::openvdb blosc_static)
+ endif()
+ 
+ if(WIN32)
+diff --git a/src/occt_wrapper/CMakeLists.txt b/src/occt_wrapper/CMakeLists.txt
+index 8ab9fb4..258d1f5 100644
+--- a/src/occt_wrapper/CMakeLists.txt
++++ b/src/occt_wrapper/CMakeLists.txt
+@@ -20,6 +20,7 @@ include(GenerateExportHeader)
+ generate_export_header(OCCTWrapper)
+ 
+ find_package(OpenCASCADE 7.6.2 REQUIRED)
++find_package(freetype CONFIG REQUIRED)
+ 
+ set(OCCT_LIBS
+     TKXDESTEP
+@@ -54,9 +55,11 @@ slic3r_remap_configs("${OCCT_LIBS}" RelWithDebInfo Release)
+ 
+ target_include_directories(OCCTWrapper PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+ target_include_directories(OCCTWrapper PUBLIC ${OpenCASCADE_INCLUDE_DIR})
+-target_link_libraries(OCCTWrapper ${OCCT_LIBS})
++target_link_libraries(OCCTWrapper ${OCCT_LIBS} freetype)
+ 
+ include(GNUInstallDirs)
+ 
+-install(TARGETS OCCTWrapper DESTINATION "${CMAKE_INSTALL_BINDIR}")
++install(TARGETS OCCTWrapper RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
++                            ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
++                            LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+ 
+diff --git a/src/slic3r/GUI/PresetComboBoxes.cpp b/src/slic3r/GUI/PresetComboBoxes.cpp
+index d25f5ad..b0e0604 100644
+--- a/src/slic3r/GUI/PresetComboBoxes.cpp
++++ b/src/slic3r/GUI/PresetComboBoxes.cpp
+@@ -641,7 +641,7 @@ void PlaterPresetComboBox::OnSelect(wxCommandEvent &evt)
+ {
+     auto selected_item = evt.GetSelection();
+ 
+-    auto marker = reinterpret_cast<Marker>(this->GetClientData(selected_item));
++    long long marker = reinterpret_cast<Marker>(this->GetClientData(selected_item));
+     if (marker >= LABEL_ITEM_MARKER && marker < LABEL_ITEM_MAX) {
+         this->SetSelection(m_last_selected);
+         evt.StopPropagation();
+diff --git a/xs/src/xsinit.h b/xs/src/xsinit.h
+index 19e25c5..cc0b934 100644
+--- a/xs/src/xsinit.h
++++ b/xs/src/xsinit.h
+@@ -85,8 +85,8 @@
+ 	#undef select
+ 
+     // Because of TBB
+-    #undef _WIN32_WINNT // To avoid compiler warnings
+-    #define _WIN32_WINNT 0x0502
++    //#undef _WIN32_WINNT // To avoid compiler warnings
++    //#define _WIN32_WINNT 0x0502
+ #endif /* _MSC_VER */
+ #undef Zero
+ #undef Packet

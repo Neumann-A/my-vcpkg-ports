@@ -9,6 +9,7 @@ vcpkg_from_github(
       9901.diff
       fixing-build.patch
       devendor_p1.patch
+      quick-hack.diff
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" SLIC3R_STATIC)
