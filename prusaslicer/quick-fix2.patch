@@ -1,0 +1,45 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index d4348f540d..ee8c121aab 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -147,6 +147,8 @@ if (NOT WIN32 AND NOT APPLE)
+     set_target_properties(PrusaSlicer PROPERTIES OUTPUT_NAME "prusa-slicer")
+ endif ()
+ 
++
++find_package(Eigen3 CONFIG REQUIRED)
+ target_link_libraries(PrusaSlicer libslic3r libcereal boost_libs)
+ 
+ if (APPLE)
+diff --git a/src/clipper/CMakeLists.txt b/src/clipper/CMakeLists.txt
+index 00ca0845f3..499eb1e0ad 100644
+--- a/src/clipper/CMakeLists.txt
++++ b/src/clipper/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ cmake_minimum_required(VERSION 2.8.12)
+ project(clipper)
+ 
+-find_package(Eigen3 REQUIRED)
++find_package(Eigen3 CONFIG REQUIRED)
+ 
+ add_library(clipper STATIC
+ # We are using ClipperLib compiled as part of the libslic3r project using Slic3r::Point as its base type.
+diff --git a/src/libslic3r/CMakeLists.txt b/src/libslic3r/CMakeLists.txt
+index 468ce5e070..2c35060b6a 100644
+--- a/src/libslic3r/CMakeLists.txt
++++ b/src/libslic3r/CMakeLists.txt
+@@ -498,7 +498,13 @@ if (APPLE)
+ endif ()
+ 
+ if (TARGET OpenVDB::openvdb)
+-    target_link_libraries(libslic3r OpenVDB::openvdb blosc_static)
++    target_link_libraries(libslic3r OpenVDB::openvdb)
++    if(TARGET blosc_static)
++        target_link_libraries(libslic3r blosc_static)
++    else()
++        target_link_libraries(libslic3r blosc_shared)
++    endif()
++        
+ endif()
+ 
+ if(WIN32)

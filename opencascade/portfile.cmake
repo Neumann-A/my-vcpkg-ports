@@ -81,7 +81,7 @@ endif()
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
 
-if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
+if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic AND NOT VCPKG_BUILD_TYPE)
     # debug creates libd and bind directories that need moving
     file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/bin")
     file(RENAME "${CURRENT_PACKAGES_DIR}/debug/bind" "${CURRENT_PACKAGES_DIR}/debug/bin")
@@ -107,7 +107,7 @@ if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
     # the bin directory ends up with bat files that are noise, let's clean that up
     file(GLOB BATS "${CURRENT_PACKAGES_DIR}/bin/*.bat")
     file(REMOVE_RECURSE ${BATS})
-else()
+elseif(VCPKG_LIBRARY_LINKAGE STREQUAL static)
     # remove scripts in bin dir
     file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/bin" "${CURRENT_PACKAGES_DIR}/debug/bin")
 endif()
