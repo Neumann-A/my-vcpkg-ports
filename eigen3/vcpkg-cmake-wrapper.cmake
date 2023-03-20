@@ -1,0 +1,5 @@
+_find_package(${ARGS})
+find_package(LAPACK REQUIRED)
+if(TARGET Eigen3::Eigen)
+  set_property(TARGET Eigen3::Eigen APPEND PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK)
+endif()
