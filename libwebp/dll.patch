@@ -1,0 +1,13 @@
+diff --git a/src/dsp/cpu.h b/src/dsp/cpu.h
+index be80727c0..6777e7898 100644
+--- a/src/dsp/cpu.h	
++++ b/src/dsp/cpu.h
+@@ -247,7 +247,7 @@ extern "C" {
+ 
+ // returns true if the CPU supports the feature.
+ typedef int (*VP8CPUInfo)(CPUFeature feature);
+-WEBP_EXTERN VP8CPUInfo VP8GetCPUInfo;
++extern VP8CPUInfo VP8GetCPUInfo;
+ 
+ #ifdef __cplusplus
+ }    // extern "C"
