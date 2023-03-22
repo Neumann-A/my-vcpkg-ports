@@ -27,6 +27,7 @@ vcpkg_configure_make(
       --enable-relocatable
       --disable-f77
       --disable-java
+      --with-intsize=64
 )
 
 vcpkg_install_make()
