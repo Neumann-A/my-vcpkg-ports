@@ -8,6 +8,15 @@
       "name": "cmakejson",
       "default-features": false
     },
+    "fmt",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
     "magic-enum"
   ]
 }

@@ -12,11 +12,5 @@
       "name": "vcpkg-cmake",
       "host": true
     }
-   ],
-  "features": {
-    "examples" : {
-      "description": "build examples and tests",
-      "dependencies": []
-    }
-  }
+   ]
 }

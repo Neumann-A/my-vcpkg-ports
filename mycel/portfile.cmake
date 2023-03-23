@@ -1,27 +1,23 @@
-#set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
-
-#set(_VCPKG_DOWNLOAD_TOOL ARIA2)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO Neumann-A/MyCEL
-    REF b9edad9d90e7e4af530d53401f8d07c0bfe8faeb 
-    SHA512  73b86eb507317fcef02938b75f98f3cf9881211d177a6e5fc83e357b7b86623ede153f9fc3668790d0cce79839dd5ca4a8d79ad1795d74c26fc6f452532e026e
+    REF 919d80467a9542b832cddb27059fc39e6957f835 
+    SHA512  f1249292af412fa44517bd72e829f0f519c70ba65396ccc7a634ba01936d0f13eea5e5721f1c1cedd5ec868b5c3c931d269a123b67d0d5aa9b5abc4c1ce63d5e
     HEAD_REF master
 )
 
-vcpkg_configure_cmake(
-    SOURCE_PATH ${SOURCE_PATH}
-    PREFER_NINJA
+vcpkg_cmake_configure(
+    SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
         "-DCMakeJSON_INCLUDE_FILE=${CURRENT_INSTALLED_DIR}/share/CMakeJSON/CMakeJSON.cmake"
         -DCMAKE_MESSAGE_LOG_LEVEL=TRACE
 )
-vcpkg_install_cmake()
+vcpkg_cmake_install()
 
-vcpkg_fixup_cmake_targets()
+vcpkg_cmake_config_fixup()
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
- file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
 
 # Handle copyright
 file(INSTALL "${SOURCE_PATH}/LICENSE.md" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)

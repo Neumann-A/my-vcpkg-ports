@@ -3,7 +3,7 @@
   "version-string": "0.1",
   "description": "SerializationArchive (SerAr) is a c++ interface wrapper library around different serialization possibilities to ensure a common interface for data",
   "homepage": "https://github.com/Neumann-A/SerAr",
-  "default-features": ["json", "qt", "program-options", "config", "toml"],
+  "default-features": ["json", "program-options", "config", "toml"],
   "dependencies": [
     {
       "name": "cmakejson",
@@ -15,8 +15,14 @@
     },
     "fmt",
     "eigen3",
-    "vcpkg-cmake",
-    "vcpkg-cmake-config"
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }  
   ],
   "features": {
     "hdf5" : {
