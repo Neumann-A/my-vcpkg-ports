@@ -25,3 +25,10 @@ cd vcpkg
 ./vcpkg remove --overlay-ports=../my-vcpkg-ports --overlay-triplets=../my-vcpkg-triplets --triplet=x64-windows-llvm --host-triplet=x64-windows-llvm (someport)
 ```
 
+Or from the projects manifest via:
+```
+  "vcpkg-configuration": {
+    "overlay-ports": ["my-vcpkg-ports"],
+    "overlay-triplets": ["my-vcpkg-triplets"]
+  }
+```
