@@ -1,0 +1,188 @@
+diff --git a/cmake/Functions.cmake b/cmake/Functions.cmake
+index 370ea08..871de30 100644
+--- a/cmake/Functions.cmake
++++ b/cmake/Functions.cmake
+@@ -457,6 +457,7 @@ function(add_linker_options target buildDir completeStatic)
+     if(WIN32)
+         get_copy_of_response_file(objects_rsp ${target} objects)
+         target_link_options(${cmakeTarget} PRIVATE /DELAYLOAD:mf.dll /DELAYLOAD:mfplat.dll /DELAYLOAD:mfreadwrite.dll)
++        target_link_libraries(${cmakeTarget} PRIVATE delayimp.lib)
+         target_link_options(${cmakeTarget} PRIVATE "$<$<CONFIG:${config}>:@${objects_rsp}>")
+         if(NOT completeStatic)
+             get_copy_of_response_file(archives_rsp ${target} archives)
+diff --git a/src/3rdparty/chromium/base/BUILD.gn b/src/3rdparty/chromium/base/BUILD.gn
+index 954aa8e..346ccf8 100644
+--- a/src/3rdparty/chromium/base/BUILD.gn
++++ b/src/3rdparty/chromium/base/BUILD.gn
+@@ -131,6 +131,7 @@ if (is_win) {
+       "/DELAYLOAD:cfgmgr32.dll",
+       "/DELAYLOAD:powrprof.dll",
+       "/DELAYLOAD:setupapi.dll",
++      "delayimp.lib",
+     ]
+   }
+ }
+diff --git a/src/3rdparty/chromium/build/config/win/BUILD.gn b/src/3rdparty/chromium/build/config/win/BUILD.gn
+index a7f66c2..36586ea 100644
+--- a/src/3rdparty/chromium/build/config/win/BUILD.gn
++++ b/src/3rdparty/chromium/build/config/win/BUILD.gn
+@@ -427,6 +427,7 @@ config("delayloads") {
+     "/DELAYLOAD:winusb.dll",
+     "/DELAYLOAD:wsock32.dll",
+     "/DELAYLOAD:wtsapi32.dll",
++    "delayimp.lib",
+   ]
+ }
+ 
+@@ -447,6 +448,7 @@ config("delayloads_not_for_child_dll") {
+     "/DELAYLOAD:winspool.drv",
+     "/DELAYLOAD:wintrust.dll",
+     "/DELAYLOAD:ws2_32.dll",
++    "delayimp.lib",
+   ]
+ }
+ 
+diff --git a/src/3rdparty/chromium/chrome/browser/BUILD.gn b/src/3rdparty/chromium/chrome/browser/BUILD.gn
+index 9cc6b73..011d8ad 100644
+--- a/src/3rdparty/chromium/chrome/browser/BUILD.gn
++++ b/src/3rdparty/chromium/chrome/browser/BUILD.gn
+@@ -84,6 +84,7 @@ if (is_win) {
+       "pdh.lib",  # For browser/private_working_set_snapshot.h
+       "wbemuuid.lib",  # For browser/metrics /
+                        # antivirus_metrics_provider_win.cc
++      "delayimp.lib",
+     ]
+     ldflags = [
+       "/DELAYLOAD:ndfapi.dll",
+diff --git a/src/3rdparty/chromium/chrome/test/BUILD.gn b/src/3rdparty/chromium/chrome/test/BUILD.gn
+index 76e2f44..3b378ad 100644
+--- a/src/3rdparty/chromium/chrome/test/BUILD.gn
++++ b/src/3rdparty/chromium/chrome/test/BUILD.gn
+@@ -6075,6 +6075,7 @@ test("unit_tests") {
+       "runtimeobject.lib",
+       "urlmon.lib",
+       "winmm.lib",
++      "delayimp.lib",
+     ]
+ 
+     if (is_chrome_branded) {
+diff --git a/src/3rdparty/chromium/device/bluetooth/BUILD.gn b/src/3rdparty/chromium/device/bluetooth/BUILD.gn
+index 1dce4a2..126f0f4 100644
+--- a/src/3rdparty/chromium/device/bluetooth/BUILD.gn
++++ b/src/3rdparty/chromium/device/bluetooth/BUILD.gn
+@@ -23,6 +23,7 @@ config("bluetooth_config") {
+       # symbols declared by bthprops.lib, they actually reside here:
+       "/DELAYLOAD:Bthprops.cpl",
+       "/DELAYLOAD:setupapi.dll",
++      "delayimp.lib",
+     ]
+   }
+   if ((is_linux || is_chromeos) && is_chromecast) {
+diff --git a/src/3rdparty/chromium/media/base/win/BUILD.gn b/src/3rdparty/chromium/media/base/win/BUILD.gn
+index b216168..565ecaf 100644
+--- a/src/3rdparty/chromium/media/base/win/BUILD.gn
++++ b/src/3rdparty/chromium/media/base/win/BUILD.gn
+@@ -12,6 +12,7 @@ config("delay_load_mf") {
+     "/DELAYLOAD:mf.dll",
+     "/DELAYLOAD:mfplat.dll",
+     "/DELAYLOAD:mfreadwrite.dll",
++    "delayimp.lib",
+   ]
+ }
+ 
+diff --git a/src/3rdparty/chromium/media/capture/BUILD.gn b/src/3rdparty/chromium/media/capture/BUILD.gn
+index 3f7719f..1b68377 100644
+--- a/src/3rdparty/chromium/media/capture/BUILD.gn
++++ b/src/3rdparty/chromium/media/capture/BUILD.gn
+@@ -519,6 +519,7 @@ test("capture_unittests") {
+       "mfreadwrite.lib",
+       "mfuuid.lib",
+       "dxguid.lib",
++      "delayimp.lib",
+     ]
+     ldflags = [
+       "/DELAYLOAD:mf.dll",
+diff --git a/src/3rdparty/chromium/media/gpu/BUILD.gn b/src/3rdparty/chromium/media/gpu/BUILD.gn
+index d708591..4ce5a66 100644
+--- a/src/3rdparty/chromium/media/gpu/BUILD.gn
++++ b/src/3rdparty/chromium/media/gpu/BUILD.gn
+@@ -263,6 +263,7 @@ component("gpu") {
+       "mf.lib",
+       "mfplat.lib",
+       "mfuuid.lib",
++      "delayimp.lib",
+     ]
+     ldflags += [
+       "/DELAYLOAD:d3d9.dll",
+diff --git a/src/3rdparty/chromium/services/device/usb/BUILD.gn b/src/3rdparty/chromium/services/device/usb/BUILD.gn
+index 952e013..791c7b3 100644
+--- a/src/3rdparty/chromium/services/device/usb/BUILD.gn
++++ b/src/3rdparty/chromium/services/device/usb/BUILD.gn
+@@ -20,6 +20,7 @@ if (is_win) {
+       "/DELAYLOAD:ole32.dll",
+       "/DELAYLOAD:setupapi.dll",
+       "/DELAYLOAD:winusb.dll",
++      "delayimp.lib",
+     ]
+   }
+ }
+diff --git a/src/3rdparty/chromium/third_party/breakpad/BUILD.gn b/src/3rdparty/chromium/third_party/breakpad/BUILD.gn
+index 48defa6..53e0379 100644
+--- a/src/3rdparty/chromium/third_party/breakpad/BUILD.gn
++++ b/src/3rdparty/chromium/third_party/breakpad/BUILD.gn
+@@ -1013,6 +1013,7 @@ if (is_win) {
+       libs = [
+         "diaguids.lib",
+         "imagehlp.lib",
++        "delayimp.lib",
+       ]
+ 
+       if (is_clang) {
+diff --git a/src/3rdparty/chromium/third_party/libusb/BUILD.gn b/src/3rdparty/chromium/third_party/libusb/BUILD.gn
+index 5461bd0..d915ae2 100644
+--- a/src/3rdparty/chromium/third_party/libusb/BUILD.gn
++++ b/src/3rdparty/chromium/third_party/libusb/BUILD.gn
+@@ -20,6 +20,7 @@ config("libusb_linker_config") {
+       "/DELAYLOAD:ole32.dll",
+       "/DELAYLOAD:setupapi.dll",
+       "/DELAYLOAD:winusb.dll",
++      "delayimp.lib",
+     ]
+   }
+ }
+diff --git a/src/3rdparty/chromium/ui/gfx/BUILD.gn b/src/3rdparty/chromium/ui/gfx/BUILD.gn
+index 21422f4..2d8b091 100644
+--- a/src/3rdparty/chromium/ui/gfx/BUILD.gn
++++ b/src/3rdparty/chromium/ui/gfx/BUILD.gn
+@@ -888,6 +888,7 @@ test("gfx_unittests") {
+       "dwrite.lib",
+       "imm32.lib",
+       "oleacc.lib",
++      "delayimp.lib",
+     ]
+   }
+ 
+diff --git a/src/3rdparty/chromium/ui/gl/BUILD.gn b/src/3rdparty/chromium/ui/gl/BUILD.gn
+index bb3eedd..3580d80 100644
+--- a/src/3rdparty/chromium/ui/gl/BUILD.gn
++++ b/src/3rdparty/chromium/ui/gl/BUILD.gn
+@@ -385,6 +385,7 @@ jumbo_component("gl") {
+     libs = [
+       "dxgi.lib",
+       "dwmapi.lib",
++      "delayimp.lib",
+     ]
+     ldflags = [
+       "/DELAYLOAD:dwmapi.dll",
+diff --git a/src/3rdparty/chromium/ui/views/BUILD.gn b/src/3rdparty/chromium/ui/views/BUILD.gn
+index 03dea6f..cbb590d 100644
+--- a/src/3rdparty/chromium/ui/views/BUILD.gn
++++ b/src/3rdparty/chromium/ui/views/BUILD.gn
+@@ -682,6 +682,7 @@ jumbo_component("views") {
+       "imm32.lib",
+       "oleacc.lib",
+       "uiautomationcore.lib",
++      "delayimp.lib",
+     ]
+     ldflags = [
+       "/DELAYLOAD:dwmapi.dll",
