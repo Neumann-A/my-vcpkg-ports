@@ -44,12 +44,13 @@ vcpkg_from_github(
         ${STRING_PATCH}
         9690.diff
         10070.diff
+        eigen3.patch
 )
 
 # =============================================================================
 #Overwrite outdated modules if they have not been patched:
 file(COPY "${CURRENT_PORT_DIR}/FindHDF5.cmake" DESTINATION "${SOURCE_PATH}/CMake/patches/99") # due to usage of targets in netcdf-c
-#file(REMOVE "${SOURCE_PATH}/CMake/FindEigen3.cmake")
+file(REMOVE "${SOURCE_PATH}/CMake/FindEigen3.cmake")
 # =============================================================================
 
 # =============================================================================

@@ -1,0 +1,27 @@
+{
+  "name": "salome-medcoupling",
+  "version": "4.1.0",
+  "description": "salome-medcoupling is a part of SALOME platform to manipulate meshes and fields in memory, and use salome-med format for files.",
+  "homepage": "https://www.salome-platform.org",
+  "license": "GPL-2.0-or-later",
+  "dependencies": [
+    "python3",
+    "libxml2",
+    "metis",
+    "boost-filesystem",
+    "boost-regex",
+"boost-system",
+"boost-thread",
+"boost-date-time",
+"boost-chrono",
+"boost-serialization",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ]
+}

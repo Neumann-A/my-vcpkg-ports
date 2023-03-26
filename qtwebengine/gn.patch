@@ -1,0 +1,11 @@
+diff --git a/src/3rdparty/gn/build/build_win.ninja.template b/src/3rdparty/gn/build/build_win.ninja.template
+index 3d2b572..fdb6655 100644
+--- a/src/3rdparty/gn/build/build_win.ninja.template	
++++ b/src/3rdparty/gn/build/build_win.ninja.template
+@@ -8,5 +8,5 @@ rule alink_thin
+   description = LIB $out
+ 
+ rule link
+-  command = ninja -t msvc -- $ld /nologo $ldflags /PDB:$out.pdb $in $solibs $libs /link /OUT:${out}
++  command = ninja -t msvc -- $ld /nologo $ldflags /PDB:$out.pdb $in $solibs $libs /OUT:${out}
+   description = LINK $out

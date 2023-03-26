@@ -1,0 +1,141 @@
+diff --git a/common/include/pcl/common/utils.h b/common/include/pcl/common/utils.h
+index 4a73e76..086e410 100644
+--- a/common/include/pcl/common/utils.h
++++ b/common/include/pcl/common/utils.h
+@@ -52,7 +52,7 @@ namespace pcl
+       * \return true if val1 is equal to val2, false otherwise.
+       */
+     template<typename T> bool
+-    equal (T val1, T val2, T eps = std::numeric_limits<T>::min ())
++    equal (T val1, T val2, T eps = (std::numeric_limits<T>::min)())
+     {
+       return (std::fabs (val1 - val2) < eps);
+     }
+diff --git a/common/include/pcl/impl/instantiate.hpp b/common/include/pcl/impl/instantiate.hpp
+index ea73a0c..4cfc92b 100644
+--- a/common/include/pcl/impl/instantiate.hpp
++++ b/common/include/pcl/impl/instantiate.hpp
+@@ -95,7 +95,7 @@
+ //
+ //    ((x)(y)(z))((1)(2)(3))((dracula)(radu))
+ //
+-#ifdef _MSC_VER
++#if defined(_MSC_VER) && ! defined(__clang__)
+ #define PCL_INSTANTIATE_PRODUCT_IMPL(r, product) \
+   BOOST_PP_CAT(PCL_INSTANTIATE_, BOOST_PP_SEQ_HEAD(product)) \
+           BOOST_PP_EXPAND(BOOST_PP_SEQ_TO_TUPLE(BOOST_PP_SEQ_TAIL(product))) 
+diff --git a/common/src/colors.cpp b/common/src/colors.cpp
+index 24987bc..f1535d8 100644
+--- a/common/src/colors.cpp
++++ b/common/src/colors.cpp
+@@ -38,6 +38,7 @@
+ #include <pcl/point_types.h>
+ #include <pcl/common/colors.h>
+ 
++#include <cassert>
+ #include <array>
+ 
+ /// Glasbey lookup table
+diff --git a/common/src/gaussian.cpp b/common/src/gaussian.cpp
+index e5fef19..eafce80 100644
+--- a/common/src/gaussian.cpp
++++ b/common/src/gaussian.cpp
+@@ -36,6 +36,7 @@
+  */
+ 
+ #include <pcl/common/gaussian.h>
++#include <cassert>
+ 
+ void 
+ pcl::GaussianKernel::compute (float sigma, 
+diff --git a/common/src/range_image_planar.cpp b/common/src/range_image_planar.cpp
+index 97b249b..80f4ce1 100644
+--- a/common/src/range_image_planar.cpp
++++ b/common/src/range_image_planar.cpp
+@@ -34,6 +34,7 @@
+ 
+ /** \author Bastian Steder */
+ 
++#include <cassert>
+ #include <iostream>
+ using std::cout;
+ using std::cerr;
+diff --git a/surface/src/3rdparty/opennurbs/opennurbs_defines.cpp b/surface/src/3rdparty/opennurbs/opennurbs_defines.cpp
+index 6f0f8d7..51a9d26 100644
+--- a/surface/src/3rdparty/opennurbs/opennurbs_defines.cpp
++++ b/surface/src/3rdparty/opennurbs/opennurbs_defines.cpp
+@@ -2066,7 +2066,7 @@ ON::object_decoration ON::ObjectDecoration(int i)
+ ON::osnap_mode ON::OSnapMode(int i)
+ {
+   ON::osnap_mode osm;
+-  switch((unsigned int)i)
++  switch(i)
+   {
+   case os_none:          osm = os_none; break;
+   case os_near:          osm = os_near; break;
+diff --git a/surface/src/3rdparty/opennurbs/opennurbs_material.cpp b/surface/src/3rdparty/opennurbs/opennurbs_material.cpp
+index c77a365..36defef 100644
+--- a/surface/src/3rdparty/opennurbs/opennurbs_material.cpp
++++ b/surface/src/3rdparty/opennurbs/opennurbs_material.cpp
+@@ -1043,7 +1043,7 @@ ON_Texture::TYPE ON_Texture::TypeFromInt( int i )
+ {
+   ON_Texture::TYPE type = no_texture_type;
+ 
+-  switch((unsigned int)i)
++  switch(i)
+   {
+   case no_texture_type:
+     type = no_texture_type;
+@@ -1071,7 +1071,7 @@ ON_Texture::TYPE ON_Texture::TypeFromInt( int i )
+ ON_Texture::MODE ON_Texture::ModeFromInt( int i )
+ {
+   ON_Texture::MODE mode = no_texture_mode;
+-  switch((unsigned int)i)
++  switch(i)
+   {
+   case no_texture_mode:
+     mode = no_texture_mode;
+@@ -1095,7 +1095,7 @@ ON_Texture::MODE ON_Texture::ModeFromInt( int i )
+ ON_Texture::FILTER ON_Texture::FilterFromInt( int i )
+ {
+   ON_Texture::FILTER filter = linear_filter;
+-  switch((unsigned int)i)
++  switch(i)
+   {
+   case nearest_filter:
+     filter = nearest_filter;
+@@ -1114,7 +1114,7 @@ ON_Texture::WRAP ON_Texture::WrapFromInt( int i )
+ {
+   ON_Texture::WRAP wrap = repeat_wrap;
+ 
+-  switch((unsigned int)i)
++  switch(i)
+   {
+   case repeat_wrap:
+     wrap = repeat_wrap;
+diff --git a/surface/src/3rdparty/opennurbs/opennurbs_object_history.cpp b/surface/src/3rdparty/opennurbs/opennurbs_object_history.cpp
+index c3ef813..bce5148 100644
+--- a/surface/src/3rdparty/opennurbs/opennurbs_object_history.cpp
++++ b/surface/src/3rdparty/opennurbs/opennurbs_object_history.cpp
+@@ -1394,7 +1394,7 @@ int ON_PolyEdgeHistoryValue::GetPolyEdgePointers( ON_ClassArray<ON_PolyEdgeHisto
+ ON_Value* ON_Value::CreateValue( int value_type )
+ {
+   ON_Value* value = 0;
+-  switch((unsigned int)value_type)
++  switch(value_type)
+   {
+   case no_value_type:
+     break;
+diff --git a/surface/src/3rdparty/opennurbs/opennurbs_objref.cpp b/surface/src/3rdparty/opennurbs/opennurbs_objref.cpp
+index 0e05fc3..ef6b400 100644
+--- a/surface/src/3rdparty/opennurbs/opennurbs_objref.cpp
++++ b/surface/src/3rdparty/opennurbs/opennurbs_objref.cpp
+@@ -34,7 +34,7 @@ ON_COMPONENT_INDEX::ON_COMPONENT_INDEX(
+ ON_COMPONENT_INDEX::TYPE ON_COMPONENT_INDEX::Type(int i)
+ {
+   TYPE t = invalid_type;
+-  switch((unsigned int)i)
++  switch(i)
+   {
+   case no_type:            t = no_type;            break;
+   case brep_vertex:        t = brep_vertex;        break;
