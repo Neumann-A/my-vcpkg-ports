@@ -5,13 +5,20 @@
   "homepage": "https://ngsolve.org/",
   "license": "GPL-2.0-or-later",
   "dependencies": [
-    "libjpeg-turbo",
-    "cgns",
-    "opencascade",
-    "zlib",
+    {
+      "name": "cgns",
+      "default-features": false
+    },
     {
       "name": "ffmpeg",
-      "features": ["avcodec"],
+      "default-features": false,
+      "features": [
+        "avcodec"
+      ]
+    },
+    "libjpeg-turbo",
+    {
+      "name": "opencascade",
       "default-features": false
     },
     {
@@ -21,6 +28,7 @@
     {
       "name": "vcpkg-cmake-config",
       "host": true
-    }
+    },
+    "zlib"
   ]
 }

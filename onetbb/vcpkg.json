@@ -5,14 +5,14 @@
   "homepage": "https://github.com/oneapi-src/oneTBB",
   "license": "Apache-2.0",
   "dependencies": [
-  {
-    "name": "vcpkg-cmake",
-    "host": true
-  },
-  {
-    "name": "vcpkg-cmake-config",
-    "host": true
-  },
-  "hwloc"
-]
+    "hwloc",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ]
 }

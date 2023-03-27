@@ -8,7 +8,11 @@
     {
       "name": "qtbase",
       "default-features": false,
-      "features" : ["widgets", "gui" , "opengl"]
+      "features": [
+        "gui",
+        "opengl",
+        "widgets"
+      ]
     },
     {
       "name": "qtdeclarative",

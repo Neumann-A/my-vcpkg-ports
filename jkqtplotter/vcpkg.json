@@ -8,7 +8,12 @@
     {
       "name": "qtbase",
       "default-features": false,
-      "features" : [ "gui", "widgets", "png", "jpeg"]
+      "features": [
+        "gui",
+        "jpeg",
+        "png",
+        "widgets"
+      ]
     },
     "qtsvg",
     {

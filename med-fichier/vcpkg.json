@@ -5,11 +5,11 @@
   "homepage": "https://www.salome-platform.org",
   "license": "GPL-2.0-or-later",
   "dependencies": [
-  {
-    "name": "hdf5",
-    "default-features": false
-  },
-      {
+    {
+      "name": "hdf5",
+      "default-features": false
+    },
+    {
       "name": "vcpkg-cmake",
       "host": true
     },

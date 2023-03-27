@@ -5,8 +5,8 @@
   "homepage": "https://github.com/SleipnirGroup/Sleipnir/",
   "license": "BSD-3-Clause",
   "dependencies": [
-    "fmt",
     "eigen3",
+    "fmt",
     "intel-mkl",
     {
       "name": "vcpkg-cmake",
@@ -16,6 +16,5 @@
       "name": "vcpkg-cmake-config",
       "host": true
     }
-
   ]
 }
