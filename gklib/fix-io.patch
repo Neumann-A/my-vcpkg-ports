@@ -1,0 +1,17 @@
+diff --git a/io.c b/io.c
+index a156483..9b0bb49 100644
+--- a/io.c
++++ b/io.c
+@@ -18,6 +18,12 @@ This file contains various functions that perform I/O.
+ 
+ #include <GKlib.h>
+ 
++#ifdef _MSC_VER
++#include <io.h>
++#define read _read
++#define write _write
++#endif
++
+ /*************************************************************************
+ * This function opens a file
+ **************************************************************************/

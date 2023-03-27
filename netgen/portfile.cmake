@@ -8,6 +8,7 @@ vcpkg_from_github(
       git-ver.patch
       static.patch
       build.patch
+      fix-cgns-link.patch
 )
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")

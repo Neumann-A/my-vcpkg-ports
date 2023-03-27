@@ -29,6 +29,8 @@ if ("tools" IN_LIST FEATURES AND VCPKG_LIBRARY_LINKAGE STREQUAL static)
     message(FATAL_ERROR "Feature tools only supports dynamic build")
 endif()
 
+file(REMOVE "${SOURCE_PATH}/cmake/Modules/FindEigen.cmake")
+
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES
         openni2         WITH_OPENNI2
