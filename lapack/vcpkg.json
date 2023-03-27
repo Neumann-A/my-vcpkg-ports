@@ -5,9 +5,7 @@
   "description": "Metapackage for packages which provide LAPACK",
   "license": null,
   "dependencies": [
-    {
-      "name": "intel-mkl"
-    },
-    "blas"
+    "blas",
+    "intel-mkl"
   ]
 }

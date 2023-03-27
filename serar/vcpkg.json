@@ -3,18 +3,17 @@
   "version-string": "0.1",
   "description": "SerializationArchive (SerAr) is a c++ interface wrapper library around different serialization possibilities to ensure a common interface for data",
   "homepage": "https://github.com/Neumann-A/SerAr",
-  "default-features": ["json", "program-options", "config", "toml"],
   "dependencies": [
     {
       "name": "cmakejson",
       "default-features": false
     },
+    "eigen3",
+    "fmt",
     {
       "name": "mycel",
       "default-features": false
     },
-    "fmt",
-    "eigen3",
     {
       "name": "vcpkg-cmake",
       "host": true
@@ -22,52 +21,81 @@
     {
       "name": "vcpkg-cmake-config",
       "host": true
-    }  
+    }
+  ],
+  "default-features": [
+    "config",
+    "json",
+    "program-options",
+    "toml"
   ],
   "features": {
-    "hdf5" : {
+    "cereal": {
+      "description": "Build with Cereal Wrappers",
+      "dependencies": [
+        {
+          "name": "cereal",
+          "default-features": false
+        }
+      ]
+    },
+    "config": {
+      "description": "Build with config file support"
+    },
+    "hdf5": {
       "description": "Build with HDF5 support",
-      "dependencies": [ 
+      "dependencies": [
         {
           "name": "hdf5",
           "default-features": false
         }
       ]
     },
-    "matlab" : {
-      "description": "Build with MATLAB support",
-      "dependencies": [ 
-        {
-          "name": "matlab",
-          "default-features": false
-        }
-      ]
-    },
-    "json" : {
+    "json": {
       "description": "Build with JSON support",
-      "dependencies": [ 
+      "dependencies": [
         {
           "name": "nlohmann-json",
           "default-features": false
         }
       ]
     },
-    "toml" : {
-      "description": "Build with TOML support",
-      "dependencies": [ 
+    "matlab": {
+      "description": "Build with MATLAB support",
+      "dependencies": [
         {
-          "name": "toml11",
+          "name": "matlab",
           "default-features": false
         }
       ]
     },
-    "qt" : {
+    "program-options": {
+      "description": "Build with Boost program options wrapper",
+      "dependencies": [
+        {
+          "name": "boost-program-options",
+          "default-features": false
+        }
+      ]
+    },
+    "qt": {
       "description": "Build with Qt User Interface support",
-      "dependencies": [ 
+      "dependencies": [
         {
           "name": "qtbase",
-          "features": [ "gui", "widgets", "zstd", "doubleconversion", "jpeg", "png", "pcre2", "freetype", "icu", "harfbuzz" ],
-          "default-features": false
+          "default-features": false,
+          "features": [
+            "doubleconversion",
+            "freetype",
+            "gui",
+            "harfbuzz",
+            "icu",
+            "jpeg",
+            "pcre2",
+            "png",
+            "widgets",
+            "zstd"
+          ]
         },
         {
           "name": "qttools",
@@ -75,24 +103,11 @@
         }
       ]
     },
-    "cereal" : {
-      "description": "Build with Cereal Wrappers",
-      "dependencies": [ 
+    "toml": {
+      "description": "Build with TOML support",
+      "dependencies": [
         {
-          "name": "cereal",
-          "default-features": false
-        }
-      ]
-    },
-    "config" : {
-      "description": "Build with config file support",
-      "dependencies": [ ]
-    },
-    "program-options" : {
-      "description": "Build with Boost program options wrapper",
-      "dependencies": [ 
-        {
-          "name": "boost-program-options",
+          "name": "toml11",
           "default-features": false
         }
       ]

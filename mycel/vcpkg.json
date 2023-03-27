@@ -9,6 +9,7 @@
       "default-features": false
     },
     "fmt",
+    "magic-enum",
     {
       "name": "vcpkg-cmake",
       "host": true
@@ -16,7 +17,6 @@
     {
       "name": "vcpkg-cmake-config",
       "host": true
-    },
-    "magic-enum"
+    }
   ]
 }

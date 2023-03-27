@@ -11,8 +11,8 @@
       "features": [
         "concurrent",
         "gui",
-        "widgets",
-        "opengl"
+        "opengl",
+        "widgets"
       ]
     },
     "qtsvg",

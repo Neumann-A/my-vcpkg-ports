@@ -5,18 +5,41 @@
   "homepage": "www.freecad.org",
   "license": "GPL-2.0-or-later",
   "dependencies": [
-    "opengl",
-    "matplotlib-cpp",
-    "eigen3",
+    "boost-date-time",
+    "boost-filesystem",
+    "boost-program-options",
+    "boost-regex",
+    "boost-system",
+    "boost-thread",
     "coin",
-    "opencv",
+    "eigen3",
+    "freetype",
+    "matplotlib-cpp",
+    "med-fichier",
+    "netgen",
+    {
+      "name": "opencascade",
+      "default-features": false
+    },
+    {
+      "name": "opencv",
+      "default-features": false
+    },
+    "opengl",
     "orocos-kdl",
+    {
+      "name": "pcl",
+      "default-features": false,
+      "features": [
+        "qt"
+      ]
+    },
+    "python3",
     "qtsvg",
     {
-     "name": "pcl",
-     "features": ["qt"]
+      "name": "qtwebengine",
+      "default-features": false
     },
-    "freetype",
     {
       "name": "vcpkg-cmake",
       "host": true
@@ -25,18 +48,6 @@
       "name": "vcpkg-cmake-config",
       "host": true
     },
-    "xerces-c",
-    "python3",
-    "opencascade",
-    "med-fichier",
-    "boost-program-options",
-    "boost-filesystem",
-    "boost-regex",
-    "boost-system",
-    "boost-thread",
-    "boost-date-time",
-    "netgen",
-    "qtwebengine"
-    
+    "xerces-c"
   ]
 }

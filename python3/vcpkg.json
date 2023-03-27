@@ -44,12 +44,12 @@
       "name": "sqlite3",
       "platform": "!(windows & static)"
     },
-    "zlib",
     {
       "name": "vcpkg-msbuild",
       "host": true,
       "platform": "windows"
-    }
+    },
+    "zlib"
   ],
   "features": {
     "deprecated-win7-support": {

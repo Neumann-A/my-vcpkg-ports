@@ -6,7 +6,10 @@
     {
       "name": "qtbase",
       "default-features": false,
-      "features" : [ "gui", "widgets"]
+      "features": [
+        "gui",
+        "widgets"
+      ]
     },
     {
       "name": "vcpkg-qmake",

@@ -3,22 +3,21 @@
   "version-string": "1.02",
   "description": "Application for statistical analysis and data visualization which can generate different types of publication quality 2D and 3D plots with extensive visual customization.",
   "homepage": "https://alphaplot.sourceforge.io/",
-  "dependencies": [ 
-    "qtdatavis3d",
-    "qtpropertybrowser",
-    "qttranslations",
-    "qttools",
-    "qtscript",
-    "qtimageformats",
-    "qtsvg",
-    "qcustomplot",
+  "dependencies": [
     "gsl",
     "muparser",
+    "qcustomplot",
+    "qtdatavis3d",
+    "qtimageformats",
+    "qtpropertybrowser",
+    "qtscript",
+    "qtsvg",
+    "qttools",
+    "qttranslations",
     {
       "name": "vcpkg-qmake",
       "host": true,
       "default-features": false
     }
-   ]
-
+  ]
 }

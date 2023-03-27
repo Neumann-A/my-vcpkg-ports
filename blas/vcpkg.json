@@ -5,8 +5,6 @@
   "description": "Metapackage for packages which provide BLAS",
   "license": null,
   "dependencies": [
-    {
-      "name": "intel-mkl"
-    }
+    "intel-mkl"
   ]
 }

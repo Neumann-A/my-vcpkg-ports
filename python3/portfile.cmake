@@ -10,6 +10,7 @@ set(PYTHON_VERSION        ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTH
 
 set(PATCHES
     101352.patch
+    dup-ffi-symbols.patch
     0001-only-build-required-projects.patch
     0003-use-vcpkg-zlib.patch
     0004-devendor-external-dependencies.patch
