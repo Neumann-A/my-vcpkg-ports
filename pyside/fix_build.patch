@@ -1,0 +1,79 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6f26b15..5b9edad 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -5,6 +5,8 @@ set(CMAKE_BUILD_TYPE Release CACHE STRING "Build Type")
+ 
+ project(pyside6_super_project)
+ 
++link_directories(${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/$<$<CONFIG:DEBUG>:debug/>lib)
++
+ if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+     message(FATAL_ERROR "In-source builds are not allowed.")
+ endif()
+diff --git a/sources/pyside6/PySide6/__init__.py.in b/sources/pyside6/PySide6/__init__.py.in
+index d0a4ecc..5866f70 100644
+--- a/sources/pyside6/PySide6/__init__.py.in
++++ b/sources/pyside6/PySide6/__init__.py.in
+@@ -31,7 +31,7 @@ def _additional_dll_directories(package_dir):
+         result.append(libpysideqml)
+     for path in os.environ.get('PATH').split(';'):
+         if path:
+-             if (Path(path) / 'qmake.exe').exists():
++             if ((Path(path) / 'Qt6Core.dll').exists() or (Path(path) / 'Qt6Cored.dll').exists()):
+                  result.append(path)
+                  break
+     return result
+diff --git a/sources/pyside6/cmake/Macros/PySideModules.cmake b/sources/pyside6/cmake/Macros/PySideModules.cmake
+index cca66be..f7d0cc6 100644
+--- a/sources/pyside6/cmake/Macros/PySideModules.cmake
++++ b/sources/pyside6/cmake/Macros/PySideModules.cmake
+@@ -21,7 +21,7 @@ endmacro()
+ # set size optimization flags for pyside6
+ macro(append_size_optimization_flags _module_name)
+     if(NOT QFP_NO_OVERRIDE_OPTIMIZATION_FLAGS)
+-        if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
++        if (MSVC)
+             target_compile_options(${_module_name} PRIVATE /Gy /Gw /EHsc)
+             target_link_options(${_module_name} PRIVATE LINKER:/OPT:REF)
+         elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU|CLANG")
+@@ -243,7 +243,7 @@ macro(create_pyside_module)
+     if(NOT PYSIDE_IS_CROSS_BUILD)
+         set(generate_pyi_options ${module_NAME} --sys-path
+             "${pysidebindings_BINARY_DIR}"
+-            "${SHIBOKEN_PYTHON_MODULE_DIR}/..")     # use the layer above shiboken6
++            "${SHIBOKEN_PYTHON_MODULE_DIR}/../..")     # use the layer above shiboken6
+         if (QUIET_BUILD)
+             list(APPEND generate_pyi_options "--quiet")
+         endif()
+diff --git a/sources/shiboken6/ApiExtractor/clangparser/compilersupport.cpp b/sources/shiboken6/ApiExtractor/clangparser/compilersupport.cpp
+index d3497de..79523a7 100644
+--- a/sources/shiboken6/ApiExtractor/clangparser/compilersupport.cpp
++++ b/sources/shiboken6/ApiExtractor/clangparser/compilersupport.cpp
+@@ -33,7 +33,7 @@ QVersionNumber libClangVersion()
+ }
+ 
+ static Compiler _compiler =
+-#if defined (Q_CC_CLANG)
++#if defined (Q_CC_CLANG) && !defined (Q_CC_MSVC)
+     Compiler::Clang;
+ #elif defined (Q_CC_MSVC)
+     Compiler::Msvc;
+@@ -46,7 +46,7 @@ Compiler compiler() { return _compiler; }
+ bool setCompiler(const QString &name)
+ {
+     bool result = true;
+-    if (name == u"msvc")
++    if (name == u"msvc" || name == u"clang-cl")
+         _compiler = Compiler::Msvc;
+     else if (name == u"g++")
+         _compiler = Compiler::Gpp;
+@@ -339,7 +339,7 @@ QByteArrayList emulatedCompilerOptions()
+         result.append(QByteArrayLiteral("-fdelayed-template-parsing"));
+         result.append(QByteArrayLiteral("-Wno-microsoft-enum-value"));
+         // Fix yvals_core.h:  STL1000: Unexpected compiler version, expected Clang 7 or newer (MSVC2017 update)
+-        result.append(QByteArrayLiteral("-D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH"));
++        // result.append(QByteArrayLiteral("-D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH"));
+         if (needsClangBuiltinIncludes())
+             appendClangBuiltinIncludes(&headerPaths);
+         break;

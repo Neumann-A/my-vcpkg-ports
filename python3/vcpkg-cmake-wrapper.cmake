@@ -122,5 +122,7 @@ else()
     _find_package(${ARGS})
 endif()
 
+link_directories(${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/$<$<CONFIG:DEBUG>:debug/>lib)
+
 unset(_PythonFinder_WantInterp)
 unset(_PythonFinder_WantLibs)
