@@ -55,3 +55,7 @@ file(GLOB lics "${SOURCE_PATH}/LICENSES/*")
 vcpkg_install_copyright(FILE_LIST ${lics})
 
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/Lib/site-packages/PySide6/__init__.py" "${CURRENT_BUILDTREES_DIR}" "do-not-use-and-force-false")
+
+#TODO: Need to add "os.add_dll_directory(os.path.dirname(__file__)+'/../../../bin')" to "vcpkg\installed\triplet\lib\site-packages\shiboken6\__init__.py" before "from shiboken6.Shiboken import *"
+
+
