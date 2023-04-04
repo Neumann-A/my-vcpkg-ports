@@ -1,7 +1,7 @@
-diff --git a/omniORB-4-5a27911dc0.clean/config/config.mk b/omniORB-4-5a27911dc0/config/config.mk
+diff --git a/config/config.mk b/config/config.mk
 index 31d2cfd..c8e34f5 100644
---- a/omniORB-4-5a27911dc0.clean/config/config.mk
-+++ b/omniORB-4-5a27911dc0/config/config.mk
+--- a/config/config.mk
++++ b/config/config.mk
 @@ -21,7 +21,7 @@
  # You should also look at <top>/mk/platforms/$(platform).mk and if necessary
  # edit the make variables, such as CC and CXX, in the file.
@@ -11,10 +11,10 @@ index 31d2cfd..c8e34f5 100644
  #platform = x86_win32_vs_15
  #platform = x86_win32_vs_14
  #platform = x86_win32_vs_12
-diff --git a/omniORB-4-5a27911dc0.clean/configure b/omniORB-4-5a27911dc0/configure
+diff --git a/configure b/configure
 index a90b79e..360d7b0 100644
---- a/omniORB-4-5a27911dc0.clean/configure
-+++ b/omniORB-4-5a27911dc0/configure
+--- a/configure
++++ b/configure
 @@ -8435,6 +8435,7 @@ case "$host" in
    *-*-openbsd*)  plat_name="OpenBSD";  plat_def="__openbsd__";  os_v="3";;
    *-*-sco*)      plat_name="OSR5";     plat_def="__osr5__";     os_v="5";;
@@ -23,10 +23,10 @@ index a90b79e..360d7b0 100644
  esac
  
  PLATFORM_NAME=$plat_name
-diff --git a/omniORB-4-5a27911dc0.clean/configure.ac b/omniORB-4-5a27911dc0/configure.ac
+diff --git a/configure.ac b/configure.ac
 index d485463..2ba9c82 100644
---- a/omniORB-4-5a27911dc0.clean/configure.ac
-+++ b/omniORB-4-5a27911dc0/configure.ac
+--- a/configure.ac
++++ b/configure.ac
 @@ -231,6 +231,7 @@ case "$host" in
    *-*-openbsd*)  plat_name="OpenBSD";  plat_def="__openbsd__";  os_v="3";;
    *-*-sco*)      plat_name="OSR5";     plat_def="__osr5__";     os_v="5";;
@@ -35,10 +35,10 @@ index d485463..2ba9c82 100644
  esac
  
  AC_SUBST(PLATFORM_NAME, $plat_name)
-diff --git a/omniORB-4-5a27911dc0.clean/include/omnithread/atomic.h b/omniORB-4-5a27911dc0/include/omnithread/atomic.h
+diff --git a/include/omnithread/atomic.h b/include/omnithread/atomic.h
 index 3fed8df..e1b6a71 100644
---- a/omniORB-4-5a27911dc0.clean/include/omnithread/atomic.h
-+++ b/omniORB-4-5a27911dc0/include/omnithread/atomic.h
+--- a/include/omnithread/atomic.h
++++ b/include/omnithread/atomic.h
 @@ -27,7 +27,7 @@
  #define __omnithread_atomic_h_
  
@@ -48,10 +48,10 @@ index 3fed8df..e1b6a71 100644
  
  #  define OMNI_REFCOUNT_DEFINED
  
-diff --git a/omniORB-4-5a27911dc0.clean/mk/beforeauto.mk.in b/omniORB-4-5a27911dc0/mk/beforeauto.mk.in
+diff --git a/mk/beforeauto.mk.in b/mk/beforeauto.mk.in
 index f078912..9aef646 100644
---- a/omniORB-4-5a27911dc0.clean/mk/beforeauto.mk.in
-+++ b/omniORB-4-5a27911dc0/mk/beforeauto.mk.in
+--- a/mk/beforeauto.mk.in
++++ b/mk/beforeauto.mk.in
 @@ -4,7 +4,7 @@
  #
  # Based upon beforedir.mk and platform makefiles
@@ -134,10 +134,10 @@ index f078912..9aef646 100644
 +platform = x86_win32_vs_16
 +include $(THIS_IMPORT_TREE)/mk/platforms/$(platform).mk
 \ No newline at end of file
-diff --git a/omniORB-4-5a27911dc0.clean/mk/beforedir.mk b/omniORB-4-5a27911dc0/mk/beforedir.mk
+diff --git a/mk/beforedir.mk b/mk/beforedir.mk
 index 855bc4d..e1c4ef7 100644
---- a/omniORB-4-5a27911dc0.clean/mk/beforedir.mk
-+++ b/omniORB-4-5a27911dc0/mk/beforedir.mk
+--- a/mk/beforedir.mk
++++ b/mk/beforedir.mk
 @@ -377,6 +377,7 @@ export::
  
  else
@@ -146,125 +146,10 @@ index 855bc4d..e1c4ef7 100644
  include $(THIS_IMPORT_TREE)/mk/platforms/$(platform).mk
  
  endif
-diff --git a/omniORB-4-5a27911dc0.clean/mk/mklib.mk b/omniORB-4-5a27911dc0/mk/mklib.mk
-index fb83cf3..117a365 100644
---- a/omniORB-4-5a27911dc0.clean/mk/mklib.mk
-+++ b/omniORB-4-5a27911dc0/mk/mklib.mk
-@@ -16,12 +16,26 @@
- # are called libfoo.a and libfoo.so.1.3 etc.
- #
- 
--all:: mkstatic mkshared
-+ifdef BuildSharedLibrary
-+
-+all:: mkshared
-+
-+export:: mkshared
-+
-+ifdef INSTALLTARGET
-+install:: mkshared
-+endif
-+
-+else
-+
-+all:: mkstatic
- 
--export:: mkstatic mkshared
-+export:: mkstatic
- 
- ifdef INSTALLTARGET
--install:: mkstatic mkshared
-+install:: mkstatic
-+endif
-+
- endif
- 
- vers := $(subst ., ,$(LIB_VERSION))
-@@ -38,7 +52,7 @@ namespec := $(LIB_NAME) $(vers)
- # Build Static library
- ##############################################################################
- 
--ifndef NoStaticLibrary
-+ifndef BuildSharedLibrary
- 
- staticlib := static/$(patsubst %,$(LibNoDebugPattern),$(LIB_NAME)$(major))
- MDFLAGS += -p static/
-@@ -46,7 +60,7 @@ MDFLAGS += -p static/
- mkstatic::
- 	@(dir=static; $(CreateDir))
- 
--mkstatic:: $(staticlib)
-+$(warning mkstatic) mkstatic:: $(staticlib)
- 
- $(staticlib): $(patsubst %, static/%, $(LIB_OBJS))
- 	@$(StaticLinkLibrary)
-@@ -71,7 +85,7 @@ veryclean::
- 
- else
- 
--mkstatic::
-+# $(warning mkstatic dummy) mkstatic::
- 
- endif
- 
-@@ -97,10 +111,10 @@ mkshared::
- mkshared:: $(shlib)
- 
- $(shlib): $(patsubst %, shared/%, $(LIB_OBJS) $(LIB_SHARED_ONLY_OBJS))
--	@(namespec="$(namespec)" extralibs="$(imps) $(extralibs)"; \
--         $(MakeCXXSharedLibrary))
-+	$(warning shlib test) @(namespec="$(namespec)" extralibs="$(imps) $(extralibs)"; \
-+         $(warning mksharedline)$(MakeCXXSharedLibrary))
- 
--export:: $(shlib)
-+ $(warning export mklib) export:: $(shlib)
- 	@(namespec="$(namespec)"; \
-           $(ExportSharedLibrary))
- 
-@@ -139,7 +153,7 @@ endif
- 
- else
- 
--mkshared::
-+# mkshared::
- 
- endif
- 
-@@ -150,9 +164,9 @@ ifdef Win32Platform
- 
- ifdef BuildSharedLibrary
- 
--all:: mkstaticdbug mkshareddbug
-+all:: mkshareddbug
- 
--export:: mkstaticdbug mkshareddbug
-+export:: mkshareddbug
- 
- else
- 
-@@ -166,6 +180,8 @@ endif
- #      Static debug libraries
- #####################################################
- 
-+ifndef BuildSharedLibrary
-+
- dbuglib := debug/$(patsubst %,$(LibDebugPattern),$(LIB_NAME)$(major))
- MDFLAGS += -p debug/
- 
-@@ -187,7 +203,8 @@ clean::
- veryclean::
- 	$(RM) debug/*.o
- 	$(RM) $(dbuglib)
--
-+  
-+endif
- #####################################################
- #      DLL debug libraries
- #####################################################
-diff --git a/omniORB-4-5a27911dc0.clean/mk/platforms/x86_win32_vs_16.mk b/omniORB-4-5a27911dc0/mk/platforms/x86_win32_vs_16.mk
+diff --git a/mk/platforms/x86_win32_vs_16.mk b/mk/platforms/x86_win32_vs_16.mk
 index cd2f16a..44370fb 100644
---- a/omniORB-4-5a27911dc0.clean/mk/platforms/x86_win32_vs_16.mk
-+++ b/omniORB-4-5a27911dc0/mk/platforms/x86_win32_vs_16.mk
+--- a/mk/platforms/x86_win32_vs_16.mk
++++ b/mk/platforms/x86_win32_vs_16.mk
 @@ -8,7 +8,7 @@ x86Processor = 1
  
  compiler_version_suffix=_vc16
@@ -320,10 +205,10 @@ index cd2f16a..44370fb 100644
  
  
  # Add the location of the Open SSL library
-diff --git a/omniORB-4-5a27911dc0.clean/mk/python.mk b/omniORB-4-5a27911dc0/mk/python.mk
+diff --git a/mk/python.mk b/mk/python.mk
 index 1380018..fb321a5 100644
---- a/omniORB-4-5a27911dc0.clean/mk/python.mk
-+++ b/omniORB-4-5a27911dc0/mk/python.mk
+--- a/mk/python.mk
++++ b/mk/python.mk
 @@ -4,7 +4,7 @@
  
  PYVERSION := $(shell $(PYTHON) -c 'import sys; sys.stdout.write(".".join(sys.version.split(".")[:2]))')
@@ -333,23 +218,10 @@ index 1380018..fb321a5 100644
  
  PythonSHAREDLIB_SUFFIX = $(shell $(PYTHON) -c 'import sys, distutils.sysconfig; sys.stdout.write((distutils.sysconfig.get_config_var("SO") or ".so").lstrip("."))')
  
-diff --git a/omniORB-4-5a27911dc0.clean/mk/unix.mk b/omniORB-4-5a27911dc0/mk/unix.mk
-index 58d83a2..778ea86 100644
---- a/omniORB-4-5a27911dc0.clean/mk/unix.mk
-+++ b/omniORB-4-5a27911dc0/mk/unix.mk
-@@ -3,7 +3,7 @@
- #
- 
- UnixPlatform = 1
--
-+agagasf asfaedf 
- #
- # Any recursively-expanded variable set here can be overridden _afterwards_ by
- # a platform-specific mk file which includes this one.
-diff --git a/omniORB-4-5a27911dc0.clean/mk/win32.mk b/omniORB-4-5a27911dc0/mk/win32.mk
+diff --git a/mk/win32.mk b/mk/win32.mk
 index 94c9aad..f788d41 100644
---- a/omniORB-4-5a27911dc0.clean/mk/win32.mk
-+++ b/omniORB-4-5a27911dc0/mk/win32.mk
+--- a/mk/win32.mk
++++ b/mk/win32.mk
 @@ -81,7 +81,7 @@ endif
  
  
@@ -411,128 +283,10 @@ index 94c9aad..f788d41 100644
  endef
  
  # Export SharedLibrary
-diff --git a/omniORB-4-5a27911dc0.clean/src/lib/omniORB/orbcore/dir.mk b/omniORB-4-5a27911dc0/src/lib/omniORB/orbcore/dir.mk
-index 634e6b1..5c9558f 100644
---- a/omniORB-4-5a27911dc0.clean/src/lib/omniORB/orbcore/dir.mk
-+++ b/omniORB-4-5a27911dc0/src/lib/omniORB/orbcore/dir.mk
-@@ -220,7 +220,7 @@ include $(BASE_OMNI_TREE)/mk/mklib.mk
- 
- #########################################################################
- ifdef Win32Platform
--
-+ifndef BuildSharedLibrary
- stublib = static/$(patsubst %,$(LibNoDebugPattern),msvcstub)
- 
- all:: $(stublib)
-@@ -252,7 +252,7 @@ clean::
- 
- veryclean::
- 	$(RM) $(stubdblib)
--
-+endif
- endif
- 
- #########################################################################
-diff --git a/omniORB-4-5a27911dc0.clean/src/lib/omnithread/dir.mk b/omniORB-4-5a27911dc0/src/lib/omnithread/dir.mk
-index ed2194c..efaacfe 100644
---- a/omniORB-4-5a27911dc0.clean/src/lib/omnithread/dir.mk
-+++ b/omniORB-4-5a27911dc0/src/lib/omnithread/dir.mk
-@@ -32,14 +32,27 @@ LIB_VERSION  := $(OMNITHREAD_VERSION)
- LIB_OBJS     := $(CXXSRCS:.cc=.o)
- LIB_IMPORTS  := $(OMNITHREAD_PLATFORM_LIB)
- 
--all:: mkstatic mkshared
-+ifdef BuildSharedLibrary
-+
-+all:: mkshared
- 
--export:: mkstatic mkshared
-+export:: mkshared
- 
- ifdef INSTALLTARGET
--install:: mkstatic mkshared
-+install:: mkshared
- endif
- 
-+else
-+
-+all:: mkstatic
-+
-+export:: mkstatic
-+
-+ifdef INSTALLTARGET
-+install:: mkstatic
-+endif
-+
-+endif
- vers := $(subst ., ,$(LIB_VERSION))
- ifeq ($(words $(vers)), 2)
-   vers  := _ $(vers)
-@@ -54,7 +67,7 @@ namespec := $(LIB_NAME) $(vers)
- # Build Static library
- ##############################################################################
- 
--ifndef NoStaticLibrary
-+ifndef BuildSharedLibrary
- 
- staticlib := static/$(patsubst %,$(LibNoDebugPattern),$(LIB_NAME)$(major))
- 
-@@ -84,10 +97,6 @@ veryclean::
- 	$(RM) $(staticlib)
- 	(dir=static; $(CleanStaticLibrary))
- 
--else
--
--mkstatic::
--
- endif
- 
- 
-@@ -152,10 +161,6 @@ veryclean::
- 
- endif
- 
--else
--
--mkshared::
--
- endif
- 
- ##############################################################################
-@@ -165,9 +170,9 @@ ifdef Win32Platform
- 
- ifdef BuildSharedLibrary
- 
--all:: mkstaticdbug mkshareddbug
-+all:: mkshareddbug
- 
--export:: mkstaticdbug mkshareddbug
-+export:: mkshareddbug
- 
- else
- 
-@@ -182,6 +187,8 @@ endif
- #      Static debug libraries
- #####################################################
- 
-+ifndef BuildSharedLibrary
-+
- dbuglib := debug/$(patsubst %,$(LibDebugPattern),$(LIB_NAME)$(major))
- 
- mkstaticdbug::
-@@ -205,6 +212,8 @@ veryclean::
- 	$(RM) $(dbuglib)
- 	(dir=debug; $(CleanStaticLibrary))
- 
-+endif
-+
- #####################################################
- #      DLL debug libraries
- #####################################################
-diff --git a/omniORB-4-5a27911dc0.clean/src/tool/omniidl/cxx/dir.mk b/omniORB-4-5a27911dc0/src/tool/omniidl/cxx/dir.mk
+diff --git a/src/tool/omniidl/cxx/dir.mk b/src/tool/omniidl/cxx/dir.mk
 index 84f10ac..fee51c7 100644
---- a/omniORB-4-5a27911dc0.clean/src/tool/omniidl/cxx/dir.mk
-+++ b/omniORB-4-5a27911dc0/src/tool/omniidl/cxx/dir.mk
+--- a/src/tool/omniidl/cxx/dir.mk
++++ b/src/tool/omniidl/cxx/dir.mk
 @@ -173,7 +173,7 @@ veryclean::
  
  ifdef Cygwin

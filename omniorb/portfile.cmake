@@ -6,6 +6,8 @@ vcpkg_download_distfile(ARCHIVE
 vcpkg_extract_source_archive(
     SOURCE_PATH
     ARCHIVE "${ARCHIVE}"
+    PATCHES wip.patch
+            wip2.patch
 )
 
 #vcpkg_find_acquire_program(PYTHON3)
@@ -35,7 +37,7 @@ vcpkg_configure_make(
   OPTIONS
 )
 
-vcpkg_install_make(
+vcpkg_build_make(
   MAKEFILE GNUMakefile
   ADD_BIN_TO_PATH
 )
