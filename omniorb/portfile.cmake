@@ -25,9 +25,12 @@ cmake_path(GET BISON PARENT_PATH BISON_DIR)
 vcpkg_add_to_path("${BISON_DIR}")
 
 if(VCPKG_TARGET_IS_WINDOWS)
-  #string(APPEND VCPKG_C_FLAGS " -I${CURRENT_INSTALLED_DIR}/include/python3.10")
-  #string(APPEND VCPKG_CXX_FLAGS " -I${CURRENT_INSTALLED_DIR}/include/python3.10")
   string(APPEND VCPKG_LINKER_FLAGS " -v -fuse-ld=lld-link")
+endif()
+
+if(VCPKG_TARGET_IS_WINDOWS)
+    z_vcpkg_get_cmake_vars(cmake_vars_file)
+    include("${cmake_vars_file}")
 endif()
 
 vcpkg_configure_make(
