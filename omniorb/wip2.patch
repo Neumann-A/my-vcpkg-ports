@@ -105,7 +105,7 @@ index 783402530..4b8d9f79b 100644
  #
  
 -IMPORT_LIBRARY_FLAGS = $(patsubst %,$(LibPathPattern),$(IMPORT_LIBRARY_DIRS))
-+IMPORT_LIBRARY_FLAGS = $(warning DIRS:$(IMPORT_LIBRARY_DIRS))$(patsubst %,$(LibPathPattern),$(IMPORT_LIBRARY_DIRS))
++IMPORT_LIBRARY_FLAGS = $(patsubst %,$(LibPathPattern),$(IMPORT_LIBRARY_DIRS))
  
  define CXXExecutable
  (set -x; \

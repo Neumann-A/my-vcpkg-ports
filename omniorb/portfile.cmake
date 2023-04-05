@@ -8,6 +8,7 @@ vcpkg_extract_source_archive(
     ARCHIVE "${ARCHIVE}"
     PATCHES wip.patch
             wip2.patch
+            wip3.patch
 )
 
 #vcpkg_find_acquire_program(PYTHON3)
@@ -31,14 +32,17 @@ endif()
 
 vcpkg_configure_make(
   SOURCE_PATH "${SOURCE_PATH}"
-  AUTOCONFIG
-  NO_WRAPPERS
+  #AUTOCONFIG
+  #NO_WRAPPERS
   COPY_SOURCE
+  SKIP_CONFIGURE
   OPTIONS
 )
 
 vcpkg_build_make(
-  MAKEFILE GNUMakefile
+  MAKEFILE "GNUMakefile"
+  SUBPATH "src"
+  BUILD_TARGET "export"
   ADD_BIN_TO_PATH
 )
 
