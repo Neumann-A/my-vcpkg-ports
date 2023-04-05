@@ -2,7 +2,7 @@
   "name": "omniorb",
   "version": "4.3.0",
   "description": "A suite of portable game libraries",
-  "license": "LGPL-2.0-only",
+  "license": "LGPL-2.1-or-later",
   "supports": "!osx & !uwp",
   "dependencies": [
     "zlib",
