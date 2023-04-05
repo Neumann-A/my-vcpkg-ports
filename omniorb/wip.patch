@@ -11,18 +11,6 @@ index 31d2cfd..c8e34f5 100644
  #platform = x86_win32_vs_15
  #platform = x86_win32_vs_14
  #platform = x86_win32_vs_12
-diff --git a/configure b/configure
-index a90b79e..360d7b0 100644
---- a/configure
-+++ b/configure
-@@ -8435,6 +8435,7 @@ case "$host" in
-   *-*-openbsd*)  plat_name="OpenBSD";  plat_def="__openbsd__";  os_v="3";;
-   *-*-sco*)      plat_name="OSR5";     plat_def="__osr5__";     os_v="5";;
-   *-*-gnu*)      plat_name="GNU";      plat_def="__hurd__" ;    os_v="0";;
-+  *-*-mingw*)    plat_name="Win32Platform";      plat_def="__WIN32__" ;    os_v="4";;
- esac
- 
- PLATFORM_NAME=$plat_name
 diff --git a/configure.ac b/configure.ac
 index d485463..2ba9c82 100644
 --- a/configure.ac
@@ -52,50 +40,6 @@ diff --git a/mk/beforeauto.mk.in b/mk/beforeauto.mk.in
 index f078912..9aef646 100644
 --- a/mk/beforeauto.mk.in
 +++ b/mk/beforeauto.mk.in
-@@ -4,7 +4,7 @@
- #
- # Based upon beforedir.mk and platform makefiles
- 
--platform         = autoconf
-+# platform         = autoconf
- MAKEFILE_INC_DIR = $(BASE_OMNI_TREE)/$(CURRENT)/
- IMPORT_TREES     = $(TOP) $(BASE_OMNI_TREE)
- THIS_IMPORT_TREE = $(TOP)
-@@ -341,8 +341,8 @@ GENERATED_CXX_HDRS += $(CORBA_STUB_HDRS)
- # later if necessary.
- #
- 
--UnixPlatform = 1
--ThreadSystem = Posix
-+# UnixPlatform = 1
-+# ThreadSystem = Posix
- 
- #
- # General rules for cleaning.
-@@ -601,14 +601,17 @@ OMNIORB_COS_DYNAMIC_LIB_DEPEND := $(GENERATE_LIB_DEPEND)
- # the rules in their platform files.
- #
- BuildSharedLibrary = 1       # Enable by default
--SHAREDLIB_SUFFIX = so
-+SHAREDLIB_SUFFIX = dll
- 
--SharedLibraryFullNameTemplate 	= lib$$1$$2.$(SHAREDLIB_SUFFIX).$$3.$$4
--SharedLibrarySoNameTemplate   	= lib$$1$$2.$(SHAREDLIB_SUFFIX).$$3
--SharedLibraryLibNameTemplate  	= lib$$1$$2.$(SHAREDLIB_SUFFIX)
--SharedLibraryImplibNameTemplate = lib$$1$$2.a
-+# .$$3.$$4
-+# .$$3
- 
--SharedLibraryPlatformLinkFlagsTemplate = -shared -Wl,-soname,$$soname
-+SharedLibraryFullNameTemplate 	= $$1$$2.$(SHAREDLIB_SUFFIX)
-+SharedLibrarySoNameTemplate   	= $$1$$2.$(SHAREDLIB_SUFFIX)
-+SharedLibraryLibNameTemplate  	= $$1$$2.$(SHAREDLIB_SUFFIX)
-+SharedLibraryImplibNameTemplate = $$1$$2.lib
-+
-+# SharedLibraryPlatformLinkFlagsTemplate = -shared -LD$${debug:+d} -Wl,-soname,$$soname
- 
- define SharedLibraryFullName
- fn() { \
 @@ -655,13 +658,13 @@ define ExportSharedLibraryToDir
   $(ExportLibraryToDir); \
   $(ParseNameSpec); \
@@ -126,85 +70,15 @@ index f078912..9aef646 100644
  CC              = @CC@
  CXX             = @CXX@
  RANLIB		= @RANLIB@
-@@ -1311,3 +1314,6 @@ endif
+@@ -1311,3 +1314,7 @@ endif
  
  lib_depend := $(patsubst %,$(LibPattern),omnithread)
  OMNITHREAD_LIB_DEPEND := $(GENERATE_LIB_DEPEND)
 +
-+platform = x86_win32_vs_16
-+include $(THIS_IMPORT_TREE)/mk/platforms/$(platform).mk
++ifdef Win32Platform
++include $(THIS_IMPORT_TREE)/mk/platforms/vcpkg.mk
++endif
 \ No newline at end of file
-diff --git a/mk/beforedir.mk b/mk/beforedir.mk
-index 855bc4d..e1c4ef7 100644
---- a/mk/beforedir.mk
-+++ b/mk/beforedir.mk
-@@ -377,6 +377,7 @@ export::
- 
- else
- 
-+# THIS_IMPORT_TREE := $(TOP)
- include $(THIS_IMPORT_TREE)/mk/platforms/$(platform).mk
- 
- endif
-diff --git a/mk/platforms/x86_win32_vs_16.mk b/mk/platforms/x86_win32_vs_16.mk
-index cd2f16a..44370fb 100644
---- a/mk/platforms/x86_win32_vs_16.mk
-+++ b/mk/platforms/x86_win32_vs_16.mk
-@@ -8,7 +8,7 @@ x86Processor = 1
- 
- compiler_version_suffix=_vc16
- 
--WINVER = 0x0501
-+WINVER = 0x0A00
- 
- BINDIR = bin/x86_win32
- LIBDIR = lib/x86_win32
-@@ -27,28 +27,28 @@ ABSTOP = $(shell cd $(TOP); pwd)
- 
- # Use the following set of flags to build and use multithreaded DLLs
- #
--MSVC_DLL_CXXNODEBUGFLAGS       = -MD -EHs -GS -GR -Zi -nologo
-+MSVC_DLL_CXXNODEBUGFLAGS       = -MD -EHs -GS -GR -Z7 -nologo
- MSVC_DLL_CXXLINKNODEBUGOPTIONS = -nologo -manifest -DEBUG
--MSVC_DLL_CNODEBUGFLAGS         = -MD -GS -GR -Zi -nologo
-+MSVC_DLL_CNODEBUGFLAGS         = -MD -GS -GR -Z7 -nologo
- MSVC_DLL_CLINKNODEBUGOPTIONS   = -nologo -manifest -DEBUG
- #
--MSVC_DLL_CXXDEBUGFLAGS         = -MDd -EHs -RTC1 -GS -GR -Zi -nologo
-+MSVC_DLL_CXXDEBUGFLAGS         = -MDd -EHs -RTC1 -GS -GR -Z7 -nologo
- MSVC_DLL_CXXLINKDEBUGOPTIONS   = -nologo -manifest -DEBUG
--MSVC_DLL_CDEBUGFLAGS           = -MDd -RTC1 -GS -GR -Zd -Zi -nologo
-+MSVC_DLL_CDEBUGFLAGS           = -MDd -RTC1 -GS -GR -Zd -Z7 -nologo
- MSVC_DLL_CLINKDEBUGOPTIONS     = -nologo -manifest -DEBUG
- #
- # Or
- #
- # Use the following set of flags to build and use multithread static libraries
- #
--MSVC_STATICLIB_CXXNODEBUGFLAGS       = -MT -EHs -GS -GR -Zi -nologo
-+MSVC_STATICLIB_CXXNODEBUGFLAGS       = -MT -EHs -GS -GR -Z7 -nologo
- MSVC_STATICLIB_CXXLINKNODEBUGOPTIONS = -nologo -manifest -DEBUG
--MSVC_STATICLIB_CNODEBUGFLAGS         = -MT -GS -GR -Zi -nologo
-+MSVC_STATICLIB_CNODEBUGFLAGS         = -MT -GS -GR -Z7 -nologo
- MSVC_STATICLIB_CLINKNODEBUGOPTIONS   = -nologo -manifest -DEBUG
- 
--MSVC_STATICLIB_CXXDEBUGFLAGS         = -MTd -EHs -RTC1 -GS -GR -Zi -nologo
-+MSVC_STATICLIB_CXXDEBUGFLAGS         = -MTd -EHs -RTC1 -GS -GR -Z7 -nologo
- MSVC_STATICLIB_CXXLINKDEBUGOPTIONS   = -nologo -manifest -DEBUG
--MSVC_STATICLIB_CDEBUGFLAGS           = -MTd -RTC1 -GS -GR -Zi -nologo
-+MSVC_STATICLIB_CDEBUGFLAGS           = -MTd -RTC1 -GS -GR -Z7 -nologo
- MSVC_STATICLIB_CLINKDEBUGOPTIONS     = -nologo -manifest -DEBUG
- 
- 
-@@ -65,7 +65,7 @@ IMPORT_CPPFLAGS += -D__x86__ -D__NT__ -D__OSVERSION__=4 \
- 
- 
- # Default directory for the omniNames log files.
--OMNINAMES_LOG_DEFAULT_LOCATION = C:\\temp
-+#OMNINAMES_LOG_DEFAULT_LOCATION = temp
- 
- 
- # Add the location of the Open SSL library
 diff --git a/mk/python.mk b/mk/python.mk
 index 1380018..fb321a5 100644
 --- a/mk/python.mk
@@ -214,7 +88,7 @@ index 1380018..fb321a5 100644
  PYVERSION := $(shell $(PYTHON) -c 'import sys; sys.stdout.write(".".join(sys.version.split(".")[:2]))')
  PYPREFIX  := $(shell $(PYTHON) -c 'import sys; sys.stdout.write(sys.exec_prefix.replace("\\","/"))')
 -PYINCDIR  := $(shell $(PYTHON) -c 'import sys, distutils.sysconfig; sys.stdout.write(distutils.sysconfig.get_python_inc().replace("\\","/"))')
-+PYINCDIR  := E:/all/vcpkg/installed/x64-windows-release/include/python3.10
++PYINCDIR  := $(prefix)/include/python3.10
  
  PythonSHAREDLIB_SUFFIX = $(shell $(PYTHON) -c 'import sys, distutils.sysconfig; sys.stdout.write((distutils.sysconfig.get_config_var("SO") or ".so").lstrip("."))')
  
@@ -222,12 +96,11 @@ diff --git a/mk/win32.mk b/mk/win32.mk
 index 94c9aad..f788d41 100644
 --- a/mk/win32.mk
 +++ b/mk/win32.mk
-@@ -81,7 +81,7 @@ endif
+@@ -81,7 +81,6 @@ endif
  
  
  ifndef WINVER
 -WINVER = 0x0400
-+WINVER = 0x0A00
  endif
  
  IMPORT_CPPFLAGS += -D__WIN32__ -D_WIN32_WINNT=$(WINVER)
@@ -249,16 +122,6 @@ index 94c9aad..f788d41 100644
  )
  endef
  
-@@ -211,8 +211,8 @@ ifndef EmbeddedSystem
- BuildSharedLibrary = 1
- endif
- 
--SharedLibraryFullNameTemplate = $(SharedLibraryLibNameTemplate).lib
- SharedLibraryLibNameTemplate  = $$1$$2$$3$$4_rt$${extrasuffix:-}
-+SharedLibraryFullNameTemplate = $(SharedLibraryLibNameTemplate).lib
- SharedLibraryShortLibName = $$1$$2_rt$${extrasuffix:-}.lib
- SharedLibraryDllNameTemplate  = $$1$$2$$3$$4$(compiler_version_suffix)_rt$${extrasuffix:-}
- SharedLibraryExportSymbolFileNameTemplate = $$1$$2$${extrasuffix:-}.def
 @@ -356,18 +356,18 @@ extralinkoption="$(MSVC_DLL_CXXLINKDEBUGOPTIONS)"; \
  else \
  extralinkoption="$(MSVC_DLL_CXXLINKNODEBUGOPTIONS)"; \
@@ -274,9 +137,8 @@ index 94c9aad..f788d41 100644
  $$defflag -IMPLIB:$@ $(IMPORT_LIBRARY_FLAGS) \
  $^ $$extralibs $$resname; \
 -$(MANIFESTTOOL) /outputresource:"$$dllname;#2" /manifest $$dllname.manifest; \
--$(CP) $@ $$slibname;
 +$(MANIFESTTOOL) -outputresource:"$$dllname;#2" -manifest $$dllname.manifest; \
-+$(CP) $@ $$slibname; \
+ $(CP) $@ $$slibname;
  endef
  
  # Export SharedLibrary

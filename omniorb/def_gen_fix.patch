@@ -16,12 +16,3 @@ index fc179563e..15903919a 100644
  egrep '^[^ ]+ +[^ ]+ +SECT[^ ]+ +[^ ]+ +\(\) +External +\| +\?[^ ]*|^[^ ]+ +[^ ]+ +SECT[^ ]+ +[^ ]+ +External +\| +\?[^?][^ ]*'|\
  egrep -v 'deleting destructor[^(]+\(unsigned int\)' | \
  egrep -v 'anonymous namespace' | \
-@@ -367,7 +369,7 @@ $(CXXLINK) -out:$$dllname -DLL $$extralinkoption \
- $$defflag -IMPLIB:$@ $(IMPORT_LIBRARY_FLAGS) \
- $^ $$extralibs $$resname; \
- $(MANIFESTTOOL) -outputresource:"$$dllname;#2" -manifest $$dllname.manifest; \
--$(CP) $@ $$slibname; \
-+$(CP) $@ $$slibname;
- endef
- 
- # Export SharedLibrary
