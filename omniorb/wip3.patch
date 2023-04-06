@@ -1,0 +1,76 @@
+diff --git a/omniORB-4-2b0ef111ae.clean/mk/beforeauto.mk.in b/omniORB-4-2b0ef111ae/mk/beforeauto.mk.in
+index b7087ea36..30f8c40d0 100644
+--- a/omniORB-4-2b0ef111ae.clean/mk/beforeauto.mk.in
++++ b/omniORB-4-2b0ef111ae/mk/beforeauto.mk.in
+@@ -4,7 +4,7 @@
+ #
+ # Based upon beforedir.mk and platform makefiles
+ 
+-platform         = autoconf
++#platform         = autoconf
+ MAKEFILE_INC_DIR = $(BASE_OMNI_TREE)/$(CURRENT)/
+ IMPORT_TREES     = $(TOP) $(BASE_OMNI_TREE)
+ THIS_IMPORT_TREE = $(TOP)
+@@ -36,6 +36,8 @@ BINDIR  = bin
+ 
+ prefix        	 := @prefix@
+ exec_prefix   	 := @exec_prefix@
++includedir 	 := @includedir@
++libdir 	 := @libdir@
+ INSTALLTARGET 	 := 1
+ INSTALLINCDIR 	 := $(DESTDIR)@includedir@
+ INSTALLBINDIR 	 := $(DESTDIR)@bindir@
+@@ -738,7 +740,7 @@ shared/%.o: %.c
+ # these such as AR, RM, etc (see section 10.3 of the GNU make manual).
+ #
+ 
+-AR              = @AR@ cq
++#AR              = @AR@ cq
+ CC              = @CC@
+ CXX             = @CXX@
+ RANLIB		= @RANLIB@
+diff --git a/omniORB-4-2b0ef111ae.clean/mk/platforms/vcpkg.mk b/omniORB-4-2b0ef111ae/mk/platforms/vcpkg.mk
+index 29396a8ec..ba941c6a5 100644
+--- a/omniORB-4-2b0ef111ae.clean/mk/platforms/vcpkg.mk
++++ b/omniORB-4-2b0ef111ae/mk/platforms/vcpkg.mk
+@@ -61,3 +61,4 @@ MANIFESTTOOL = mt.exe
+ RCTOOL       = rc.exe
+ CLINK        = link.exe
+ CXXLINK      = link.exe
++AR           = lib.exe
+diff --git a/omniORB-4-2b0ef111ae.clean/mk/win32.mk b/omniORB-4-2b0ef111ae/mk/win32.mk
+index 104caff36..fd17f69d5 100644
+--- a/omniORB-4-2b0ef111ae.clean/mk/win32.mk
++++ b/omniORB-4-2b0ef111ae/mk/win32.mk
+@@ -8,7 +8,7 @@ Win32Platform = 1
+ # Define macro for path of wrapper executables
+ #
+ ifndef EmbeddedSystem
+-WRAPPER_FPATH = bin/x86_win32
++WRAPPER_FPATH = bin
+ else
+ WRAPPER_FPATH = $(HOSTBINDIR)
+ endif
+@@ -145,7 +145,7 @@ BinPattern = %.exe
+ define StaticLinkLibrary
+ (set -x; \
+  $(RM) $@; \
+- $(AR) $@ $^; \
++ $(AR) -OUT:$@ $^; \
+ )
+ endef
+ 
+diff --git a/omniORB-4-2b0ef111ae.clean/src/lib/dir.mk b/omniORB-4-2b0ef111ae/src/lib/dir.mk
+index 732f8457c..3382264c4 100644
+--- a/omniORB-4-2b0ef111ae.clean/src/lib/dir.mk
++++ b/omniORB-4-2b0ef111ae/src/lib/dir.mk
+@@ -19,7 +19,8 @@ ifdef Win32Platform
+ ifndef MinGW32Build
+ export::
+ 	(cd $(EXPORT_TREE)/$(BINDIR); editbin /REBASE:BASE=0x68000000,DOWN *_rt.dll; )
+-	(cd $(EXPORT_TREE)/$(BINDIR); editbin /REBASE:BASE=0x68000000,DOWN *_rtd.dll; )
++#export::
++#	(cd $(EXPORT_TREE)/$(BINDIR); editbin /REBASE:BASE=0x68000000,DOWN *_rtd.dll; )
+ endif
+ endif
+ endif

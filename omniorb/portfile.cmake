@@ -9,6 +9,7 @@ vcpkg_extract_source_archive(
     PATCHES wip.patch
             fix_dependency.patch
             def_gen_fix.patch
+            wip2.patch
 )
 
 vcpkg_add_to_path("${CURRENT_HOST_INSTALLED_DIR}/tools/python3") # port ask python distutils for info.
@@ -55,12 +56,14 @@ if(VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_MINGW)
       endif()
   endforeach()
   configure_file("${CMAKE_CURRENT_LIST_DIR}/vcpkg.mk" "${SOURCE_PATH}/mk/platforms/vcpkg.mk" @ONLY NEWLINE_STYLE UNIX)
+  file(GLOB_RECURSE wrappers "${SOURCE_PATH}/bin/x86_win32/*")
+  file(COPY ${wrappers} DESTINATION "${SOURCE_PATH}/bin")
 endif()
 
 vcpkg_configure_make(
   SOURCE_PATH "${SOURCE_PATH}"
   AUTOCONFIG
-  NO_WRAPPERS
+  #NO_WRAPPERS
   COPY_SOURCE
   OPTIONS
 )
