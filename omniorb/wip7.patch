@@ -1,0 +1,39 @@
+diff --git a/mk/mklib.mk b/mk/mklib.mk
+index 1d73cfdbe..e6e8d65fe 100644
+--- a/mk/mklib.mk
++++ b/mk/mklib.mk
+@@ -16,16 +16,6 @@
+ # are called libfoo.a and libfoo.so.1.3 etc.
+ #
+ 
+-ifndef NoReleaseBuild
+-
+-all:: mkstatic mkshared
+-
+-export:: mkstatic mkshared
+-
+-ifdef INSTALLTARGET
+-install:: mkstatic mkshared
+-endif
+-
+ vers := $(subst ., ,$(LIB_VERSION))
+ ifeq ($(words $(vers)), 2)
+   vers  := _ $(vers)
+@@ -36,6 +26,16 @@ endif
+ 
+ namespec := $(LIB_NAME) $(vers)
+ 
++ifndef NoReleaseBuild
++
++all:: mkstatic mkshared
++
++export:: mkstatic mkshared
++
++ifdef INSTALLTARGET
++install:: mkstatic mkshared
++endif
++
+ ##############################################################################
+ # Build Static library
+ ##############################################################################
+

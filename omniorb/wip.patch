@@ -40,27 +40,6 @@ diff --git a/mk/beforeauto.mk.in b/mk/beforeauto.mk.in
 index f078912..9aef646 100644
 --- a/mk/beforeauto.mk.in
 +++ b/mk/beforeauto.mk.in
-@@ -655,13 +658,13 @@ define ExportSharedLibraryToDir
-  $(ExportLibraryToDir); \
-  $(ParseNameSpec); \
-  soname=$(SharedLibrarySoNameTemplate); \
-- libname=$(SharedLibraryLibNameTemplate); \
-- set -x; \
-- cd $$dir; \
-- $(RM) $$soname; \
-- ln -s $(<F) $$soname; \
-- $(RM) $$libname; \
-- ln -s $$soname $$libname;
-+ libname=$(SharedLibraryLibNameTemplate);
-+ # set -x; \
-+ # cd $$dir; \
-+ # $(RM) $$soname; \
-+ # ln -s $(<F) $$soname; \
-+ # $(RM) $$libname; \
-+ # ln -s $$soname $$libname;
- endef
- 
- define ExportSharedLibrary
 @@ -738,7 +741,7 @@ shared/%.o: %.c
  # these such as AR, RM, etc (see section 10.3 of the GNU make manual).
  #

@@ -1,12 +1,13 @@
 {
-  "name": "omniorb",
+  "name": "omniorbpy",
   "version": "4.3.0",
-  "description": "omniORB is a robust high performance CORBA ORB for C++",
+  "description": "omniORB is a robust high performance CORBA ORB for Python",
   "license": "LGPL-2.1-or-later",
   "supports": "!uwp",
   "dependencies": [
     "openssl",
     "python3",
+    "omniorb",
     {
       "name": "python3",
       "host": true

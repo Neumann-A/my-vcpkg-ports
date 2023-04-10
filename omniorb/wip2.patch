@@ -1,3 +1,64 @@
+diff --git a/mk/beforeauto.mk.in b/mk/beforeauto.mk.in
+index b7087ea36..d7a826fa9 100644
+--- a/mk/beforeauto.mk.in
++++ b/mk/beforeauto.mk.in
+@@ -36,6 +36,8 @@ BINDIR  = bin
+ 
+ prefix        	 := @prefix@
+ exec_prefix   	 := @exec_prefix@
++includedir   	   := @includedir@
++libdir   	       := @libdir@
+ INSTALLTARGET 	 := 1
+ INSTALLINCDIR 	 := $(DESTDIR)@includedir@
+ INSTALLBINDIR 	 := $(DESTDIR)@bindir@
+@@ -362,6 +364,9 @@ endef
+ #
+ # Patterns for various file types
+ #
++
++ifndef Win32Platform
++
+ LibPathPattern    = -L%
+ LibNoDebugPattern = lib%.a
+ LibDebugPattern = lib%.a
+@@ -371,6 +376,37 @@ LibSearchPattern = -l%
+ BinPattern = %
+ TclScriptPattern = %
+ 
++else
++
++LibPathPattern = -libpath:%
++LibNoDebugPattern = %.lib
++LibDebugPattern = %d.lib
++DLLNoDebugPattern = %_rt.lib
++DLLDebugPattern = %_rtd.lib
++LibNoDebugSearchPattern = %.lib
++LibDebugSearchPattern = %d.lib
++DLLNoDebugSearchPattern = %_rt.lib
++DLLDebugSearchPattern = %_rtd.lib
++
++
++ifndef BuildDebugBinary
++
++LibPattern = $(LibNoDebugPattern)
++DLLPattern = $(DLLNoDebugPattern)
++LibSearchPattern = $(LibNoDebugSearchPattern)
++DLLSearchPattern = $(DLLNoDebugSearchPattern)
++
++else
++
++LibPattern = $(LibDebugPattern)
++DLLPattern = $(DLLDebugPattern)
++LibSearchPattern = $(LibDebugSearchPattern)
++DLLSearchPattern = $(DLLDebugSearchPattern)
++endif
++
++endif
++
++
+ 
+ #
+ # Stuff to generate statically-linked libraries.
 diff --git a/mk/mklib.mk b/mk/mklib.mk
 index 8f64b14dd..1d73cfdbe 100644
 --- a/mk/mklib.mk
@@ -31,6 +92,25 @@ index 8f64b14dd..1d73cfdbe 100644
  endif
 +endif
 \ No newline at end of file
+diff --git a/src/lib/dir.mk b/src/lib/dir.mk
+index 732f8457c..bff3144f8 100644
+--- a/src/lib/dir.mk
++++ b/src/lib/dir.mk
+@@ -17,9 +17,14 @@ ciao::
+ ifndef EmbeddedSystem
+ ifdef Win32Platform
+ ifndef MinGW32Build
++ifndef NoReleaseBuild
+ export::
+ 	(cd $(EXPORT_TREE)/$(BINDIR); editbin /REBASE:BASE=0x68000000,DOWN *_rt.dll; )
++endif
++ifndef NoDebugBuild
++export::
+ 	(cd $(EXPORT_TREE)/$(BINDIR); editbin /REBASE:BASE=0x68000000,DOWN *_rtd.dll; )
+ endif
+ endif
+ endif
++endif
 diff --git a/mk/python.mk b/mk/python.mk
 index fe90dbe55..39ea44bbc 100644
 --- a/mk/python.mk
@@ -53,7 +133,7 @@ index 6d320a2bd..3983eba5c 100644
  #
  ifndef EmbeddedSystem
 -WRAPPER_FPATH = $(BINDIR)
-+WRAPPER_FPATH = bin/x86_win32
++WRAPPER_FPATH = bin
  else
  WRAPPER_FPATH = $(HOSTBINDIR)
  endif

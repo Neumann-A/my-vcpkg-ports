@@ -60,3 +60,31 @@ RCTOOL       = @VCPKG_DETECTED_CMAKE_RC_COMPILER@
 CLINK        = @VCPKG_DETECTED_CMAKE_LINKER@
 CXXLINK      = @VCPKG_DETECTED_CMAKE_LINKER@
 AR           = @VCPKG_DETECTED_CMAKE_AR@
+RANLIB       = true
+
+# To build ZIOP support, EnableZIOP must be defined and one or both of
+# the zlib and zstd sections must be defined.
+
+#EnableZIOP = 1
+
+#EnableZIOPZLib = 1
+#ZLIB_ROOT = /cygdrive/c/zlib-1.2.11
+#ZLIB_CPPFLAGS = -DOMNI_ENABLE_ZIOP_ZLIB -I$(ZLIB_ROOT)
+#ZLIB_LIB = $(patsubst %,$(LibPathPattern),$(ZLIB_ROOT)) zdll.lib
+
+#EnableZIOPZStd = 1
+#ZSTD_ROOT = /cygdrive/c/zstd
+#ZSTD_CPPFLAGS = -DOMNI_ENABLE_ZIOP_ZSTD -I$(ZSTD_ROOT)/include
+#ZSTD_LIB = $(patsubst %,$(LibPathPattern),$(ZSTD_ROOT)/lib) zstd.lib
+LN_S=cp -pR 
+
+define ExportSharedLibraryToDir
+ $(ExportLibraryToDir); \
+ $(ParseNameSpec); \
+ soname=$(SharedLibraryShortLibName); \
+ libname=$(SharedLibraryLibNameTemplate); \
+ set -x; \
+ cd $$dir; \
+ $(RM) $$soname; \
+ $(LN_S) $(<F) $$soname;
+endef
