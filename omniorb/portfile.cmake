@@ -13,6 +13,7 @@ vcpkg_extract_source_archive(
             wip5.patch
             wip7.patch
             wip8.patch
+            wip9.patch
 )
 
 vcpkg_add_to_path("${CURRENT_HOST_INSTALLED_DIR}/tools/python3") # port ask python distutils for info.
