@@ -5,6 +5,12 @@
   "homepage": "https://www.salome-platform.org",
   "license": "GPL-2.0-or-later",
   "dependencies": [
+    "salome-configuration",
+    "salome-kernel",
+    {
+      "name": "python3",
+      "host": true
+    },
     {
       "name": "vcpkg-cmake",
       "host": true

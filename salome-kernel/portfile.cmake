@@ -33,7 +33,7 @@ vcpkg_cmake_configure(
       -DSALOME_INSTALL_SCRIPT_SCRIPTS:PATH=share/salome/script
       -DSALOME_INSTALL_APPLISKEL_SCRIPTS:PATH=share/salome/appliskel
       -DSALOME_INSTALL_APPLISKEL_PYTHON:PATH=share/salome/appliskel
-      -DSALOME_INSTALL_BINS:PATH=bin
+      -DSALOME_INSTALL_BINS:PATH=tools/salome/bin
       -DSALOME_INSTALL_LIBS:PATH=lib
     OPTIONS_DEBUG
       -DPYTHONLIBS_ROOT_DIR=${CURRENT_INSTALLED_DIR}/debug/lib
@@ -42,6 +42,49 @@ vcpkg_cmake_configure(
 )
 
 vcpkg_cmake_install()
+
+file(GLOB dll_files "${CURRENT_PACKAGES_DIR}/lib/*.dll")
+file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/bin")
+foreach(dll_file IN LISTS dll_files)
+  string(REPLACE "/lib/" "/bin/" new_loc "${dll_file}")
+  file(RENAME "${dll_file}" "${new_loc}")
+endforeach()
+
+if(NOT VCPKG_BUILD_TYPE)
+  file(GLOB dll_files "${CURRENT_PACKAGES_DIR}/debug/lib/*.dll")
+  file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/debug/bin")
+  foreach(dll_file IN LISTS dll_files)
+    string(REPLACE "/lib/" "/bin/" new_loc "${dll_file}")
+    file(RENAME "${dll_file}" "${new_loc}")
+  endforeach()
+endif()
+
 vcpkg_cmake_config_fixup(PACKAGE_NAME SalomeKERNEL)
 
+if(VCPKG_TARGET_IS_WINDOWS)
+  set(file "${CURRENT_PACKAGES_DIR}/share/salomekernel/SalomeKERNELTargets-release.cmake")
+  file(READ "${file}" contents)
+  string(REGEX REPLACE "/lib/([^.]+)\\.dll" "/bin/\\1.dll" contents "${contents}")
+  file(WRITE "${file}" "${contents}")
+
+  if(NOT VCPKG_BUILD_TYPE)
+    set(file "${CURRENT_PACKAGES_DIR}/share/salomekernel/SalomeKERNELTargets-debug.cmake")
+    file(READ "${file}" contents)
+    string(REGEX REPLACE "/lib/([^.]+)\\.dll" "/bin/\\1.dll" contents "${contents}")
+    file(WRITE "${file}" "${contents}")
+  endif()
+endif()
+file(GLOB idl_pys "${CURRENT_PACKAGES_DIR}/bin/salome/*idl.py")
+foreach(idl_py IN LISTS idl_pys)
+  file(READ "${idl_py}" contents)
+  string(REPLACE "r\"${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/idl" "os.path.realpath(os.path.dirname(__file__)) + \"/../../../../idl/salome" contents "${contents}")
+  string(REPLACE "${CURRENT_BUILDTREES_DIR}" "" contents "${contents}")
+  file(WRITE "${idl_py}" "${contents}")
+endforeach()
+
+# TODO remove NO_MODULE from Config.cmake
+
+file(RENAME "${CURRENT_PACKAGES_DIR}/bin/salome" "${CURRENT_PACKAGES_DIR}/tools/salome/bin/salome")
+
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
+vcpkg_copy_tool_dependencies("${CURRENT_PACKAGES_DIR}/tools/salome/bin")
