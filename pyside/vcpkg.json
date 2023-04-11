@@ -6,6 +6,7 @@
   "license": null,
   "dependencies": [
     "python3",
+    "numpy",
     {
       "name": "python3",
       "host": true

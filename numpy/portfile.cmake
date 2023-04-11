@@ -47,3 +47,12 @@ file(REMOVE_RECURSE
 )
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE.txt")
+
+#TODO edit E:\all\vcpkg\installed\x64-win-llvm-release\lib\site-packages\numpy\__config__.py
+	# Zeile  43:                 "commands": "E:/b/numpy/x64-win-llvm-release-venv/Scripts/cython.exe",
+	# Zeile  76:                 "pc file directory": r"E:/all/vcpkg/installed/x64-win-llvm-release/lib/pkgconfig",
+	# Zeile  84:                 "lib directory": r"E:/all/vcpkg/installed/x64-win-llvm-release/lib",
+	# Zeile  86:                 "pc file directory": r"E:/all/vcpkg/installed/x64-win-llvm-release/lib/pkgconfig",
+	# Zeile  90:             "path": r"E:\b\numpy\x64-win-llvm-release-venv\Scripts\python.exe",
+  
+  #TODO: Need to add "import os\n os.add_dll_directory(os.path.dirname(__file__)+'/../../../bin')" to "vcpkg\installed\triplet\lib\site-packages\numpy\__init__.py" after import warnings
