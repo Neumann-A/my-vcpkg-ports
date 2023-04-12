@@ -1,14 +1,14 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO Open-Cascade-SAS/OCCT
-    REF bb368e271e24f63078129283148ce83db6b9670a #V7.6.2
-    SHA512 500c7ff804eb6b202bef48e1be904fe43a3c0137e9a402affe128b3b75a1adbb20bfe383cee82503b13efc083a95eb97425f1afb1f66bae38543d29f871a91f9
+    REF 185d29b92f6764ffa9fc195b7dbe7bba3c4ac855 #V7.7.0
+    SHA512 837b8a8d5163647bdd1689c7afbf8774fad8525b411213fc53ee5892336e9f7a02947ef6bf12f86ab09e016e7f96c2f9f9470790e61efc0155f172a05d54cf0f
     HEAD_REF master
     PATCHES
-        fix-pdb-find.patch
-        fix-install-prefix-path.patch
-        install-include-dir.patch
-        fix-depend-freetype.patch
+        #fix-pdb-find.patch
+        #fix-install-prefix-path.patch
+        #install-include-dir.patch
+        #fix-depend-freetype.patch
 )
 
 if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
@@ -17,14 +17,22 @@ else()
     set(BUILD_TYPE "Static")
 endif()
 
+list(APPEND FEATURE_OPTIONS -DUSE_FREETYPE=ON)
+
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES
         "freeimage"  USE_FREEIMAGE
         "tbb"        USE_TBB
         "rapidjson"  USE_RAPIDJSON
+        "vtk"        USE_VTK
+        #"ffmpeg"     USE_FFMPEG # NOt ready for ffmpeg 5
+        #"openvr"     USE_OPENVR
+        "draco"      USE_DRACO
 )
 
-# VTK option in opencascade not currently supported because only 6.1.0 is supported but vcpkg has >= 9.0
+if(VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_MINGW)
+  list(APPEND FEATURE_OPTIONS -DUSE_D3D=ON)
+endif()
 
 # We turn off BUILD_MODULE_Draw as it requires TCL 8.6 and TK 8.6 specifically which conflicts with vcpkg only having TCL 9.0 
 # And pre-built ActiveTCL binaries are behind a marketing wall :(
@@ -41,13 +49,17 @@ vcpkg_cmake_configure(
         -DBUILD_DOC_Overview=OFF
         -DINSTALL_TEST_CASES=OFF
         -DINSTALL_SAMPLES=OFF
+        "-D3RDPARTY_TBB_DIR=${CURRENT_INSTALLED_DIR}/share/tbb"
+        #"-D3RDPARTY_VTK_INCLUDE_DIR=${CURRENT_INSTALLED_DIR}/include/vtk-9.2"
+        "-D3RDPARTY_VTK_INCLUDE_DIR=${CURRENT_INSTALLED_DIR}/include/draco"
+        #--trace-expand
 )
 
 vcpkg_cmake_install()
 
 vcpkg_cmake_config_fixup(CONFIG_PATH lib/cmake/opencascade)
-file(READ "${CURRENT_PACKAGES_DIR}/share/opencascade/OpenCASCADEConfig.cmake" contents)
-file(WRITE "${CURRENT_PACKAGES_DIR}/share/opencascade/OpenCASCADEConfig.cmake" "${contents}\nif(OpenCASCADE_WITH_FREETYPE)\nfind_dependency(freetype CONFIG)\nendif()\n")
+#file(READ "${CURRENT_PACKAGES_DIR}/share/opencascade/OpenCASCADEConfig.cmake" contents)
+#file(WRITE "${CURRENT_PACKAGES_DIR}/share/opencascade/OpenCASCADEConfig.cmake" "${contents}\nif(OpenCASCADE_WITH_FREETYPE)\nfind_dependency(freetype CONFIG)\nendif()\n")
 
 #make occt includes relative to source_file
 list(APPEND ADDITIONAL_HEADERS 

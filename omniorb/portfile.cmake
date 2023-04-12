@@ -3,17 +3,32 @@ vcpkg_download_distfile(ARCHIVE
     FILENAME "omniORB-${VERSION}.tar.bz2"
     SHA512 b081c1acbea3c7bee619a288fec209a0705b7d436f8e5fd4743675046356ef271a8c75882334fcbde4ff77d15f54d2da55f6cfcd117b01e42919d04fd29bfe2f
 )
+
+if(VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_MINGW)
+set (PATCHES 
+
+      wip5.patch
+      wip7.patch
+      wip8.patch
+      wip9.patch
+    )
+set (OPTIONS 
+      ac_cv_prog_cc_g=yes
+      ac_cv_prog_cxx_11=no
+      ac_cv_prog_cxx_g=yes
+      omni_cv_sync_add_and_fetch=no
+    )
+endif()
+
 vcpkg_extract_source_archive(
     SOURCE_PATH
     ARCHIVE "${ARCHIVE}"
-    PATCHES fix_dependency.patch
-            def_gen_fix.patch
-            wip.patch
-            wip2.patch
-            wip5.patch
-            wip7.patch
-            wip8.patch
-            wip9.patch
+    PATCHES 
+      fix_dependency.patch
+      def_gen_fix.patch
+      wip.patch
+      wip2.patch
+      ${PATCHES}
 )
 
 vcpkg_add_to_path("${CURRENT_HOST_INSTALLED_DIR}/tools/python3") # port ask python distutils for info.
@@ -71,16 +86,15 @@ vcpkg_configure_make(
   NO_WRAPPERS
   COPY_SOURCE
   OPTIONS
-    ac_cv_prog_cc_g=yes
-    ac_cv_prog_cxx_11=no
-    ac_cv_prog_cxx_g=yes
-    omni_cv_sync_add_and_fetch=no
+    ${OPTIONS}
 )
 
-vcpkg_replace_string("${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel//mk/platforms/vcpkg.mk" "replace-with-per-config-text" "NoDebugBuild=1")
-if(NOT VCPKG_BUILD_TYPE)
-  vcpkg_replace_string("${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/mk/platforms/vcpkg.mk" "replace-with-per-config-text" "NoReleaseBuild=1\nBuildDebugBinary=1")
-  vcpkg_replace_string("${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/src/tool/omniidl/cxx/dir.mk" "python$(subst .,,$(PYVERSION)).lib" "python$(subst .,,$(PYVERSION))_d.lib")
+if(VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_MINGW)
+  vcpkg_replace_string("${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel//mk/platforms/vcpkg.mk" "replace-with-per-config-text" "NoDebugBuild=1")
+  if(NOT VCPKG_BUILD_TYPE)
+    vcpkg_replace_string("${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/mk/platforms/vcpkg.mk" "replace-with-per-config-text" "NoReleaseBuild=1\nBuildDebugBinary=1")
+    vcpkg_replace_string("${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/src/tool/omniidl/cxx/dir.mk" "python$(subst .,,$(PYVERSION)).lib" "python$(subst .,,$(PYVERSION))_d.lib")
+  endif()
 endif()
 
 vcpkg_install_make(

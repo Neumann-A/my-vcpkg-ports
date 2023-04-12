@@ -40,15 +40,6 @@ diff --git a/mk/beforeauto.mk.in b/mk/beforeauto.mk.in
 index f078912..9aef646 100644
 --- a/mk/beforeauto.mk.in
 +++ b/mk/beforeauto.mk.in
-@@ -738,7 +741,7 @@ shared/%.o: %.c
- # these such as AR, RM, etc (see section 10.3 of the GNU make manual).
- #
- 
--AR              = ar cq
-+AR              = @AR@ cq
- CC              = @CC@
- CXX             = @CXX@
- RANLIB		= @RANLIB@
 @@ -1311,3 +1314,7 @@ endif
  
  lib_depend := $(patsubst %,$(LibPattern),omnithread)

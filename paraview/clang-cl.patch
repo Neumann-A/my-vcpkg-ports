@@ -1,0 +1,12 @@
+diff --git a/Library/VisItLib/common/utility/win32-regex.c b/Library/VisItLib/common/utility/win32-regex.c
+index 533a0be..54ff316 100644
+--- a/Library/VisItLib/common/utility/win32-regex.c
++++ b/Library/VisItLib/common/utility/win32-regex.c
+@@ -340,6 +340,7 @@ char *alloca ();
+ typedef char boolean;
+ #define false 0
+ #define true 1
++#define not not_var
+ 
+ static int re_match_2_internal (
+      struct re_pattern_buffer *bufp,
