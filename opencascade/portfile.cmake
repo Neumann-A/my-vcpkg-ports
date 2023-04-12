@@ -52,7 +52,9 @@ vcpkg_cmake_configure(
         "-D3RDPARTY_TBB_DIR=${CURRENT_INSTALLED_DIR}/share/tbb"
         #"-D3RDPARTY_VTK_INCLUDE_DIR=${CURRENT_INSTALLED_DIR}/include/vtk-9.2"
         "-D3RDPARTY_VTK_INCLUDE_DIR=${CURRENT_INSTALLED_DIR}/include/draco"
-        #--trace-expand
+        "-D3RDPARTY_DRACO_LIBRARY=${CURRENT_INSTALLED_DIR}/lib/draco.lib"
+        "-D3RDPARTY_DRACO_LIBRARY_DEBUG=${CURRENT_INSTALLED_DIR}/debug/lib/draco.lib"
+        --trace-expand
 )
 
 vcpkg_cmake_install()
