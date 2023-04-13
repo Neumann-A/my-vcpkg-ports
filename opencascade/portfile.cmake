@@ -9,6 +9,7 @@ vcpkg_from_github(
         #fix-install-prefix-path.patch
         #install-include-dir.patch
         #fix-depend-freetype.patch
+        fix_build.patch
 )
 
 if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
@@ -54,7 +55,7 @@ vcpkg_cmake_configure(
         "-D3RDPARTY_VTK_INCLUDE_DIR=${CURRENT_INSTALLED_DIR}/include/draco"
         "-D3RDPARTY_DRACO_LIBRARY=${CURRENT_INSTALLED_DIR}/lib/draco.lib"
         "-D3RDPARTY_DRACO_LIBRARY_DEBUG=${CURRENT_INSTALLED_DIR}/debug/lib/draco.lib"
-        --trace-expand
+        #--trace-expand
 )
 
 vcpkg_cmake_install()

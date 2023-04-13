@@ -8,6 +8,7 @@
     "salome-configuration",
     "salome-kernel",
     "salome-geom",
+    "salome-medcoupling",
     {
       "name": "python3",
       "host": true
