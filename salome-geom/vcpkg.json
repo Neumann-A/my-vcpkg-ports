@@ -13,7 +13,8 @@
     },
     {
       "name": "vtk",
-      "default-features": false
+      "default-features": false,
+      "features" : ["paraview","python"]
     },
     {
       "name": "python3",
