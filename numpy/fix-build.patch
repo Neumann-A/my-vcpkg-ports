@@ -29,9 +29,6 @@ index 9aaa5ed..e968fb3 100644
    cpp_args_common += [
      '-fno-exceptions',  # no exception support
      '-fno-rtti',  # no runtime type information
-diff --git a/numpy/distutils/__pycache__/conv_template.cpython-310.pyc b/numpy/distutils/__pycache__/conv_template.cpython-310.pyc
-index b663c56..ba5487d 100644
-Binary files a/numpy/distutils/__pycache__/conv_template.cpython-310.pyc and b/numpy/distutils/__pycache__/conv_template.cpython-310.pyc differ
 diff --git a/numpy/meson.build b/numpy/meson.build
 index cc5a79b..447a1ce 100644
 --- a/numpy/meson.build

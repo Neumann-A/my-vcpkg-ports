@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO numpy/numpy
     REF 7b27c3ebe7f35684aeb2dfa2fd3125b2a69aed49
-    SHA512 fe7004a5c588cc2f1bc08896cf11dc1029cbdda347ad0ed63481aedcb7d2276b1a75d5baa0e614e599341e9e41c778b5ded5f2ae7a6d1fa5b6b915ba21045932
+    SHA512 6612f4a8c23832baa631082ddf64d929c8a6c583fbc4be3cf63ec3f6234e40dec9ad5e4545444f5f6722c587306affefc3a4643f5fa848f9d2574e0cad3a9630
     HEAD_REF main
     PATCHES fix-build.patch
 )
