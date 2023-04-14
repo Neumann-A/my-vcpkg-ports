@@ -15,7 +15,7 @@
     "libxml2",
     "metis",
     "scotch",
-    "python3",
+    "med-fichier",
     "salome-configuration",
     {
       "name": "vcpkg-cmake",

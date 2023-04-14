@@ -1,24 +1,14 @@
 {
-  "name": "salome-geom",
+  "name": "salome-med",
   "version": "9.1.0",
-  "description": "SALOME Mesh module",
+  "description": "SALOME Med module",
   "homepage": "https://www.salome-platform.org",
   "license": "GPL-2.0-or-later",
   "dependencies": [
+    "python3",
     "salome-configuration",
     "salome-kernel",
-    {
-      "name": "opencascade",
-      "default-features": false
-    },
-    {
-      "name": "vtk",
-      "default-features": false
-    },
-    {
-      "name": "python3",
-      "host": true
-    },
+    "salome-medcoupling",
     {
       "name": "vcpkg-cmake",
       "host": true
