@@ -29,7 +29,7 @@ vcpkg_cmake_configure(
 
 vcpkg_cmake_install()
 vcpkg_cmake_config_fixup(PACKAGE_NAME MEDFile CONFIG_PATH cmake)
-vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/MEDFile/MEDFileConfig.cmake" "/cmake/" "/share/MEDFile/)
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/MEDFile/MEDFileConfig.cmake" "/cmake/" "/share/MEDFile/")
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
@@ -49,8 +49,27 @@ elseif(VCPKG_TARGET_IS_WINDOWS) #dynamic builds on windows
     string(REPLACE "/lib/" "/bin/" dll_file_moved "${dll_file}")
     file(RENAME "${dll_file}" "${dll_file_moved}")
   endforeach()
+  if(NOT VCPKG_BUILD_TYPE)
+    file(GLOB dll_files "${CURRENT_PACKAGES_DIR}/debug/lib/*.dll")
+    foreach(dll_file IN LISTS dll_files)
+      string(REPLACE "/lib/" "/bin/" dll_file_moved "${dll_file}")
+      file(RENAME "${dll_file}" "${dll_file_moved}")
+    endforeach()
+  endif()
 endif()
+if(VCPKG_TARGET_IS_WINDOWS)
+  set(file "${CURRENT_PACKAGES_DIR}/share/MEDFile/MEDFileTargets-release.cmake")
+  file(READ "${file}" contents)
+  string(REGEX REPLACE "/lib/([^.]+)\\.dll" "/bin/\\1.dll" contents "${contents}")
+  file(WRITE "${file}" "${contents}")
 
+  if(NOT VCPKG_BUILD_TYPE)
+    set(file "${CURRENT_PACKAGES_DIR}/share/MEDFile/MEDFileTargets-debug.cmake")
+    file(READ "${file}" contents)
+    string(REGEX REPLACE "/lib/([^.]+)\\.dll" "/bin/\\1.dll" contents "${contents}")
+    file(WRITE "${file}" "${contents}")
+  endif()
+endif()
 
 # Correct upstream uses autotools
 # vcpkg_configure_make(
