@@ -1,7 +1,7 @@
-diff --git a/140c4f4da5-1e86554320.clean/CMakeLists.txt b/140c4f4da5-1e86554320/CMakeLists.txt
+diff --git a/CMakeLists.txt b/CMakeLists.txt
 index bf92061..933505d 100644
---- a/140c4f4da5-1e86554320.clean/CMakeLists.txt
-+++ b/140c4f4da5-1e86554320/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
 @@ -500,7 +500,7 @@ endif(ENABLE_CPP_CORE_GUIDELINES_CHECK)
  
  add_library(netgen_cgns INTERFACE)

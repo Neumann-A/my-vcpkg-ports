@@ -10,32 +10,6 @@ index f4f1683..6c902ae 100644
  #else
  #include <unistd.h>
  #endif
-diff --git a/src/hdfi/_MEDobjectGetName.c b/src/hdfi/_MEDobjectGetName.c
-index b9ebcf2..48aafe8 100644
---- a/src/hdfi/_MEDobjectGetName.c
-+++ b/src/hdfi/_MEDobjectGetName.c
-@@ -28,7 +28,7 @@ _MEDobjectGetName(const med_idt fid,const char * const path,const med_size ind,c
- 
-   med_err _ret=-1;
- 
--  if ( H5Literate_by_name(fid,path, H5_INDEX_NAME, H5_ITER_INC,
-+  if ( H5Literate_by_name1(fid,path, H5_INDEX_NAME, H5_ITER_INC,
- 			  (hsize_t *) &ind, _MEDcopyName, name,H5P_DEFAULT ) < 0 ) {
-     MED_ERR_(_ret,MED_ERR_VISIT,MED_ERR_DATAGROUP,path);
-     /* H5Eprint1(stderr); */
-diff --git a/src/hdfi/__MEDobjectGetName.c b/src/hdfi/__MEDobjectGetName.c
-index f368100..c500b21 100644
---- a/src/hdfi/__MEDobjectGetName.c
-+++ b/src/hdfi/__MEDobjectGetName.c
-@@ -57,7 +57,7 @@ __MEDobjectGetName(const med_idt fid, const char * const path, const med_size in
- /*     goto ERROR; */
- /*   } */
- 
--  if ( H5Literate_by_name(fid,path, index_type, order, (hsize_t *) &ind, _MEDcopyName, name,H5P_DEFAULT ) < 0 ) {
-+  if ( H5Literate_by_name1(fid,path, index_type, order, (hsize_t *) &ind, _MEDcopyName, name,H5P_DEFAULT ) < 0 ) {
-     MED_ERR_(_ret,MED_ERR_VISIT,MED_ERR_DATAGROUP,path);
-     /* H5Eprint1(stderr); */
-     goto ERROR;
 diff --git a/src/misc/_MEDaccess.c b/src/misc/_MEDaccess.c
 index 481203d..4c18b2a 100644
 --- a/src/misc/_MEDaccess.c

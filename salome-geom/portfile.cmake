@@ -2,7 +2,9 @@ vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
     URL "https://git.salome-platform.org/gitpub/modules/geom.git"
     REF "abd699810f0d9758075b9a4158d94d4965b06539"
-    PATCHES fix-newer-opencascada.patch
+    PATCHES 
+      fix-newer-opencascada.patch
+      more-fixes.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static"  SMESH_BUILD_STATIC)
@@ -78,5 +80,3 @@ file(RENAME "${CURRENT_PACKAGES_DIR}/bin/salome" "${CURRENT_PACKAGES_DIR}/tools/
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
 
 file(REMOVE "${CURRENT_PACKAGES_DIR}/tools/salome/bin/VERSION")
-
-

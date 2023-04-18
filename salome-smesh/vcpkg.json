@@ -9,6 +9,7 @@
     "salome-kernel",
     "salome-geom",
     "salome-med",
+    "boost-polygon",
     {
       "name": "python3",
       "host": true
