@@ -1,3 +1,7 @@
+# This library cannot easily be found only. Be aware that the original source repository is not accessible.
+# Checking for updates needs to be done manually by trying to increase the version in the link.
+# med-fichier is needed to build all libraries of the https://www.salome-platform.org/ since it is the io 
+# entry point to open and read .med files.
 vcpkg_download_distfile(ARCHIVE
   URLS "https://files.salome-platform.org/Salome/other/med-${VERSION}.tar.gz"
   FILENAME "med-${VERSION}.tar.gz"
@@ -6,18 +10,16 @@ vcpkg_download_distfile(ARCHIVE
 
 vcpkg_extract_source_archive(
   SOURCE_PATH
-  ARCHIVE ${ARCHIVE}
+  ARCHIVE "${ARCHIVE}"
   PATCHES 
-    hdf5.patch
-    hdf5-2.patch
-    more-fixes.patch
+    hdf5.patch        # CMake patches for hdf5
+    hdf5-2.patch      # source patches to fix API version of HDF5
+    more-fixes.patch  # include fixes
 )
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static"  MEDFILE_BUILD_STATIC_LIBS)
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "dynamic"  MEDFILE_BUILD_SHARED_LIBS)
 
-#string(APPEND VCPKG_C_FLAGS " -Daccess=_access")
-#string(APPEND VCPKG_CXX_FLAGS " -Daccess=_access")
-
+# If there are problems with the cmake build try switching to autotools for !windows
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
@@ -30,7 +32,6 @@ vcpkg_cmake_configure(
 vcpkg_cmake_install()
 vcpkg_cmake_config_fixup(PACKAGE_NAME MEDFile CONFIG_PATH cmake)
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/MEDFile/MEDFileConfig.cmake" "/cmake/" "/share/MEDFile/")
-vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
     set(EXTRA_TOOLS medimport)
@@ -56,13 +57,10 @@ elseif(VCPKG_TARGET_IS_WINDOWS) #dynamic builds on windows
       file(RENAME "${dll_file}" "${dll_file_moved}")
     endforeach()
   endif()
-endif()
-if(VCPKG_TARGET_IS_WINDOWS)
   set(file "${CURRENT_PACKAGES_DIR}/share/MEDFile/MEDFileTargets-release.cmake")
   file(READ "${file}" contents)
   string(REGEX REPLACE "/lib/([^.]+)\\.dll" "/bin/\\1.dll" contents "${contents}")
   file(WRITE "${file}" "${contents}")
-
   if(NOT VCPKG_BUILD_TYPE)
     set(file "${CURRENT_PACKAGES_DIR}/share/MEDFile/MEDFileTargets-debug.cmake")
     file(READ "${file}" contents)
@@ -71,13 +69,4 @@ if(VCPKG_TARGET_IS_WINDOWS)
   endif()
 endif()
 
-# Correct upstream uses autotools
-# vcpkg_configure_make(
-    # AUTOCONFIG
-    # SOURCE_PATH "${SOURCE_PATH}"
-    # OPTIONS
-      # --disable-fortran
-      # #--with-hdf5=${CURRENT_INSTALLED_DIR}
-# )
-
-# vcpkg_install_make()
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING.LESSER") # GPL seems to be mentioned due to autotools stuff
