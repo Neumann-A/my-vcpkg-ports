@@ -21,6 +21,7 @@ set(PATCHES
     0012-force-disable-curses.patch
     0013-configure-no-libcrypt.patch  # https://github.com/python/cpython/pull/28881
     use_correct_macro.patch
+    add-vcpkg-search-path.patch
 )
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")

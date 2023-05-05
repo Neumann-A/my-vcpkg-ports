@@ -30,6 +30,8 @@ file(COPY "${SOURCE_PATH_SVML}/" DESTINATION "${SOURCE_PATH}/numpy/core/src/umat
 x_vcpkg_get_python_packages(PYTHON_VERSION "3" OUT_PYTHON_VAR "PYTHON3" PACKAGES cython)
 set(CYTHON "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-venv/Scripts/cython${VCPKG_HOST_EXECUTABLE_SUFFIX}")
 
+set(VCPKG_BUILD_TYPE release) # No debug builds required for pure python modules
+
 vcpkg_configure_meson(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS 
@@ -41,6 +43,25 @@ vcpkg_configure_meson(
 vcpkg_install_meson()
 vcpkg_fixup_pkgconfig()
 
+# edit E:\all\vcpkg\installed\x64-win-llvm-release\lib\site-packages\numpy\__config__.py
+	# line  43:                 "commands": "E:/b/numpy/x64-win-llvm-release-venv/Scripts/cython.exe",
+	# line  76:                 "pc file directory": r"E:/all/vcpkg/installed/x64-win-llvm-release/lib/pkgconfig",
+	# line  84:                 "lib directory": r"E:/all/vcpkg/installed/x64-win-llvm-release/lib",
+	# line  86:                 "pc file directory": r"E:/all/vcpkg/installed/x64-win-llvm-release/lib/pkgconfig",
+	# line  90:             "path": r"E:\b\numpy\x64-win-llvm-release-venv\Scripts\python.exe",
+set(pyfile "${CURRENT_PACKAGES_DIR}/lib/site-packages/numpy/__config__.py")
+file(READ "${pyfile}" contents)
+string(REPLACE "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-venv/Scripts/" "" contents "${contents}")
+string(REPLACE "${CURRENT_INSTALLED_DIR}" "$(prefix)" contents "${contents}")
+file(WRITE "${pyfile}" "${contents}")
+
+
+if(VCPKG_TARGET_IS_WINDOWS)
+    file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/")
+    file(RENAME "${CURRENT_PACKAGES_DIR}/lib/site-packages/numpy" "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/numpy")
+    file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/lib")
+endif()
+
 file(REMOVE_RECURSE
     "${CURRENT_PACKAGES_DIR}/debug/include"
     "${CURRENT_PACKAGES_DIR}/debug/share"
@@ -48,11 +69,4 @@ file(REMOVE_RECURSE
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE.txt")
 
-#TODO edit E:\all\vcpkg\installed\x64-win-llvm-release\lib\site-packages\numpy\__config__.py
-	# Zeile  43:                 "commands": "E:/b/numpy/x64-win-llvm-release-venv/Scripts/cython.exe",
-	# Zeile  76:                 "pc file directory": r"E:/all/vcpkg/installed/x64-win-llvm-release/lib/pkgconfig",
-	# Zeile  84:                 "lib directory": r"E:/all/vcpkg/installed/x64-win-llvm-release/lib",
-	# Zeile  86:                 "pc file directory": r"E:/all/vcpkg/installed/x64-win-llvm-release/lib/pkgconfig",
-	# Zeile  90:             "path": r"E:\b\numpy\x64-win-llvm-release-venv\Scripts\python.exe",
-  
-  #TODO: Need to add "import os\n os.add_dll_directory(os.path.dirname(__file__)+'/../../../bin')" to "vcpkg\installed\triplet\lib\site-packages\numpy\__init__.py" after import warnings
+set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
