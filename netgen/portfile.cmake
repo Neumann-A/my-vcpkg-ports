@@ -6,9 +6,11 @@ vcpkg_from_github(
     HEAD_REF master
     PATCHES 
       git-ver.patch
-      static.patch
-      build.patch
-      fix-cgns-link.patch
+      static-exports.patch
+      cmake-adjustments.patch
+      vcpkg-fix-cgns-link.patch
+      cgns-scoped-enum.patch
+      downstream-fixes.patch
 )
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
@@ -36,7 +38,7 @@ vcpkg_cmake_configure(
       -DUSE_NATIVE_ARCH=OFF
       -DUSE_MPI=OFF
       -DUSE_SUPERBUILD=OFF
-      -DNETGEN_VERSION_GIT=v${VERSION}
+      -DNETGEN_VERSION_GIT=v${VERSION} # this variable is patched in via git-ver.patch
 )
 
 vcpkg_cmake_install()
@@ -50,6 +52,10 @@ endif()
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
   vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/nglib.h" "defined(NGSTATIC_BUILD)" "1")
+  vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/nglib.h" "define NGLIB" "define NGLIB\n#define OCCGEOMETRY\n#define JPEGLIB\n#define FFMPEG\n")
   vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/core/ngcore_api.hpp" "!defined(NGSTATIC_BUILD)" "0")
 endif()
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/netgen/NetgenConfig.cmake" "${SOURCE_PATH}" "NOT-USABLE")
+
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
