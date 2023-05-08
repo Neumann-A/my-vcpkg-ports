@@ -1,0 +1,192 @@
+diff --git a/c7df1582d3-a90757de57.clean/Make.inc b/c7df1582d3-a90757de57/Make.inc
+index 5bbb52617..10e22cdae 100644
+--- a/c7df1582d3-a90757de57.clean/Make.inc
++++ b/c7df1582d3-a90757de57/Make.inc
+@@ -40,31 +40,31 @@ OPENBLAS_USE_THREAD:=1
+ # Flags for using libraries available on the system instead of building them.
+ # Please read the notes around usage of SYSTEM flags in README.md
+ # Issues resulting from use of SYSTEM versions will generally not be accepted.
+-USE_SYSTEM_CSL:=0
+-USE_SYSTEM_LLVM:=0
++USE_SYSTEM_CSL:=1
++USE_SYSTEM_LLVM:=1
+ USE_SYSTEM_LIBUNWIND:=0
+-DISABLE_LIBUNWIND:=0
+-USE_SYSTEM_PCRE:=0
++DISABLE_LIBUNWIND:=1
++USE_SYSTEM_PCRE:=1
+ USE_SYSTEM_LIBM:=0
+ USE_SYSTEM_OPENLIBM:=0
+ UNTRUSTED_SYSTEM_LIBM:=0
+-USE_SYSTEM_DSFMT:=0
++USE_SYSTEM_DSFMT:=1
+ USE_SYSTEM_LIBBLASTRAMPOLINE:=0
+-USE_SYSTEM_BLAS:=0
+-USE_SYSTEM_LAPACK:=0
+-USE_SYSTEM_GMP:=0
+-USE_SYSTEM_MPFR:=0
+-USE_SYSTEM_LIBSUITESPARSE:=0
+-USE_SYSTEM_LIBUV:=0
+-USE_SYSTEM_UTF8PROC:=0
+-USE_SYSTEM_MBEDTLS:=0
+-USE_SYSTEM_LIBSSH2:=0
++USE_SYSTEM_BLAS:=1
++USE_SYSTEM_LAPACK:=1
++USE_SYSTEM_GMP:=1
++USE_SYSTEM_MPFR:=1
++USE_SYSTEM_LIBSUITESPARSE:=1
++USE_SYSTEM_LIBUV:=1
++USE_SYSTEM_UTF8PROC:=1
++USE_SYSTEM_MBEDTLS:=1
++USE_SYSTEM_LIBSSH2:=1
+ USE_SYSTEM_NGHTTP2:=0
+-USE_SYSTEM_CURL:=0
+-USE_SYSTEM_LIBGIT2:=0
++USE_SYSTEM_CURL:=1
++USE_SYSTEM_LIBGIT2:=1
+ USE_SYSTEM_PATCHELF:=0
+ USE_SYSTEM_LIBWHICH:=0
+-USE_SYSTEM_ZLIB:=0
++USE_SYSTEM_ZLIB:=1
+ USE_SYSTEM_P7ZIP:=0
+ USE_SYSTEM_LLD:=0
+ 
+@@ -373,14 +373,14 @@ USE_RV := 0
+ 
+ # Path to cmake (override in Make.user if needed)
+ CMAKE ?= cmake
+-CMAKE_GENERATOR ?= make
++CMAKE_GENERATOR ?= Ninja
+ 
+ # Point pkg-config to only look at our libraries, overriding whatever
+ # the user may have unwittingly set.  To pass PKG_CONFIG_* variables
+ # through to the buildsystem, these must be set either on the command
+ # line, or through `override` directives within Make.user
+-export PKG_CONFIG_PATH = $(JULIAHOME)/usr/lib/pkgconfig
+-export PKG_CONFIG_LIBDIR = $(JULIAHOME)/usr/lib/pkgconfig
++# export PKG_CONFIG_PATH = $(JULIAHOME)/usr/lib/pkgconfig
++# export PKG_CONFIG_LIBDIR = $(JULIAHOME)/usr/lib/pkgconfig
+ 
+ # Figure out OS and architecture
+ BUILD_OS := $(shell uname)
+@@ -395,8 +395,8 @@ CROSS_COMPILE:=
+ HOSTCC = $(CC)
+ HOSTCXX = $(CXX)
+ else
+-HOSTCC ?= gcc
+-HOSTCXX ?= g++
++HOSTCC ?= compile cl
++HOSTCXX ?= compile cl
+ OPENBLAS_DYNAMIC_ARCH := 1
+ override CROSS_COMPILE:=$(XC_HOST)-
+ ifneq (,$(findstring mingw,$(XC_HOST)))
+@@ -469,6 +469,7 @@ endif
+ 
+ # Compiler specific stuff
+ 
++
+ CC_VERSION_STRING = $(shell $(CC) --version)
+ ifneq (,$(findstring clang,$(CC_VERSION_STRING)))
+ USECLANG := 1
+@@ -478,6 +479,11 @@ USECLANG := 0
+ USEGCC := 1
+ endif
+ 
++USECLANG = 0
++USEGCC = 0
++USEMSVC = 1
++
++
+ FC := $(CROSS_COMPILE)gfortran
+ 
+ # Note: Supporting only macOS Yosemite and above
+@@ -505,6 +511,15 @@ DEBUGFLAGS := -O0 -ggdb2 -DJL_DEBUG_BUILD -fstack-protector
+ SHIPFLAGS := -O3 -ggdb2 -falign-functions
+ endif
+ 
++ifeq ($(USEMSVC),1)
++CC := compile cl
++CXX := compile cl
++DEBUGFLAGS := -O0 -Z7 -DJL_DEBUG_BUILD -Gy
++SHIPFLAGS := -O2 -Z7
++JCFLAGS := -std:c11 -D_FILE_OFFSET_BITS=64
++JCXXFLAGS := -GR-
++endif
++
+ ifeq ($(USECLANG),1)
+ CC := $(CROSS_COMPILE)clang
+ CXX := $(CROSS_COMPILE)clang++
+@@ -779,6 +794,8 @@ XC_HOST := $(ARCH)$(shell echo $(BUILD_MACHINE) | sed "s/[^-]*\(.*\)$$/\1/")
+ endif
+ endif
+ 
++ARCH=x86_x64
++
+ # Normalize ppc64le to powerpc64le
+ ifeq ($(ARCH), ppc64le)
+ override ARCH := powerpc64le
+@@ -791,7 +808,7 @@ $(error "cannot build julia with cygwin-target compilers. set XC_HOST to i686-w6
+ else ifeq (msys, $(shell $(CC) -dumpmachine | cut -d\- -f3))
+ $(error "cannot build julia with msys-target compilers. please see the README.windows document for instructions on setting up mingw-w64 compilers")
+ else ifneq (,$(findstring MSYS,$(shell uname)))
+-$(error "cannot build julia from a msys shell. please launch a mingw shell instead by setting MSYSTEM=MINGW64")
++## $(error "cannot build julia from a msys shell. please launch a mingw shell instead by setting MSYSTEM=MINGW64")
+ endif
+ 
+ ifeq ($(BUILD_OS),Darwin)
+@@ -1211,10 +1228,17 @@ endif
+ endef
+ $(foreach proj,$(BB_PROJECTS),$(eval $(call SET_BB_DEFAULT,$(proj))))
+ 
++# Some special restrictions on BB usage:
++ifeq ($(USE_SYSTEM_BLAS),1)
++# Since the names don't line up (`BLAS` vs. `OPENBLAS`), manually gate:
++USE_BINARYBUILDER_OPENBLAS := 0
++# Disable BB LIBSUITESPARSE if we're using system BLAS
++USE_BINARYBUILDER_LIBSUITESPARSE := 0
++endif
+ 
+ # Warn if the user tries to build something that requires `gfortran` but they don't have it installed.
+ ifeq ($(FC_VERSION),)
+-ifneq ($(USE_BINARYBUILDER_OPENBLAS)$(USE_BINARYBUILDER_LIBSUITESPARSE),11)
++ifneq ($(USE_SYSTEM_BLAS)$(USE_SYSTEM_LIBSUITESPARSE),11)
+ $(error "Attempting to build OpenBLAS or SuiteSparse without a functioning fortran compiler!")
+ endif
+ endif
+@@ -1392,14 +1416,6 @@ endif # Clang
+ CUSTOM_LD_LIBRARY_PATH := LD_LIBRARY_PATH="$(build_libdir)"
+ endif
+ 
+-# Some special restrictions on BB usage:
+-ifeq ($(USE_SYSTEM_BLAS),1)
+-# Since the names don't line up (`BLAS` vs. `OPENBLAS`), manually gate:
+-USE_BINARYBUILDER_OPENBLAS := 0
+-# Disable BB LIBSUITESPARSE if we're using system BLAS
+-USE_BINARYBUILDER_LIBSUITESPARSE := 0
+-endif
+-
+ ifeq ($(USE_SYSTEM_LIBM),1)
+ # If we're using system libm, disable BB OpenLibm
+ USE_BINARYBUILDER_OPENLIBM := 0
+@@ -1621,15 +1637,15 @@ LOADER_DEBUG_INSTALL_DEP_LIBS = $(call build_deplibs, \
+ 
+ # Colors for make
+ ifndef VERBOSE
+-VERBOSE := 0
++VERBOSE := 1
+ endif
+ 
+ WARNCOLOR:="\033[33;1m"
+ ENDCOLOR:="\033[0m"
+ 
+-ifeq ($(VERBOSE), 0)
++ifeq ($(VERBOSE), 1)
+ 
+-QUIET_MAKE = -s
++QUIET_MAKE = -v
+ 
+ CCCOLOR:="\033[34m"
+ LINKCOLOR:="\033[34;1m"
+diff --git a/c7df1582d3-a90757de57/configure b/c7df1582d3-a90757de57/configure
+new file mode 100644
+index 000000000..e69de29bb

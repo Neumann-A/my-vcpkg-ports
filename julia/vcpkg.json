@@ -1,0 +1,32 @@
+{
+  "name": "julia",
+  "version": "1.9.0",
+  "description": "Julia is a high-level, high-performance dynamic language for technical computing. ",
+  "homepage": "julialang.org",
+  "license": "MIT",
+  "dependencies": [
+    "lapack",
+    "blas",
+    "gmp",
+    "mpfr",
+    "pcre",
+    "libgit2",
+    "mbedtls",
+    "libssh2",
+    "curl",
+    "libuv",
+    "zlib",
+    "utf8proc",
+    "suitesparse",
+    "libuv",
+    "nghttp2",
+    "dsfmt",
+    {
+        "name": "llvm",
+        "default-features": false,
+        "features" : [
+            "lld"
+        ]
+    }
+  ]
+}

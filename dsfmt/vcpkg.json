@@ -1,0 +1,11 @@
+{
+  "name": "dsfmt",
+  "version": "2.2.5",
+  "description": "Double precision SIMD-oriented Fast Mersenne Twister",
+  "homepage": "https://github.com/MersenneTwister-Lab/dSFMT",
+  "license": null,
+  "dependencies": [
+  {"name": "vcpkg-cmake",
+  "host": true}
+  ]
+}
