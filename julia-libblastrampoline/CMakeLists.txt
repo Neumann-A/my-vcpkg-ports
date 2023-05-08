@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 3.25)
+
+project(libblastrampoline)
+include(GNUInstallDirs)
+
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+if(CMAKE_SYSTEM_PROCESSOR)
+endif()
+
+set(LBT_SOVERSION_MAJOR 5)
+set(LBT_SOVERSION_MINOR 8)
+set(LBT_SOVERSION_PATCH 0)
+
+
+add_library(blastrampoline )
+set_target_properties(blastrampoline PROPERTIES SOVERSION ${LBT_SOVERSION_MAJOR}.${LBT_SOVERSION_MINOR}.${LBT_SOVERSION_PATCH})
+
+install(DIRECTORY include TYPE INCLUDE)
+
+install(TARGETS blastrampoline
+        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+)

@@ -1,0 +1,15 @@
+{
+  "name": "julia-libblastrampoline",
+  "version": "5.8.0",
+  "description": "Using PLT trampolines to provide a BLAS and LAPACK demuxing library.",
+  "homepage": "https://github.com/JuliaLinearAlgebra/libblastrampoline",
+  "license": "MIT",
+  "dependencies": [
+    "lapack",
+    "blas",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    }
+  ]
+}

@@ -1,7 +1,7 @@
-diff --git a/c7df1582d3-a90757de57.clean/Make.inc b/c7df1582d3-a90757de57/Make.inc
+diff --git a/Make.inc b/Make.inc
 index 5bbb52617..10e22cdae 100644
---- a/c7df1582d3-a90757de57.clean/Make.inc
-+++ b/c7df1582d3-a90757de57/Make.inc
+--- a/Make.inc
++++ b/Make.inc
 @@ -40,31 +40,31 @@ OPENBLAS_USE_THREAD:=1
  # Flags for using libraries available on the system instead of building them.
  # Please read the notes around usage of SYSTEM flags in README.md
@@ -187,6 +187,6 @@ index 5bbb52617..10e22cdae 100644
  
  CCCOLOR:="\033[34m"
  LINKCOLOR:="\033[34;1m"
-diff --git a/c7df1582d3-a90757de57/configure b/c7df1582d3-a90757de57/configure
+diff --git a/configure b/configure
 new file mode 100644
 index 000000000..e69de29bb
