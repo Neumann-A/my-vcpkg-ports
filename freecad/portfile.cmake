@@ -8,6 +8,11 @@ vcpkg_from_github(
 )
 
 vcpkg_add_to_path("${CURRENT_INSTALLED_DIR}/tools/Qt6/bin")
+set(ENV{PYTHONPATH} "${CURRENT_INSTALLED_DIR}/Lib/site-packages")
+#x_vcpkg_get_python_packages(PYTHON_VERSION "3" OUT_PYTHON_VAR "PYTHON3" PACKAGES pyside6 shiboken6 pivy)
+
+string(APPEND VCPKG_C_FLAGS " -DHAVE_SHIBOKEN6 -DHAVE_PYSIDE6")
+string(APPEND VCPKG_CXX_FLAGS " -DHAVE_SHIBOKEN6 -DHAVE_PYSIDE6")
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
@@ -16,6 +21,19 @@ vcpkg_cmake_configure(
       -DBUILD_GUI=ON
       -DFREECAD_USE_PCL=ON
       -DBUILD_FLAT_MESH=ON
+      -DFREECAD_USE_SHIBOKEN=OFF
+      -DPython_EXECUTABLE=${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}
+      -DBUILD_TECHDRAW=OFF # Requires xmlpattern
+      -DFREECAD_QT_VERSION=6
+      -DBUILD_TEST=OFF
+      "-DFREECAD_USE_EXTERNAL_SMESH=ON"
+      "-DFREECAD_USE_EXTERNAL_KDL=ON"
+#      "-DPYTHON3_EXECUTABLE=${PYTHON3}"
+      --trace-expand
+      -DFREECAD_USE_SHIBOKEN=ON
+      -DFREECAD_USE_PYSIDE=ON
 )
 
 vcpkg_cmake_install()
+
+#E:\all\vcpkg\installed\x64-win-llvm-release\Lib\site-packages\shiboken6/../../../bin

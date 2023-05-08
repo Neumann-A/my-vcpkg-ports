@@ -11,12 +11,20 @@
     "boost-regex",
     "boost-system",
     "boost-thread",
+    "boost-python",
+    "boost-convert",
+    "boost-assign",
+    "boost-geometry",
+    "boost-statechart",
     "coin",
     "eigen3",
     "freetype",
     "matplotlib-cpp",
     "med-fichier",
     "netgen",
+    "salome-smesh",
+    "salome-netgenplugin",
+    "pivy",
     {
       "name": "opencascade",
       "default-features": false
@@ -31,9 +39,14 @@
       "name": "pcl",
       "default-features": false,
       "features": [
-        "qt"
+        "qt",
+        "visualization",
+        "vtk",
+        "simulation",
+        "opengl"
       ]
     },
+    "pyside",
     "python3",
     "qtsvg",
     {
