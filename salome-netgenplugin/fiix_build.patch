@@ -1,0 +1,106 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ab0173e11..887cdf75b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -107,7 +107,7 @@ ENDIF(SALOME_BUILD_GUI)
+ 
+ IF(SALOME_BUILD_GUI)
+   # Qt
+-  FIND_PACKAGE(SalomeQt5 REQUIRED)
++  FIND_PACKAGE(SalomeQt6 REQUIRED)
+ ENDIF(SALOME_BUILD_GUI)
+ 
+ # OCCT
+diff --git a/src/NETGENPlugin/CMakeLists.txt b/src/NETGENPlugin/CMakeLists.txt
+index aa4746e1c..12da8b77f 100644
+--- a/src/NETGENPlugin/CMakeLists.txt
++++ b/src/NETGENPlugin/CMakeLists.txt
+@@ -70,7 +70,7 @@ SET(_link_LIBRARIES
+   VTK::CommonCore
+   VTK::CommonDataModel
+   SalomeIDLNETGENPLUGIN
+-  Qt5::Core
++  Qt6::Core
+ )
+ 
+ # --- headers ---
+diff --git a/src/NETGENPlugin/NETGENPlugin_Mesher.cxx b/src/NETGENPlugin/NETGENPlugin_Mesher.cxx
+index 2d9ff3bd5..dec7461be 100644
+--- a/src/NETGENPlugin/NETGENPlugin_Mesher.cxx
++++ b/src/NETGENPlugin/NETGENPlugin_Mesher.cxx
+@@ -55,6 +55,7 @@
+ #include <BRepAdaptor_Surface.hxx>
+ #include <BRepBuilderAPI_Copy.hxx>
+ #include <BRepLProp_SLProps.hxx>
++#include <BRepBndLib.hxx>
+ #include <BRepMesh_IncrementalMesh.hxx>
+ #include <BRep_Builder.hxx>
+ #include <BRep_Tool.hxx>
+@@ -876,12 +877,12 @@ void NETGENPlugin_Mesher::SetLocalSizeForChordalError( netgen::OCCGeometry& occg
+       {
+         Standard_Integer n1,n2,n3;
+         triangulation->Triangles()(i).Get( n1,n2,n3 );
+-        p [0] = triangulation->Nodes()(n1).Transformed(loc).XYZ();
+-        p [1] = triangulation->Nodes()(n2).Transformed(loc).XYZ();
+-        p [2] = triangulation->Nodes()(n3).Transformed(loc).XYZ();
+-        uv[0] = triangulation->UVNodes()(n1).XY();
+-        uv[1] = triangulation->UVNodes()(n2).XY();
+-        uv[2] = triangulation->UVNodes()(n3).XY();
++        p [0] = triangulation->Node(n1).Transformed(loc).XYZ();
++        p [1] = triangulation->Node(n2).Transformed(loc).XYZ();
++        p [2] = triangulation->Node(n3).Transformed(loc).XYZ();
++        uv[0] = triangulation->UVNode(n1).XY();
++        uv[1] = triangulation->UVNode(n2).XY();
++        uv[2] = triangulation->UVNode(n3).XY();
+         surfProp.SetParameters( uv[0].X(), uv[0].Y() );
+         if ( !surfProp.IsCurvatureDefined() )
+           break;
+@@ -1039,7 +1040,7 @@ double NETGENPlugin_Mesher::GetDefaultMinSize(const TopoDS_Shape& geom,
+       BRep_Tool::Triangulation ( TopoDS::Face( fExp.Current() ), loc);
+     if ( triangulation.IsNull() ) continue;
+     const double fTol = BRep_Tool::Tolerance( TopoDS::Face( fExp.Current() ));
+-    const TColgp_Array1OfPnt&   points = triangulation->Nodes();
++    auto points = [&] (auto index) { return triangulation->Node(index); };
+     const Poly_Array1OfTriangle& trias = triangulation->Triangles();
+     for ( int iT = trias.Lower(); iT <= trias.Upper(); ++iT )
+     {
+diff --git a/src/NETGENPlugin/NETGENPlugin_NETGEN_2D_ONLY.cxx b/src/NETGENPlugin/NETGENPlugin_NETGEN_2D_ONLY.cxx
+index 9c122c3f2..206a214f2 100644
+--- a/src/NETGENPlugin/NETGENPlugin_NETGEN_2D_ONLY.cxx
++++ b/src/NETGENPlugin/NETGENPlugin_NETGEN_2D_ONLY.cxx
+@@ -43,6 +43,7 @@
+ #include <Precision.hxx>
+ #include <Standard_ErrorHandler.hxx>
+ #include <Standard_Failure.hxx>
++#include <TopExp.hxx>
+ 
+ #include <utilities.h>
+ 
+diff --git a/src/NETGENPlugin/NETGENPlugin_Remesher_2D.cxx b/src/NETGENPlugin/NETGENPlugin_Remesher_2D.cxx
+index d23a42ff0..8d150ec5f 100644
+--- a/src/NETGENPlugin/NETGENPlugin_Remesher_2D.cxx
++++ b/src/NETGENPlugin/NETGENPlugin_Remesher_2D.cxx
+@@ -65,11 +67,11 @@ namespace netgen {
+ }
+ namespace nglib
+ {
+-  NETGENPLUGIN_DLL_HEADER
++  //NETGENPLUGIN_DLL_HEADER
+ #ifdef NETGEN_V6
+-  extern netgen::NgArray<netgen::Point<3> > readedges;
++  //extern netgen::NgArray<netgen::Point<3> > readedges;
+ #else
+-  extern netgen::Array<netgen::Point<3> > readedges;
++  //extern netgen::Array<netgen::Point<3> > readedges;
+ #endif
+ }
+ 
+@@ -231,7 +233,7 @@ namespace
+ 
+   void HoleFiller::AddHoleBordersAndEdges( Ng_STL_Geometry * ngStlGeo, bool toAddEdges )
+   {
+-    nglib::readedges.SetSize(0);
++    //nglib::readedges.SetSize(0); // This looks like a bug in netgen if you ask me
+ 
+     for ( size_t i = 0; i < myHole.size(); ++i )
+       for ( size_t iP = 1; iP < myHole[i].size(); ++iP )

@@ -1,0 +1,26 @@
+{
+  "name": "salome-netgenplugin",
+  "version": "9.10.0",
+  "description": "Meshing plugin for Netgen",
+  "homepage": "https://www.salome-platform.org",
+  "license": "GPL-2.0-or-later",
+  "dependencies": [
+    "salome-configuration",
+    "salome-kernel",
+    "salome-geom",
+    "salome-smesh",
+    "boost-polygon",
+    {
+      "name": "python3",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ]
+}
