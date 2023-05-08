@@ -1,0 +1,43 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4b59dcaa0..9972daea4 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -15,6 +15,8 @@ if (SoQt_FOUND)
+ endif()
+ 
+ find_package(Python REQUIRED COMPONENTS Interpreter Development)
++file(TO_CMAKE_PATH "${Python_SITEARCH}" Python_SITEARCH)
++string(REPLACE "${VCPKG_INSTALLED_DIR}" "${CMAKE_INSTALL_PREFIX}" Python_SITEARCH "${Python_SITEARCH}")
+ 
+ # SWIGIFY HEADERS
+ # doing this with the origin python functions
+@@ -37,7 +39,7 @@ add_subdirectory(interfaces)
+ 
+ install(DIRECTORY
+     ${CMAKE_BINARY_DIR}/pivy
+-    DESTINATION ${Python_SITEARCH}
++    DESTINATION "${Python_SITEARCH}"
+     FILES_MATCHING
+     PATTERN "*.py"
+     PATTERN "*.so"
+diff --git a/interfaces/CMakeLists.txt b/interfaces/CMakeLists.txt
+index 92f9af665..35fbbded8 100644
+--- a/interfaces/CMakeLists.txt
++++ b/interfaces/CMakeLists.txt
+@@ -40,7 +40,8 @@ target_include_directories(coin
+     )
+ 
+ target_link_libraries(coin PUBLIC Coin::Coin)
+-install(TARGETS coin DESTINATION ${Python_SITEARCH}/pivy)
++
++install(TARGETS coin DESTINATION "${Python_SITEARCH}/pivy")
+ 
+ 
+ if (SoQt_FOUND)
+@@ -77,5 +78,5 @@ if (SoQt_FOUND)
+         )
+ 
+     target_link_libraries(soqt PUBLIC SoQt::SoQt)
+-    install(TARGETS soqt DESTINATION ${Python_SITEARCH}/pivy/gui)
++    install(TARGETS soqt DESTINATION "${Python_SITEARCH}/pivy/gui")
+ endif()

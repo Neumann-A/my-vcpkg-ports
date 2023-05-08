@@ -1,0 +1,19 @@
+{
+  "name": "pivy",
+  "version": "0.6.8",
+  "description": "python bindings to coin3d",
+  "homepage": "https://www.numpy.org/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    "python3",
+    "coin"
+  ]
+}
