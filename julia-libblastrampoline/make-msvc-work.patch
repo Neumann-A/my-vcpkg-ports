@@ -1,0 +1,582 @@
+diff --git a/src/Make.inc b/src/Make.inc
+index 782cfc33a..5f9f36829 100644
+--- a/src/Make.inc
++++ b/src/Make.inc
+@@ -2,6 +2,7 @@
+ 
+ # ARCH detection in Make, used to pick out which trampoline assembly syntax we're gonna use
+ ARCH := $(shell $(CC) -dumpmachine | sed "s/\([^-]*\).*$$/\1/")
++ARCH := amd64
+ 
+ # Normalize ppc64le to powerpc64le
+ ifeq ($(ARCH),ppc64le)
+@@ -22,6 +23,7 @@ TRIPLET := $(shell $(CC) -dumpmachine)
+ ifneq (,$(findstring MINGW,$(OS))$(findstring MSYS,$(OS))$(findstring CYGWIN,$(OS))$(findstring mingw,$(TRIPLET)))
+   OS := WINNT
+ endif
++OS := WINNT
+ 
+ LBT_SOVERSION_MAJOR := 5
+ LBT_SOVERSION_MINOR := 4
+@@ -64,13 +66,14 @@ endif
+ 
+ ifeq ($(OS),WINNT)
+ # On windows, we need to enable unicode mode
+-LBT_CFLAGS += -municode
++LBT_CFLAGS += -DUNICODE -D_UNICODE
++LBT_CFLAGS += -DPATH_MAX=4096 -DMAX_SYMBOL_LEN=64
++
+ endif
+ 
+ # On windows, we must generate import libraries
+ ifeq ($(OS),WINNT)
+ define IMPLIB_FLAGS
+-  -Wl,--out-implib,$(1).a
+ endef
+ else
+ define IMPLIB_FLAGS
+diff --git a/src/Makefile b/src/Makefile
+index ea3e0d3e2..cd1cdcf94 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -5,8 +5,10 @@ ifeq ($(OS),WINNT)
+ # On Windows only build the library with the major soversion, all other copies
+ # are useless and error prone.
+ TARGET_LIBRARIES = $(builddir)/$(LIB_MAJOR_VERSION)
++OBJEXT :=.obj
+ else
+ TARGET_LIBRARIES = $(builddir)/$(LIB_MAJOR_VERSION) $(builddir)/$(LIB_FULL_VERSION) $(builddir)/libblastrampoline.$(SHLIB_EXT)
++OBJEXT :=.o
+ endif
+ 
+ maintarget=$(word 1,$(TARGET_LIBRARIES))
+@@ -15,26 +17,26 @@ maintarget=$(word 1,$(TARGET_LIBRARIES))
+ all: $(maintarget)
+ 
+ # Objects we'll build
+-MAIN_OBJS := libblastrampoline.o dl_utils.o config.o \
+-			 autodetection.o \
+-			 threading.o deepbindless.o trampolines/trampolines_$(ARCH).o
++MAIN_OBJS := libblastrampoline$(OBJEXT) dl_utils$(OBJEXT) config$(OBJEXT) \
++			 autodetection$(OBJEXT) \
++			 threading$(OBJEXT) deepbindless$(OBJEXT) trampolines/trampolines_$(ARCH)$(OBJEXT)
+ 
+ # Include win_utils.c on windws
+ ifeq ($(OS),WINNT)
+-MAIN_OBJS += win_utils.o
++MAIN_OBJS += win_utils$(OBJEXT)
+ endif
+ 
+ # If we're on an architecture that supports f2c autodetection, compile that in!
+ ifeq ($(F2C_AUTODETECTION),1)
+-MAIN_OBJS += f2c_adapters.o
++MAIN_OBJS += f2c_adapters$(OBJEXT)
+ endif
+ 
+ ifeq ($(CBLAS_DIVERGENCE_AUTODETECTION),1)
+-MAIN_OBJS += cblas_adapters.o
++MAIN_OBJS += cblas_adapters$(OBJEXT)
+ endif
+ 
+ ifeq ($(COMPLEX_RETSTYLE_AUTODETECTION),1)
+-MAIN_OBJS += complex_return_style_adapters.o
++MAIN_OBJS += complex_return_style_adapters$(OBJEXT)
+ endif
+ 
+ # Place the `.o` files into `$(builddir)`
+@@ -51,17 +53,17 @@ endif
+ $(builddir) $(builddir)/trampolines:
+ 	@mkdir -p $@
+ 
+-$(builddir)/%.o: %.c | $(builddir) $(builddir)/trampolines
++$(builddir)/%$(OBJEXT): %.c | $(builddir) $(builddir)/trampolines
+ 	@$(call PRINT_CC,$(CC) -o $@ $(LBT_CFLAGS) -c $^)
+-$(builddir)/trampolines/%.o: trampolines/%.S exported_funcs.inc | $(builddir)/trampolines
+-	@$(call PRINT_CC,$(CC) -o $@ $(LBT_CFLAGS) -c $<)
++$(builddir)/trampolines/%$(OBJEXT): trampolines/%.S exported_funcs.inc | $(builddir)/trampolines
++	@$(call PRINT_CC,$(CCAS) -o $@ $(CCASFLAGS) -c $<)
+ 
+ dump-trampolines: trampolines/trampolines_$(ARCH).S
+-	$(CC) $< -S | sed -E 's/ ((%%)|;) /\n/g' | sed -E 's/.global/\n.global/g'
++	$(CCAS) $< -S | sed -E 's/ ((%%)|;) /\n/g' | sed -E 's/.global/\n.global/g'
+ 
+ 
+ $(builddir)/$(LIB_MAJOR_VERSION): $(MAIN_OBJS)
+-	@$(call PRINT_CC,$(CC) -o "$@" $(call IMPLIB_FLAGS,$@) $(LBT_CFLAGS) $(SONAME_FLAG) $^ -shared $(LBT_LDFLAGS))
++	@$(call PRINT_CC,$(CC) -o "$@" $(call IMPLIB_FLAGS,$@) $(LBT_CFLAGS) $(SONAME_FLAG) $^ -Xlinker -DLL $(LBT_LDFLAGS))
+ 
+ ifneq ($(OS),WINNT)
+ $(builddir)/$(LIB_FULL_VERSION): | $(builddir)/$(LIB_MAJOR_VERSION)
+diff --git a/src/autodetection.c b/src/autodetection.c
+index 86ee1241f..0f1f8fea5 100644
+--- a/src/autodetection.c
++++ b/src/autodetection.c
+@@ -205,8 +205,8 @@ int32_t autodetect_complex_return_style(void * handle, const char * suffix) {
+     }
+ 
+     // Typecast to function pointer for easier usage below
+-    double complex (*zdotc_normal)(                  int64_t *, double complex *, int64_t *, double complex *, int64_t *) = zdotc_addr;
+-    void           (*zdotc_retarg)(double complex *, int64_t *, double complex *, int64_t *, double complex *, int64_t *) = zdotc_addr;
++    DOUBLE_COMPLEX_TYPE (*zdotc_normal)(                  int64_t *, DOUBLE_COMPLEX_TYPE *, int64_t *, DOUBLE_COMPLEX_TYPE *, int64_t *) = zdotc_addr;
++    void           (*zdotc_retarg)(DOUBLE_COMPLEX_TYPE *, int64_t *, DOUBLE_COMPLEX_TYPE *, int64_t *, DOUBLE_COMPLEX_TYPE *, int64_t *) = zdotc_addr;
+ 
+     /*
+      * First, check to see if `zdotc` zeros out the first argument if all arguments are zero.
+@@ -218,9 +218,9 @@ int32_t autodetect_complex_return_style(void * handle, const char * suffix) {
+      * makes this invocation safe across the full normal-return/argument-return vs. lp64/ilp64
+      * compatibility square.
+      */
+-    double complex retval = 0.0 + 1.0*I;
++    DOUBLE_COMPLEX_TYPE retval = DOUBLE_COMPLEX_CREATE (0.0, 1.0);
+     int64_t zero = 0;
+-    double complex zeroc = 0.0 + 0.0*I;
++    DOUBLE_COMPLEX_TYPE zeroc = DOUBLE_COMPLEX_CREATE (0.0, 0.0);
+     zdotc_retarg(&retval, &zero, &zeroc, &zero, &zeroc, &zero);
+ 
+     if (creal(retval) == 0.0 && cimag(retval) == 0.0) {
+@@ -228,7 +228,7 @@ int32_t autodetect_complex_return_style(void * handle, const char * suffix) {
+     }
+ 
+     // If it was _not_ reset, let's hazard a guess that we're dealing with a normal return style:
+-    retval = 0.0 + 1.0*I;
++    retval = DOUBLE_COMPLEX_CREATE (0.0, 1.0);
+     retval = zdotc_normal(&zero, &zeroc, &zero, &zeroc, &zero);
+     if (creal(retval) == 0.0 && cimag(retval) == 0.0) {
+         return LBT_COMPLEX_RETSTYLE_NORMAL;
+diff --git a/src/cblas_adapters.c b/src/cblas_adapters.c
+index 98afc6390..6a8b3bfac 100644
+--- a/src/cblas_adapters.c
++++ b/src/cblas_adapters.c
+@@ -9,47 +9,47 @@
+  *  - https://github.com/JuliaLinearAlgebra/libblastrampoline/issues/56
+  */
+ 
+-extern double complex zdotc_(const int32_t *,
+-                             const double complex *, const int32_t *,
+-                             const double complex *, const int32_t *);
++extern DOUBLE_COMPLEX_TYPE zdotc_(const int32_t *,
++                             const DOUBLE_COMPLEX_TYPE *, const int32_t *,
++                             const DOUBLE_COMPLEX_TYPE *, const int32_t *);
+ void lbt_cblas_zdotc_sub(const int32_t N,
+-                         const double complex *X, const int32_t incX,
+-                         const double complex *Y, const int32_t incY,
+-                         double complex * z)
++                         const DOUBLE_COMPLEX_TYPE *X, const int32_t incX,
++                         const DOUBLE_COMPLEX_TYPE *Y, const int32_t incY,
++                         DOUBLE_COMPLEX_TYPE * z)
+ {
+    *z = zdotc_(&N, X, &incX, Y, &incY);
+ }
+ 
+-extern double complex zdotc_64_(const int64_t *,
+-                                const double complex *, const int64_t *,
+-                                const double complex *, const int64_t *);
++extern DOUBLE_COMPLEX_TYPE zdotc_64_(const int64_t *,
++                                const DOUBLE_COMPLEX_TYPE *, const int64_t *,
++                                const DOUBLE_COMPLEX_TYPE *, const int64_t *);
+ void lbt_cblas_zdotc_sub64_(const int64_t N,
+-                            const double complex *X, const int64_t incX,
+-                            const double complex *Y, const int64_t incY,
+-                            double complex * z)
++                            const DOUBLE_COMPLEX_TYPE *X, const int64_t incX,
++                            const DOUBLE_COMPLEX_TYPE *Y, const int64_t incY,
++                            DOUBLE_COMPLEX_TYPE * z)
+ {
+    *z = zdotc_64_(&N, X, &incX, Y, &incY);
+ }
+ 
+ 
+-extern double complex zdotu_(const int32_t *,
+-                             const double complex *, const int32_t *,
+-                             const double complex *, const int32_t *);
++extern DOUBLE_COMPLEX_TYPE zdotu_(const int32_t *,
++                             const DOUBLE_COMPLEX_TYPE *, const int32_t *,
++                             const DOUBLE_COMPLEX_TYPE *, const int32_t *);
+ void lbt_cblas_zdotu_sub(const int32_t N,
+-                         const double complex *X, const int32_t incX,
+-                         const double complex *Y, const int32_t incY,
+-                         double complex * z)
++                         const DOUBLE_COMPLEX_TYPE *X, const int32_t incX,
++                         const DOUBLE_COMPLEX_TYPE *Y, const int32_t incY,
++                         DOUBLE_COMPLEX_TYPE * z)
+ {
+    *z = zdotu_(&N, X, &incX, Y, &incY);
+ }
+ 
+-extern double complex zdotu_64_(const int64_t *,
+-                                const double complex *, const int64_t *,
+-                                const double complex *, const int64_t *);
++extern DOUBLE_COMPLEX_TYPE zdotu_64_(const int64_t *,
++                                const DOUBLE_COMPLEX_TYPE *, const int64_t *,
++                                const DOUBLE_COMPLEX_TYPE *, const int64_t *);
+ void lbt_cblas_zdotu_sub64_(const int64_t N,
+-                            const double complex *X, const int64_t incX,
+-                            const double complex *Y, const int64_t incY,
+-                            double complex * z)
++                            const DOUBLE_COMPLEX_TYPE *X, const int64_t incX,
++                            const DOUBLE_COMPLEX_TYPE *Y, const int64_t incY,
++                            DOUBLE_COMPLEX_TYPE * z)
+ {
+    *z = zdotu_64_(&N, X, &incX, Y, &incY);
+ }
+@@ -61,47 +61,47 @@ void lbt_cblas_zdotu_sub64_(const int64_t N,
+ 
+ 
+ 
+-extern float complex cdotc_(const int32_t *,
+-                             const float complex *, const int32_t *,
+-                             const float complex *, const int32_t *);
++extern FLOAT_COMPLEX_TYPE cdotc_(const int32_t *,
++                             const FLOAT_COMPLEX_TYPE *, const int32_t *,
++                             const FLOAT_COMPLEX_TYPE *, const int32_t *);
+ void lbt_cblas_cdotc_sub(const int32_t N,
+-                         const float complex *X, const int32_t incX,
+-                         const float complex *Y, const int32_t incY,
+-                         float complex * z)
++                         const FLOAT_COMPLEX_TYPE *X, const int32_t incX,
++                         const FLOAT_COMPLEX_TYPE *Y, const int32_t incY,
++                         FLOAT_COMPLEX_TYPE * z)
+ {
+    *z = cdotc_(&N, X, &incX, Y, &incY);
+ }
+ 
+-extern float complex cdotc_64_(const int64_t *,
+-                                const float complex *, const int64_t *,
+-                                const float complex *, const int64_t *);
++extern FLOAT_COMPLEX_TYPE cdotc_64_(const int64_t *,
++                                const FLOAT_COMPLEX_TYPE *, const int64_t *,
++                                const FLOAT_COMPLEX_TYPE *, const int64_t *);
+ void lbt_cblas_cdotc_sub64_(const int64_t N,
+-                            const float complex *X, const int64_t incX,
+-                            const float complex *Y, const int64_t incY,
+-                            float complex * z)
++                            const FLOAT_COMPLEX_TYPE *X, const int64_t incX,
++                            const FLOAT_COMPLEX_TYPE *Y, const int64_t incY,
++                            FLOAT_COMPLEX_TYPE * z)
+ {
+    *z = cdotc_64_(&N, X, &incX, Y, &incY);
+ }
+ 
+ 
+-extern float complex cdotu_(const int32_t *,
+-                             const float complex *, const int32_t *,
+-                             const float complex *, const int32_t *);
++extern FLOAT_COMPLEX_TYPE cdotu_(const int32_t *,
++                             const FLOAT_COMPLEX_TYPE *, const int32_t *,
++                             const FLOAT_COMPLEX_TYPE *, const int32_t *);
+ void lbt_cblas_cdotu_sub(const int32_t N,
+-                         const float complex *X, const int32_t incX,
+-                         const float complex *Y, const int32_t incY,
+-                         float complex * z)
++                         const FLOAT_COMPLEX_TYPE *X, const int32_t incX,
++                         const FLOAT_COMPLEX_TYPE *Y, const int32_t incY,
++                         FLOAT_COMPLEX_TYPE * z)
+ {
+    *z = cdotu_(&N, X, &incX, Y, &incY);
+ }
+ 
+-extern float complex cdotu_64_(const int64_t *,
+-                                const float complex *, const int64_t *,
+-                                const float complex *, const int64_t *);
++extern FLOAT_COMPLEX_TYPE cdotu_64_(const int64_t *,
++                                const FLOAT_COMPLEX_TYPE *, const int64_t *,
++                                const FLOAT_COMPLEX_TYPE *, const int64_t *);
+ void lbt_cblas_cdotu_sub64_(const int64_t N,
+-                            const float complex *X, const int64_t incX,
+-                            const float complex *Y, const int64_t incY,
+-                            float complex * z)
++                            const FLOAT_COMPLEX_TYPE *X, const int64_t incX,
++                            const FLOAT_COMPLEX_TYPE *Y, const int64_t incY,
++                            FLOAT_COMPLEX_TYPE * z)
+ {
+    *z = cdotu_64_(&N, X, &incX, Y, &incY);
+ }
+diff --git a/src/complex_return_style_adapters.c b/src/complex_return_style_adapters.c
+index 7b20c141e..7e6099fc8 100644
+--- a/src/complex_return_style_adapters.c
++++ b/src/complex_return_style_adapters.c
+@@ -11,112 +11,112 @@
+ 
+ 
+ // zdotc
+-extern void (*cmplxret_zdotc__addr)(double complex * z,
++extern void (*cmplxret_zdotc__addr)(DOUBLE_COMPLEX_TYPE * z,
+                                     const int32_t *,
+-                                    const double complex *, const int32_t *,
+-                                    const double complex *, const int32_t *);
+-double complex cmplxret_zdotc_(const int32_t * N,
+-                               const double complex *X, const int32_t * incX,
+-                               const double complex *Y, const int32_t * incY)
++                                    const DOUBLE_COMPLEX_TYPE *, const int32_t *,
++                                    const DOUBLE_COMPLEX_TYPE *, const int32_t *);
++DOUBLE_COMPLEX_TYPE cmplxret_zdotc_(const int32_t * N,
++                               const DOUBLE_COMPLEX_TYPE *X, const int32_t * incX,
++                               const DOUBLE_COMPLEX_TYPE *Y, const int32_t * incY)
+ {
+-   double complex c;
++   DOUBLE_COMPLEX_TYPE c;
+    cmplxret_zdotc__addr(&c, N, X, incX, Y, incY);
+    return c;
+ }
+ 
+-extern void (*cmplxret_zdotc_64__addr)(double complex * z,
++extern void (*cmplxret_zdotc_64__addr)(DOUBLE_COMPLEX_TYPE * z,
+                                        const int64_t *,
+-                                       const double complex *, const int64_t *,
+-                                       const double complex *, const int64_t *);
+-double complex cmplxret_zdotc_64_(const int64_t * N,
+-                                  const double complex *X, const int64_t * incX,
+-                                  const double complex *Y, const int64_t * incY)
++                                       const DOUBLE_COMPLEX_TYPE *, const int64_t *,
++                                       const DOUBLE_COMPLEX_TYPE *, const int64_t *);
++DOUBLE_COMPLEX_TYPE cmplxret_zdotc_64_(const int64_t * N,
++                                  const DOUBLE_COMPLEX_TYPE *X, const int64_t * incX,
++                                  const DOUBLE_COMPLEX_TYPE *Y, const int64_t * incY)
+ {
+-   double complex c;
++   DOUBLE_COMPLEX_TYPE c;
+    cmplxret_zdotc_64__addr(&c, N, X, incX, Y, incY);
+    return c;
+ }
+ 
+ 
+ // zdotu
+-extern void (*cmplxret_zdotu__addr)(double complex * z,
++extern void (*cmplxret_zdotu__addr)(DOUBLE_COMPLEX_TYPE * z,
+                                     const int32_t *,
+-                                    const double complex *, const int32_t *,
+-                                    const double complex *, const int32_t *);
+-double complex cmplxret_zdotu_(const int32_t * N,
+-                               const double complex *X, const int32_t * incX,
+-                               const double complex *Y, const int32_t * incY)
++                                    const DOUBLE_COMPLEX_TYPE *, const int32_t *,
++                                    const DOUBLE_COMPLEX_TYPE *, const int32_t *);
++DOUBLE_COMPLEX_TYPE cmplxret_zdotu_(const int32_t * N,
++                               const DOUBLE_COMPLEX_TYPE *X, const int32_t * incX,
++                               const DOUBLE_COMPLEX_TYPE *Y, const int32_t * incY)
+ {
+-   double complex c;
++   DOUBLE_COMPLEX_TYPE c;
+    cmplxret_zdotu__addr(&c, N, X, incX, Y, incY);
+    return c;
+ }
+ 
+-extern void (*cmplxret_zdotu_64__addr)(double complex * z,
++extern void (*cmplxret_zdotu_64__addr)(DOUBLE_COMPLEX_TYPE * z,
+                                        const int64_t *,
+-                                       const double complex *, const int64_t *,
+-                                       const double complex *, const int64_t *);
+-double complex cmplxret_zdotu_64_(const int64_t * N,
+-                                  const double complex *X, const int64_t * incX,
+-                                  const double complex *Y, const int64_t * incY)
++                                       const DOUBLE_COMPLEX_TYPE *, const int64_t *,
++                                       const DOUBLE_COMPLEX_TYPE *, const int64_t *);
++DOUBLE_COMPLEX_TYPE cmplxret_zdotu_64_(const int64_t * N,
++                                  const DOUBLE_COMPLEX_TYPE *X, const int64_t * incX,
++                                  const DOUBLE_COMPLEX_TYPE *Y, const int64_t * incY)
+ {
+-   double complex c;
++   DOUBLE_COMPLEX_TYPE c;
+    cmplxret_zdotu_64__addr(&c, N, X, incX, Y, incY);
+    return c;
+ }
+ 
+ 
+ // cdotc
+-extern void (*cmplxret_cdotc__addr)(float complex * z,
++extern void (*cmplxret_cdotc__addr)(FLOAT_COMPLEX_TYPE * z,
+                                     const int32_t *,
+-                                    const float complex *, const int32_t *,
+-                                    const float complex *, const int32_t *);
+-float complex cmplxret_cdotc_(const int32_t * N,
+-                               const float complex *X, const int32_t * incX,
+-                               const float complex *Y, const int32_t * incY)
++                                    const FLOAT_COMPLEX_TYPE *, const int32_t *,
++                                    const FLOAT_COMPLEX_TYPE *, const int32_t *);
++FLOAT_COMPLEX_TYPE cmplxret_cdotc_(const int32_t * N,
++                               const FLOAT_COMPLEX_TYPE *X, const int32_t * incX,
++                               const FLOAT_COMPLEX_TYPE *Y, const int32_t * incY)
+ {
+-   float complex c;
++   FLOAT_COMPLEX_TYPE c;
+    cmplxret_cdotc__addr(&c, N, X, incX, Y, incY);
+    return c;
+ }
+ 
+-extern void (*cmplxret_cdotc_64__addr)(float complex * z,
++extern void (*cmplxret_cdotc_64__addr)(FLOAT_COMPLEX_TYPE * z,
+                                        const int64_t *,
+-                                       const float complex *, const int64_t *,
+-                                       const float complex *, const int64_t *);
+-float complex cmplxret_cdotc_64_(const int64_t * N,
+-                                  const float complex *X, const int64_t * incX,
+-                                  const float complex *Y, const int64_t * incY)
++                                       const FLOAT_COMPLEX_TYPE *, const int64_t *,
++                                       const FLOAT_COMPLEX_TYPE *, const int64_t *);
++FLOAT_COMPLEX_TYPE cmplxret_cdotc_64_(const int64_t * N,
++                                  const FLOAT_COMPLEX_TYPE *X, const int64_t * incX,
++                                  const FLOAT_COMPLEX_TYPE *Y, const int64_t * incY)
+ {
+-   float complex c;
++   FLOAT_COMPLEX_TYPE c;
+    cmplxret_cdotc_64__addr(&c, N, X, incX, Y, incY);
+    return c;
+ }
+ 
+ 
+ // cdotu
+-extern void (*cmplxret_cdotu__addr)(float complex * z,
++extern void (*cmplxret_cdotu__addr)(FLOAT_COMPLEX_TYPE * z,
+                                     const int32_t *,
+-                                    const float complex *, const int32_t *,
+-                                    const float complex *, const int32_t *);
+-float complex cmplxret_cdotu_(const int32_t * N,
+-                               const float complex *X, const int32_t * incX,
+-                               const float complex *Y, const int32_t * incY)
++                                    const FLOAT_COMPLEX_TYPE *, const int32_t *,
++                                    const FLOAT_COMPLEX_TYPE *, const int32_t *);
++FLOAT_COMPLEX_TYPE cmplxret_cdotu_(const int32_t * N,
++                               const FLOAT_COMPLEX_TYPE *X, const int32_t * incX,
++                               const FLOAT_COMPLEX_TYPE *Y, const int32_t * incY)
+ {
+-   float complex c;
++   FLOAT_COMPLEX_TYPE c;
+    cmplxret_cdotu__addr(&c, N, X, incX, Y, incY);
+    return c;
+ }
+ 
+-extern void (*cmplxret_cdotu_64__addr)(float complex * z,
++extern void (*cmplxret_cdotu_64__addr)(FLOAT_COMPLEX_TYPE * z,
+                                        const int64_t *,
+-                                       const float complex *, const int64_t *,
+-                                       const float complex *, const int64_t *);
+-float complex cmplxret_cdotu_64_(const int64_t * N,
+-                                  const float complex *X, const int64_t * incX,
+-                                  const float complex *Y, const int64_t * incY)
++                                       const FLOAT_COMPLEX_TYPE *, const int64_t *,
++                                       const FLOAT_COMPLEX_TYPE *, const int64_t *);
++FLOAT_COMPLEX_TYPE cmplxret_cdotu_64_(const int64_t * N,
++                                  const FLOAT_COMPLEX_TYPE *X, const int64_t * incX,
++                                  const FLOAT_COMPLEX_TYPE *Y, const int64_t * incY)
+ {
+-   float complex c;
++   FLOAT_COMPLEX_TYPE c;
+    cmplxret_cdotu_64__addr(&c, N, X, incX, Y, incY);
+    return c;
+ }
+diff --git a/src/f2c_adapters.c b/src/f2c_adapters.c
+index 4c05fdc8c..970e48a4f 100644
+--- a/src/f2c_adapters.c
++++ b/src/f2c_adapters.c
+@@ -58,22 +58,22 @@ LBT_HIDDEN float f2c_samin_64_(const int64_t* n, const float* x, const int64_t*
+ }
+ 
+ // scamax
+-extern double (*f2c_scamax__addr)(const int32_t* n, const float complex* x, const int32_t* ix);
+-LBT_HIDDEN float f2c_scamax_(const int32_t* n, const float complex* x, const int32_t* ix) {
++extern double (*f2c_scamax__addr)(const int32_t* n, const FLOAT_COMPLEX_TYPE* x, const int32_t* ix);
++LBT_HIDDEN float f2c_scamax_(const int32_t* n, const FLOAT_COMPLEX_TYPE* x, const int32_t* ix) {
+     return f2c_scamax__addr(n, x, ix);
+ }
+-extern double (*f2c_scamax_64__addr)(const int64_t* n, const float complex* x, const int64_t* ix);
+-LBT_HIDDEN float f2c_scamax_64_(const int64_t* n, const float complex* x, const int64_t* ix) {
++extern double (*f2c_scamax_64__addr)(const int64_t* n, const FLOAT_COMPLEX_TYPE* x, const int64_t* ix);
++LBT_HIDDEN float f2c_scamax_64_(const int64_t* n, const FLOAT_COMPLEX_TYPE* x, const int64_t* ix) {
+ 	return f2c_scamax_64__addr(n, x, ix);
+ }
+ 
+ // scamin
+-extern double (*f2c_scamin__addr)(const int32_t* n, const float complex* x, const int32_t* ix);
+-LBT_HIDDEN float f2c_scamin_(const int32_t* n, const float complex* x, const int32_t* ix) {
++extern double (*f2c_scamin__addr)(const int32_t* n, const FLOAT_COMPLEX_TYPE* x, const int32_t* ix);
++LBT_HIDDEN float f2c_scamin_(const int32_t* n, const FLOAT_COMPLEX_TYPE* x, const int32_t* ix) {
+     return f2c_scamin__addr(n, x, ix);
+ }
+-extern double (*f2c_scamin_64__addr)(const int64_t* n, const float complex* x, const int64_t* ix);
+-LBT_HIDDEN float f2c_scamin_64_(const int64_t* n, const float complex* x, const int64_t* ix) {
++extern double (*f2c_scamin_64__addr)(const int64_t* n, const FLOAT_COMPLEX_TYPE* x, const int64_t* ix);
++LBT_HIDDEN float f2c_scamin_64_(const int64_t* n, const FLOAT_COMPLEX_TYPE* x, const int64_t* ix) {
+ 	return f2c_scamin_64__addr(n, x, ix);
+ }
+ 
+@@ -118,22 +118,22 @@ LBT_HIDDEN float f2c_sasum_64_(const int64_t* n, const float* x, const int64_t*
+ }
+ 
+ // scsum
+-extern double (*f2c_scsum__addr)(const int32_t* n, const float complex* x, const int32_t* ix);
+-LBT_HIDDEN float f2c_scsum_(const int32_t* n, const float complex* x, const int32_t* ix) {
++extern double (*f2c_scsum__addr)(const int32_t* n, const FLOAT_COMPLEX_TYPE* x, const int32_t* ix);
++LBT_HIDDEN float f2c_scsum_(const int32_t* n, const FLOAT_COMPLEX_TYPE* x, const int32_t* ix) {
+ 	return f2c_scsum__addr(n, x, ix);
+ }
+-extern double (*f2c_scsum_64__addr)(const int64_t* n, const float complex* x, const int64_t* ix);
+-LBT_HIDDEN float f2c_scsum_64_(const int64_t* n, const float complex* x, const int64_t* ix) {
++extern double (*f2c_scsum_64__addr)(const int64_t* n, const FLOAT_COMPLEX_TYPE* x, const int64_t* ix);
++LBT_HIDDEN float f2c_scsum_64_(const int64_t* n, const FLOAT_COMPLEX_TYPE* x, const int64_t* ix) {
+     return f2c_scsum_64__addr(n, x, ix);
+ }
+ 
+ // scasum_ and scasum_64_
+-extern double (*f2c_scasum__addr)(const int32_t* n, const float complex* x, const int32_t* ix);
+-LBT_HIDDEN float f2c_scasum_(const int32_t* n, const float complex* x, const int32_t* ix) {
++extern double (*f2c_scasum__addr)(const int32_t* n, const FLOAT_COMPLEX_TYPE* x, const int32_t* ix);
++LBT_HIDDEN float f2c_scasum_(const int32_t* n, const FLOAT_COMPLEX_TYPE* x, const int32_t* ix) {
+     return f2c_scasum__addr(n, x, ix);
+ }
+-extern double (*f2c_scasum_64__addr)(const int64_t* n, const float complex* x, const int64_t* ix);
+-LBT_HIDDEN float f2c_scasum_64_(const int64_t* n, const float complex* x, const int64_t* ix) {
++extern double (*f2c_scasum_64__addr)(const int64_t* n, const FLOAT_COMPLEX_TYPE* x, const int64_t* ix);
++LBT_HIDDEN float f2c_scasum_64_(const int64_t* n, const FLOAT_COMPLEX_TYPE* x, const int64_t* ix) {
+     return f2c_scasum_64__addr(n, x, ix);
+ }
+ 
+@@ -148,12 +148,12 @@ LBT_HIDDEN float f2c_snrm2_64_(const int64_t* n, const float* x, const int64_t*
+ }
+ 
+ // scnrm2_ and scnrm2_64_
+-extern double (*f2c_scnrm2__addr)(const int32_t* n, const float complex* x, const int32_t* ix);
+-LBT_HIDDEN float f2c_scnrm2_(const int32_t* n, const float complex* x, const int32_t* ix) {
++extern double (*f2c_scnrm2__addr)(const int32_t* n, const FLOAT_COMPLEX_TYPE* x, const int32_t* ix);
++LBT_HIDDEN float f2c_scnrm2_(const int32_t* n, const FLOAT_COMPLEX_TYPE* x, const int32_t* ix) {
+ 	return f2c_scnrm2__addr(n, x, ix);
+ }
+-extern double (*f2c_scnrm2_64__addr)(const int64_t* n, const float complex* x, const int64_t* ix);
+-LBT_HIDDEN float f2c_scnrm2_64_(const int64_t* n, const float complex* x, const int64_t* ix) {
++extern double (*f2c_scnrm2_64__addr)(const int64_t* n, const FLOAT_COMPLEX_TYPE* x, const int64_t* ix);
++LBT_HIDDEN float f2c_scnrm2_64_(const int64_t* n, const FLOAT_COMPLEX_TYPE* x, const int64_t* ix) {
+ 	return f2c_scnrm2_64__addr(n, x, ix);
+ }
+ 
+diff --git a/src/libblastrampoline_internal.h b/src/libblastrampoline_internal.h
+index 65e466d50..6b66f47ce 100644
+--- a/src/libblastrampoline_internal.h
++++ b/src/libblastrampoline_internal.h
+@@ -2,7 +2,9 @@
+ #include <stdint.h>
+ #include <stdlib.h>
+ #include <string.h>
++#ifndef _MSC_VER
+ #include <unistd.h>
++#endif
+ 
+ // Load in our publicly-defined functions/types
+ #include "libblastrampoline.h"
+@@ -18,6 +20,18 @@
+ #include <windows.h>
+ #endif
+ 
++#if !defined(_MSC_VER)
++# define FLOAT_COMPLEX_TYPE float complex
++# define FLOAT_COMPLEX_CREATE(real, imag) (real + imag * I)
++# define DOUBLE_COMPLEX_TYPE double complex
++# define DOUBLE_COMPLEX_CREATE(real, imag) (real + imag * I)
++#else
++# define FLOAT_COMPLEX_TYPE _Fcomplex
++# define FLOAT_COMPLEX_CREATE(real, imag) _FCbuild(real, imag)
++# define DOUBLE_COMPLEX_TYPE _Dcomplex
++# define DOUBLE_COMPLEX_CREATE(real, imag) _Cbuild(real, imag)
++#endif 
++
+ #ifdef _OS_DARWIN_
+ #include <mach-o/dyld.h>
+ #include <sys/syslimits.h>
