@@ -1,8 +1,8 @@
-diff --git a/Make.inc b/Make.inc
-index 5bbb52617..10e22cdae 100644
---- a/Make.inc
-+++ b/Make.inc
-@@ -40,31 +40,31 @@ OPENBLAS_USE_THREAD:=1
+diff --git a/c7df1582d3-a90757de57.clean/Make.inc b/c7df1582d3-a90757de57/Make.inc
+index 5bbb52617..c8ed2e07e 100644
+--- a/c7df1582d3-a90757de57.clean/Make.inc
++++ b/c7df1582d3-a90757de57/Make.inc
+@@ -40,32 +40,32 @@ OPENBLAS_USE_THREAD:=1
  # Flags for using libraries available on the system instead of building them.
  # Please read the notes around usage of SYSTEM flags in README.md
  # Issues resulting from use of SYSTEM versions will generally not be accepted.
@@ -13,14 +13,14 @@ index 5bbb52617..10e22cdae 100644
  USE_SYSTEM_LIBUNWIND:=0
 -DISABLE_LIBUNWIND:=0
 -USE_SYSTEM_PCRE:=0
+-USE_SYSTEM_LIBM:=0
 +DISABLE_LIBUNWIND:=1
 +USE_SYSTEM_PCRE:=1
- USE_SYSTEM_LIBM:=0
++USE_SYSTEM_LIBM:=1
  USE_SYSTEM_OPENLIBM:=0
  UNTRUSTED_SYSTEM_LIBM:=0
 -USE_SYSTEM_DSFMT:=0
-+USE_SYSTEM_DSFMT:=1
- USE_SYSTEM_LIBBLASTRAMPOLINE:=0
+-USE_SYSTEM_LIBBLASTRAMPOLINE:=0
 -USE_SYSTEM_BLAS:=0
 -USE_SYSTEM_LAPACK:=0
 -USE_SYSTEM_GMP:=0
@@ -30,6 +30,11 @@ index 5bbb52617..10e22cdae 100644
 -USE_SYSTEM_UTF8PROC:=0
 -USE_SYSTEM_MBEDTLS:=0
 -USE_SYSTEM_LIBSSH2:=0
+-USE_SYSTEM_NGHTTP2:=0
+-USE_SYSTEM_CURL:=0
+-USE_SYSTEM_LIBGIT2:=0
++USE_SYSTEM_DSFMT:=1
++USE_SYSTEM_LIBBLASTRAMPOLINE:=1
 +USE_SYSTEM_BLAS:=1
 +USE_SYSTEM_LAPACK:=1
 +USE_SYSTEM_GMP:=1
@@ -39,19 +44,20 @@ index 5bbb52617..10e22cdae 100644
 +USE_SYSTEM_UTF8PROC:=1
 +USE_SYSTEM_MBEDTLS:=1
 +USE_SYSTEM_LIBSSH2:=1
- USE_SYSTEM_NGHTTP2:=0
--USE_SYSTEM_CURL:=0
--USE_SYSTEM_LIBGIT2:=0
++USE_SYSTEM_NGHTTP2:=1
 +USE_SYSTEM_CURL:=1
 +USE_SYSTEM_LIBGIT2:=1
  USE_SYSTEM_PATCHELF:=0
- USE_SYSTEM_LIBWHICH:=0
+-USE_SYSTEM_LIBWHICH:=0
 -USE_SYSTEM_ZLIB:=0
+-USE_SYSTEM_P7ZIP:=0
++USE_SYSTEM_LIBWHICH:=1
 +USE_SYSTEM_ZLIB:=1
- USE_SYSTEM_P7ZIP:=0
++USE_SYSTEM_P7ZIP:=1
  USE_SYSTEM_LLD:=0
  
-@@ -373,14 +373,14 @@ USE_RV := 0
+ # Link to the LLVM shared library
+@@ -373,21 +373,23 @@ USE_RV := 0
  
  # Path to cmake (override in Make.user if needed)
  CMAKE ?= cmake
@@ -69,7 +75,16 @@ index 5bbb52617..10e22cdae 100644
  
  # Figure out OS and architecture
  BUILD_OS := $(shell uname)
-@@ -395,8 +395,8 @@ CROSS_COMPILE:=
++BUILD_OS := MINGW
+ 
+ ifneq (,$(findstring CYGWIN,$(BUILD_OS)))
+ XC_HOST ?= $(shell uname -m)-w64-mingw32
+ endif
++XC_HOST = x86_x64-w64-mingw32
+ 
+ ifeq ($(XC_HOST),)
+ CROSS_COMPILE:=
+@@ -395,8 +397,8 @@ CROSS_COMPILE:=
  HOSTCC = $(CC)
  HOSTCXX = $(CXX)
  else
@@ -80,7 +95,7 @@ index 5bbb52617..10e22cdae 100644
  OPENBLAS_DYNAMIC_ARCH := 1
  override CROSS_COMPILE:=$(XC_HOST)-
  ifneq (,$(findstring mingw,$(XC_HOST)))
-@@ -469,6 +469,7 @@ endif
+@@ -469,6 +471,7 @@ endif
  
  # Compiler specific stuff
  
@@ -88,7 +103,7 @@ index 5bbb52617..10e22cdae 100644
  CC_VERSION_STRING = $(shell $(CC) --version)
  ifneq (,$(findstring clang,$(CC_VERSION_STRING)))
  USECLANG := 1
-@@ -478,6 +479,11 @@ USECLANG := 0
+@@ -478,6 +481,11 @@ USECLANG := 0
  USEGCC := 1
  endif
  
@@ -100,7 +115,7 @@ index 5bbb52617..10e22cdae 100644
  FC := $(CROSS_COMPILE)gfortran
  
  # Note: Supporting only macOS Yosemite and above
-@@ -505,6 +511,15 @@ DEBUGFLAGS := -O0 -ggdb2 -DJL_DEBUG_BUILD -fstack-protector
+@@ -505,6 +513,15 @@ DEBUGFLAGS := -O0 -ggdb2 -DJL_DEBUG_BUILD -fstack-protector
  SHIPFLAGS := -O3 -ggdb2 -falign-functions
  endif
  
@@ -116,25 +131,71 @@ index 5bbb52617..10e22cdae 100644
  ifeq ($(USECLANG),1)
  CC := $(CROSS_COMPILE)clang
  CXX := $(CROSS_COMPILE)clang++
-@@ -779,6 +794,8 @@ XC_HOST := $(ARCH)$(shell echo $(BUILD_MACHINE) | sed "s/[^-]*\(.*\)$$/\1/")
+@@ -758,14 +775,15 @@ endif
+ # JULIA_CPU_TARGET is the JIT-only complement to MARCH. Setting it explicitly is not generally necessary,
+ #    since it is set equal to MARCH by default
+ 
+-BUILD_MACHINE := $(shell $(HOSTCC) -dumpmachine)
+-
++# BUILD_MACHINE := $(shell $(HOSTCC) -dumpmachine)
++BUILD_MACHINE := x86_64
++ARCH := x86_64
+ # Clang spells mingw `-windows-gnu`, but autotools, etc
+ # don't recognize that, so canonicalize to mingw32
+ BUILD_MACHINE := $(subst windows-gnu,mingw32,$(BUILD_MACHINE))
+ 
+ ifeq ($(ARCH),)
+-override ARCH := $(shell $(CC) -dumpmachine | sed "s/\([^-]*\).*$$/\1/")
++# override ARCH := $(shell $(CC) -dumpmachine | sed "s/\([^-]*\).*$$/\1/")
+ else
+ ifneq ($(XC_HOST),)
+ XC_HOST := $(ARCH)$(shell echo $(XC_HOST) | sed "s/[^-]*\(.*\)$$/\1/")
+@@ -779,21 +797,14 @@ XC_HOST := $(ARCH)$(shell echo $(BUILD_MACHINE) | sed "s/[^-]*\(.*\)$$/\1/")
  endif
  endif
  
 +ARCH=x86_x64
++BUILD_ARCH=x86_x64
 +
  # Normalize ppc64le to powerpc64le
  ifeq ($(ARCH), ppc64le)
  override ARCH := powerpc64le
-@@ -791,7 +808,7 @@ $(error "cannot build julia with cygwin-target compilers. set XC_HOST to i686-w6
- else ifeq (msys, $(shell $(CC) -dumpmachine | cut -d\- -f3))
- $(error "cannot build julia with msys-target compilers. please see the README.windows document for instructions on setting up mingw-w64 compilers")
- else ifneq (,$(findstring MSYS,$(shell uname)))
--$(error "cannot build julia from a msys shell. please launch a mingw shell instead by setting MSYSTEM=MINGW64")
-+## $(error "cannot build julia from a msys shell. please launch a mingw shell instead by setting MSYSTEM=MINGW64")
  endif
  
+-ifeq ($(ARCH),mingw32)
+-$(error "the mingw32 compiler you are using fails the openblas testsuite. please see the README.windows document for a replacement")
+-else ifeq (cygwin, $(shell $(CC) -dumpmachine | cut -d\- -f3))
+-$(error "cannot build julia with cygwin-target compilers. set XC_HOST to i686-w64-mingw32 or x86_64-w64-mingw32 for mingw cross-compile")
+-else ifeq (msys, $(shell $(CC) -dumpmachine | cut -d\- -f3))
+-$(error "cannot build julia with msys-target compilers. please see the README.windows document for instructions on setting up mingw-w64 compilers")
+-else ifneq (,$(findstring MSYS,$(shell uname)))
+-$(error "cannot build julia from a msys shell. please launch a mingw shell instead by setting MSYSTEM=MINGW64")
+-endif
+-
  ifeq ($(BUILD_OS),Darwin)
-@@ -1211,10 +1228,17 @@ endif
+ ## Mac is a rather cool 64-bit user-space on 32-bit kernel architecture, so to determine arch we detect
+ ## the capabilities of the hardware, rather than the compiler or kernel, and make a substitution
+@@ -1108,8 +1119,8 @@ endif
+ endif
+ 
+ ifeq ($(USE_SYSTEM_LIBM), 1)
+-LIBM := -lm
+-LIBMNAME := libm
++LIBM :=
++LIBMNAME :=
+ else
+ LIBM := -lopenlibm
+ LIBMNAME := libopenlibm
+@@ -1161,7 +1172,7 @@ endif
+ # Auto-detect triplet once, create different versions that we use as defaults below for each BB install target
+ FC_VERSION := $(shell $(FC) --version 2>/dev/null | head -1)
+ FC_OR_CC_VERSION := $(or $(FC_VERSION),$(shell $(CC) --version 2>/dev/null | head -1))
+-BB_TRIPLET_LIBGFORTRAN_CXXABI := $(shell $(call invoke_python,$(JULIAHOME)/contrib/normalize_triplet.py) $(or $(XC_HOST),$(XC_HOST),$(BUILD_MACHINE)) "$(FC_OR_CC_VERSION)" "$(or $(shell echo '\#include <string>' | $(CXX) $(CXXFLAGS) -x c++ -dM -E - | grep _GLIBCXX_USE_CXX11_ABI | awk '{ print $$3 }' ),1)")
++BB_TRIPLET_LIBGFORTRAN_CXXABI := $(shell $(call invoke_python,$(JULIAHOME)/contrib/normalize_triplet.py) $(or $(XC_HOST),$(XC_HOST),$(BUILD_MACHINE)) "$(FC_OR_CC_VERSION)" "$(or $(shell echo '\#include <string>' | $(CXX) $(CXXFLAGS) -TP -E - | grep _GLIBCXX_USE_CXX11_ABI | awk '{ print $$3 }' ),1)")
+ BB_TRIPLET_LIBGFORTRAN := $(subst $(SPACE),-,$(filter-out cxx%,$(subst -,$(SPACE),$(BB_TRIPLET_LIBGFORTRAN_CXXABI))))
+ BB_TRIPLET_CXXABI := $(subst $(SPACE),-,$(filter-out libgfortran%,$(subst -,$(SPACE),$(BB_TRIPLET_LIBGFORTRAN_CXXABI))))
+ BB_TRIPLET := $(subst $(SPACE),-,$(filter-out cxx%,$(filter-out libgfortran%,$(subst -,$(SPACE),$(BB_TRIPLET_LIBGFORTRAN_CXXABI)))))
+@@ -1211,10 +1222,17 @@ endif
  endef
  $(foreach proj,$(BB_PROJECTS),$(eval $(call SET_BB_DEFAULT,$(proj))))
  
@@ -153,7 +214,7 @@ index 5bbb52617..10e22cdae 100644
  $(error "Attempting to build OpenBLAS or SuiteSparse without a functioning fortran compiler!")
  endif
  endif
-@@ -1392,14 +1416,6 @@ endif # Clang
+@@ -1392,14 +1410,6 @@ endif # Clang
  CUSTOM_LD_LIBRARY_PATH := LD_LIBRARY_PATH="$(build_libdir)"
  endif
  
@@ -168,7 +229,16 @@ index 5bbb52617..10e22cdae 100644
  ifeq ($(USE_SYSTEM_LIBM),1)
  # If we're using system libm, disable BB OpenLibm
  USE_BINARYBUILDER_OPENLIBM := 0
-@@ -1621,15 +1637,15 @@ LOADER_DEBUG_INSTALL_DEP_LIBS = $(call build_deplibs, \
+@@ -1487,6 +1497,8 @@ JULIA_BUILD_MODE := debug
+ endif
+ endif
+ 
++JULIA_BUILD_MODE := release
++
+ JULIA_EXECUTABLE_debug := $(build_bindir)/julia-debug$(EXE)
+ JULIA_EXECUTABLE_release := $(build_bindir)/julia$(EXE)
+ JULIA_EXECUTABLE := $(JULIA_EXECUTABLE_$(JULIA_BUILD_MODE))
+@@ -1621,15 +1633,15 @@ LOADER_DEBUG_INSTALL_DEP_LIBS = $(call build_deplibs, \
  
  # Colors for make
  ifndef VERBOSE
@@ -187,6 +257,68 @@ index 5bbb52617..10e22cdae 100644
  
  CCCOLOR:="\033[34m"
  LINKCOLOR:="\033[34;1m"
-diff --git a/configure b/configure
-new file mode 100644
-index 000000000..e69de29bb
+
+diff --git a/c7df1582d3-a90757de57.clean/src/Makefile b/c7df1582d3-a90757de57/src/Makefile
+index a6939f629..2955e2b9b 100644
+--- a/c7df1582d3-a90757de57.clean/src/Makefile
++++ b/c7df1582d3-a90757de57/src/Makefile
+@@ -18,8 +18,8 @@ FLAGS := \
+ 	-I$(SRCDIR)/flisp -I$(SRCDIR)/support \
+ 	-I$(LIBUV_INC) -I$(build_includedir) \
+ 	-I$(JULIAHOME)/deps/valgrind
+-FLAGS += -Wall -Wno-strict-aliasing -fno-omit-frame-pointer -fvisibility=hidden -fno-common \
+-		 -Wno-comment -Wpointer-arith -Wundef
++#FLAGS += -Wall -Wno-strict-aliasing -fno-omit-frame-pointer -fvisibility=hidden -fno-common \
++#		 -Wno-comment -Wpointer-arith -Wundef
+ ifeq ($(USEGCC),1) # GCC bug #25509 (void)__attribute__((warn_unused_result))
+ FLAGS += -Wno-unused-result
+ endif
+@@ -361,15 +361,15 @@ $(BUILDDIR)/julia_version.h: $(JULIAHOME)/VERSION
+ 	@echo "#endif" >> $@.$(JULIA_BUILD_MODE).tmp
+ 	mv $@.$(JULIA_BUILD_MODE).tmp $@
+ 
+-CXXLD = $(CXX) -shared
++CXXLD = $(CXX) -Xlinker -DLL
+ 
+-$(build_shlibdir)/libjulia-internal.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(OBJS) $(BUILDDIR)/flisp/libflisp.a $(BUILDDIR)/support/libsupport.a $(LIBUV)
++$(build_shlibdir)/libjulia-internal.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(OBJS) $(BUILDDIR)/flisp/libflisp.a $(BUILDDIR)/support/libsupport.a
+ 	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(OBJS) $(RPATH_LIB) -o $@ \
+ 		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_RELEASE_LIBS) $(call SONAME_FLAGS,libjulia-internal.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-internal.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+ 
+-$(build_shlibdir)/libjulia-internal-debug.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(DOBJS) $(BUILDDIR)/flisp/libflisp-debug.a $(BUILDDIR)/support/libsupport-debug.a $(LIBUV)
++$(build_shlibdir)/libjulia-internal-debug.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(DOBJS) $(BUILDDIR)/flisp/libflisp-debug.a $(BUILDDIR)/support/libsupport-debug.a
+ 	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(DOBJS) $(RPATH_LIB) -o $@ \
+ 		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_DEBUG_LIBS) $(call SONAME_FLAGS,libjulia-internal-debug.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-internal-debug.$(SHLIB_EXT) $@
+diff --git a/c7df1582d3-a90757de57.clean/src/flisp/Makefile b/c7df1582d3-a90757de57/src/flisp/Makefile
+index 7a363b0ec..7bb929c61 100644
+--- a/c7df1582d3-a90757de57.clean/src/flisp/Makefile
++++ b/c7df1582d3-a90757de57/src/flisp/Makefile
+@@ -53,8 +53,8 @@ FLAGS := -I$(LLTSRCDIR) $(JCFLAGS) $(HFILEDIRS:%=-I%) \
+ ifneq ($(OS), emscripten)
+ FLAGS += -DUSE_COMPUTED_GOTO
+ endif
+-FLAGS += -Wall -Wno-strict-aliasing -fvisibility=hidden -Wpointer-arith -Wundef
+-FLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
++#FLAGS += -Wall -Wno-strict-aliasing -fvisibility=hidden -Wpointer-arith -Wundef
++#FLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
+ 
+ DEBUGFLAGS += $(FLAGS)
+ SHIPFLAGS += $(FLAGS)
+diff --git a/c7df1582d3-a90757de57.clean/src/support/Makefile b/c7df1582d3-a90757de57/src/support/Makefile
+index a884aa5fd..f52ca8eaf 100644
+--- a/c7df1582d3-a90757de57.clean/src/support/Makefile
++++ b/c7df1582d3-a90757de57/src/support/Makefile
+@@ -25,8 +25,8 @@ OBJS := $(SRCS:%=$(BUILDDIR)/%.o)
+ DOBJS := $(SRCS:%=$(BUILDDIR)/%.dbg.obj)
+ 
+ FLAGS := $(HFILEDIRS:%=-I%) -I$(LIBUV_INC) -I$(UTF8PROC_INC) -DLIBRARY_EXPORTS -DUTF8PROC_EXPORTS
+-FLAGS += -Wall -Wno-strict-aliasing -fvisibility=hidden -Wpointer-arith -Wundef
+-JCFLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
++#FLAGS += -Wall -Wno-strict-aliasing -fvisibility=hidden -Wpointer-arith -Wundef
++#JCFLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
+ 
+ DEBUGFLAGS += $(FLAGS)
+ SHIPFLAGS += $(FLAGS)

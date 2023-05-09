@@ -1,0 +1,20 @@
+diff --git a/libwhich.c b/libwhich.c
+index 15787fa06..170ce73d8 100644
+--- a/libwhich.c
++++ b/libwhich.c
+@@ -37,6 +37,7 @@ int _fwrite(const WCHAR *str, size_t nchars, FILE *out) {
+     }
+     return -1;
+ }
++#ifndef _MSC_VER
+ size_t wcslen(const WCHAR *str)
+ {
+     size_t len = 0;
+@@ -44,6 +45,7 @@ size_t wcslen(const WCHAR *str)
+         len++;
+     return len;
+ }
++#endif()
+ int fputs(const WCHAR *str, FILE *out)
+ {
+     return _fwrite(str, wcslen(str), out);

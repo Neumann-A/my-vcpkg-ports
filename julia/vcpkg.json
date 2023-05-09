@@ -22,6 +22,7 @@
     "nghttp2",
     "dsfmt",
     "julia-libblastrampoline",
+    "libwhich",
     {
         "name": "llvm",
         "default-features": false,

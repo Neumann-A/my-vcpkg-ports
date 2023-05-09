@@ -19,6 +19,15 @@ vcpkg_configure_make(
     USE_WRAPPERS
     )
 
+
+vcpkg_add_to_path("${CURRENT_INSTALLED_DIR}/tools/llvm")
+
+#vcpkg_build_make(
+#    BUILD_TARGET all
+#    SUBPATH deps
+#)
+
 vcpkg_build_make(
-    BUILD_TARGET default
+    BUILD_TARGET all
+    SUBPATH src
 )
