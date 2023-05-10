@@ -1,0 +1,15 @@
+diff --git a/src/threading.c b/src/threading.c
+index ec1af7e3f..67b502376 100644
+--- a/src/threading.c
++++ b/src/threading.c
+@@ -40,8 +40,8 @@ LBT_DLLEXPORT void lbt_register_thread_interface(const char * getter, const char
+         idx++;
+     }
+ 
+-    getter_names[idx] = strdup(getter);
+-    setter_names[idx] = strdup(setter);
++    getter_names[idx] = _strdup(getter);
++    setter_names[idx] = _strdup(setter);
+ }
+ 
+ /*

@@ -6,7 +6,9 @@ vcpkg_from_github(
     REF 81316155d4838392e8462a92bcac3eebe9acd0c7
     SHA512 5f998da2ff1abfd1d4e4ea9fcef9452072aac0d61294179b663d62d666bb67db9442f884877c97d707107e6353ee690a188c8c114d293f53b20709f61ef059c9
     HEAD_REF master
-    PATCHES make-msvc-work.patch
+    PATCHES 
+      make-msvc-work.patch
+      strdup.patch
 )
 
 file(TOUCH "${SOURCE_PATH}/configure")

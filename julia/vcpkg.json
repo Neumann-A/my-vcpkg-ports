@@ -29,6 +29,10 @@
         "features" : [
             "lld"
         ]
+    },
+    {
+      "name": "vcpkg-cmake-get-vars",
+      "host": true
     }
   ]
 }

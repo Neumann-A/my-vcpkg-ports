@@ -1,7 +1,7 @@
-diff --git a/c7df1582d3-a90757de57.clean/Make.inc b/c7df1582d3-a90757de57/Make.inc
+diff --git a/Make.inc b/Make.inc
 index 5bbb52617..c8ed2e07e 100644
---- a/c7df1582d3-a90757de57.clean/Make.inc
-+++ b/c7df1582d3-a90757de57/Make.inc
+--- a/Make.inc
++++ b/Make.inc
 @@ -40,32 +40,32 @@ OPENBLAS_USE_THREAD:=1
  # Flags for using libraries available on the system instead of building them.
  # Please read the notes around usage of SYSTEM flags in README.md
@@ -258,10 +258,10 @@ index 5bbb52617..c8ed2e07e 100644
  CCCOLOR:="\033[34m"
  LINKCOLOR:="\033[34;1m"
 
-diff --git a/c7df1582d3-a90757de57.clean/src/Makefile b/c7df1582d3-a90757de57/src/Makefile
+diff --git a/src/Makefile b/src/Makefile
 index a6939f629..2955e2b9b 100644
---- a/c7df1582d3-a90757de57.clean/src/Makefile
-+++ b/c7df1582d3-a90757de57/src/Makefile
+--- a/src/Makefile
++++ b/src/Makefile
 @@ -18,8 +18,8 @@ FLAGS := \
  	-I$(SRCDIR)/flisp -I$(SRCDIR)/support \
  	-I$(LIBUV_INC) -I$(build_includedir) \
@@ -292,10 +292,10 @@ index a6939f629..2955e2b9b 100644
  	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(DOBJS) $(RPATH_LIB) -o $@ \
  		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_DEBUG_LIBS) $(call SONAME_FLAGS,libjulia-internal-debug.$(JL_MAJOR_SHLIB_EXT)))
  	@$(INSTALL_NAME_CMD)libjulia-internal-debug.$(SHLIB_EXT) $@
-diff --git a/c7df1582d3-a90757de57.clean/src/flisp/Makefile b/c7df1582d3-a90757de57/src/flisp/Makefile
+diff --git a/src/flisp/Makefile b/src/flisp/Makefile
 index 7a363b0ec..7bb929c61 100644
---- a/c7df1582d3-a90757de57.clean/src/flisp/Makefile
-+++ b/c7df1582d3-a90757de57/src/flisp/Makefile
+--- a/src/flisp/Makefile
++++ b/src/flisp/Makefile
 @@ -53,8 +53,8 @@ FLAGS := -I$(LLTSRCDIR) $(JCFLAGS) $(HFILEDIRS:%=-I%) \
  ifneq ($(OS), emscripten)
  FLAGS += -DUSE_COMPUTED_GOTO
@@ -307,10 +307,10 @@ index 7a363b0ec..7bb929c61 100644
  
  DEBUGFLAGS += $(FLAGS)
  SHIPFLAGS += $(FLAGS)
-diff --git a/c7df1582d3-a90757de57.clean/src/support/Makefile b/c7df1582d3-a90757de57/src/support/Makefile
+diff --git a/src/support/Makefile b/src/support/Makefile
 index a884aa5fd..f52ca8eaf 100644
---- a/c7df1582d3-a90757de57.clean/src/support/Makefile
-+++ b/c7df1582d3-a90757de57/src/support/Makefile
+--- a/src/support/Makefile
++++ b/src/support/Makefile
 @@ -25,8 +25,8 @@ OBJS := $(SRCS:%=$(BUILDDIR)/%.o)
  DOBJS := $(SRCS:%=$(BUILDDIR)/%.dbg.obj)
  
