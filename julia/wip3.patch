@@ -1,0 +1,324 @@
+diff --git a/Make.inc b/Make.inc
+index c2eb31208..adb8e5446 100644
+--- a/Make.inc
++++ b/Make.inc
+@@ -66,7 +66,7 @@ USE_SYSTEM_PATCHELF:=0
+ USE_SYSTEM_LIBWHICH:=1
+ USE_SYSTEM_ZLIB:=1
+ USE_SYSTEM_P7ZIP:=1
+-USE_SYSTEM_LLD:=0
++USE_SYSTEM_LLD:=1
+ 
+ # Link to the LLVM shared library
+ USE_LLVM_SHLIB := 1
+diff --git a/configure b/configure
+new file mode 100644
+index 000000000..e69de29bb
+diff --git a/deps/Makefile b/deps/Makefile
+index e1f2f6cfc..4356a6984 100644
+--- a/deps/Makefile
++++ b/deps/Makefile
+@@ -216,29 +216,29 @@ distcleanall: $(addprefix distclean-, $(DEP_LIBS_ALL))
+ 	rm -rf $(build_prefix)
+ getall: $(addprefix get-, $(DEP_LIBS_ALL))
+ 
+-include $(SRCDIR)/csl.mk
+-include $(SRCDIR)/ittapi.mk
+-include $(SRCDIR)/llvm.mk
+-include $(SRCDIR)/libuv.mk
+-include $(SRCDIR)/pcre.mk
+-include $(SRCDIR)/openlibm.mk
+-include $(SRCDIR)/dsfmt.mk
+-include $(SRCDIR)/objconv.mk
+-include $(SRCDIR)/blastrampoline.mk
+-include $(SRCDIR)/openblas.mk
+-include $(SRCDIR)/utf8proc.mk
+-include $(SRCDIR)/libsuitesparse.mk
+-include $(SRCDIR)/zlib.mk
+-include $(SRCDIR)/unwind.mk
+-include $(SRCDIR)/gmp.mk
+-include $(SRCDIR)/mpfr.mk
+-include $(SRCDIR)/patchelf.mk
+-include $(SRCDIR)/mbedtls.mk
+-include $(SRCDIR)/libssh2.mk
+-include $(SRCDIR)/nghttp2.mk
+-include $(SRCDIR)/curl.mk
+-include $(SRCDIR)/libgit2.mk
+-include $(SRCDIR)/libwhich.mk
+-include $(SRCDIR)/p7zip.mk
++# include $(SRCDIR)/csl.mk
++# include $(SRCDIR)/ittapi.mk
++# include $(SRCDIR)/llvm.mk
++# include $(SRCDIR)/libuv.mk
++# include $(SRCDIR)/pcre.mk
++# include $(SRCDIR)/openlibm.mk
++# include $(SRCDIR)/dsfmt.mk
++# include $(SRCDIR)/objconv.mk
++# include $(SRCDIR)/blastrampoline.mk
++# include $(SRCDIR)/openblas.mk
++# include $(SRCDIR)/utf8proc.mk
++# include $(SRCDIR)/libsuitesparse.mk
++# include $(SRCDIR)/zlib.mk
++# include $(SRCDIR)/unwind.mk
++# include $(SRCDIR)/gmp.mk
++# include $(SRCDIR)/mpfr.mk
++# include $(SRCDIR)/patchelf.mk
++# include $(SRCDIR)/mbedtls.mk
++# include $(SRCDIR)/libssh2.mk
++# include $(SRCDIR)/nghttp2.mk
++# include $(SRCDIR)/curl.mk
++# include $(SRCDIR)/libgit2.mk
++# include $(SRCDIR)/libwhich.mk
++# include $(SRCDIR)/p7zip.mk
+ 
+ include $(SRCDIR)/tools/uninstallers.mk
+diff --git a/deps/valgrind/valgrind.h b/deps/valgrind/valgrind.h
+index 2e07a49d9..47f0746f7 100644
+--- a/deps/valgrind/valgrind.h
++++ b/deps/valgrind/valgrind.h
+@@ -451,7 +451,65 @@ typedef
+ 
+ #if defined(PLAT_amd64_win64) && !defined(__GNUC__)
+ 
+-#error Unsupported compiler.
++
++typedef
++   struct {
++      unsigned long int nraddr; /* where's the code? */
++   }
++   OrigFn;
++
++#define __SPECIAL_INSTRUCTION_PREAMBLE                            \
++                     "rolq $3,  %%rdi ; rolq $13, %%rdi\n\t"      \
++                     "rolq $61, %%rdi ; rolq $51, %%rdi\n\t"
++
++#define VALGRIND_DO_CLIENT_REQUEST_EXPR(                          \
++        _zzq_default, _zzq_request,                               \
++        _zzq_arg1, _zzq_arg2, _zzq_arg3, _zzq_arg4, _zzq_arg5)    \
++    __extension__                                                 \
++    ({ volatile unsigned long int _zzq_args[6];                   \
++    volatile unsigned long int _zzq_result;                       \
++    _zzq_args[0] = (unsigned long int)(_zzq_request);             \
++    _zzq_args[1] = (unsigned long int)(_zzq_arg1);                \
++    _zzq_args[2] = (unsigned long int)(_zzq_arg2);                \
++    _zzq_args[3] = (unsigned long int)(_zzq_arg3);                \
++    _zzq_args[4] = (unsigned long int)(_zzq_arg4);                \
++    _zzq_args[5] = (unsigned long int)(_zzq_arg5);                \
++    __asm__ volatile(__SPECIAL_INSTRUCTION_PREAMBLE               \
++                     /* %RDX = client_request ( %RAX ) */         \
++                     "xchgq %%rbx,%%rbx"                          \
++                     : "=d" (_zzq_result)                         \
++                     : "a" (&_zzq_args[0]), "0" (_zzq_default)    \
++                     : "cc", "memory"                             \
++                    );                                            \
++    _zzq_result;                                                  \
++    })
++
++#define VALGRIND_GET_NR_CONTEXT(_zzq_rlval)                       \
++  { volatile OrigFn* _zzq_orig = &(_zzq_rlval);                   \
++    volatile unsigned long int __addr;                            \
++    __asm__ volatile(__SPECIAL_INSTRUCTION_PREAMBLE               \
++                     /* %RAX = guest_NRADDR */                    \
++                     "xchgq %%rcx,%%rcx"                          \
++                     : "=a" (__addr)                              \
++                     :                                            \
++                     : "cc", "memory"                             \
++                    );                                            \
++    _zzq_orig->nraddr = __addr;                                   \
++  }
++
++#define VALGRIND_CALL_NOREDIR_RAX                                 \
++                     __SPECIAL_INSTRUCTION_PREAMBLE               \
++                     /* call-noredir *%RAX */                     \
++                     "xchgq %%rdx,%%rdx\n\t"
++
++#define VALGRIND_VEX_INJECT_IR()                                 \
++ do {                                                            \
++    __asm__ volatile(__SPECIAL_INSTRUCTION_PREAMBLE              \
++                     "xchgq %%rdi,%%rdi\n\t"                     \
++                     : : : "cc", "memory"                        \
++                    );                                           \
++ } while (0)
++
+ 
+ #endif /* PLAT_amd64_win64 */
+ 
+diff --git a/src/gc.h b/src/gc.h
+index 7b02df69a..b5d775baf 100644
+--- a/src/gc.h
++++ b/src/gc.h
+@@ -11,7 +11,9 @@
+ 
+ #include <stdlib.h>
+ #include <string.h>
++#ifndef _MSC_VER
+ #include <strings.h>
++#endif
+ #include <inttypes.h>
+ #include "julia.h"
+ #include "julia_threads.h"
+diff --git a/src/jl_uv.c b/src/jl_uv.c
+index 93d775ce5..dd69456a0 100644
+--- a/src/jl_uv.c
++++ b/src/jl_uv.c
+@@ -22,6 +22,10 @@
+ #include "support/ios.h"
+ #include "uv.h"
+ 
++#define UV_STDIN_FD (HANDLE)STD_INPUT_HANDLE 
++#define UV_STDOUT_FD (HANDLE)STD_OUTPUT_HANDLE 
++#define UV_STDERR_FD (HANDLE)STD_ERROR_HANDLE 
++
+ #include "julia_assert.h"
+ 
+ #ifdef __cplusplus
+@@ -242,7 +246,7 @@ JL_DLLEXPORT void jl_close_uv(uv_handle_t *handle)
+         uv_fs_t req;
+         jl_uv_file_t *fd = (jl_uv_file_t*)handle;
+         if ((ssize_t)fd->file != -1) {
+-            uv_fs_close(handle->loop, &req, fd->file, NULL);
++            uv_fs_close(handle->loop, &req, (uv_file)fd->file, NULL);
+             fd->file = (uv_os_fd_t)(ssize_t)-1;
+         }
+         jl_uv_closeHandle(handle); // synchronous (ok since the callback is known to not interact with any global state)
+@@ -299,8 +303,8 @@ JL_DLLEXPORT int jl_spawn(char *name, char **argv,
+     // unused fields:
+     //opts.uid = 0;
+     //opts.gid = 0;
+-    opts.cpumask = cpumask;
+-    opts.cpumask_size = cpumask_size;
++    //opts.cpumask = cpumask;
++    //opts.cpumask_size = cpumask_size;
+     opts.cwd = cwd;
+     opts.args = argv;
+     opts.stdio_count = nstdio;
+@@ -361,7 +365,7 @@ JL_DLLEXPORT int jl_fs_sendfile(uv_os_fd_t src_fd, uv_os_fd_t dst_fd,
+ {
+     uv_fs_t req;
+     JL_SIGATOMIC_BEGIN();
+-    int ret = uv_fs_sendfile(unused_uv_loop_arg, &req, dst_fd, src_fd,
++    int ret = uv_fs_sendfile(unused_uv_loop_arg, &req, (uv_file)dst_fd, (uv_file)src_fd,
+                              in_offset, len, NULL);
+     uv_fs_req_cleanup(&req);
+     JL_SIGATOMIC_END();
+@@ -425,7 +429,7 @@ JL_DLLEXPORT int jl_fs_write(uv_os_fd_t handle, const char *data, size_t len,
+     buf[0].len = len;
+     if (!jl_io_loop)
+         jl_io_loop = uv_default_loop();
+-    int ret = uv_fs_write(unused_uv_loop_arg, &req, handle, buf, 1, offset, NULL);
++    int ret = uv_fs_write(unused_uv_loop_arg, &req, (uv_file)handle, buf, 1, offset, NULL);
+     uv_fs_req_cleanup(&req);
+     return ret;
+ }
+@@ -436,7 +440,7 @@ JL_DLLEXPORT int jl_fs_read(uv_os_fd_t handle, char *data, size_t len)
+     uv_buf_t buf[1];
+     buf[0].base = data;
+     buf[0].len = len;
+-    int ret = uv_fs_read(unused_uv_loop_arg, &req, handle, buf, 1, -1, NULL);
++    int ret = uv_fs_read(unused_uv_loop_arg, &req, (uv_file)handle, buf, 1, -1, NULL);
+     uv_fs_req_cleanup(&req);
+     return ret;
+ }
+@@ -448,7 +452,7 @@ JL_DLLEXPORT int jl_fs_read_byte(uv_os_fd_t handle)
+     uv_buf_t buf[1];
+     buf[0].base = (char*)&c;
+     buf[0].len = 1;
+-    int ret = uv_fs_read(unused_uv_loop_arg, &req, handle, buf, 1, -1, NULL);
++    int ret = uv_fs_read(unused_uv_loop_arg, &req, (uv_file)handle, buf, 1, -1, NULL);
+     uv_fs_req_cleanup(&req);
+     switch (ret) {
+     case -1: return ret;
+@@ -463,7 +467,7 @@ JL_DLLEXPORT int jl_fs_read_byte(uv_os_fd_t handle)
+ JL_DLLEXPORT int jl_fs_close(uv_os_fd_t handle)
+ {
+     uv_fs_t req;
+-    int ret = uv_fs_close(unused_uv_loop_arg, &req, handle, NULL);
++    int ret = uv_fs_close(unused_uv_loop_arg, &req, (uv_file)handle, NULL);
+     uv_fs_req_cleanup(&req);
+     return ret;
+ }
+diff --git a/src/jloptions.c b/src/jloptions.c
+index 5d2dee81d..056c4212d 100644
+--- a/src/jloptions.c
++++ b/src/jloptions.c
+@@ -6,7 +6,9 @@
+ #include "julia.h"
+ #include "julia_internal.h"
+ 
++#ifndef _MSC_VER
+ #include <unistd.h>
++#endif
+ #include <getopt.h>
+ #include "julia_assert.h"
+ 
+diff --git a/src/partr.c b/src/partr.c
+index b9a1d779d..01c8b02a6 100644
+--- a/src/partr.c
++++ b/src/partr.c
+@@ -3,8 +3,9 @@
+ #include <assert.h>
+ #include <stdio.h>
+ #include <stdlib.h>
++#ifndef _MSC_VER
+ #include <strings.h>
+-
++#endif
+ #include "julia.h"
+ #include "julia_internal.h"
+ #include "gc.h"
+diff --git a/src/processor_x86.cpp b/src/processor_x86.cpp
+index c61712ada..73f4799b9 100644
+--- a/src/processor_x86.cpp
++++ b/src/processor_x86.cpp
+@@ -1045,21 +1045,21 @@ jl_image_fptrs_t jl_init_processor_pkgimg(void *hdl)
+     return parse_sysimg(hdl, pkgimg_init_cb);
+ }
+ 
+-extern "C" JL_DLLEXPORT std::pair<std::string,std::vector<std::string>> jl_get_llvm_target(bool imaging, uint32_t &flags)
++JL_DLLEXPORT std::pair<std::string,std::vector<std::string>> jl_get_llvm_target(bool imaging, uint32_t &flags)
+ {
+     ensure_jit_target(imaging);
+     flags = jit_targets[0].en.flags;
+     return get_llvm_target_vec(jit_targets[0]);
+ }
+ 
+-extern "C" JL_DLLEXPORT const std::pair<std::string,std::string> &jl_get_llvm_disasm_target(void)
++JL_DLLEXPORT const std::pair<std::string,std::string> &jl_get_llvm_disasm_target(void)
+ {
+     static const auto res = get_llvm_target_str(TargetData<feature_sz>{"generic", "",
+             {feature_masks, 0}, {{}, 0}, 0});
+     return res;
+ }
+ 
+-extern "C" JL_DLLEXPORT std::vector<jl_target_spec_t> jl_get_llvm_clone_targets(void)
++JL_DLLEXPORT std::vector<jl_target_spec_t> jl_get_llvm_clone_targets(void)
+ {
+     if (jit_targets.empty())
+         jl_error("JIT targets not initialized");
+diff --git a/src/signal-handling.c b/src/signal-handling.c
+index 391a97055..d17ecd8e7 100644
+--- a/src/signal-handling.c
++++ b/src/signal-handling.c
+@@ -6,8 +6,8 @@
+ #include <inttypes.h>
+ #include "julia.h"
+ #include "julia_internal.h"
+-#include <unistd.h>
+ #ifndef _OS_WINDOWS_
++#include <unistd.h>
+ #include <sys/mman.h>
+ #endif
+ 
+diff --git a/src/win32_ucontext.c b/src/win32_ucontext.c
+index d39a76621..95d4a4fbf 100644
+--- a/src/win32_ucontext.c
++++ b/src/win32_ucontext.c
+@@ -28,7 +28,7 @@ JL_DLLEXPORT EXCEPTION_DISPOSITION NTAPI __julia_personality(
+     EXCEPTION_DISPOSITION rval;
+     switch (jl_exception_handler(&ExceptionInfo)) {
+         case EXCEPTION_EXECUTE_HANDLER:
+-            rval = ExceptionExecuteHandler;
++            rval = 4; //ExceptionExecuteHandler;
+             break;
+         case EXCEPTION_CONTINUE_EXECUTION:
+             rval = ExceptionContinueExecution;

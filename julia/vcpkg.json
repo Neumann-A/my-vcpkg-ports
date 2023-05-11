@@ -23,6 +23,7 @@
     "dsfmt",
     "julia-libblastrampoline",
     "libwhich",
+    "getopt",
     {
         "name": "llvm",
         "default-features": false,

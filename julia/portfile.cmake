@@ -4,7 +4,10 @@ vcpkg_from_github(
     REF 8e630552924eac54c809aa7bc30871c7df1582d3
     SHA512 6b7513322f3a10d58cbce81a526138bbe23ffa07274c74e7846f68fddd78aeec5ec375624957d688887c02e787258a71f648f465ef4933f4aa7b514924ba8cb1
     HEAD_REF master
-    PATCHES wip.patch
+    PATCHES 
+        wip.patch
+        wip2.patch
+        wip3.patch
 )
 
 vcpkg_find_acquire_program(PYTHON3)
@@ -48,6 +51,7 @@ if(ccas)
 endif()
 
 vcpkg_add_to_path("${CURRENT_INSTALLED_DIR}/tools/llvm")
+vcpkg_add_to_path(PREPEND "${CMAKE_CURRENT_LIST_DIR}")
 set(ENV{CC} "compile clang-cl")
 set(ENV{CXX} "compile clang-cl")
 #vcpkg_build_make(
@@ -58,5 +62,5 @@ set(VCPKG_CONCURRENCY 1)
 vcpkg_build_make(
     ADD_BIN_TO_PATH
     BUILD_TARGET all
-    SUBPATH src
+    #SUBPATH src
 )

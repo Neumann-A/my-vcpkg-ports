@@ -1,7 +1,7 @@
-diff --git a/c7df1582d3-182321309f.clean/Make.inc b/c7df1582d3-182321309f/Make.inc
+diff --git a/Make.inc b/Make.inc
 index c8ed2e07e..49dc93c0b 100644
---- a/c7df1582d3-182321309f.clean/Make.inc
-+++ b/c7df1582d3-182321309f/Make.inc
+--- a/Make.inc
++++ b/Make.inc
 @@ -514,11 +514,11 @@ SHIPFLAGS := -O3 -ggdb2 -falign-functions
  endif
  
@@ -100,10 +100,10 @@ index c8ed2e07e..49dc93c0b 100644
  
  CCCOLOR:="\033[34m"
  LINKCOLOR:="\033[34;1m"
-diff --git a/c7df1582d3-182321309f.clean/deps/libgit2.mk b/c7df1582d3-182321309f/deps/libgit2.mk
+diff --git a/deps/libgit2.mk b/deps/libgit2.mk
 index 30d94aeca..3e4d0feeb 100644
---- a/c7df1582d3-182321309f.clean/deps/libgit2.mk
-+++ b/c7df1582d3-182321309f/deps/libgit2.mk
+--- a/deps/libgit2.mk
++++ b/deps/libgit2.mk
 @@ -18,7 +18,7 @@ ifeq ($(OS),WINNT)
  LIBGIT2_OPTS += -DWIN32=ON -DMINGW=ON
  ifneq ($(ARCH),x86_64)
@@ -113,10 +113,10 @@ index 30d94aeca..3e4d0feeb 100644
  endif
  endif
  ifeq ($(BUILD_OS),WINNT)
-diff --git a/c7df1582d3-182321309f.clean/src/Makefile b/c7df1582d3-182321309f/src/Makefile
+diff --git a/src/Makefile b/src/Makefile
 index 2955e2b9b..0276eb8f9 100644
---- a/c7df1582d3-182321309f.clean/src/Makefile
-+++ b/c7df1582d3-182321309f/src/Makefile
+--- a/src/Makefile
++++ b/src/Makefile
 @@ -23,7 +23,7 @@ FLAGS := \
  ifeq ($(USEGCC),1) # GCC bug #25509 (void)__attribute__((warn_unused_result))
  FLAGS += -Wno-unused-result
@@ -135,10 +135,10 @@ index 2955e2b9b..0276eb8f9 100644
  
  # llvm-config --cxxflags does not return -DNDEBUG
  ifeq ($(shell $(LLVM_CONFIG_HOST) --assertion-mode),OFF)
-diff --git a/c7df1582d3-182321309f.clean/src/array.c b/c7df1582d3-182321309f/src/array.c
+diff --git a/src/array.c b/src/array.c
 index 0b5822967..2c1eff03f 100644
---- a/c7df1582d3-182321309f.clean/src/array.c
-+++ b/c7df1582d3-182321309f/src/array.c
+--- a/src/array.c
++++ b/src/array.c
 @@ -549,7 +549,7 @@ JL_DLLEXPORT jl_value_t *jl_ptrarrayref(jl_array_t *a JL_PROPAGATES_ROOT, size_t
  {
      assert(i < jl_array_len(a));
@@ -197,10 +197,10 @@ index 0b5822967..2c1eff03f 100644
      for (ssize_t i = 0; i < n; i++) {
          void *val = jl_atomic_load_relaxed(src_pa + n - i - 1);
          jl_atomic_store_release(dest_pa + n - i - 1, val);
-diff --git a/c7df1582d3-182321309f.clean/src/cgmemmgr.cpp b/c7df1582d3-182321309f/src/cgmemmgr.cpp
+diff --git a/src/cgmemmgr.cpp b/src/cgmemmgr.cpp
 index 9f4d69137..48a24eb9e 100644
---- a/c7df1582d3-182321309f.clean/src/cgmemmgr.cpp
-+++ b/c7df1582d3-182321309f/src/cgmemmgr.cpp
+--- a/src/cgmemmgr.cpp
++++ b/src/cgmemmgr.cpp
 @@ -213,7 +213,7 @@ static intptr_t get_anon_hdl(void)
      return -1;
  }
@@ -210,10 +210,10 @@ index 9f4d69137..48a24eb9e 100644
  // Multiple of 128MB.
  // Hopefully no one will set a ulimit for this to be a problem...
  static constexpr size_t map_size_inc_default = 128 * 1024 * 1024;
-diff --git a/c7df1582d3-182321309f.clean/src/cgutils.cpp b/c7df1582d3-182321309f/src/cgutils.cpp
+diff --git a/src/cgutils.cpp b/src/cgutils.cpp
 index c091111f3..92205bc60 100644
---- a/c7df1582d3-182321309f.clean/src/cgutils.cpp
-+++ b/c7df1582d3-182321309f/src/cgutils.cpp
+--- a/src/cgutils.cpp
++++ b/src/cgutils.cpp
 @@ -224,14 +224,21 @@ void jl_debugcache_t::initialize(Module *m) {
          julia_h,
          71, // At the time of this writing. Not sure if it's worth it to keep this in sync
@@ -250,10 +250,10 @@ index c091111f3..92205bc60 100644
      diargs.push_back(jl_pvalue_dillvmt);    // Return Type (ret value)
      diargs.push_back(jl_pvalue_dillvmt);    // First Argument (function)
      diargs.push_back(jl_ppvalue_dillvmt);   // Second Argument (argv)
-diff --git a/c7df1582d3-182321309f.clean/src/codegen.cpp b/c7df1582d3-182321309f/src/codegen.cpp
+diff --git a/src/codegen.cpp b/src/codegen.cpp
 index 462e9c0fb..e07b97444 100644
---- a/c7df1582d3-182321309f.clean/src/codegen.cpp
-+++ b/c7df1582d3-182321309f/src/codegen.cpp
+--- a/src/codegen.cpp
++++ b/src/codegen.cpp
 @@ -4464,11 +4464,13 @@ static Value *global_binding_pointer(jl_codectx_t &ctx, jl_module_t *m, jl_sym_t
      }
      if (assign) {
@@ -281,10 +281,10 @@ index 462e9c0fb..e07b97444 100644
          return jl_nothing;
      wchar_t path16[MAX_PATH];
      DWORD n16 = GetModuleFileNameW(mod, path16, MAX_PATH);
-diff --git a/c7df1582d3-182321309f.clean/src/datatype.c b/c7df1582d3-182321309f/src/datatype.c
+diff --git a/src/datatype.c b/src/datatype.c
 index 1cf83f5e2..b01c3937b 100644
---- a/c7df1582d3-182321309f.clean/src/datatype.c
-+++ b/c7df1582d3-182321309f/src/datatype.c
+--- a/src/datatype.c
++++ b/src/datatype.c
 @@ -938,34 +938,34 @@ JL_DLLEXPORT jl_value_t *jl_atomic_new_bits(jl_value_t *dt, const char *data)
      size_t nb = jl_datatype_size(bt);
      // some types have special pools to minimize allocations
@@ -582,10 +582,10 @@ index 1cf83f5e2..b01c3937b 100644
      if (!jl_field_isptr(st, i)) {
          jl_datatype_t *ft = (jl_datatype_t*)jl_field_type_concrete(st, i);
          if (!jl_is_datatype(ft) || ft->layout->first_ptr < 0)
-diff --git a/c7df1582d3-182321309f.clean/src/flisp/Makefile b/c7df1582d3-182321309f/src/flisp/Makefile
+diff --git a/src/flisp/Makefile b/src/flisp/Makefile
 index 7bb929c61..0a71c5d95 100644
---- a/c7df1582d3-182321309f.clean/src/flisp/Makefile
-+++ b/c7df1582d3-182321309f/src/flisp/Makefile
+--- a/src/flisp/Makefile
++++ b/src/flisp/Makefile
 @@ -26,30 +26,33 @@ NATIVE_BUILDDIR := $(BUILDDIR)
  LLT_BUILDDIR := $(BUILDDIR)/$(LLTDIR)
  endif
@@ -629,10 +629,10 @@ index 7bb929c61..0a71c5d95 100644
  ifneq ($(OS), emscripten)
  FLAGS += -DUSE_COMPUTED_GOTO
  endif
-diff --git a/c7df1582d3-182321309f.clean/src/flisp/flisp.c b/c7df1582d3-182321309f/src/flisp/flisp.c
+diff --git a/src/flisp/flisp.c b/src/flisp/flisp.c
 index 32c000802..fe53517c1 100644
---- a/c7df1582d3-182321309f.clean/src/flisp/flisp.c
-+++ b/c7df1582d3-182321309f/src/flisp/flisp.c
+--- a/src/flisp/flisp.c
++++ b/src/flisp/flisp.c
 @@ -41,8 +41,9 @@
  #include <locale.h>
  #include <limits.h>
@@ -677,10 +677,10 @@ index 32c000802..fe53517c1 100644
      }
  
      fl_ctx->memory_exception_value = fl_list2(fl_ctx, fl_ctx->OutOfMemoryError,
-diff --git a/c7df1582d3-182321309f.clean/src/gc-stacks.c b/c7df1582d3-182321309f/src/gc-stacks.c
+diff --git a/src/gc-stacks.c b/src/gc-stacks.c
 index b35c1722c..790e22ac6 100644
---- a/c7df1582d3-182321309f.clean/src/gc-stacks.c
-+++ b/c7df1582d3-182321309f/src/gc-stacks.c
+--- a/src/gc-stacks.c
++++ b/src/gc-stacks.c
 @@ -23,7 +23,7 @@
  #define MIN_STACK_MAPPINGS_PER_POOL 5
  
@@ -690,10 +690,10 @@ index b35c1722c..790e22ac6 100644
  
  #ifdef _OS_WINDOWS_
  #define MAP_FAILED NULL
-diff --git a/c7df1582d3-182321309f.clean/src/gc.c b/c7df1582d3-182321309f/src/gc.c
+diff --git a/src/gc.c b/src/gc.c
 index da79a5806..dab6d2d50 100644
---- a/c7df1582d3-182321309f.clean/src/gc.c
-+++ b/c7df1582d3-182321309f/src/gc.c
+--- a/src/gc.c
++++ b/src/gc.c
 @@ -135,7 +135,7 @@ jl_mutex_t heapsnapshot_lock;
  
  // Flag that tells us whether we need to support conservative marking
@@ -797,10 +797,10 @@ index da79a5806..dab6d2d50 100644
          return;
      }
      jl_gc_debug_print();
-diff --git a/c7df1582d3-182321309f.clean/src/gf.c b/c7df1582d3-182321309f/src/gf.c
+diff --git a/src/gf.c b/src/gf.c
 index cdbf2c724..473da795c 100644
---- a/c7df1582d3-182321309f.clean/src/gf.c
-+++ b/c7df1582d3-182321309f/src/gf.c
+--- a/src/gf.c
++++ b/src/gf.c
 @@ -24,7 +24,7 @@
  extern "C" {
  #endif
@@ -857,10 +857,10 @@ index cdbf2c724..473da795c 100644
  #ifdef JL_GF_PROFILE
  size_t ncalls;
  void call_cache_stats()
-diff --git a/c7df1582d3-182321309f.clean/src/iddict.c b/c7df1582d3-182321309f/src/iddict.c
+diff --git a/src/iddict.c b/src/iddict.c
 index 1fa8a67d1..0353ee87e 100644
---- a/c7df1582d3-182321309f.clean/src/iddict.c
-+++ b/c7df1582d3-182321309f/src/iddict.c
+--- a/src/iddict.c
++++ b/src/iddict.c
 @@ -43,7 +43,7 @@ static inline int jl_table_assign_bp(jl_array_t **pa, jl_value_t *key, jl_value_
          *pa = a;
      }
@@ -918,10 +918,10 @@ index 1fa8a67d1..0353ee87e 100644
      if (found)
          *found = (bp != NULL);
      if (bp == NULL)
-diff --git a/c7df1582d3-182321309f.clean/src/init.c b/c7df1582d3-182321309f/src/init.c
+diff --git a/src/init.c b/src/init.c
 index 89f4153ff..0ad6a12af 100644
---- a/c7df1582d3-182321309f.clean/src/init.c
-+++ b/c7df1582d3-182321309f/src/init.c
+--- a/src/init.c
++++ b/src/init.c
 @@ -11,8 +11,13 @@
  #include <stdio.h>
  #include <fcntl.h>
@@ -981,10 +981,10 @@ index 89f4153ff..0ad6a12af 100644
          }
      }
      if (jl_options.julia_bindir)
-diff --git a/c7df1582d3-182321309f.clean/src/interpreter.c b/c7df1582d3-182321309f/src/interpreter.c
+diff --git a/src/interpreter.c b/src/interpreter.c
 index 1f9c416d9..298408c33 100644
---- a/c7df1582d3-182321309f.clean/src/interpreter.c
-+++ b/c7df1582d3-182321309f/src/interpreter.c
+--- a/src/interpreter.c
++++ b/src/interpreter.c
 @@ -93,7 +93,7 @@ static jl_value_t *eval_methoddef(jl_expr_t *ex, interpreter_state *s)
          }
          jl_value_t *bp_owner = (jl_value_t*)modu;
@@ -1021,10 +1021,10 @@ index 1f9c416d9..298408c33 100644
  {
      interpreter_state *s;
      jl_value_t **locals;
-diff --git a/c7df1582d3-182321309f.clean/src/jl_exported_data.inc b/c7df1582d3-182321309f/src/jl_exported_data.inc
+diff --git a/src/jl_exported_data.inc b/src/jl_exported_data.inc
 index 6f0671ef0..ecb3149ac 100644
---- a/c7df1582d3-182321309f.clean/src/jl_exported_data.inc
-+++ b/c7df1582d3-182321309f/src/jl_exported_data.inc
+--- a/src/jl_exported_data.inc
++++ b/src/jl_exported_data.inc
 @@ -131,7 +131,7 @@
  // Data symbols that are defined inside the public libjulia
  #define JL_EXPORTED_DATA_SYMBOLS(XX) \
@@ -1034,10 +1034,10 @@ index 6f0671ef0..ecb3149ac 100644
      XX(jl_options, jl_options_t) \
  
  // end of file
-diff --git a/c7df1582d3-182321309f.clean/src/jl_uv.c b/c7df1582d3-182321309f/src/jl_uv.c
+diff --git a/src/jl_uv.c b/src/jl_uv.c
 index 97a6602c1..45dbe1585 100644
---- a/c7df1582d3-182321309f.clean/src/jl_uv.c
-+++ b/c7df1582d3-182321309f/src/jl_uv.c
+--- a/src/jl_uv.c
++++ b/src/jl_uv.c
 @@ -52,7 +52,7 @@ void jl_init_uv(void)
      JL_MUTEX_INIT(&jl_uv_mutex); // a file-scope initializer can be used instead
  }
@@ -1056,10 +1056,10 @@ index 97a6602c1..45dbe1585 100644
  
  JL_DLLEXPORT int jl_process_events(void)
  {
-diff --git a/c7df1582d3-182321309f.clean/src/jltypes.c b/c7df1582d3-182321309f/src/jltypes.c
+diff --git a/src/jltypes.c b/src/jltypes.c
 index bf1fd6d45..167a06381 100644
---- a/c7df1582d3-182321309f.clean/src/jltypes.c
-+++ b/c7df1582d3-182321309f/src/jltypes.c
+--- a/src/jltypes.c
++++ b/src/jltypes.c
 @@ -19,7 +19,7 @@
  extern "C" {
  #endif
@@ -1114,10 +1114,10 @@ index bf1fd6d45..167a06381 100644
      size_t sz = jl_svec_len(a);
      if (sz <= 1)
          return 0;
-diff --git a/c7df1582d3-182321309f.clean/src/julia.h b/c7df1582d3-182321309f/src/julia.h
+diff --git a/src/julia.h b/src/julia.h
 index e39a8d66c..f5d7c6e29 100644
---- a/c7df1582d3-182321309f.clean/src/julia.h
-+++ b/c7df1582d3-182321309f/src/julia.h
+--- a/src/julia.h
++++ b/src/julia.h
 @@ -123,7 +123,7 @@ static inline void jl_set_typeof(void *v, void *t) JL_NOTSAFEPOINT
  {
      // Do not call this on a value that is already initialized.
@@ -1363,10 +1363,10 @@ index e39a8d66c..f5d7c6e29 100644
      // threadpool id
      int8_t threadpoolid;
      // saved gc stack top for context switches
-diff --git a/c7df1582d3-182321309f.clean/src/julia_atomics.h b/c7df1582d3-182321309f/src/julia_atomics.h
+diff --git a/src/julia_atomics.h b/src/julia_atomics.h
 index fea1cd2ee..312e2615b 100644
---- a/c7df1582d3-182321309f.clean/src/julia_atomics.h
-+++ b/c7df1582d3-182321309f/src/julia_atomics.h
+--- a/src/julia_atomics.h
++++ b/src/julia_atomics.h
 @@ -33,9 +33,10 @@ using std::atomic_compare_exchange_strong_explicit;
  using std::atomic_exchange;
  using std::atomic_exchange_explicit;
@@ -1389,10 +1389,10 @@ index fea1cd2ee..312e2615b 100644
  
  #undef jl_atomic_exchange
  #undef jl_atomic_exchange_relaxed
-diff --git a/c7df1582d3-182321309f.clean/src/julia_internal.h b/c7df1582d3-182321309f/src/julia_internal.h
+diff --git a/src/julia_internal.h b/src/julia_internal.h
 index 15e004e0b..d3eef8173 100644
---- a/c7df1582d3-182321309f.clean/src/julia_internal.h
-+++ b/c7df1582d3-182321309f/src/julia_internal.h
+--- a/src/julia_internal.h
++++ b/src/julia_internal.h
 @@ -139,7 +139,7 @@ void __tsan_switch_to_fiber(void *fiber, unsigned flags);
  // If we've smashed the stack, (and not just normal NORETURN)
  // this will smash stack-unwind too
@@ -1505,10 +1505,10 @@ index 15e004e0b..d3eef8173 100644
          jl_typemap_entry_t *newrec, int8_t offs);
  jl_typemap_entry_t *jl_typemap_alloc(
          jl_tupletype_t *type, jl_tupletype_t *simpletype, jl_svec_t *guardsigs,
-diff --git a/c7df1582d3-182321309f.clean/src/julia_threads.h b/c7df1582d3-182321309f/src/julia_threads.h
+diff --git a/src/julia_threads.h b/src/julia_threads.h
 index 847465b36..de1711917 100644
---- a/c7df1582d3-182321309f.clean/src/julia_threads.h
-+++ b/c7df1582d3-182321309f/src/julia_threads.h
+--- a/src/julia_threads.h
++++ b/src/julia_threads.h
 @@ -48,7 +48,7 @@ typedef struct {
      !defined(JL_HAVE_ASYNCIFY)
  #if (defined(_CPU_X86_64_) || defined(_CPU_X86_) || defined(_CPU_AARCH64_) ||  \
@@ -1593,10 +1593,10 @@ index 847465b36..de1711917 100644
  
  JL_DLLEXPORT void jl_wakeup_thread(int16_t tid);
  
-diff --git a/c7df1582d3-182321309f.clean/src/method.c b/c7df1582d3-182321309f/src/method.c
+diff --git a/src/method.c b/src/method.c
 index 4e48ef912..b5bc3fa8d 100644
---- a/c7df1582d3-182321309f.clean/src/method.c
-+++ b/c7df1582d3-182321309f/src/method.c
+--- a/src/method.c
++++ b/src/method.c
 @@ -882,7 +882,7 @@ jl_method_t *jl_make_opaque_closure_method(jl_module_t *module, jl_value_t *name
  // empty generic function def
  JL_DLLEXPORT jl_value_t *jl_generic_function_def(jl_sym_t *name,
@@ -1606,10 +1606,10 @@ index 4e48ef912..b5bc3fa8d 100644
                                                   jl_value_t *bp_owner,
                                                   jl_binding_t *bnd)
  {
-diff --git a/c7df1582d3-182321309f.clean/src/partr.c b/c7df1582d3-182321309f/src/partr.c
+diff --git a/src/partr.c b/src/partr.c
 index aceaf9dc2..4845982f4 100644
---- a/c7df1582d3-182321309f.clean/src/partr.c
-+++ b/c7df1582d3-182321309f/src/partr.c
+--- a/src/partr.c
++++ b/src/partr.c
 @@ -138,7 +138,7 @@ int jl_running_under_rr(int recheck)
  #ifdef _OS_LINUX_
  #define RR_CALL_BASE 1000
@@ -1628,10 +1628,10 @@ index aceaf9dc2..4845982f4 100644
  
  JL_DLLEXPORT jl_task_t *jl_task_get_next(jl_value_t *trypoptask, jl_value_t *q, jl_value_t *checkempty)
  {
-diff --git a/c7df1582d3-182321309f.clean/src/pipeline.cpp b/c7df1582d3-182321309f/src/pipeline.cpp
+diff --git a/src/pipeline.cpp b/src/pipeline.cpp
 index 10709989f..d8db79eae 100644
---- a/c7df1582d3-182321309f.clean/src/pipeline.cpp
-+++ b/c7df1582d3-182321309f/src/pipeline.cpp
+--- a/src/pipeline.cpp
++++ b/src/pipeline.cpp
 @@ -711,7 +711,7 @@ void registerCallbacks(PassBuilder &PB) {
          });
  }
@@ -1641,10 +1641,10 @@ index 10709989f..d8db79eae 100644
  llvmGetPassPluginInfo() {
        return {LLVM_PLUGIN_API_VERSION, "Julia", "1", registerCallbacks};
  }
-diff --git a/c7df1582d3-182321309f.clean/src/processor.h b/c7df1582d3-182321309f/src/processor.h
+diff --git a/src/processor.h b/src/processor.h
 index d1b18cb72..e962a1d40 100644
---- a/c7df1582d3-182321309f.clean/src/processor.h
-+++ b/c7df1582d3-182321309f/src/processor.h
+--- a/src/processor.h
++++ b/src/processor.h
 @@ -194,14 +194,14 @@ extern JL_DLLEXPORT bool jl_processor_print_help;
   * If the detected/specified CPU name is not available on the LLVM version specified,
   * a fallback CPU name will be used. Unsupported features will be ignored.
@@ -1671,10 +1671,10 @@ index d1b18cb72..e962a1d40 100644
  std::string jl_get_cpu_name_llvm(void);
  std::string jl_get_cpu_features_llvm(void);
  #endif
-diff --git a/c7df1582d3-182321309f.clean/src/runtime_ccall.cpp b/c7df1582d3-182321309f/src/runtime_ccall.cpp
+diff --git a/src/runtime_ccall.cpp b/src/runtime_ccall.cpp
 index e3543c9f6..bf8cf7602 100644
---- a/c7df1582d3-182321309f.clean/src/runtime_ccall.cpp
-+++ b/c7df1582d3-182321309f/src/runtime_ccall.cpp
+--- a/src/runtime_ccall.cpp
++++ b/src/runtime_ccall.cpp
 @@ -54,7 +54,7 @@ void *jl_get_library_(const char *f_lib, int throw_err)
  }
  
@@ -1684,10 +1684,10 @@ index e3543c9f6..bf8cf7602 100644
  {
      void *handle = jl_atomic_load_acquire(hnd);
      if (!handle)
-diff --git a/c7df1582d3-182321309f.clean/src/runtime_intrinsics.c b/c7df1582d3-182321309f/src/runtime_intrinsics.c
+diff --git a/src/runtime_intrinsics.c b/src/runtime_intrinsics.c
 index a170c81c6..74b9ad98e 100644
---- a/c7df1582d3-182321309f.clean/src/runtime_intrinsics.c
-+++ b/c7df1582d3-182321309f/src/runtime_intrinsics.c
+--- a/src/runtime_intrinsics.c
++++ b/src/runtime_intrinsics.c
 @@ -306,7 +306,7 @@ JL_DLLEXPORT jl_value_t *jl_atomic_pointerref(jl_value_t *p, jl_value_t *order)
      jl_value_t *ety = jl_tparam0(jl_typeof(p));
      char *pp = (char*)jl_unbox_long(p);
@@ -1742,10 +1742,10 @@ index a170c81c6..74b9ad98e 100644
              if (success || !jl_egal(result, expected))
                  break;
          }
-diff --git a/c7df1582d3-182321309f.clean/src/safepoint.c b/c7df1582d3-182321309f/src/safepoint.c
+diff --git a/src/safepoint.c b/src/safepoint.c
 index 1ff26d616..70e4b7c87 100644
---- a/c7df1582d3-182321309f.clean/src/safepoint.c
-+++ b/c7df1582d3-182321309f/src/safepoint.c
+--- a/src/safepoint.c
++++ b/src/safepoint.c
 @@ -19,7 +19,7 @@ extern "C" {
  // 1: at least one sigint is pending, only the sigint page is enabled.
  // 2: at least one sigint is pending, both safepoint pages are enabled.
@@ -1755,10 +1755,10 @@ index 1ff26d616..70e4b7c87 100644
  char *jl_safepoint_pages = NULL;
  // The number of safepoints enabled on the three pages.
  // The first page, is the SIGINT page, only used by the master thread.
-diff --git a/c7df1582d3-182321309f.clean/src/smallintset.c b/c7df1582d3-182321309f/src/smallintset.c
+diff --git a/src/smallintset.c b/src/smallintset.c
 index 54fdad616..caaea620f 100644
---- a/c7df1582d3-182321309f.clean/src/smallintset.c
-+++ b/c7df1582d3-182321309f/src/smallintset.c
+--- a/src/smallintset.c
++++ b/src/smallintset.c
 @@ -130,9 +130,9 @@ static int smallintset_insert_(jl_array_t *a, uint_t hv, size_t val1)
      return 0;
  }
@@ -1780,10 +1780,10 @@ index 54fdad616..caaea620f 100644
  {
      jl_array_t *a = jl_atomic_load_relaxed(pcache);
      size_t sz = jl_array_len(a);
-diff --git a/c7df1582d3-182321309f.clean/src/support/Makefile b/c7df1582d3-182321309f/src/support/Makefile
+diff --git a/src/support/Makefile b/src/support/Makefile
 index f52ca8eaf..3db671e58 100644
---- a/c7df1582d3-182321309f.clean/src/support/Makefile
-+++ b/c7df1582d3-182321309f/src/support/Makefile
+--- a/src/support/Makefile
++++ b/src/support/Makefile
 @@ -1,4 +1,6 @@
  SRCDIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 +$(info SRCDIR is $(SRCDIR))
@@ -1838,10 +1838,10 @@ index f52ca8eaf..3db671e58 100644
  
  $(BUILDDIR)/host/Makefile:
  	mkdir -p $(BUILDDIR)/host
-diff --git a/c7df1582d3-182321309f.clean/src/support/dtypes.h b/c7df1582d3-182321309f/src/support/dtypes.h
+diff --git a/src/support/dtypes.h b/src/support/dtypes.h
 index d49ae0b22..0e28a373c 100644
---- a/c7df1582d3-182321309f.clean/src/support/dtypes.h
-+++ b/c7df1582d3-182321309f/src/support/dtypes.h
+--- a/src/support/dtypes.h
++++ b/src/support/dtypes.h
 @@ -25,6 +25,7 @@
  #include <stdlib.h>
  #include <sys/stat.h>
@@ -1850,10 +1850,10 @@ index d49ae0b22..0e28a373c 100644
  #include <windows.h>
  
  #if defined(_COMPILER_MICROSOFT_) && !defined(_SSIZE_T_) && !defined(_SSIZE_T_DEFINED)
-diff --git a/c7df1582d3-182321309f.clean/src/support/platform.h b/c7df1582d3-182321309f/src/support/platform.h
+diff --git a/src/support/platform.h b/src/support/platform.h
 index 56f8cafbc..7a07cd449 100644
---- a/c7df1582d3-182321309f.clean/src/support/platform.h
-+++ b/c7df1582d3-182321309f/src/support/platform.h
+--- a/src/support/platform.h
++++ b/src/support/platform.h
 @@ -33,7 +33,7 @@
  *                               Compiler                                       *
  *******************************************************************************/
@@ -1863,10 +1863,10 @@ index 56f8cafbc..7a07cd449 100644
  #define _COMPILER_CLANG_
  #elif defined(__GNUC__)
  #define _COMPILER_GCC_
-diff --git a/c7df1582d3-182321309f.clean/src/symbol.c b/c7df1582d3-182321309f/src/symbol.c
+diff --git a/src/symbol.c b/src/symbol.c
 index 14606c82b..49bbf5283 100644
---- a/c7df1582d3-182321309f.clean/src/symbol.c
-+++ b/c7df1582d3-182321309f/src/symbol.c
+--- a/src/symbol.c
++++ b/src/symbol.c
 @@ -15,7 +15,7 @@
  extern "C" {
  #endif
@@ -1903,10 +1903,10 @@ index 14606c82b..49bbf5283 100644
  uint32_t jl_get_gs_ctr(void) { return jl_atomic_load_relaxed(&gs_ctr); }
  void jl_set_gs_ctr(uint32_t ctr) { jl_atomic_store_relaxed(&gs_ctr, ctr); }
  
-diff --git a/c7df1582d3-182321309f.clean/src/sys.c b/c7df1582d3-182321309f/src/sys.c
+diff --git a/src/sys.c b/src/sys.c
 index 2de4bc61a..880db7ffa 100644
---- a/c7df1582d3-182321309f.clean/src/sys.c
-+++ b/c7df1582d3-182321309f/src/sys.c
+--- a/src/sys.c
++++ b/src/sys.c
 @@ -140,7 +140,7 @@ JL_DLLEXPORT int32_t jl_fstat(uv_os_fd_t fd, char *statbuf)
      uv_fs_t req;
      int ret;
@@ -1925,10 +1925,10 @@ index 2de4bc61a..880db7ffa 100644
  JL_DLLEXPORT uint64_t jl_rand(void) JL_NOTSAFEPOINT
  {
      uint64_t max = UINT64_MAX;
-diff --git a/c7df1582d3-182321309f.clean/src/task.c b/c7df1582d3-182321309f/src/task.c
+diff --git a/src/task.c b/src/task.c
 index 4bb5d666a..699075d5d 100644
---- a/c7df1582d3-182321309f.clean/src/task.c
-+++ b/c7df1582d3-182321309f/src/task.c
+--- a/src/task.c
++++ b/src/task.c
 @@ -29,7 +29,9 @@
  #include <stdlib.h>
  #include <string.h>
@@ -1948,10 +1948,10 @@ index 4bb5d666a..699075d5d 100644
  
  void JL_NORETURN jl_finish_task(jl_task_t *t)
  {
-diff --git a/c7df1582d3-182321309f.clean/src/threading.c b/c7df1582d3-182321309f/src/threading.c
+diff --git a/src/threading.c b/src/threading.c
 index f81924ab9..0c159718b 100644
---- a/c7df1582d3-182321309f.clean/src/threading.c
-+++ b/c7df1582d3-182321309f/src/threading.c
+--- a/src/threading.c
++++ b/src/threading.c
 @@ -36,9 +36,9 @@ extern "C" {
  
  #include "threading.h"
@@ -1983,10 +1983,10 @@ index f81924ab9..0c159718b 100644
  
  JL_DLLEXPORT int jl_in_threaded_region(void)
  {
-diff --git a/c7df1582d3-182321309f.clean/src/threading.h b/c7df1582d3-182321309f/src/threading.h
+diff --git a/src/threading.h b/src/threading.h
 index 9fd63f0fd..2457d70f2 100644
---- a/c7df1582d3-182321309f.clean/src/threading.h
-+++ b/c7df1582d3-182321309f/src/threading.h
+--- a/src/threading.h
++++ b/src/threading.h
 @@ -12,7 +12,7 @@ extern "C" {
  
  #define PROFILE_JL_THREADING            0
@@ -1996,10 +1996,10 @@ index 9fd63f0fd..2457d70f2 100644
  
  typedef struct _jl_threadarg_t {
      int16_t tid;
-diff --git a/c7df1582d3-182321309f.clean/src/typemap.c b/c7df1582d3-182321309f/src/typemap.c
+diff --git a/src/typemap.c b/src/typemap.c
 index 3afa1ffc1..6dbd808f8 100644
---- a/c7df1582d3-182321309f.clean/src/typemap.c
-+++ b/c7df1582d3-182321309f/src/typemap.c
+--- a/src/typemap.c
++++ b/src/typemap.c
 @@ -259,16 +259,16 @@ static int is_cache_leaf(jl_value_t *ty, int tparam)
      return (jl_is_concrete_type(ty) && (tparam || !jl_is_kind(ty)));
  }
@@ -2112,10 +2112,10 @@ index 3afa1ffc1..6dbd808f8 100644
          jl_typemap_entry_t *newrec, int8_t offs)
  {
      jl_typemap_t *cache = jl_atomic_load_relaxed(pcache);
-diff --git a/c7df1582d3-182321309f.clean/src/win32_ucontext.c b/c7df1582d3-182321309f/src/win32_ucontext.c
+diff --git a/src/win32_ucontext.c b/src/win32_ucontext.c
 index c6d437230..8aced1102 100644
---- a/c7df1582d3-182321309f.clean/src/win32_ucontext.c
-+++ b/c7df1582d3-182321309f/src/win32_ucontext.c
+--- a/src/win32_ucontext.c
++++ b/src/win32_ucontext.c
 @@ -3,6 +3,7 @@
  #include "win32_ucontext.h"
  
@@ -2124,10 +2124,10 @@ index c6d437230..8aced1102 100644
  #include <windows.h>
  
  #ifdef __cplusplus
-diff --git a/c7df1582d3-182321309f.clean/test/clangsa/ImplicitAtomicsTest.c b/c7df1582d3-182321309f/test/clangsa/ImplicitAtomicsTest.c
+diff --git a/test/clangsa/ImplicitAtomicsTest.c b/test/clangsa/ImplicitAtomicsTest.c
 index 87154347d..f29b86bc5 100644
---- a/c7df1582d3-182321309f.clean/test/clangsa/ImplicitAtomicsTest.c
-+++ b/c7df1582d3-182321309f/test/clangsa/ImplicitAtomicsTest.c
+--- a/test/clangsa/ImplicitAtomicsTest.c
++++ b/test/clangsa/ImplicitAtomicsTest.c
 @@ -5,13 +5,13 @@
  
  #include "julia_atomics.h"
