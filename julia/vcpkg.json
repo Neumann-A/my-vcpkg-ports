@@ -9,7 +9,7 @@
     "blas",
     "gmp",
     "mpfr",
-    "pcre",
+    "pcre2",
     "libgit2",
     "mbedtls",
     "libssh2",

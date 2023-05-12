@@ -177,6 +177,9 @@ func_cl_wrapper ()
 	  set x "$@" "$lib"
 	  shift
 	  ;;
+	-LIBPATH:*)
+	  linker_opts="$linker_opts ${1//\\//}"
+	  ;;
 	-L)
 	  eat=1
 	  func_cl_dashL "$2"
@@ -187,9 +190,29 @@ func_cl_wrapper ()
 	-static)
 	  shared=false
 	  ;;
+	-shared)
+	  linker_opts="$linker_opts -DLL"
+	  ;;
 	-Wl,--out-implib,*)
 	  func_file_conv "${1#-Wl,--out-implib,}" mingw
 	  linker_opts="$linker_opts -IMPLIB:$file"
+	  ;;
+	-Wl,--whole-archive,*)
+	  func_file_conv "${1#-Wl,--whole-archive,}" mingw
+	  linker_opts="$linker_opts -WHOLEARCHIVE:$file"
+	  ;;
+	-Wl,--whole-archive)
+	  eat=1
+	  case $2 in
+        -l*)
+          func_cl_dashl "${2#-l}"
+          libname="$lib"
+          ;;
+        *)
+          libname="$2"
+          ;;
+	  esac
+	  linker_opts="$linker_opts -WHOLEARCHIVE:$libname"
 	  ;;
 	-Wl,*)
 	  arg=${1#-Wl,}
