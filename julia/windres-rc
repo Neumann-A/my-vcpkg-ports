@@ -101,7 +101,7 @@ func_windres_wrapper ()
 	  ;;
 	-O)
 	  # this can only be coff if the wrapper is used. 
-	  shift
+	  eat=1
 	  ;;
 	-*)
 	  set -- "$@" "${1//\\\"/\"}"

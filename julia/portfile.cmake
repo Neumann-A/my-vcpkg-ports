@@ -8,6 +8,7 @@ vcpkg_from_github(
         wip.patch
         wip2.patch
         wip3.patch
+        wip4.patch
 )
 
 vcpkg_find_acquire_program(PYTHON3)

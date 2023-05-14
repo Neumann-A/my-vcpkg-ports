@@ -227,6 +227,13 @@ func_cl_wrapper ()
 	  eat=1
 	  linker_opts="$linker_opts $2"
 	  ;;
+	-mconsole)
+	  linker_opts="$linker_opts -SUBSYSTEM:CONSOLE"
+	  ;;
+	-municode)
+	  set x "$@" "-DUNICODE" "-D_UNICODE"
+	  shift
+	  ;;
 	-*)
 	  set x "$@" "$1"
 	  shift
@@ -252,7 +259,8 @@ func_cl_wrapper ()
   if test -n "$linker_opts"; then
     linker_opts="-link$linker_opts"
   fi
-  export MSYS2_ARG_CONV_EXCL="*"
+  export MSYS2_ARG_CONV_EXCL="-Fo;-Fe;-LIBPATH:;-WHOLEARCHIVE:;-IMPLIB:;-Tp;-I;-L;-SUBSYSTEM:"
+  #echo "!!!Compiling: $@ $linker_opts"
   exec "$@" $linker_opts
   exit 1
 }
