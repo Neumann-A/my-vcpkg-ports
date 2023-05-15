@@ -1,0 +1,463 @@
+diff --git a/c7df1582d3-219f25421d.clean/Makefile b/c7df1582d3-219f25421d/Makefile
+index 2a47acf54..b79f568b6 100644
+--- a/c7df1582d3-219f25421d.clean/Makefile
++++ b/c7df1582d3-219f25421d/Makefile
+@@ -62,8 +62,8 @@ julia-deps: | $(DIRS) $(build_datarootdir)/julia/base $(build_datarootdir)/julia
+ 	@$(MAKE) $(QUIET_MAKE) -C $(BUILDROOT)/deps
+ 
+ # `julia-stdlib` depends on `julia-deps` so that the fake JLL stdlibs can copy in their Artifacts.toml files.
+-julia-stdlib: | $(DIRS) julia-deps
+-	@$(MAKE) $(QUIET_MAKE) -C $(BUILDROOT)/stdlib
++#julia-stdlib: | $(DIRS) julia-deps
++#	@$(MAKE) $(QUIET_MAKE) -C $(BUILDROOT)/stdlib
+ 
+ julia-base: julia-deps $(build_sysconfdir)/julia/startup.jl $(build_man1dir)/julia.1 $(build_datarootdir)/julia/julia-config.jl
+ 	@$(MAKE) $(QUIET_MAKE) -C $(BUILDROOT)/base
+@@ -80,10 +80,12 @@ julia-src-release julia-src-debug : julia-src-% : julia-deps julia_flisp.boot.in
+ julia-cli-release julia-cli-debug: julia-cli-% : julia-deps
+ 	@$(MAKE) $(QUIET_MAKE) -C $(BUILDROOT)/cli $*
+ 
+-julia-sysimg-ji : julia-stdlib julia-base julia-cli-$(JULIA_BUILD_MODE) julia-src-$(JULIA_BUILD_MODE) | $(build_private_libdir)
++#julia-stdlib
++julia-sysimg-ji : julia-base julia-cli-$(JULIA_BUILD_MODE) julia-src-$(JULIA_BUILD_MODE) | $(build_private_libdir)
+ 	@$(MAKE) $(QUIET_MAKE) -C $(BUILDROOT) -f sysimage.mk sysimg-ji JULIA_EXECUTABLE='$(JULIA_EXECUTABLE)'
+ 
+-julia-sysimg-bc : julia-stdlib julia-base julia-cli-$(JULIA_BUILD_MODE) julia-src-$(JULIA_BUILD_MODE) | $(build_private_libdir)
++#julia-stdlib
++julia-sysimg-bc : julia-base julia-cli-$(JULIA_BUILD_MODE) julia-src-$(JULIA_BUILD_MODE) | $(build_private_libdir)
+ 	@$(MAKE) $(QUIET_MAKE) -C $(BUILDROOT) -f sysimage.mk sysimg-bc JULIA_EXECUTABLE='$(JULIA_EXECUTABLE)'
+ 
+ julia-sysimg-release julia-sysimg-debug : julia-sysimg-% : julia-sysimg-ji julia-src-%
+@@ -581,8 +583,9 @@ distcleanall: cleanall
+ 	@-$(MAKE) -C $(BUILDROOT)/deps distcleanall
+ 	@-$(MAKE) -C $(BUILDROOT)/doc cleanall
+ 
++# julia-stdlib
+ .PHONY: default debug release check-whitespace release-candidate \
+-	julia-debug julia-release julia-stdlib julia-deps julia-deps-libs \
++	julia-debug julia-release julia-deps julia-deps-libs \
+ 	julia-cli-release julia-cli-debug julia-src-release julia-src-debug \
+ 	julia-symlink julia-base julia-sysimg julia-sysimg-ji julia-sysimg-release julia-sysimg-debug \
+ 	test testall testall1 test test-* test-revise-* \
+diff --git a/c7df1582d3-219f25421d.clean/cli/Makefile b/c7df1582d3-219f25421d/cli/Makefile
+index 73f9a4d74..8069df4a1 100644
+--- a/c7df1582d3-219f25421d.clean/cli/Makefile
++++ b/c7df1582d3-219f25421d/cli/Makefile
+@@ -7,7 +7,7 @@ include $(JULIAHOME)/deps/llvm-ver.make
+ 
+ HEADERS := $(addprefix $(SRCDIR)/,jl_exports.h loader.h) $(addprefix $(JULIAHOME)/src/,julia_fasttls.h support/platform.h support/dirpath.h jl_exported_data.inc jl_exported_funcs.inc)
+ 
+-LOADER_CFLAGS = $(JCFLAGS) -I$(BUILDROOT)/src -I$(JULIAHOME)/src -I$(JULIAHOME)/src/support -I$(build_includedir) -ffreestanding
++LOADER_CFLAGS = $(JCFLAGS) -I$(BUILDROOT)/src -I$(JULIAHOME)/src -I$(JULIAHOME)/src/support -I$(build_includedir) -ffreestanding -DJULIA_LIBRARY_EXPORTS
+ LOADER_LDFLAGS = $(JLDFLAGS) -ffreestanding -L$(build_shlibdir) -L$(build_libdir)
+ 
+ ifeq ($(OS),WINNT)
+diff --git a/c7df1582d3-219f25421d.clean/cli/jl_exports.h b/c7df1582d3-219f25421d/cli/jl_exports.h
+index a96ba31be..0837b0aad 100644
+--- a/c7df1582d3-219f25421d.clean/cli/jl_exports.h
++++ b/c7df1582d3-219f25421d/cli/jl_exports.h
+@@ -10,7 +10,8 @@
+ #ifdef _OS_WINDOWS_
+ # ifdef JULIA_LIBRARY_EXPORTS
+ #  define JL_DLLEXPORT __declspec(dllexport)
+-# else
++# else
++#  error "lets see who errors"
+ #  define JL_DLLEXPORT __declspec(dllimport)
+ # endif
+ #define JL_HIDDEN
+diff --git a/c7df1582d3-219f25421d.clean/src/Makefile b/c7df1582d3-219f25421d/src/Makefile
+index 8c72a6563..bdedaf048 100644
+--- a/c7df1582d3-219f25421d.clean/src/Makefile
++++ b/c7df1582d3-219f25421d/src/Makefile
+@@ -363,14 +363,16 @@ $(BUILDDIR)/julia_version.h: $(JULIAHOME)/VERSION
+ 
+ CXXLD = $(CXX) -Xlinker -DLL
+ 
++EXTRA_LIBS := -lgetopt -lLLVMWindowsManifest -lLLVMWindowsDriver -lLLVMXRay -lLLVMLibDriver -lLLVMDlltoolDriver -lLLVMCoverage -lLLVMLineEditor -lLLVMX86TargetMCA -lLLVMX86Disassembler -lLLVMX86AsmParser -lLLVMX86CodeGen -lLLVMX86Desc -lLLVMX86Info -lLLVMOrcJIT -lLLVMMCJIT -lLLVMJITLink -lLLVMInterpreter -lLLVMExecutionEngine -lLLVMRuntimeDyld -lLLVMOrcTargetProcess -lLLVMOrcShared -lLLVMDWP -lLLVMDebugInfoGSYM -lLLVMOption -lLLVMObjectYAML -lLLVMObjCopy -lLLVMMCA -lLLVMMCDisassembler -lLLVMLTO -lLLVMPasses -lLLVMCFGuard -lLLVMCoroutines -lLLVMObjCARCOpts -lLLVMipo -lLLVMVectorize -lLLVMLinker -lLLVMInstrumentation -lLLVMFrontendOpenMP -lLLVMFrontendOpenACC -lLLVMExtensions -lLLVMDWARFLinker -lLLVMGlobalISel -lLLVMMIRParser -lLLVMAsmPrinter -lLLVMSelectionDAG -lLLVMCodeGen -lLLVMIRReader -lLLVMAsmParser -lLLVMInterfaceStub -lLLVMFileCheck -lLLVMFuzzMutate -lLLVMTarget -lLLVMScalarOpts -lLLVMInstCombine -lLLVMAggressiveInstCombine -lLLVMTransformUtils -lLLVMBitWriter -lLLVMAnalysis -lLLVMProfileData -lLLVMSymbolize -lLLVMDebugInfoPDB -lLLVMDebugInfoMSF -lLLVMDebugInfoDWARF -lLLVMObject -lLLVMTextAPI -lLLVMMCParser -lLLVMMC -lLLVMDebugInfoCodeView -lLLVMBitReader -lLLVMFuzzerCLI -lLLVMCore -lLLVMRemarks -lLLVMBitstreamReader -lLLVMBinaryFormat -lLLVMTableGen -lLLVMSupport -lLLVMDemangle
++
+ $(build_shlibdir)/libjulia-internal.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(OBJS) $(BUILDDIR)/flisp/libflisp.a $(BUILDDIR)/support/libsupport.a
+-	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(OBJS) $(RPATH_LIB) $(WHOLE_ARCHIVE) -llibjulia.dll -o $@ \
++	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(OBJS) $(RPATH_LIB) $(EXTRA_LIBS) $(WHOLE_ARCHIVE) -llibjulia.dll -o $@ \
+ 		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_RELEASE_LIBS) $(call SONAME_FLAGS,libjulia-internal.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-internal.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+ 
+ $(build_shlibdir)/libjulia-internal-debug.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(DOBJS) $(BUILDDIR)/flisp/libflisp-debug.a $(BUILDDIR)/support/libsupport-debug.a
+-	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(DOBJS) $(RPATH_LIB) $(WHOLE_ARCHIVE) -llibjulia.dll -o $@ \
++	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(DOBJS) $(RPATH_LIB) $(EXTRA_LIBS) $(WHOLE_ARCHIVE) -llibjulia-debug.dll -o $@ \
+ 		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_DEBUG_LIBS) $(call SONAME_FLAGS,libjulia-internal-debug.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-internal-debug.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+@@ -390,13 +392,13 @@ libjulia-internal-debug: $(build_shlibdir)/libjulia-internal-debug.$(JL_MAJOR_MI
+ libjulia-internal-debug libjulia-internal-release: $(PUBLIC_HEADER_TARGETS)
+ 
+ $(build_shlibdir)/libjulia-codegen.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(CODEGEN_OBJS) $(BUILDDIR)/support/libsupport.a $(build_shlibdir)/libjulia-internal.$(JL_MAJOR_MINOR_SHLIB_EXT)
+-	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(CODEGEN_OBJS) $(RPATH_LIB) -o $@ \
++	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(CODEGEN_OBJS) $(RPATH_LIB) $(EXTRA_LIBS) -o $@ \
+ 		$(JLDFLAGS) $(JLIBLDFLAGS) $(CG_RELEASE_LIBS) $(call SONAME_FLAGS,libjulia-codegen.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-codegen.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+ 
+ $(build_shlibdir)/libjulia-codegen-debug.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(CODEGEN_DOBJS) $(BUILDDIR)/support/libsupport-debug.a $(build_shlibdir)/libjulia-internal-debug.$(JL_MAJOR_MINOR_SHLIB_EXT)
+-	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(CODEGEN_DOBJS) $(RPATH_LIB) -o $@ \
++	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(CODEGEN_DOBJS) $(RPATH_LIB) $(EXTRA_LIBS) -o $@ \
+ 		$(JLDFLAGS) $(JLIBLDFLAGS) $(CG_DEBUG_LIBS) $(call SONAME_FLAGS,libjulia-codegen-debug.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-codegen-debug.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+diff --git a/c7df1582d3-219f25421d.clean/src/codegen-stubs.c b/c7df1582d3-219f25421d/src/codegen-stubs.c
+index 84516c33f..be5aa35e4 100644
+--- a/c7df1582d3-219f25421d.clean/src/codegen-stubs.c
++++ b/c7df1582d3-219f25421d/src/codegen-stubs.c
+@@ -10,10 +10,15 @@
+ 
+ #define UNAVAILABLE { jl_errorf("%s: not available in this build of Julia", __func__); }
+ 
++JL_DLLEXPORT void jl_dump_native(void *native_code,
++        const char *bc_fname, const char *unopt_bc_fname, const char *obj_fname, const char *asm_fname,
++        const char *sysimg_data, size_t sysimg_len, ios_t *s) UNAVAILABLE
+ JL_DLLEXPORT void jl_dump_native_fallback(void *native_code,
+         const char *bc_fname, const char *unopt_bc_fname, const char *obj_fname, const char *asm_fname,
+         const char *sysimg_data, size_t sysimg_len, ios_t *s) UNAVAILABLE
++JL_DLLEXPORT void jl_get_llvm_gvs(void *native_code, arraylist_t *gvs) UNAVAILABLE
+ JL_DLLEXPORT void jl_get_llvm_gvs_fallback(void *native_code, arraylist_t *gvs) UNAVAILABLE
++JL_DLLEXPORT void jl_get_llvm_external_fns(void *native_code, arraylist_t *gvs) UNAVAILABLE
+ JL_DLLEXPORT void jl_get_llvm_external_fns_fallback(void *native_code, arraylist_t *gvs) UNAVAILABLE
+ 
+ JL_DLLEXPORT void jl_extern_c_fallback(jl_function_t *f, jl_value_t *rt, jl_value_t *argt, char *name) UNAVAILABLE
+@@ -25,24 +30,47 @@ JL_DLLEXPORT void jl_get_llvmf_defn_fallback(jl_llvmf_dump_t *dump, jl_method_in
+ JL_DLLEXPORT void *jl_LLVMCreateDisasm_fallback(const char *TripleName, void *DisInfo, int TagType, void *GetOpInfo, void *SymbolLookUp) UNAVAILABLE
+ JL_DLLEXPORT size_t jl_LLVMDisasmInstruction_fallback(void *DC, uint8_t *Bytes, uint64_t BytesSize, uint64_t PC, char *OutString, size_t OutStringSize) UNAVAILABLE
+ 
++JL_DLLEXPORT void jl_init_codegen(void) { }
++JL_DLLEXPORT void jl_teardown_codegen(void) { }
++
+ JL_DLLEXPORT void jl_init_codegen_fallback(void) { }
+ 
++JL_DLLEXPORT int jl_getFunctionInfo(jl_frame_t **frames, uintptr_t pointer, int skipC, int noInline)
++{
++    return 0;
++}
+ JL_DLLEXPORT int jl_getFunctionInfo_fallback(jl_frame_t **frames, uintptr_t pointer, int skipC, int noInline)
+ {
+     return 0;
+ }
+ 
++JL_DLLEXPORT void jl_register_fptrs(uint64_t image_base, const struct _jl_image_fptrs_t *fptrs,
++                       jl_method_instance_t **linfos, size_t n)
++{
++    (void)image_base; (void)fptrs; (void)linfos; (void)n;
++}
++
+ JL_DLLEXPORT void jl_register_fptrs_fallback(uint64_t image_base, const struct _jl_image_fptrs_t *fptrs,
+                        jl_method_instance_t **linfos, size_t n)
+ {
+     (void)image_base; (void)fptrs; (void)linfos; (void)n;
+ }
+ 
++JL_DLLEXPORT jl_code_instance_t *jl_generate_fptr(jl_method_instance_t *mi JL_PROPAGATES_ROOT, size_t world)
++{
++    return NULL;
++}
++
+ JL_DLLEXPORT jl_code_instance_t *jl_generate_fptr_fallback(jl_method_instance_t *mi JL_PROPAGATES_ROOT, size_t world)
+ {
+     return NULL;
+ }
+ 
++JL_DLLEXPORT void jl_generate_fptr_for_unspecialized(jl_code_instance_t *unspec)
++{
++    jl_atomic_store_release(&unspec->invoke, &jl_fptr_interpret_call);
++}
++
+ JL_DLLEXPORT void jl_generate_fptr_for_unspecialized_fallback(jl_code_instance_t *unspec)
+ {
+     jl_atomic_store_release(&unspec->invoke, &jl_fptr_interpret_call);
+@@ -53,6 +81,11 @@ JL_DLLEXPORT uint32_t jl_get_LLVM_VERSION_fallback(void)
+     return 0;
+ }
+ 
++JL_DLLEXPORT int jl_compile_extern_c(LLVMOrcThreadSafeModuleRef llvmmod, void *params, void *sysimg, jl_value_t *declrt, jl_value_t *sigt)
++{
++    return 0;
++}
++
+ JL_DLLEXPORT int jl_compile_extern_c_fallback(LLVMOrcThreadSafeModuleRef llvmmod, void *params, void *sysimg, jl_value_t *declrt, jl_value_t *sigt)
+ {
+     return 0;
+@@ -67,6 +100,8 @@ JL_DLLEXPORT size_t jl_jit_total_bytes_fallback(void)
+     return 0;
+ }
+ 
++JL_DLLEXPORT void *jl_create_native(jl_array_t *methods, LLVMOrcThreadSafeModuleRef llvmmod, const jl_cgparams_t *cgparams, int _policy, int _imaging_mode, int _external_linkage, size_t _world) UNAVAILABLE
++
+ JL_DLLEXPORT void *jl_create_native_fallback(jl_array_t *methods, LLVMOrcThreadSafeModuleRef llvmmod, const jl_cgparams_t *cgparams, int _policy, int _imaging_mode, int _external_linkage, size_t _world) UNAVAILABLE
+ 
+ JL_DLLEXPORT void jl_dump_compiles_fallback(void *s)
+@@ -85,6 +120,9 @@ JL_DLLEXPORT jl_value_t *jl_dump_fptr_asm_fallback(uint64_t fptr, char raw_mc, c
+ 
+ JL_DLLEXPORT jl_value_t *jl_dump_function_asm_fallback(jl_llvmf_dump_t* dump, char raw_mc, const char* asm_variant, const char *debuginfo, char binary) UNAVAILABLE
+ 
++JL_DLLEXPORT void jl_get_function_id(void *native_code, jl_code_instance_t *ncode,
++        int32_t *func_idx, int32_t *specfunc_idx) UNAVAILABLE
++
+ JL_DLLEXPORT void jl_get_function_id_fallback(void *native_code, jl_code_instance_t *ncode,
+         int32_t *func_idx, int32_t *specfunc_idx) UNAVAILABLE
+ 
+diff --git a/c7df1582d3-219f25421d.clean/src/flisp/flisp.h b/c7df1582d3-219f25421d/src/flisp/flisp.h
+index b031e456c..ee6f7f4d2 100644
+--- a/c7df1582d3-219f25421d.clean/src/flisp/flisp.h
++++ b/c7df1582d3-219f25421d/src/flisp/flisp.h
+@@ -14,7 +14,7 @@
+ #include "hashing.h"
+ #include "ptrhash.h"
+ #include "htable.h"
+-#include "uv.h"
++#include <uv.h>
+ 
+ //#define MEMDEBUG
+ //#define MEMDEBUG2
+diff --git a/c7df1582d3-219f25421d.clean/src/gc-heap-snapshot.cpp b/c7df1582d3-219f25421d/src/gc-heap-snapshot.cpp
+index ac2a04693..518b83bed 100644
+--- a/c7df1582d3-219f25421d.clean/src/gc-heap-snapshot.cpp
++++ b/c7df1582d3-219f25421d/src/gc-heap-snapshot.cpp
+@@ -121,7 +121,7 @@ struct HeapSnapshot {
+ // when snapshotting is on.
+ int gc_heap_snapshot_enabled = 0;
+ HeapSnapshot *g_snapshot = nullptr;
+-extern jl_mutex_t heapsnapshot_lock;
++extern "C" jl_mutex_t heapsnapshot_lock;
+ 
+ void serialize_heap_snapshot(ios_t *stream, HeapSnapshot &snapshot, char all_one);
+ static inline void _record_gc_edge(const char *edge_type,
+diff --git a/c7df1582d3-219f25421d.clean/src/gc.c b/c7df1582d3-219f25421d/src/gc.c
+index 78e9fe142..f778770f0 100644
+--- a/c7df1582d3-219f25421d.clean/src/gc.c
++++ b/c7df1582d3-219f25421d/src/gc.c
+@@ -131,7 +131,7 @@ static jl_mutex_t finalizers_lock;
+ static uv_mutex_t gc_cache_lock;
+ 
+ // mutex for gc-heap-snapshot.
+-jl_mutex_t heapsnapshot_lock;
++JL_DLLEXPORT jl_mutex_t heapsnapshot_lock;
+ 
+ // Flag that tells us whether we need to support conservative marking
+ // of objects.
+diff --git a/c7df1582d3-219f25421d.clean/src/julia.h b/c7df1582d3-219f25421d/src/julia.h
+index b45d3e038..0fd5339ef 100644
+--- a/c7df1582d3-219f25421d.clean/src/julia.h
++++ b/c7df1582d3-219f25421d/src/julia.h
+@@ -12,6 +12,12 @@
+ #undef jl_egal
+ #endif
+ 
++#ifdef JULIA_LIBRARY_EXPORTS
++#define JL_DLLIMPORT   __declspec(dllexport)
++#else
++#define JL_DLLIMPORT   __declspec(dllimport)
++#endif
++
+ #include "julia_fasttls.h"
+ #include "libsupport.h"
+ #include <stdint.h>
+@@ -70,8 +76,8 @@
+ typedef struct _jl_taggedvalue_t jl_taggedvalue_t;
+ typedef struct _jl_tls_states_t *jl_ptls_t;
+ 
+-#ifdef JULIA_LIBRARY_EXPORTS
+-#include "uv.h"
++#ifdef LIBRARY_EXPORTS
++#include <uv.h>
+ #endif
+ #include "julia_atomics.h"
+ #include "julia_threads.h"
+@@ -1615,10 +1621,10 @@ JL_DLLEXPORT size_t jl_array_size(jl_value_t *a, int d);
+ JL_DLLEXPORT const char *jl_string_ptr(jl_value_t *s);
+ 
+ // modules and global variables
+-extern JL_DLLEXPORT jl_module_t *jl_main_module JL_GLOBALLY_ROOTED;
+-extern JL_DLLEXPORT jl_module_t *jl_core_module JL_GLOBALLY_ROOTED;
+-extern JL_DLLEXPORT jl_module_t *jl_base_module JL_GLOBALLY_ROOTED;
+-extern JL_DLLEXPORT jl_module_t *jl_top_module JL_GLOBALLY_ROOTED;
++extern JL_DLLIMPORT jl_module_t *jl_main_module JL_GLOBALLY_ROOTED;
++extern JL_DLLIMPORT jl_module_t *jl_core_module JL_GLOBALLY_ROOTED;
++extern JL_DLLIMPORT jl_module_t *jl_base_module JL_GLOBALLY_ROOTED;
++extern JL_DLLIMPORT jl_module_t *jl_top_module JL_GLOBALLY_ROOTED;
+ JL_DLLEXPORT jl_module_t *jl_new_module(jl_sym_t *name);
+ JL_DLLEXPORT void jl_set_module_nospecialize(jl_module_t *self, int on);
+ JL_DLLEXPORT void jl_set_module_optlevel(jl_module_t *self, int lvl);
+diff --git a/c7df1582d3-219f25421d.clean/src/julia_internal.h b/c7df1582d3-219f25421d/src/julia_internal.h
+index f7a18e8bf..6a7c9d0c6 100644
+--- a/c7df1582d3-219f25421d.clean/src/julia_internal.h
++++ b/c7df1582d3-219f25421d/src/julia_internal.h
+@@ -17,13 +17,17 @@
+ #include <llvm-c/Orc.h>
+ #if !defined(_WIN32)
+ #include <unistd.h>
++#define JL_DLLIMPORT
+ #else
++#define JL_DLLIMPORT   __declspec(dllimport)
+ #define sleep(x) Sleep(1000*x)
+ #endif
+ #if defined(_CPU_ARM_)
+ #include <sys/time.h>
+ #endif
+ 
++
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+@@ -306,9 +310,9 @@ static inline void memmove_refs(void **dstp, void *const *srcp, size_t n) JL_NOT
+ #define GC_IN_IMAGE 4
+ 
+ // useful constants
+-extern jl_methtable_t *jl_type_type_mt JL_GLOBALLY_ROOTED;
+-extern jl_methtable_t *jl_nonfunction_mt JL_GLOBALLY_ROOTED;
+-extern jl_methtable_t *jl_kwcall_mt JL_GLOBALLY_ROOTED;
++extern JL_DLLIMPORT jl_methtable_t *jl_type_type_mt JL_GLOBALLY_ROOTED;
++extern JL_DLLIMPORT jl_methtable_t *jl_nonfunction_mt JL_GLOBALLY_ROOTED;
++extern JL_DLLIMPORT jl_methtable_t *jl_kwcall_mt JL_GLOBALLY_ROOTED;
+ extern JL_DLLEXPORT _JAtomic(size_t) jl_world_counter;
+ 
+ typedef void (*tracer_cb)(jl_value_t *tracee);
+@@ -519,7 +523,7 @@ jl_svec_t *jl_perm_symsvec(size_t n, ...);
+ 
+ // this sizeof(__VA_ARGS__) trick can't be computed until C11, but that only matters to Clang in some situations
+ #if !defined(__clang_analyzer__) && !(defined(_COMPILER_ASAN_ENABLED_) || defined(_COMPILER_TSAN_ENABLED_))
+-#ifdef _COMPILER_GCC_
++#if 0
+ #define jl_perm_symsvec(n, ...) \
+     (jl_perm_symsvec)(__extension__({                                         \
+             static_assert(                                                    \
+@@ -529,22 +533,14 @@ jl_svec_t *jl_perm_symsvec(size_t n, ...);
+         }), __VA_ARGS__)
+ #ifdef jl_svec
+ #undef jl_svec
+-#define jl_svec(n, ...) \
+-    (ijl_svec)(__extension__({                                                \
+-            static_assert(                                                    \
+-                n == sizeof((void *[]){ __VA_ARGS__ })/sizeof(void *),        \
+-                "Number of passed arguments does not match expected number"); \
+-            n;                                                                \
+-        }), __VA_ARGS__)
+-#else
++#endif
+ #define jl_svec(n, ...) \
+     (jl_svec)(__extension__({                                                 \
+             static_assert(                                                    \
+                 n == sizeof((void *[]){ __VA_ARGS__ })/sizeof(void *),        \
+                 "Number of passed arguments does not match expected number"); \
+             n;                                                                \
+-        }), __VA_ARGS__)
+-#endif
++        }), __VA_ARGS__) {}
+ #endif
+ #endif
+ 
+@@ -619,8 +615,8 @@ typedef union {
+ 
+ JL_DLLEXPORT jl_code_info_t *jl_type_infer(jl_method_instance_t *li, size_t world, int force);
+ JL_DLLEXPORT jl_code_instance_t *jl_compile_method_internal(jl_method_instance_t *meth JL_PROPAGATES_ROOT, size_t world);
+-jl_code_instance_t *jl_generate_fptr(jl_method_instance_t *mi JL_PROPAGATES_ROOT, size_t world);
+-void jl_generate_fptr_for_unspecialized(jl_code_instance_t *unspec);
++JL_DLLEXPORT jl_code_instance_t *jl_generate_fptr(jl_method_instance_t *mi JL_PROPAGATES_ROOT, size_t world);
++JL_DLLEXPORT void jl_generate_fptr_for_unspecialized(jl_code_instance_t *unspec);
+ JL_DLLEXPORT jl_code_instance_t *jl_get_method_inferred(
+         jl_method_instance_t *mi JL_PROPAGATES_ROOT, jl_value_t *rettype,
+         size_t min_world, size_t max_world);
+@@ -860,7 +856,7 @@ void jl_init_flisp(void);
+ void jl_init_common_symbols(void);
+ void jl_init_primitives(void) JL_GC_DISABLED;
+ void jl_init_llvm(void);
+-void jl_init_codegen(void);
++JL_DLLEXPORT void jl_init_codegen(void);
+ void jl_init_runtime_ccall(void);
+ void jl_init_intrinsic_functions(void);
+ void jl_init_intrinsic_properties(void);
+@@ -981,15 +977,15 @@ void *jl_create_native(jl_array_t *methods, LLVMOrcThreadSafeModuleRef llvmmod,
+ void jl_dump_native(void *native_code,
+         const char *bc_fname, const char *unopt_bc_fname, const char *obj_fname, const char *asm_fname,
+         const char *sysimg_data, size_t sysimg_len, ios_t *s);
+-void jl_get_llvm_gvs(void *native_code, arraylist_t *gvs);
+-void jl_get_llvm_external_fns(void *native_code, arraylist_t *gvs);
++JL_DLLEXPORT void jl_get_llvm_gvs(void *native_code, arraylist_t *gvs);
++JL_DLLEXPORT void jl_get_llvm_external_fns(void *native_code, arraylist_t *gvs);
+ JL_DLLEXPORT void jl_get_function_id(void *native_code, jl_code_instance_t *ncode,
+         int32_t *func_idx, int32_t *specfunc_idx);
+ 
+ // the first argument to jl_idtable_rehash is used to return a value
+ // make sure it is rooted if it is used after the function returns
+ JL_DLLEXPORT jl_array_t *jl_idtable_rehash(jl_array_t *a, size_t newsz);
+-_JAtomic(jl_value_t*) *jl_table_peek_bp(jl_array_t *a, jl_value_t *key) JL_NOTSAFEPOINT;
++JL_DLLEXPORT _JAtomic(jl_value_t*) *jl_table_peek_bp(jl_array_t *a, jl_value_t *key) JL_NOTSAFEPOINT;
+ 
+ JL_DLLEXPORT jl_method_t *jl_new_method_uninit(jl_module_t*);
+ 
+diff --git a/c7df1582d3-219f25421d.clean/src/simplevector.c b/c7df1582d3-219f25421d/src/simplevector.c
+index cb65646e0..f0fa4219b 100644
+--- a/c7df1582d3-219f25421d.clean/src/simplevector.c
++++ b/c7df1582d3-219f25421d/src/simplevector.c
+@@ -7,7 +7,7 @@
+ #include "julia_internal.h"
+ #include "julia_assert.h"
+ 
+-JL_DLLEXPORT jl_svec_t *(ijl_svec)(size_t n, ...)
++JL_DLLEXPORT jl_svec_t *(jl_svec)(size_t n, ...)
+ {
+     va_list args;
+     if (n == 0) return jl_emptysvec;
+diff --git a/c7df1582d3-219f25421d.clean/src/support/dtypes.h b/c7df1582d3-219f25421d/src/support/dtypes.h
+index a3d9717d9..37e18dae7 100644
+--- a/c7df1582d3-219f25421d.clean/src/support/dtypes.h
++++ b/c7df1582d3-219f25421d/src/support/dtypes.h
+@@ -78,7 +78,11 @@ typedef intptr_t ssize_t;
+ # else
+ #  define JL_DLLEXPORT __declspec(dllimport)
+ # endif
++#ifdef JULIA_LIBRARY_EXPORTS
++#define JL_DLLIMPORT   __declspec(dllexport)
++#else
+ #define JL_DLLIMPORT   __declspec(dllimport)
++#endif
+ #else
+ #define STDCALL
+ # define JL_DLLEXPORT __attribute__ ((visibility("default")))
+diff --git a/c7df1582d3-219f25421d.clean/src/sys.c b/c7df1582d3-219f25421d/src/sys.c
+index aafdc9377..2cd999f0a 100644
+--- a/c7df1582d3-219f25421d.clean/src/sys.c
++++ b/c7df1582d3-219f25421d/src/sys.c
+@@ -436,7 +436,7 @@ JL_DLLEXPORT int jl_cpu_threads(void) JL_NOTSAFEPOINT
+ JL_DLLEXPORT int jl_effective_threads(void) JL_NOTSAFEPOINT
+ {
+     int cpu = jl_cpu_threads();
+-    int masksize = uv_cpumask_size();
++    int masksize = -1;//uv_cpumask_size();
+     if (masksize < 0 || jl_running_under_rr(0))
+         return cpu;
+     uv_thread_t tid = uv_thread_self();
+diff --git a/c7df1582d3-219f25421d.clean/src/threading.c b/c7df1582d3-219f25421d/src/threading.c
+index 16a3b7fe3..5d180eef4 100644
+--- a/c7df1582d3-219f25421d.clean/src/threading.c
++++ b/c7df1582d3-219f25421d/src/threading.c
+@@ -618,7 +618,7 @@ static uv_barrier_t thread_init_done;
+ void jl_start_threads(void)
+ {
+     int nthreads = jl_atomic_load_relaxed(&jl_n_threads);
+-    int cpumasksize = uv_cpumask_size();
++    int cpumasksize = -1; //uv_cpumask_size();
+     char *cp;
+     int i, exclusive;
+     uv_thread_t uvtid;
+diff --git a/c7df1582d3-219f25421d.clean/src/uv_constants.h b/c7df1582d3-219f25421d/src/uv_constants.h
+index c403bd737..c07da5c1e 100644
+--- a/c7df1582d3-219f25421d.clean/src/uv_constants.h
++++ b/c7df1582d3-219f25421d/src/uv_constants.h
+@@ -1,6 +1,6 @@
+ // This file is a part of Julia. License is MIT: https://julialang.org/license
+ 
+-#include "uv.h"
++#include <uv.h>
+ #if EDOM > 0
+ # define UV__ERR(x) (-(x))
+ #else

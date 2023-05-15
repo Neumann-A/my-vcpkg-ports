@@ -1,7 +1,7 @@
-diff --git a/c7df1582d3-3df89c79f1.clean/cli/Makefile b/c7df1582d3-3df89c79f1/cli/Makefile
+diff --git a/cli/Makefile b/cli/Makefile
 index 60fd97c3c..bfa9994a1 100644
---- a/c7df1582d3-3df89c79f1.clean/cli/Makefile
-+++ b/c7df1582d3-3df89c79f1/cli/Makefile
+--- a/cli/Makefile
++++ b/cli/Makefile
 @@ -111,7 +111,7 @@ STRIP_EXPORTED_FUNCS := $(shell $(CPP_STDOUT) -I$(JULIAHOME)/src $(SRCDIR)/list_
  endif
  
@@ -20,10 +20,10 @@ index 60fd97c3c..bfa9994a1 100644
  		$(JLIBLDFLAGS) $(call SONAME_FLAGS,libjulia-debug.$(JL_MAJOR_SHLIB_EXT)))
  	@$(INSTALL_NAME_CMD)libjulia-debug.$(JL_MAJOR_SHLIB_EXT) $@
  ifeq ($(OS), WINNT)
-diff --git a/c7df1582d3-3df89c79f1.clean/cli/jl_exports.h b/c7df1582d3-3df89c79f1/cli/jl_exports.h
+diff --git a/cli/jl_exports.h b/cli/jl_exports.h
 index 05e7d6b77..06cc31df2 100644
---- a/c7df1582d3-3df89c79f1.clean/cli/jl_exports.h
-+++ b/c7df1582d3-3df89c79f1/cli/jl_exports.h
+--- a/cli/jl_exports.h
++++ b/cli/jl_exports.h
 @@ -7,6 +7,22 @@
  #include "../src/jl_exported_data.inc"
  #include "../src/jl_exported_funcs.inc"
@@ -67,10 +67,10 @@ index 05e7d6b77..06cc31df2 100644
 +# endif
 +#define JL_HIDDEN    __attribute__ ((visibility("hidden")))
 +#endif
-diff --git a/c7df1582d3-3df89c79f1.clean/src/Makefile b/c7df1582d3-3df89c79f1/src/Makefile
+diff --git a/src/Makefile b/src/Makefile
 index 22ace44b2..d5922da4b 100644
---- a/c7df1582d3-3df89c79f1.clean/src/Makefile
-+++ b/c7df1582d3-3df89c79f1/src/Makefile
+--- a/src/Makefile
++++ b/src/Makefile
 @@ -157,7 +157,7 @@ LIBJULIA_PATH_REL := libjulia
  endif
  
@@ -96,10 +96,10 @@ index 22ace44b2..d5922da4b 100644
  		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_DEBUG_LIBS) $(call SONAME_FLAGS,libjulia-internal-debug.$(JL_MAJOR_SHLIB_EXT)))
  	@$(INSTALL_NAME_CMD)libjulia-internal-debug.$(SHLIB_EXT) $@
  	$(DSYMUTIL) $@
-diff --git a/c7df1582d3-3df89c79f1.clean/src/julia.h b/c7df1582d3-3df89c79f1/src/julia.h
+diff --git a/src/julia.h b/src/julia.h
 index f5d7c6e29..6b252180a 100644
---- a/c7df1582d3-3df89c79f1.clean/src/julia.h
-+++ b/c7df1582d3-3df89c79f1/src/julia.h
+--- a/src/julia.h
++++ b/src/julia.h
 @@ -3,7 +3,7 @@
  #ifndef JULIA_H
  #define JULIA_H
@@ -127,10 +127,10 @@ index f5d7c6e29..6b252180a 100644
  #define jl_setjmp_f ijl_setjmp
  #define jl_setjmp_name "ijl_setjmp"
  #define jl_setjmp(a,b) ijl_setjmp(a)
-diff --git a/c7df1582d3-3df89c79f1.clean/src/threading.c b/c7df1582d3-3df89c79f1/src/threading.c
+diff --git a/src/threading.c b/src/threading.c
 index 0c159718b..75a190dad 100644
---- a/c7df1582d3-3df89c79f1.clean/src/threading.c
-+++ b/c7df1582d3-3df89c79f1/src/threading.c
+--- a/src/threading.c
++++ b/src/threading.c
 @@ -643,7 +643,7 @@ void jl_start_threads(void)
          memset(mask, 0, cpumasksize);
          mask[0] = 1;
