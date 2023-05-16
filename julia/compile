@@ -234,6 +234,19 @@ func_cl_wrapper ()
 	  set x "$@" "-DUNICODE" "-D_UNICODE"
 	  shift
 	  ;;
+	-x)
+	  eat=1
+	  case $2 in
+        c++)
+          set x "$@" "-TP"
+	      shift
+          ;;
+        c)
+          set x "$@" "-TC"
+	      shift
+          ;;
+	  esac
+	  ;;
 	-*)
 	  set x "$@" "$1"
 	  shift

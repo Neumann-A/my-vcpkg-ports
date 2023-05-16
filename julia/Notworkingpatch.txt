@@ -1,0 +1,277 @@
+diff --git a/src/support/Makefile b/src/support/Makefile
+index a884aa5fd..f52ca8eaf 100644
+--- a/src/support/Makefile
++++ b/src/support/Makefile
+@@ -25,8 +25,8 @@ OBJS := $(SRCS:%=$(BUILDDIR)/%.o)
+ DOBJS := $(SRCS:%=$(BUILDDIR)/%.dbg.obj)
+ 
+ FLAGS := $(HFILEDIRS:%=-I%) -I$(LIBUV_INC) -I$(UTF8PROC_INC) -DLIBRARY_EXPORTS -DUTF8PROC_EXPORTS
+-FLAGS += -Wall -Wno-strict-aliasing -fvisibility=hidden -Wpointer-arith -Wundef
+-JCFLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
++#FLAGS += -Wall -Wno-strict-aliasing -fvisibility=hidden -Wpointer-arith -Wundef
++#JCFLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
+ 
+ DEBUGFLAGS += $(FLAGS)
+ SHIPFLAGS += $(FLAGS)
+@@ -1161,7 +1172,7 @@ endif
+ # Auto-detect triplet once, create different versions that we use as defaults below for each BB install target
+ FC_VERSION := $(shell $(FC) --version 2>/dev/null | head -1)
+ FC_OR_CC_VERSION := $(or $(FC_VERSION),$(shell $(CC) --version 2>/dev/null | head -1))
+-BB_TRIPLET_LIBGFORTRAN_CXXABI := $(shell $(call invoke_python,$(JULIAHOME)/contrib/normalize_triplet.py) $(or $(XC_HOST),$(XC_HOST),$(BUILD_MACHINE)) "$(FC_OR_CC_VERSION)" "$(or $(shell echo '\#include <string>' | $(CXX) $(CXXFLAGS) -x c++ -dM -E - | grep _GLIBCXX_USE_CXX11_ABI | awk '{ print $$3 }' ),1)")
++BB_TRIPLET_LIBGFORTRAN_CXXABI := $(shell $(call invoke_python,$(JULIAHOME)/contrib/normalize_triplet.py) $(or $(XC_HOST),$(XC_HOST),$(BUILD_MACHINE)) "$(FC_OR_CC_VERSION)" "$(or $(shell echo '\#include <string>' | $(CXX) $(CXXFLAGS) -TP -E - | grep _GLIBCXX_USE_CXX11_ABI | awk '{ print $$3 }' ),1)")
+ BB_TRIPLET_LIBGFORTRAN := $(subst $(SPACE),-,$(filter-out cxx%,$(subst -,$(SPACE),$(BB_TRIPLET_LIBGFORTRAN_CXXABI))))
+ BB_TRIPLET_CXXABI := $(subst $(SPACE),-,$(filter-out libgfortran%,$(subst -,$(SPACE),$(BB_TRIPLET_LIBGFORTRAN_CXXABI))))
+ BB_TRIPLET := $(subst $(SPACE),-,$(filter-out cxx%,$(filter-out libgfortran%,$(subst -,$(SPACE),$(BB_TRIPLET_LIBGFORTRAN_CXXABI)))))
+@@ -1172,7 +1172,7 @@ endif
+ # Auto-detect triplet once, create different versions that we use as defaults below for each BB install target
+ FC_VERSION := $(shell $(FC) --version 2>/dev/null | head -1)
+ FC_OR_CC_VERSION := $(or $(FC_VERSION),$(shell $(CC) --version 2>/dev/null | head -1))
+-BB_TRIPLET_LIBGFORTRAN_CXXABI := $(shell $(call invoke_python,$(JULIAHOME)/contrib/normalize_triplet.py) $(or $(XC_HOST),$(XC_HOST),$(BUILD_MACHINE)) "$(FC_OR_CC_VERSION)" "$(or $(shell echo '\#include <string>' | $(CXX) $(CXXFLAGS) -TP -E - | grep _GLIBCXX_USE_CXX11_ABI | awk '{ print $$3 }' ),1)")
++BB_TRIPLET_LIBGFORTRAN_CXXABI := x86_64-pc-windows-msvc
+ BB_TRIPLET_LIBGFORTRAN := $(subst $(SPACE),-,$(filter-out cxx%,$(subst -,$(SPACE),$(BB_TRIPLET_LIBGFORTRAN_CXXABI))))
+ BB_TRIPLET_CXXABI := $(subst $(SPACE),-,$(filter-out libgfortran%,$(subst -,$(SPACE),$(BB_TRIPLET_LIBGFORTRAN_CXXABI))))
+ BB_TRIPLET := $(subst $(SPACE),-,$(filter-out cxx%,$(filter-out libgfortran%,$(subst -,$(SPACE),$(BB_TRIPLET_LIBGFORTRAN_CXXABI)))))
+diff --git a/src/codegen.cpp b/src/codegen.cpp
+index 462e9c0fb..e07b97444 100644
+--- a/src/codegen.cpp
++++ b/src/codegen.cpp
+@@ -4464,11 +4464,13 @@ static Value *global_binding_pointer(jl_codectx_t &ctx, jl_module_t *m, jl_sym_t
+     }
+     if (assign) {
+         if (b->owner != m) {
+-            char *msg;
+-            (void)asprintf(&msg, "cannot assign a value to imported variable %s.%s from module %s",
+-                    jl_symbol_name(b->owner->name), jl_symbol_name(s), jl_symbol_name(m->name));
++            std::string msg = "cannot assign a value to imported variable "
++                        + std::string(jl_symbol_name(b->owner->name)) 
++                        + "."
++                        + std::string(jl_symbol_name(s))
++                        + " from module "
++                        + std::string(jl_symbol_name(m->name));
+             emit_error(ctx, msg);
+-            free(msg);
+             return NULL;
+         }
+     }
+     
+     
+     
+@@ -8966,7 +8968,7 @@ extern "C" JL_DLLEXPORT jl_value_t *jl_get_libllvm_impl(void) JL_NOTSAFEPOINT
+ {
+ #if defined(_OS_WINDOWS_)
+     HMODULE mod;
+-    if (!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCSTR)&llvm::DebugFlag, &mod))
++    if (!GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCSTR)&llvm::DebugFlag, &mod))
+         return jl_nothing;
+     wchar_t path16[MAX_PATH];
+     DWORD n16 = GetModuleFileNameW(mod, path16, MAX_PATH);
+     
+diff --git a/src/flisp/Makefile b/src/flisp/Makefile
+index 7bb929c61..0a71c5d95 100644
+--- a/src/flisp/Makefile
++++ b/src/flisp/Makefile
+@@ -26,30 +26,33 @@ NATIVE_BUILDDIR := $(BUILDDIR)
+ LLT_BUILDDIR := $(BUILDDIR)/$(LLTDIR)
+ endif
+ 
+-HEADERS := $(wildcard *.h) $(LIBUV_INC)/uv.h $(wildcard $(LLTDIR)/*.h)
+-
++HEADERS := $(wildcard *.h) $(wildcard $(LLTDIR)/*.h)
++#$(LIBUV_INC)/uv.h
+ OBJS := $(SRCS:%.c=$(BUILDDIR)/%.o)
+ DOBJS := $(SRCS:%.c=$(BUILDDIR)/%.dbg.obj)
+ LLT_release := $(LLT_BUILDDIR)/libsupport.a
+ LLT_debug := $(LLT_BUILDDIR)/libsupport-debug.a
+-LIBFILES_release := $(LLT_release) $(LIBUV)
+-LIBFILES_debug := $(LLT_debug) $(LIBUV)
+-LIBS :=
++LIBFILES_release := $(LLT_release)
++#$(LIBUV)
++LIBFILES_debug := $(LLT_debug)
++#$(LIBUV)
++LIBS += -luv
+ ifneq ($(OS),WINNT)
+-LIBS += -lpthread
++#LIBS += -lpthread
+ endif
+ 
+ ifeq ($(USE_SYSTEM_UTF8PROC),0)
+ LIBFILES_release += $(LIBUTF8PROC)
+ LIBFILES_debug += $(LIBUTF8PROC)
+ else
+-LIBS += $(LIBUTF8PROC)
++LIBS += -lutf8proc
+ endif
+ 
+ 
+ FLAGS := -I$(LLTSRCDIR) $(JCFLAGS) $(HFILEDIRS:%=-I%) \
+-        -I$(LIBUV_INC) -I$(UTF8PROC_INC) -I$(build_includedir) $(LIBDIRS:%=-L%) \
+-        -DLIBRARY_EXPORTS -DUTF8PROC_EXPORTS
++        -I$(build_includedir) $(LIBDIRS:%=-L%) \
++        -DLIBRARY_EXPORTS
++#-I$(LIBUV_INC) -I$(UTF8PROC_INC) -DUTF8PROC_EXPORTS
+ ifneq ($(OS), emscripten)
+ FLAGS += -DUSE_COMPUTED_GOTO
+ endif
+ 
+ 
+ 
+ diff --git a/src/pipeline.cpp b/src/pipeline.cpp
+index 10709989f..d8db79eae 100644
+--- a/src/pipeline.cpp
++++ b/src/pipeline.cpp
+@@ -711,7 +711,7 @@ void registerCallbacks(PassBuilder &PB) {
+         });
+ }
+ 
+-extern "C" JL_DLLEXPORT ::llvm::PassPluginLibraryInfo
++extern "C" ::llvm::PassPluginLibraryInfo
+ llvmGetPassPluginInfo() {
+       return {LLVM_PLUGIN_API_VERSION, "Julia", "1", registerCallbacks};
+ }
+
+diff --git a/src/processor.h b/src/processor.h
+index d1b18cb72..e962a1d40 100644
+--- a/src/processor.h
++++ b/src/processor.h
+@@ -194,14 +194,14 @@ extern JL_DLLEXPORT bool jl_processor_print_help;
+  * If the detected/specified CPU name is not available on the LLVM version specified,
+  * a fallback CPU name will be used. Unsupported features will be ignored.
+  */
+-extern "C" JL_DLLEXPORT std::pair<std::string,std::vector<std::string>> jl_get_llvm_target(bool imaging, uint32_t &flags);
++JL_DLLEXPORT std::pair<std::string,std::vector<std::string>> jl_get_llvm_target(bool imaging, uint32_t &flags);
+ 
+ /**
+  * Returns the CPU name and feature string to be used by LLVM disassembler.
+  *
+  * This will return a generic CPU name and a full feature string.
+  */
+-extern "C" JL_DLLEXPORT const std::pair<std::string,std::string> &jl_get_llvm_disasm_target(void);
++JL_DLLEXPORT const std::pair<std::string,std::string> &jl_get_llvm_disasm_target(void);
+ 
+ struct jl_target_spec_t {
+     // LLVM target name
+@@ -218,7 +218,7 @@ struct jl_target_spec_t {
+ /**
+  * Return the list of targets to clone
+  */
+-extern "C" JL_DLLEXPORT std::vector<jl_target_spec_t> jl_get_llvm_clone_targets(void);
++JL_DLLEXPORT std::vector<jl_target_spec_t> jl_get_llvm_clone_targets(void);
+ std::string jl_get_cpu_name_llvm(void);
+ std::string jl_get_cpu_features_llvm(void);
+ #endif
+ 
+@@ -19,12 +21,15 @@ SRCS += _setjmp.win64
+ endif
+ endif
+ 
+-HEADERS := $(wildcard *.h) $(LIBUV_INC)/uv.h
++HEADERS := $(wildcard *.h)
++# $(LIBUV_INC)/uv.h
+ 
+ OBJS := $(SRCS:%=$(BUILDDIR)/%.o)
+ DOBJS := $(SRCS:%=$(BUILDDIR)/%.dbg.obj)
+ 
+-FLAGS := $(HFILEDIRS:%=-I%) -I$(LIBUV_INC) -I$(UTF8PROC_INC) -DLIBRARY_EXPORTS -DUTF8PROC_EXPORTS
++FLAGS := $(HFILEDIRS:%=-I%) -DLIBRARY_EXPORTS 
++#-DUTF8PROC_EXPORTS
++#-I$(LIBUV_INC) -I$(UTF8PROC_INC)
+ #FLAGS += -Wall -Wno-strict-aliasing -fvisibility=hidden -Wpointer-arith -Wundef
+ #JCFLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
+ diff --git a/deps/Makefile b/deps/Makefile
+index e1f2f6cfc..4356a6984 100644
+--- a/deps/Makefile
++++ b/deps/Makefile
+@@ -216,29 +216,29 @@ distcleanall: $(addprefix distclean-, $(DEP_LIBS_ALL))
+ 	rm -rf $(build_prefix)
+ getall: $(addprefix get-, $(DEP_LIBS_ALL))
+ 
+-include $(SRCDIR)/csl.mk
+-include $(SRCDIR)/ittapi.mk
+-include $(SRCDIR)/llvm.mk
+-include $(SRCDIR)/libuv.mk
+-include $(SRCDIR)/pcre.mk
+-include $(SRCDIR)/openlibm.mk
+-include $(SRCDIR)/dsfmt.mk
+-include $(SRCDIR)/objconv.mk
+-include $(SRCDIR)/blastrampoline.mk
+-include $(SRCDIR)/openblas.mk
+-include $(SRCDIR)/utf8proc.mk
+-include $(SRCDIR)/libsuitesparse.mk
+-include $(SRCDIR)/zlib.mk
+-include $(SRCDIR)/unwind.mk
+-include $(SRCDIR)/gmp.mk
+-include $(SRCDIR)/mpfr.mk
+-include $(SRCDIR)/patchelf.mk
+-include $(SRCDIR)/mbedtls.mk
+-include $(SRCDIR)/libssh2.mk
+-include $(SRCDIR)/nghttp2.mk
+-include $(SRCDIR)/curl.mk
+-include $(SRCDIR)/libgit2.mk
+-include $(SRCDIR)/libwhich.mk
+-include $(SRCDIR)/p7zip.mk
++# include $(SRCDIR)/csl.mk
++# include $(SRCDIR)/ittapi.mk
++# include $(SRCDIR)/llvm.mk
++# include $(SRCDIR)/libuv.mk
++# include $(SRCDIR)/pcre.mk
++# include $(SRCDIR)/openlibm.mk
++# include $(SRCDIR)/dsfmt.mk
++# include $(SRCDIR)/objconv.mk
++# include $(SRCDIR)/blastrampoline.mk
++# include $(SRCDIR)/openblas.mk
++# include $(SRCDIR)/utf8proc.mk
++# include $(SRCDIR)/libsuitesparse.mk
++# include $(SRCDIR)/zlib.mk
++# include $(SRCDIR)/unwind.mk
++# include $(SRCDIR)/gmp.mk
++# include $(SRCDIR)/mpfr.mk
++# include $(SRCDIR)/patchelf.mk
++# include $(SRCDIR)/mbedtls.mk
++# include $(SRCDIR)/libssh2.mk
++# include $(SRCDIR)/nghttp2.mk
++# include $(SRCDIR)/curl.mk
++# include $(SRCDIR)/libgit2.mk
++# include $(SRCDIR)/libwhich.mk
++# include $(SRCDIR)/p7zip.mk
+ 
+ include $(SRCDIR)/tools/uninstallers.mk
+ 
+ 
+@@ -112,17 +112,18 @@ endif
+ 
+ $(build_shlibdir)/libjulia.$(JL_MAJOR_MINOR_SHLIB_EXT): $(LIB_OBJS) $(SRCDIR)/list_strip_symbols.h | $(build_shlibdir) $(build_libdir)
+ 	@$(call PRINT_LINK, $(CC) $(call IMPLIB_FLAGS,$@.tmp) $(LOADER_CFLAGS) -DLIBRARY_EXPORTS -shared $(SHIPFLAGS) $(LIB_OBJS) -o $@ \
+-		$(JLIBLDFLAGS) $(LOADER_LDFLAGS) $(call SONAME_FLAGS,libjulia.$(JL_MAJOR_SHLIB_EXT)))
++		$(JLIBLDFLAGS) $(call SONAME_FLAGS,libjulia.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia.$(JL_MAJOR_SHLIB_EXT) $@
+ ifeq ($(OS), WINNT)
+ 	@# Note that if the objcopy command starts getting too long, we can use `@file` to read
+ 	@# command-line options from `file` instead.
+ 	@$(call PRINT_ANALYZE, $(OBJCOPY) $(build_libdir)/$(notdir $@).tmp.a $(STRIP_EXPORTED_FUNCS) $(build_libdir)/$(notdir $@).a && rm $(build_libdir)/$(notdir $@).tmp.a)
++	@$(call PRINT_ANALYZE, $(OBJCOPY) $(build_libdir)/$(notdir $@).a $(STRIP_EXPORTED_FUNCS) $(build_libdir)/$(notdir $@).lib)
+ endif
+ 
+ $(build_shlibdir)/libjulia-debug.$(JL_MAJOR_MINOR_SHLIB_EXT): $(LIB_DOBJS) $(SRCDIR)/list_strip_symbols.h | $(build_shlibdir) $(build_libdir)
+ 	@$(call PRINT_LINK, $(CC) $(call IMPLIB_FLAGS,$@.tmp) $(LOADER_CFLAGS) -DLIBRARY_EXPORTS -shared $(DEBUGFLAGS) $(LIB_DOBJS) -o $@ \
+-		$(JLIBLDFLAGS) $(LOADER_LDFLAGS) $(call SONAME_FLAGS,libjulia-debug.$(JL_MAJOR_SHLIB_EXT)))
++		$(JLIBLDFLAGS) $(call SONAME_FLAGS,libjulia-debug.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-debug.$(JL_MAJOR_SHLIB_EXT) $@
+ ifeq ($(OS), WINNT)
+ 	@$(call PRINT_ANALYZE, $(OBJCOPY) $(build_libdir)/$(notdir $@).tmp.a $(STRIP_EXPORTED_FUNCS) $(build_libdir)/$(notdir $@).a && rm $(build_libdir)/$(notdir $@).tmp.a)
+    
+@@ -159,10 +159,10 @@ endif
+ COMMON_LIBPATHS := -L$(build_libdir) -L$(build_shlibdir)
+ RT_LIBS := $(WHOLE_ARCHIVE) $(LIBUV) $(WHOLE_ARCHIVE) $(LIBUTF8PROC) $(NO_WHOLE_ARCHIVE) $(LIBUNWIND) $(RT_LLVMLINK) $(OSLIBS)
+ CG_LIBS := $(LIBUNWIND) $(CG_LLVMLINK) $(OSLIBS)
+-RT_DEBUG_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp-debug.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport-debug.a -ljulia-debug $(RT_LIBS)
+-CG_DEBUG_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) -ljulia-debug -ljulia-internal-debug
+-RT_RELEASE_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport.a -ljulia $(RT_LIBS)
+-CG_RELEASE_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) -ljulia -ljulia-internal
++RT_DEBUG_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp-debug.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport-debug.a libjulia-debug.dll.a $(RT_LIBS)
++CG_DEBUG_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) libjulia-debug.dll.a libjulia-internal-debug.dll.a
++RT_RELEASE_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport.a libjulia.dll.a $(RT_LIBS)
++CG_RELEASE_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) libjulia.dll.a libjulia-internal.dll.a
+ 
+ OBJS := $(SRCS:%=$(BUILDDIR)/%.o)
+ DOBJS := $(SRCS:%=$(BUILDDIR)/%.dbg.obj)

@@ -101,27 +101,6 @@ index 7ba238e0d..60fd97c3c 100644
  EXE_OBJS += $(BUILDDIR)/julia_res.o
  EXE_DOBJS += $(BUILDDIR)/julia_res.o
  endif
-@@ -112,17 +112,18 @@ endif
- 
- $(build_shlibdir)/libjulia.$(JL_MAJOR_MINOR_SHLIB_EXT): $(LIB_OBJS) $(SRCDIR)/list_strip_symbols.h | $(build_shlibdir) $(build_libdir)
- 	@$(call PRINT_LINK, $(CC) $(call IMPLIB_FLAGS,$@.tmp) $(LOADER_CFLAGS) -DLIBRARY_EXPORTS -shared $(SHIPFLAGS) $(LIB_OBJS) -o $@ \
--		$(JLIBLDFLAGS) $(LOADER_LDFLAGS) $(call SONAME_FLAGS,libjulia.$(JL_MAJOR_SHLIB_EXT)))
-+		$(JLIBLDFLAGS) $(call SONAME_FLAGS,libjulia.$(JL_MAJOR_SHLIB_EXT)))
- 	@$(INSTALL_NAME_CMD)libjulia.$(JL_MAJOR_SHLIB_EXT) $@
- ifeq ($(OS), WINNT)
- 	@# Note that if the objcopy command starts getting too long, we can use `@file` to read
- 	@# command-line options from `file` instead.
- 	@$(call PRINT_ANALYZE, $(OBJCOPY) $(build_libdir)/$(notdir $@).tmp.a $(STRIP_EXPORTED_FUNCS) $(build_libdir)/$(notdir $@).a && rm $(build_libdir)/$(notdir $@).tmp.a)
-+	@$(call PRINT_ANALYZE, $(OBJCOPY) $(build_libdir)/$(notdir $@).a $(STRIP_EXPORTED_FUNCS) $(build_libdir)/$(notdir $@).lib)
- endif
- 
- $(build_shlibdir)/libjulia-debug.$(JL_MAJOR_MINOR_SHLIB_EXT): $(LIB_DOBJS) $(SRCDIR)/list_strip_symbols.h | $(build_shlibdir) $(build_libdir)
- 	@$(call PRINT_LINK, $(CC) $(call IMPLIB_FLAGS,$@.tmp) $(LOADER_CFLAGS) -DLIBRARY_EXPORTS -shared $(DEBUGFLAGS) $(LIB_DOBJS) -o $@ \
--		$(JLIBLDFLAGS) $(LOADER_LDFLAGS) $(call SONAME_FLAGS,libjulia-debug.$(JL_MAJOR_SHLIB_EXT)))
-+		$(JLIBLDFLAGS) $(call SONAME_FLAGS,libjulia-debug.$(JL_MAJOR_SHLIB_EXT)))
- 	@$(INSTALL_NAME_CMD)libjulia-debug.$(JL_MAJOR_SHLIB_EXT) $@
- ifeq ($(OS), WINNT)
- 	@$(call PRINT_ANALYZE, $(OBJCOPY) $(build_libdir)/$(notdir $@).tmp.a $(STRIP_EXPORTED_FUNCS) $(build_libdir)/$(notdir $@).a && rm $(build_libdir)/$(notdir $@).tmp.a)
 @@ -138,10 +139,10 @@ $(build_shlibdir)/libjulia.$(SHLIB_EXT) $(build_shlibdir)/libjulia-debug.$(SHLIB
  endif
  
@@ -246,21 +225,6 @@ index a7dd98ddd..004b75b27 100644
  RT_LLVMLINK += $(LLVM_LDFLAGS) $(RT_LLVM_LINK_ARGS)
  ifeq ($(OS), WINNT)
  RT_LLVMLINK += -luuid -lole32
-@@ -159,10 +159,10 @@ endif
- COMMON_LIBPATHS := -L$(build_libdir) -L$(build_shlibdir)
- RT_LIBS := $(WHOLE_ARCHIVE) $(LIBUV) $(WHOLE_ARCHIVE) $(LIBUTF8PROC) $(NO_WHOLE_ARCHIVE) $(LIBUNWIND) $(RT_LLVMLINK) $(OSLIBS)
- CG_LIBS := $(LIBUNWIND) $(CG_LLVMLINK) $(OSLIBS)
--RT_DEBUG_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp-debug.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport-debug.a -ljulia-debug $(RT_LIBS)
--CG_DEBUG_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) -ljulia-debug -ljulia-internal-debug
--RT_RELEASE_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport.a -ljulia $(RT_LIBS)
--CG_RELEASE_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) -ljulia -ljulia-internal
-+RT_DEBUG_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp-debug.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport-debug.a libjulia-debug.dll.a $(RT_LIBS)
-+CG_DEBUG_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) libjulia-debug.dll.a libjulia-internal-debug.dll.a
-+RT_RELEASE_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport.a libjulia.dll.a $(RT_LIBS)
-+CG_RELEASE_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) libjulia.dll.a libjulia-internal.dll.a
- 
- OBJS := $(SRCS:%=$(BUILDDIR)/%.o)
- DOBJS := $(SRCS:%=$(BUILDDIR)/%.dbg.obj)
 diff --git a/sysimage.mk b/sysimage.mk
 index 2d154672d..3a39292a5 100644
 --- a/sysimage.mk

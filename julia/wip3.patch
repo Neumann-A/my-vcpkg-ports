@@ -11,67 +11,6 @@ index c2eb31208..adb8e5446 100644
  
  # Link to the LLVM shared library
  USE_LLVM_SHLIB := 1
-diff --git a/configure b/configure
-new file mode 100644
-index 000000000..e69de29bb
-diff --git a/deps/Makefile b/deps/Makefile
-index e1f2f6cfc..4356a6984 100644
---- a/deps/Makefile
-+++ b/deps/Makefile
-@@ -216,29 +216,29 @@ distcleanall: $(addprefix distclean-, $(DEP_LIBS_ALL))
- 	rm -rf $(build_prefix)
- getall: $(addprefix get-, $(DEP_LIBS_ALL))
- 
--include $(SRCDIR)/csl.mk
--include $(SRCDIR)/ittapi.mk
--include $(SRCDIR)/llvm.mk
--include $(SRCDIR)/libuv.mk
--include $(SRCDIR)/pcre.mk
--include $(SRCDIR)/openlibm.mk
--include $(SRCDIR)/dsfmt.mk
--include $(SRCDIR)/objconv.mk
--include $(SRCDIR)/blastrampoline.mk
--include $(SRCDIR)/openblas.mk
--include $(SRCDIR)/utf8proc.mk
--include $(SRCDIR)/libsuitesparse.mk
--include $(SRCDIR)/zlib.mk
--include $(SRCDIR)/unwind.mk
--include $(SRCDIR)/gmp.mk
--include $(SRCDIR)/mpfr.mk
--include $(SRCDIR)/patchelf.mk
--include $(SRCDIR)/mbedtls.mk
--include $(SRCDIR)/libssh2.mk
--include $(SRCDIR)/nghttp2.mk
--include $(SRCDIR)/curl.mk
--include $(SRCDIR)/libgit2.mk
--include $(SRCDIR)/libwhich.mk
--include $(SRCDIR)/p7zip.mk
-+# include $(SRCDIR)/csl.mk
-+# include $(SRCDIR)/ittapi.mk
-+# include $(SRCDIR)/llvm.mk
-+# include $(SRCDIR)/libuv.mk
-+# include $(SRCDIR)/pcre.mk
-+# include $(SRCDIR)/openlibm.mk
-+# include $(SRCDIR)/dsfmt.mk
-+# include $(SRCDIR)/objconv.mk
-+# include $(SRCDIR)/blastrampoline.mk
-+# include $(SRCDIR)/openblas.mk
-+# include $(SRCDIR)/utf8proc.mk
-+# include $(SRCDIR)/libsuitesparse.mk
-+# include $(SRCDIR)/zlib.mk
-+# include $(SRCDIR)/unwind.mk
-+# include $(SRCDIR)/gmp.mk
-+# include $(SRCDIR)/mpfr.mk
-+# include $(SRCDIR)/patchelf.mk
-+# include $(SRCDIR)/mbedtls.mk
-+# include $(SRCDIR)/libssh2.mk
-+# include $(SRCDIR)/nghttp2.mk
-+# include $(SRCDIR)/curl.mk
-+# include $(SRCDIR)/libgit2.mk
-+# include $(SRCDIR)/libwhich.mk
-+# include $(SRCDIR)/p7zip.mk
- 
- include $(SRCDIR)/tools/uninstallers.mk
 diff --git a/deps/valgrind/valgrind.h b/deps/valgrind/valgrind.h
 index 2e07a49d9..47f0746f7 100644
 --- a/deps/valgrind/valgrind.h
@@ -143,20 +82,6 @@ index 2e07a49d9..47f0746f7 100644
  
  #endif /* PLAT_amd64_win64 */
  
-diff --git a/src/gc.h b/src/gc.h
-index 7b02df69a..b5d775baf 100644
---- a/src/gc.h
-+++ b/src/gc.h
-@@ -11,7 +11,9 @@
- 
- #include <stdlib.h>
- #include <string.h>
-+#ifndef _MSC_VER
- #include <strings.h>
-+#endif
- #include <inttypes.h>
- #include "julia.h"
- #include "julia_threads.h"
 diff --git a/src/jl_uv.c b/src/jl_uv.c
 index 93d775ce5..dd69456a0 100644
 --- a/src/jl_uv.c

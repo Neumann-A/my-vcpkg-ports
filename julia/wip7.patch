@@ -1,0 +1,334 @@
+diff --git a/666f2a7e16-dd3ce346c3.clean/Makefile b/666f2a7e16-dd3ce346c3/Makefile
+index 392cc2ebb..aa6b8ee49 100644
+--- a/666f2a7e16-dd3ce346c3.clean/Makefile
++++ b/666f2a7e16-dd3ce346c3/Makefile
+@@ -503,7 +503,7 @@ endif
+ exe:
+ 	# run Inno Setup to compile installer.
+ 	# Note that we disable MSYS2 path munging, as it interferes with the `/` options:
+-	MSYS2_ARG_CONV_EXCL='*' $(call spawn,$(JULIAHOME)/dist-extras/inno/iscc.exe /DAppVersion=$(JULIA_VERSION) /DSourceDir="$(call cygpath_w,$(BUILDROOT)/julia-$(JULIA_COMMIT))" /DRepoDir="$(call cygpath_w,$(JULIAHOME))" /F"$(JULIA_BINARYDIST_FILENAME)" /O"$(call cygpath_w,$(BUILDROOT))" $(INNO_ARGS) $(call cygpath_w,$(JULIAHOME)/contrib/windows/build-installer.iss))
++	#MSYS2_ARG_CONV_EXCL='*' $(call spawn,$(JULIAHOME)/dist-extras/inno/iscc.exe /DAppVersion=$(JULIA_VERSION) /DSourceDir="$(call cygpath_w,$(BUILDROOT)/julia-$(JULIA_COMMIT))" /DRepoDir="$(call cygpath_w,$(JULIAHOME))" /F"$(JULIA_BINARYDIST_FILENAME)" /O"$(call cygpath_w,$(BUILDROOT))" $(INNO_ARGS) $(call cygpath_w,$(JULIAHOME)/contrib/windows/build-installer.iss))
+ 	chmod a+x "$(BUILDROOT)/$(JULIA_BINARYDIST_FILENAME).exe"
+ 
+ app:
+diff --git a/666f2a7e16-dd3ce346c3.clean/cli/Makefile b/666f2a7e16-dd3ce346c3/cli/Makefile
+index 1bf0ba39c..d7fa47eaa 100644
+--- a/666f2a7e16-dd3ce346c3.clean/cli/Makefile
++++ b/666f2a7e16-dd3ce346c3/cli/Makefile
+@@ -7,18 +7,19 @@ include $(JULIAHOME)/deps/llvm-ver.make
+ 
+ HEADERS := $(addprefix $(SRCDIR)/,jl_exports.h loader.h) $(addprefix $(JULIAHOME)/src/,julia_fasttls.h support/platform.h support/dirpath.h jl_exported_data.inc jl_exported_funcs.inc)
+ 
+-LOADER_CFLAGS = $(JCFLAGS) -I$(BUILDROOT)/src -I$(JULIAHOME)/src -I$(JULIAHOME)/src/support -I$(build_includedir) -ffreestanding
+-LOADER_LDFLAGS = $(JLDFLAGS) -ffreestanding -L$(build_shlibdir) -L$(build_libdir)
++LOADER_CFLAGS = $(JCFLAGS) -I$(BUILDROOT)/src -I$(JULIAHOME)/src -I$(JULIAHOME)/src/support -I$(build_includedir)
++LOADER_LDFLAGS = $(JLDFLAGS) -L$(build_shlibdir) -L$(build_libdir)
+ 
+ ifeq ($(OS),WINNT)
+-LOADER_CFLAGS += -municode -mconsole -nostdlib -fno-stack-check -fno-stack-protector -mno-stack-arg-probe
++LOADER_CFLAGS += -municode -mconsole
++#-nostdlib -fno-stack-check -fno-stack-protector -mno-stack-arg-probe
+ else ifeq ($(OS),Linux)
+ LOADER_CFLAGS += -DGLIBCXX_LEAST_VERSION_SYMBOL=\"$(shell echo "$(CSL_NEXT_GLIBCXX_VERSION)" | cut -d'|' -f1 | sed 's/\\//g')\"
+ endif
+ 
+ ifeq ($(OS),WINNT)
+-LOADER_LDFLAGS += -municode -mconsole -nostdlib --disable-auto-import \
+-                  --disable-runtime-pseudo-reloc -lntdll -lkernel32 -lpsapi -lShell32
++LOADER_LDFLAGS += -municode -mconsole -nostdlib -lntdll -lkernel32 -lpsapi -lShell32
++# --disable-auto-import --disable-runtime-pseudo-reloc
+ else ifeq ($(OS),Linux)
+ LOADER_LDFLAGS += -Wl,--no-as-needed -ldl -lpthread -rdynamic -lc -Wl,--as-needed
+ else ifeq ($(OS),FreeBSD)
+@@ -35,8 +36,8 @@ ifneq (,$(findstring MINGW,$(shell uname)))
+ # https://www.msys2.org/wiki/Porting/#filesystem-namespaces
+ # We define this environment variable for only these two object files,
+ # as they're the only ones that require it at the time of writing.
+-$(BUILDDIR)/loader_lib.o: export MSYS2_ARG_CONV_EXCL = -DDEP_LIBS=
+-$(BUILDDIR)/loader_lib.dbg.obj: export MSYS2_ARG_CONV_EXCL = -DDEP_LIBS=
++$(BUILDDIR)/loader_lib.o: export MSYS2_ARG_CONV_EXCL=-DDEP_LIBS=
++$(BUILDDIR)/loader_lib.dbg.obj: export MSYS2_ARG_CONV_EXCL=-DDEP_LIBS=
+ endif # MSYS2
+ 
+ EXE_OBJS := $(BUILDDIR)/loader_exe.o
+@@ -106,7 +107,7 @@ libjulia-debug: $(build_shlibdir)/libjulia-debug.$(SHLIB_EXT)
+ 
+ ifeq ($(OS),WINNT)
+ # On Windows we need to strip out exported functions from the generated import library.
+-STRIP_EXPORTED_FUNCS := $(shell $(CPP_STDOUT) -I$(JULIAHOME)/src $(SRCDIR)/list_strip_symbols.h)
++#STRIP_EXPORTED_FUNCS := $(shell $(CPP_STDOUT) -I$(JULIAHOME)/src $(SRCDIR)/list_strip_symbols.h)
+ endif
+ 
+ $(build_shlibdir)/libjulia.$(JL_MAJOR_MINOR_SHLIB_EXT): $(LIB_OBJS) $(SRCDIR)/list_strip_symbols.h | $(build_shlibdir) $(build_libdir)
+@@ -118,6 +119,7 @@ ifeq ($(OS), WINNT)
+ 	@# Note that if the objcopy command starts getting too long, we can use `@file` to read
+ 	@# command-line options from `file` instead.
+ 	@$(call PRINT_ANALYZE, $(OBJCOPY) $(build_libdir)/$(notdir $@).tmp.a $(STRIP_EXPORTED_FUNCS) $(build_libdir)/$(notdir $@).a && rm $(build_libdir)/$(notdir $@).tmp.a)
++	@$(call PRINT_ANALYZE, $(OBJCOPY) $(build_libdir)/$(notdir $@).a $(STRIP_EXPORTED_FUNCS) $(build_libdir)/$(notdir $@).lib)
+ endif
+ 
+ $(build_shlibdir)/libjulia-debug.$(JL_MAJOR_MINOR_SHLIB_EXT): $(LIB_DOBJS) $(SRCDIR)/list_strip_symbols.h | $(build_shlibdir) $(build_libdir)
+@@ -127,6 +129,7 @@ $(build_shlibdir)/libjulia-debug.$(JL_MAJOR_MINOR_SHLIB_EXT): $(LIB_DOBJS) $(SRC
+ 	@$(DSYMUTIL) $@
+ ifeq ($(OS), WINNT)
+ 	@$(call PRINT_ANALYZE, $(OBJCOPY) $(build_libdir)/$(notdir $@).tmp.a $(STRIP_EXPORTED_FUNCS) $(build_libdir)/$(notdir $@).a && rm $(build_libdir)/$(notdir $@).tmp.a)
++	@$(call PRINT_ANALYZE, $(OBJCOPY) $(build_libdir)/$(notdir $@).a $(STRIP_EXPORTED_FUNCS) $(build_libdir)/$(notdir $@).lib)
+ endif
+ 
+ ifneq ($(OS), WINNT)
+diff --git a/666f2a7e16-dd3ce346c3.clean/src/Makefile b/666f2a7e16-dd3ce346c3/src/Makefile
+index 41d8423a4..4d46cba73 100644
+--- a/666f2a7e16-dd3ce346c3.clean/src/Makefile
++++ b/666f2a7e16-dd3ce346c3/src/Makefile
+@@ -9,6 +9,8 @@ JCXXFLAGS += $(CXXFLAGS)
+ JCPPFLAGS += $(CPPFLAGS)
+ JLDFLAGS += $(LDFLAGS)
+ 
++EXTRA_LIBS := -lgetopt -lLLVMWindowsManifest -lLLVMWindowsDriver -lLLVMXRay -lLLVMLibDriver -lLLVMDlltoolDriver -lLLVMCoverage -lLLVMLineEditor -lLLVMX86TargetMCA -lLLVMX86Disassembler -lLLVMX86AsmParser -lLLVMX86CodeGen -lLLVMX86Desc -lLLVMX86Info -lLLVMOrcJIT -lLLVMMCJIT -lLLVMJITLink -lLLVMInterpreter -lLLVMExecutionEngine -lLLVMRuntimeDyld -lLLVMOrcTargetProcess -lLLVMOrcShared -lLLVMDWP -lLLVMDebugInfoGSYM -lLLVMOption -lLLVMObjectYAML -lLLVMObjCopy -lLLVMMCA -lLLVMMCDisassembler -lLLVMLTO -lLLVMPasses -lLLVMCFGuard -lLLVMCoroutines -lLLVMObjCARCOpts -lLLVMipo -lLLVMVectorize -lLLVMLinker -lLLVMInstrumentation -lLLVMFrontendOpenMP -lLLVMFrontendOpenACC -lLLVMExtensions -lLLVMDWARFLinker -lLLVMGlobalISel -lLLVMMIRParser -lLLVMAsmPrinter -lLLVMSelectionDAG -lLLVMCodeGen -lLLVMIRReader -lLLVMAsmParser -lLLVMInterfaceStub -lLLVMFileCheck -lLLVMFuzzMutate -lLLVMTarget -lLLVMScalarOpts -lLLVMInstCombine -lLLVMAggressiveInstCombine -lLLVMTransformUtils -lLLVMBitWriter -lLLVMAnalysis -lLLVMProfileData -lLLVMSymbolize -lLLVMDebugInfoPDB -lLLVMDebugInfoMSF -lLLVMDebugInfoDWARF -lLLVMObject -lLLVMTextAPI -lLLVMMCParser -lLLVMMC -lLLVMDebugInfoCodeView -lLLVMBitReader -lLLVMFuzzerCLI -lLLVMCore -lLLVMRemarks -lLLVMBitstreamReader -lLLVMBinaryFormat -lLLVMTableGen -lLLVMSupport -lLLVMDemangle
++
+ # -I BUILDDIR comes before -I SRCDIR so that the user can override <options.h> on a per-build-directory basis
+ #  for gcc/clang, suggested content is:
+ #  #include_next <options.h>
+@@ -16,7 +18,7 @@ JLDFLAGS += $(LDFLAGS)
+ FLAGS := \
+ 	-D_GNU_SOURCE -I$(BUILDDIR) -I$(SRCDIR) \
+ 	-I$(SRCDIR)/flisp -I$(SRCDIR)/support \
+-	-I$(LIBUV_INC) -I$(build_includedir) \
++    -I$(build_includedir) \
+ 	-I$(JULIAHOME)/deps/valgrind
+ #FLAGS += -Wall -Wno-strict-aliasing -fno-omit-frame-pointer -fvisibility=hidden -fno-common \
+ #		 -Wno-comment -Wpointer-arith -Wundef
+@@ -157,12 +159,12 @@ LIBJULIA_PATH_REL := libjulia
+ endif
+ 
+ COMMON_LIBPATHS := -L$(build_libdir) -L$(build_shlibdir)
+-RT_LIBS := $(WHOLE_ARCHIVE) $(LIBUV) $(WHOLE_ARCHIVE) $(LIBUTF8PROC) $(NO_WHOLE_ARCHIVE) $(LIBUNWIND) $(RT_LLVMLINK) $(OSLIBS) $(LIBTRACYCLIENT) $(LIBITTAPI)
+-CG_LIBS := $(LIBUNWIND) $(CG_LLVMLINK) $(OSLIBS) $(LIBTRACYCLIENT) $(LIBITTAPI)
+-RT_DEBUG_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp-debug.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport-debug.a -ljulia-debug $(RT_LIBS)
+-CG_DEBUG_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) -ljulia-debug -ljulia-internal-debug
+-RT_RELEASE_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport.a -ljulia $(RT_LIBS)
+-CG_RELEASE_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) -ljulia -ljulia-internal
++RT_LIBS := $(LIBUV) $(LIBUTF8PROC) $(NO_WHOLE_ARCHIVE) $(LIBUNWIND) $(RT_LLVMLINK) $(OSLIBS) $(LIBTRACYCLIENT) $(LIBITTAPI)
++CG_LIBS := $(LIBUNWIND) $(CG_LLVMLINK) $(OSLIBS) $(LIBTRACYCLIENT) $(LIBITTAPI) $(EXTRA_LIBS)
++RT_DEBUG_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp-debug.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport-debug.a libjulia-debug.dll.a $(RT_LIBS)
++CG_DEBUG_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) libjulia-debug.dll.a libjulia-internal-debug.dll.a
++RT_RELEASE_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport.a libjulia.dll.a $(RT_LIBS)
++CG_RELEASE_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) libjulia.dll.a libjulia-internal.dll.a
+ 
+ OBJS := $(SRCS:%=$(BUILDDIR)/%.o)
+ DOBJS := $(SRCS:%=$(BUILDDIR)/%.dbg.obj)
+@@ -240,7 +242,7 @@ define public_header_target
+ $$(build_includedir)/julia/$$(notdir $(1)): $(1) | $$(build_includedir)/julia
+ 	$$(INSTALL_F) $$^ $$(build_includedir)/julia/
+ endef
+-$(foreach HEADER,$(PUBLIC_HEADERS) $(LIBUV_INC)/uv.h,$(eval $(call public_header_target,$(HEADER))))
++$(foreach HEADER,$(PUBLIC_HEADERS),$(eval $(call public_header_target,$(HEADER))))
+ 
+ $(eval $(call dir_target,$(build_includedir)/julia/uv))
+ $(build_includedir)/julia/uv/*.h: $(LIBUV_INC)/uv/*.h | $(build_includedir)/julia/uv
+@@ -364,13 +366,13 @@ $(BUILDDIR)/julia_version.h: $(JULIAHOME)/VERSION
+ CXXLD = $(CXX) -Xlinker -DLL
+ 
+ $(build_shlibdir)/libjulia-internal.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(OBJS) $(BUILDDIR)/flisp/libflisp.a $(BUILDDIR)/support/libsupport.a
+-	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(OBJS) $(RPATH_LIB) $(WHOLE_ARCHIVE) -llibjulia.dll -o $@ \
++	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(OBJS) $(RPATH_LIB) $(WHOLE_ARCHIVE) libjulia.dll.a -o $@ \
+ 		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_RELEASE_LIBS) $(call SONAME_FLAGS,libjulia-internal.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-internal.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+ 
+ $(build_shlibdir)/libjulia-internal-debug.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(DOBJS) $(BUILDDIR)/flisp/libflisp-debug.a $(BUILDDIR)/support/libsupport-debug.a
+-	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(DOBJS) $(RPATH_LIB) $(WHOLE_ARCHIVE) -llibjulia.dll -o $@ \
++	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(DOBJS) $(RPATH_LIB) $(WHOLE_ARCHIVE) libjulia.dll -o $@ \
+ 		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_DEBUG_LIBS) $(call SONAME_FLAGS,libjulia-internal-debug.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-internal-debug.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+@@ -446,7 +448,7 @@ $(build_shlibdir)/lib%Plugin.$(SHLIB_EXT): $(SRCDIR)/clangsa/%.cpp $(LLVM_CONFIG
+ # before attempting this static analysis, so that all necessary headers
+ # and dependencies are properly installed:
+ #   make -C src install-analysis-deps
+-ANALYSIS_DEPS := llvm clang llvm-tools libuv utf8proc
++ANALYSIS_DEPS := llvm clang llvm-tools
+ ifeq ($(OS),Darwin)
+ ANALYSIS_DEPS += llvmunwind
+ else ifneq ($(OS),WINNT)
+diff --git a/666f2a7e16-dd3ce346c3.clean/src/flisp/Makefile b/666f2a7e16-dd3ce346c3/src/flisp/Makefile
+index 762540c5f..38e5b96b4 100644
+--- a/666f2a7e16-dd3ce346c3.clean/src/flisp/Makefile
++++ b/666f2a7e16-dd3ce346c3/src/flisp/Makefile
+@@ -26,15 +26,15 @@ NATIVE_BUILDDIR := $(BUILDDIR)
+ LLT_BUILDDIR := $(BUILDDIR)/$(LLTDIR)
+ endif
+ 
+-HEADERS := $(wildcard *.h) $(LIBUV_INC)/uv.h $(wildcard $(LLTDIR)/*.h)
++HEADERS := $(wildcard *.h) $(wildcard $(LLTDIR)/*.h)
+ 
+ OBJS := $(SRCS:%.c=$(BUILDDIR)/%.o)
+ DOBJS := $(SRCS:%.c=$(BUILDDIR)/%.dbg.obj)
+ LLT_release := $(LLT_BUILDDIR)/libsupport.a
+ LLT_debug := $(LLT_BUILDDIR)/libsupport-debug.a
+-LIBFILES_release := $(LLT_release) $(LIBUV)
+-LIBFILES_debug := $(LLT_debug) $(LIBUV)
+-LIBS :=
++LIBFILES_release := $(LLT_release)
++LIBFILES_debug := $(LLT_debug)
++LIBS :=  $(LIBUV)
+ ifneq ($(OS),WINNT)
+ LIBS += -lpthread
+ endif
+@@ -48,8 +48,8 @@ endif
+ 
+ 
+ FLAGS := -I$(LLTSRCDIR) $(JCFLAGS) $(HFILEDIRS:%=-I%) \
+-        -I$(LIBUV_INC) -I$(UTF8PROC_INC) -I$(build_includedir) $(LIBDIRS:%=-L%) \
+-        -DJL_LIBRARY_EXPORTS_INTERNAL -DUTF8PROC_EXPORTS
++         -I$(build_includedir) $(LIBDIRS:%=-L%) \
++        -DJL_LIBRARY_EXPORTS_INTERNAL
+ ifneq ($(OS), emscripten)
+ FLAGS += -DUSE_COMPUTED_GOTO
+ endif
+diff --git a/666f2a7e16-dd3ce346c3.clean/src/gc.h b/666f2a7e16-dd3ce346c3/src/gc.h
+index eb20dd0ac..2145a20cc 100644
+--- a/666f2a7e16-dd3ce346c3.clean/src/gc.h
++++ b/666f2a7e16-dd3ce346c3/src/gc.h
+@@ -12,7 +12,9 @@
+ #include <stddef.h>
+ #include <stdlib.h>
+ #include <string.h>
++#ifndef _MSC_VER
+ #include <strings.h>
++#endif
+ #include <inttypes.h>
+ #include "julia.h"
+ #include "julia_threads.h"
+diff --git a/666f2a7e16-dd3ce346c3.clean/src/jl_uv.c b/666f2a7e16-dd3ce346c3/src/jl_uv.c
+index f292d974f..8a9ed4d2d 100644
+--- a/666f2a7e16-dd3ce346c3.clean/src/jl_uv.c
++++ b/666f2a7e16-dd3ce346c3/src/jl_uv.c
+@@ -45,7 +45,7 @@ static void walk_print_cb(uv_handle_t *h, void *arg)
+         type = "<unknown>";
+     uv_os_fd_t fd;
+     if (h->type == UV_PROCESS)
+-        fd = uv_process_get_pid((uv_process_t*)h);
++        fd = (void *)uv_process_get_pid((uv_process_t*)h);
+     else if (uv_fileno(h, &fd))
+         fd = (uv_os_fd_t)-1;
+     const char *pad = "                "; // 16 spaces
+diff --git a/666f2a7e16-dd3ce346c3.clean/src/julia_internal.h b/666f2a7e16-dd3ce346c3/src/julia_internal.h
+index 4acb19190..8a4b49b5c 100644
+--- a/666f2a7e16-dd3ce346c3.clean/src/julia_internal.h
++++ b/666f2a7e16-dd3ce346c3/src/julia_internal.h
+@@ -26,7 +26,9 @@
+ #endif
+ 
+ // pragma visibility is more useful than -fvisibility
++#ifndef _MSC_VER
+ #pragma GCC visibility push(hidden)
++#endif
+ 
+ #ifdef __cplusplus
+ extern "C" {
+@@ -1120,9 +1122,13 @@ extern JL_DLLEXPORT uv_mutex_t jl_in_stackwalk;
+ #elif !defined(JL_DISABLE_LIBUNWIND)
+ // This gives unwind only local unwinding options ==> faster code
+ #  define UNW_LOCAL_ONLY
++#ifndef _MSC_VER
+ #pragma GCC visibility push(default)
++#endif
+ #  include <libunwind.h>
++#ifndef _MSC_VER
+ #pragma GCC visibility pop
++#endif
+ typedef unw_context_t bt_context_t;
+ typedef unw_cursor_t bt_cursor_t;
+ #  if (!defined(SYSTEM_LIBUNWIND) || UNW_VERSION_MAJOR > 1 ||   \
+@@ -1683,9 +1689,9 @@ JL_DLLIMPORT uint64_t jl_getUnwindInfo(uint64_t dwBase);
+ #ifdef __cplusplus
+ }
+ #endif
+-
++#ifndef _MSC_VER
+ #pragma GCC visibility pop
+-
++#endif
+ 
+ #ifdef USE_DTRACE
+ // Generated file, needs to be searched in include paths so that the builddir
+diff --git a/666f2a7e16-dd3ce346c3.clean/src/processor.h b/666f2a7e16-dd3ce346c3/src/processor.h
+index 3e83bbb22..c2606cb64 100644
+--- a/666f2a7e16-dd3ce346c3.clean/src/processor.h
++++ b/666f2a7e16-dd3ce346c3/src/processor.h
+@@ -245,14 +245,14 @@ extern JL_DLLEXPORT bool jl_processor_print_help;
+  * If the detected/specified CPU name is not available on the LLVM version specified,
+  * a fallback CPU name will be used. Unsupported features will be ignored.
+  */
+-extern "C" JL_DLLEXPORT std::pair<std::string,std::vector<std::string>> jl_get_llvm_target(bool imaging, uint32_t &flags) JL_NOTSAFEPOINT;
++extern JL_DLLEXPORT std::pair<std::string,std::vector<std::string>> jl_get_llvm_target(bool imaging, uint32_t &flags) JL_NOTSAFEPOINT;
+ 
+ /**
+  * Returns the CPU name and feature string to be used by LLVM disassembler.
+  *
+  * This will return a generic CPU name and a full feature string.
+  */
+-extern "C" JL_DLLEXPORT const std::pair<std::string,std::string> &jl_get_llvm_disasm_target(void) JL_NOTSAFEPOINT;
++JL_DLLEXPORT const std::pair<std::string,std::string> &jl_get_llvm_disasm_target(void) JL_NOTSAFEPOINT;
+ 
+ struct jl_target_spec_t {
+     // LLVM target name
+@@ -269,7 +269,7 @@ struct jl_target_spec_t {
+ /**
+  * Return the list of targets to clone
+  */
+-extern "C" JL_DLLEXPORT std::vector<jl_target_spec_t> jl_get_llvm_clone_targets(void) JL_NOTSAFEPOINT;
++extern JL_DLLEXPORT std::vector<jl_target_spec_t> jl_get_llvm_clone_targets(void) JL_NOTSAFEPOINT;
+ std::string jl_get_cpu_name_llvm(void) JL_NOTSAFEPOINT;
+ std::string jl_get_cpu_features_llvm(void) JL_NOTSAFEPOINT;
+ #endif
+diff --git a/666f2a7e16-dd3ce346c3.clean/src/processor_fallback.cpp b/666f2a7e16-dd3ce346c3/src/processor_fallback.cpp
+index 1aebde6da..bed16f04d 100644
+--- a/666f2a7e16-dd3ce346c3.clean/src/processor_fallback.cpp
++++ b/666f2a7e16-dd3ce346c3/src/processor_fallback.cpp
+@@ -142,7 +142,7 @@ const std::pair<std::string,std::string> &jl_get_llvm_disasm_target(void)
+     return res;
+ }
+ 
+-extern "C" std::vector<jl_target_spec_t> jl_get_llvm_clone_targets(void)
++extern std::vector<jl_target_spec_t> jl_get_llvm_clone_targets(void)
+ {
+     if (jit_targets.empty())
+         jl_error("JIT targets not initialized");
+diff --git a/666f2a7e16-dd3ce346c3.clean/src/support/Makefile b/666f2a7e16-dd3ce346c3/src/support/Makefile
+index bfd233edc..5fba69216 100644
+--- a/666f2a7e16-dd3ce346c3.clean/src/support/Makefile
++++ b/666f2a7e16-dd3ce346c3/src/support/Makefile
+@@ -21,14 +21,14 @@ SRCS += _setjmp.win64
+ endif
+ endif
+ 
+-HEADERS := $(wildcard *.h) $(LIBUV_INC)/uv.h
++HEADERS := $(wildcard *.h)
+ 
+ OBJS := $(SRCS:%=$(BUILDDIR)/%.o)
+ DOBJS := $(SRCS:%=$(BUILDDIR)/%.dbg.obj)
+ 
+-FLAGS := $(HFILEDIRS:%=-I%) -I$(LIBUV_INC) -I$(UTF8PROC_INC) -DJL_LIBRARY_EXPORTS_INTERNAL -DUTF8PROC_EXPORTS
+-FLAGS += -Wall -Wno-strict-aliasing -fvisibility=hidden -Wpointer-arith -Wundef
+-JCFLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
++FLAGS := $(HFILEDIRS:%=-I%) -DJL_LIBRARY_EXPORTS_INTERNAL -DUTF8PROC_EXPORTS
++#FLAGS += -Wall -Wno-strict-aliasing -fvisibility=hidden -Wpointer-arith -Wundef
++#JCFLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
+ 
+ DEBUGFLAGS += $(FLAGS)
+ SHIPFLAGS += $(FLAGS)
+diff --git a/666f2a7e16-dd3ce346c3.clean/src/sys.c b/666f2a7e16-dd3ce346c3/src/sys.c
+index aafdc9377..3f28b5d4f 100644
+--- a/666f2a7e16-dd3ce346c3.clean/src/sys.c
++++ b/666f2a7e16-dd3ce346c3/src/sys.c
+@@ -728,7 +728,7 @@ JL_DLLEXPORT size_t jl_maxrss(void)
+ 
+ // Simple `rand()` like function, with global seed and added thread-safety
+ // (but slow and insecure)
+-static _JAtomic(uint64_t) g_rngseed;
++static _Atomic(uint64_t) g_rngseed;
+ JL_DLLEXPORT uint64_t jl_rand(void) JL_NOTSAFEPOINT
+ {
+     uint64_t max = UINT64_MAX;
