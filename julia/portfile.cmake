@@ -10,13 +10,17 @@ vcpkg_from_github(
         wip3.patch
         wip4.patch
         wip5.patch
+        wip7.patch
 )
 
 vcpkg_find_acquire_program(PYTHON3)
 #x_vcpkg_get_python_packages(PYTHON_EXECUTABLE "${PYTHON3}" PACKAGES html5lib)
 get_filename_component(PYTHON3_DIR "${PYTHON3}" DIRECTORY)
 vcpkg_add_to_path("${PYTHON3_DIR}")
-
+vcpkg_find_acquire_program(PERL)
+#x_vcpkg_get_python_packages(PYTHON_EXECUTABLE "${PYTHON3}" PACKAGES html5lib)
+get_filename_component(PERL_DIR "${PERL}" DIRECTORY)
+vcpkg_add_to_path("${PERL_DIR}")
 
 vcpkg_cmake_get_vars(cmake_vars_file)
 file(TOUCH "${SOURCE_PATH}/configure")

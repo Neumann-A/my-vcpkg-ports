@@ -18,7 +18,6 @@
     "zlib",
     "utf8proc",
     "suitesparse",
-    "libuv",
     "nghttp2",
     "dsfmt",
     "julia-libblastrampoline",

@@ -1,0 +1,2705 @@
+diff --git a/666f2a7e16-68a1f62e98.clean/Make.inc b/666f2a7e16-68a1f62e98/Make.inc
+index 2c6ccee78..871285a1e 100644
+--- a/666f2a7e16-68a1f62e98.clean/Make.inc
++++ b/666f2a7e16-68a1f62e98/Make.inc
+@@ -536,7 +536,7 @@ JCPPFLAGS += -D_LARGEFILE_SOURCE -D_DARWIN_USE_64_BIT_INODE=1
+ endif
+ endif
+ 
+-JLDFLAGS :=
++JLDFLAGS := -Xlinker -DEBUG
+ 
+ ifeq ($(USECCACHE), 1)
+ # Expand CC, CXX and FC here already because we want the original definition and not the ccache version.
+@@ -573,14 +573,14 @@ FC_ARG := $(shell echo $(FC) 2>/dev/null | cut -s -d' ' -f2-)
+ endif
+ 
+ JFFLAGS := -O2 $(fPIC)
+-CPP := $(CC) -E
++CPP := $(CC) -E -d1PP -diagnostics:classic
+ AR := llvm-ar
+ AS := clang
+ LD := lld-link
+ RANLIB := llvm-ranlib
+ OBJCOPY := cp
+ 
+-CPP_STDOUT := $(CPP) -P
++CPP_STDOUT := $(CC) -EP -d1PP -diagnostics:classic
+ 
+ # file extensions
+ ifeq ($(OS), WINNT)
+@@ -1350,7 +1350,7 @@ JLIBLDFLAGS += -Wl,-compatibility_version,$(SOMAJOR) -Wl,-current_version,$(JULI
+ endif
+ 
+ ifeq ($(OS), WINNT)
+-HAVE_SSP := 1
++HAVE_SSP := 0
+ OSLIBS += -Wl,--export-all-symbols -Wl,--version-script=$(JULIAHOME)/src/julia.expmap \
+ 	$(NO_WHOLE_ARCHIVE) -lpsapi -lkernel32 -lws2_32 -liphlpapi -lwinmm -ldbghelp -luserenv -lsecur32 
+ #  -latomic
+diff --git a/666f2a7e16-68a1f62e98.clean/base/Makefile b/666f2a7e16-68a1f62e98/base/Makefile
+index 1d1507288..c0736462b 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/Makefile
++++ b/666f2a7e16-68a1f62e98/base/Makefile
+@@ -30,7 +30,7 @@ $(BUILDDIR)/features_h.jl: $(SRCDIR)/../src/features_x86.h $(SRCDIR)/../src/feat
+ 	@$(call parse_features,aarch64,AArch64)
+ 
+ $(BUILDDIR)/pcre_h.jl: $(PCRE_INCL_PATH)
+-	@$(call PRINT_PERL, $(CPP) -D PCRE2_CODE_UNIT_WIDTH=8 -dM $< | perl -nle '/^\s*#define\s+PCRE2_(\w*)\s*\(?($(PCRE_CONST))\)?u?\s*$$/ and print index($$1, "ERROR_") == 0 ? "const $$1 = Cint($$2)" : "const $$1 = UInt32($$2)"' | LC_ALL=C sort > $@)
++	@$(call PRINT_PERL, $(CPP) -DPCRE2_CODE_UNIT_WIDTH=8 -dM $< | perl -nle '/^\s*#define\s+PCRE2_(\w*)\s*\(?($(PCRE_CONST))\)?u?\s*$$/ and print index($$1, "ERROR_") == 0 ? "const $$1 = Cint($$2)" : "const $$1 = UInt32($$2)"' | LC_ALL=C sort > $@)
+ 
+ $(BUILDDIR)/errno_h.jl:
+ 	@$(call PRINT_PERL, echo '#include <errno.h>' | $(CPP) -dM - | perl -nle 'print "const $$1 = Int32($$2)" if /^#define\s+(E\w+)\s+(\d+)\s*$$/' | LC_ALL=C sort > $@)
+diff --git a/666f2a7e16-68a1f62e98.clean/base/asyncevent.jl b/666f2a7e16-68a1f62e98/base/asyncevent.jl
+index a26945bbb..a3e5446f8 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/asyncevent.jl
++++ b/666f2a7e16-68a1f62e98/base/asyncevent.jl
+@@ -23,7 +23,7 @@ mutable struct AsyncCondition
+         this = new(Libc.malloc(_sizeof_uv_async), ThreadSynchronizer(), true, false)
+         iolock_begin()
+         associate_julia_struct(this.handle, this)
+-        err = ccall(:uv_async_init, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
++        err = ccall((:uv_async_init, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+             eventloop(), this, @cfunction(uv_asynccb, Cvoid, (Ptr{Cvoid},)))
+         if err != 0
+             #TODO: this codepath is currently not tested
+@@ -102,11 +102,11 @@ mutable struct Timer
+         this = new(Libc.malloc(_sizeof_uv_timer), ThreadSynchronizer(), true, false)
+         associate_julia_struct(this.handle, this)
+         iolock_begin()
+-        err = ccall(:uv_timer_init, Cint, (Ptr{Cvoid}, Ptr{Cvoid}), loop, this)
++        err = ccall((:uv_timer_init, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}), loop, this)
+         @assert err == 0
+         finalizer(uvfinalize, this)
+-        ccall(:uv_update_time, Cvoid, (Ptr{Cvoid},), loop)
+-        err = ccall(:uv_timer_start, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, UInt64, UInt64),
++        ccall((:uv_update_time, libuv), Cvoid, (Ptr{Cvoid},), loop)
++        err = ccall((:uv_timer_start, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}, UInt64, UInt64),
+             this, @cfunction(uv_timercb, Cvoid, (Ptr{Cvoid},)),
+             timeoutms, intervalms)
+         @assert err == 0
+@@ -218,7 +218,7 @@ function uv_timercb(handle::Ptr{Cvoid})
+     lock(t.cond)
+     try
+         @atomic :monotonic t.set = true
+-        if ccall(:uv_timer_get_repeat, UInt64, (Ptr{Cvoid},), t) == 0
++        if ccall((:uv_timer_get_repeat, libuv), UInt64, (Ptr{Cvoid},), t) == 0
+             # timer is stopped now
+             close(t)
+         end
+diff --git a/666f2a7e16-68a1f62e98.clean/base/atomics.jl b/666f2a7e16-68a1f62e98/base/atomics.jl
+index 7312206c1..8e6831446 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/atomics.jl
++++ b/666f2a7e16-68a1f62e98/base/atomics.jl
+@@ -334,7 +334,7 @@ const llvmtypes = IdDict{Any,String}(
+     Int16 => "i16", UInt16 => "i16",
+     Int32 => "i32", UInt32 => "i32",
+     Int64 => "i64", UInt64 => "i64",
+-    Int128 => "i128", UInt128 => "i128",
++#    Int128 => "i128", UInt128 => "i128",
+     Float16 => "half",
+     Float32 => "float",
+     Float64 => "double",
+diff --git a/666f2a7e16-68a1f62e98.clean/base/binaryplatforms.jl b/666f2a7e16-68a1f62e98/base/binaryplatforms.jl
+index a4935d060..bc84f7e9c 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/binaryplatforms.jl
++++ b/666f2a7e16-68a1f62e98/base/binaryplatforms.jl
+@@ -550,7 +550,7 @@ function os_str(p::AbstractPlatform)
+             return "-apple-darwin"
+         end
+     elseif os(p) == "windows"
+-        return "-w64-mingw32"
++        return "-pc-windows-msvc"
+     elseif os(p) == "freebsd"
+         osvn = os_version(p)
+         if osvn !== nothing
+@@ -634,7 +634,7 @@ end
+ const os_mapping = Dict(
+     "macos" => "-apple-darwin[\\d\\.]*",
+     "freebsd" => "-(.*-)?freebsd[\\d\\.]*",
+-    "windows" => "-w64-mingw32",
++    "windows" => "-pc-windows-msvc",
+     "linux" => "-(.*-)?linux",
+ )
+ const libc_mapping = Dict(
+diff --git a/666f2a7e16-68a1f62e98.clean/base/boot.jl b/666f2a7e16-68a1f62e98/base/boot.jl
+index 43ced22c0..701bf7f43 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/boot.jl
++++ b/666f2a7e16-68a1f62e98/base/boot.jl
+@@ -178,8 +178,8 @@ export
+     # numeric types
+     Number, Real, Integer, Bool, Ref, Ptr,
+     AbstractFloat, Float16, Float32, Float64,
+-    Signed, Int, Int8, Int16, Int32, Int64, Int128,
+-    Unsigned, UInt, UInt8, UInt16, UInt32, UInt64, UInt128,
++    Signed, Int, Int8, Int16, Int32, Int64,
++    Unsigned, UInt, UInt8, UInt16, UInt32, UInt64,
+     # string types
+     AbstractChar, Char, AbstractString, String, IO,
+     # errors
+@@ -229,8 +229,8 @@ primitive type Int16   <: Signed   16 end
+ #primitive type UInt32  <: Unsigned 32 end
+ #primitive type Int64   <: Signed   64 end
+ #primitive type UInt64  <: Unsigned 64 end
+-primitive type Int128  <: Signed   128 end
+-primitive type UInt128 <: Unsigned 128 end
++#primitive type Int128  <: Signed   128 end
++#primitive type UInt128 <: Unsigned 128 end
+ 
+ if Int === Int64
+     const UInt = UInt64
+@@ -546,8 +546,8 @@ atdoc     = (source, mod, str, expr) -> Expr(:escape, expr)
+ atdoc!(λ) = global atdoc = λ
+ 
+ # macros for big integer syntax
+-macro int128_str end
+-macro uint128_str end
++#macro int128_str end
++#macro uint128_str end
+ macro big_str end
+ 
+ # macro for command syntax
+@@ -666,112 +666,112 @@ toInt8(x::Int8)       = x
+ toInt8(x::Int16)      = checked_trunc_sint(Int8, x)
+ toInt8(x::Int32)      = checked_trunc_sint(Int8, x)
+ toInt8(x::Int64)      = checked_trunc_sint(Int8, x)
+-toInt8(x::Int128)     = checked_trunc_sint(Int8, x)
++#toInt8(x::Int128)     = checked_trunc_sint(Int8, x)
+ toInt8(x::UInt8)      = bitcast(Int8, check_top_bit(Int8, x))
+ toInt8(x::UInt16)     = checked_trunc_sint(Int8, check_top_bit(Int8, x))
+ toInt8(x::UInt32)     = checked_trunc_sint(Int8, check_top_bit(Int8, x))
+ toInt8(x::UInt64)     = checked_trunc_sint(Int8, check_top_bit(Int8, x))
+-toInt8(x::UInt128)    = checked_trunc_sint(Int8, check_top_bit(Int8, x))
++#toInt8(x::UInt128)    = checked_trunc_sint(Int8, check_top_bit(Int8, x))
+ toInt8(x::Bool)       = and_int(bitcast(Int8, x), Int8(1))
+ toInt16(x::Int8)      = sext_int(Int16, x)
+ toInt16(x::Int16)     = x
+ toInt16(x::Int32)     = checked_trunc_sint(Int16, x)
+ toInt16(x::Int64)     = checked_trunc_sint(Int16, x)
+-toInt16(x::Int128)    = checked_trunc_sint(Int16, x)
++#toInt16(x::Int128)    = checked_trunc_sint(Int16, x)
+ toInt16(x::UInt8)     = zext_int(Int16, x)
+ toInt16(x::UInt16)    = bitcast(Int16, check_top_bit(Int16, x))
+ toInt16(x::UInt32)    = checked_trunc_sint(Int16, check_top_bit(Int16, x))
+ toInt16(x::UInt64)    = checked_trunc_sint(Int16, check_top_bit(Int16, x))
+-toInt16(x::UInt128)   = checked_trunc_sint(Int16, check_top_bit(Int16, x))
++#toInt16(x::UInt128)   = checked_trunc_sint(Int16, check_top_bit(Int16, x))
+ toInt16(x::Bool)      = and_int(zext_int(Int16, x), Int16(1))
+ toInt32(x::Int8)      = sext_int(Int32, x)
+ toInt32(x::Int16)     = sext_int(Int32, x)
+ toInt32(x::Int32)     = x
+ toInt32(x::Int64)     = checked_trunc_sint(Int32, x)
+-toInt32(x::Int128)    = checked_trunc_sint(Int32, x)
++#toInt32(x::Int128)    = checked_trunc_sint(Int32, x)
+ toInt32(x::UInt8)     = zext_int(Int32, x)
+ toInt32(x::UInt16)    = zext_int(Int32, x)
+ toInt32(x::UInt32)    = bitcast(Int32, check_top_bit(Int32, x))
+ toInt32(x::UInt64)    = checked_trunc_sint(Int32, check_top_bit(Int32, x))
+-toInt32(x::UInt128)   = checked_trunc_sint(Int32, check_top_bit(Int32, x))
++#toInt32(x::UInt128)   = checked_trunc_sint(Int32, check_top_bit(Int32, x))
+ toInt32(x::Bool)      = and_int(zext_int(Int32, x), Int32(1))
+ toInt64(x::Int8)      = sext_int(Int64, x)
+ toInt64(x::Int16)     = sext_int(Int64, x)
+ toInt64(x::Int32)     = sext_int(Int64, x)
+ toInt64(x::Int64)     = x
+-toInt64(x::Int128)    = checked_trunc_sint(Int64, x)
++#toInt64(x::Int128)    = checked_trunc_sint(Int64, x)
+ toInt64(x::UInt8)     = zext_int(Int64, x)
+ toInt64(x::UInt16)    = zext_int(Int64, x)
+ toInt64(x::UInt32)    = zext_int(Int64, x)
+ toInt64(x::UInt64)    = bitcast(Int64, check_top_bit(Int64, x))
+-toInt64(x::UInt128)   = checked_trunc_sint(Int64, check_top_bit(Int64, x))
++#toInt64(x::UInt128)   = checked_trunc_sint(Int64, check_top_bit(Int64, x))
+ toInt64(x::Bool)      = and_int(zext_int(Int64, x), Int64(1))
+-toInt128(x::Int8)     = sext_int(Int128, x)
+-toInt128(x::Int16)    = sext_int(Int128, x)
+-toInt128(x::Int32)    = sext_int(Int128, x)
+-toInt128(x::Int64)    = sext_int(Int128, x)
+-toInt128(x::Int128)   = x
+-toInt128(x::UInt8)    = zext_int(Int128, x)
+-toInt128(x::UInt16)   = zext_int(Int128, x)
+-toInt128(x::UInt32)   = zext_int(Int128, x)
+-toInt128(x::UInt64)   = zext_int(Int128, x)
+-toInt128(x::UInt128)  = bitcast(Int128, check_top_bit(Int128, x))
+-toInt128(x::Bool)     = and_int(zext_int(Int128, x), Int128(1))
++#toInt128(x::Int8)     = sext_int(Int128, x)
++#toInt128(x::Int16)    = sext_int(Int128, x)
++#toInt128(x::Int32)    = sext_int(Int128, x)
++#toInt128(x::Int64)    = sext_int(Int128, x)
++#toInt128(x::Int128)   = x
++#toInt128(x::UInt8)    = zext_int(Int128, x)
++#toInt128(x::UInt16)   = zext_int(Int128, x)
++#toInt128(x::UInt32)   = zext_int(Int128, x)
++#toInt128(x::UInt64)   = zext_int(Int128, x)
++#toInt128(x::UInt128)  = bitcast(Int128, check_top_bit(Int128, x))
++#toInt128(x::Bool)     = and_int(zext_int(Int128, x), Int128(1))
+ toUInt8(x::Int8)      = bitcast(UInt8, check_top_bit(UInt8, x))
+ toUInt8(x::Int16)     = checked_trunc_uint(UInt8, x)
+ toUInt8(x::Int32)     = checked_trunc_uint(UInt8, x)
+ toUInt8(x::Int64)     = checked_trunc_uint(UInt8, x)
+-toUInt8(x::Int128)    = checked_trunc_uint(UInt8, x)
++#toUInt8(x::Int128)    = checked_trunc_uint(UInt8, x)
+ toUInt8(x::UInt8)     = x
+ toUInt8(x::UInt16)    = checked_trunc_uint(UInt8, x)
+ toUInt8(x::UInt32)    = checked_trunc_uint(UInt8, x)
+ toUInt8(x::UInt64)    = checked_trunc_uint(UInt8, x)
+-toUInt8(x::UInt128)   = checked_trunc_uint(UInt8, x)
++#toUInt8(x::UInt128)   = checked_trunc_uint(UInt8, x)
+ toUInt8(x::Bool)      = and_int(bitcast(UInt8, x), UInt8(1))
+ toUInt16(x::Int8)     = sext_int(UInt16, check_top_bit(UInt16, x))
+ toUInt16(x::Int16)    = bitcast(UInt16, check_top_bit(UInt16, x))
+ toUInt16(x::Int32)    = checked_trunc_uint(UInt16, x)
+ toUInt16(x::Int64)    = checked_trunc_uint(UInt16, x)
+-toUInt16(x::Int128)   = checked_trunc_uint(UInt16, x)
++#toUInt16(x::Int128)   = checked_trunc_uint(UInt16, x)
+ toUInt16(x::UInt8)    = zext_int(UInt16, x)
+ toUInt16(x::UInt16)   = x
+ toUInt16(x::UInt32)   = checked_trunc_uint(UInt16, x)
+ toUInt16(x::UInt64)   = checked_trunc_uint(UInt16, x)
+-toUInt16(x::UInt128)  = checked_trunc_uint(UInt16, x)
++#toUInt16(x::UInt128)  = checked_trunc_uint(UInt16, x)
+ toUInt16(x::Bool)     = and_int(zext_int(UInt16, x), UInt16(1))
+ toUInt32(x::Int8)     = sext_int(UInt32, check_top_bit(UInt32, x))
+ toUInt32(x::Int16)    = sext_int(UInt32, check_top_bit(UInt32, x))
+ toUInt32(x::Int32)    = bitcast(UInt32, check_top_bit(UInt32, x))
+ toUInt32(x::Int64)    = checked_trunc_uint(UInt32, x)
+-toUInt32(x::Int128)   = checked_trunc_uint(UInt32, x)
++#toUInt32(x::Int128)   = checked_trunc_uint(UInt32, x)
+ toUInt32(x::UInt8)    = zext_int(UInt32, x)
+ toUInt32(x::UInt16)   = zext_int(UInt32, x)
+ toUInt32(x::UInt32)   = x
+ toUInt32(x::UInt64)   = checked_trunc_uint(UInt32, x)
+-toUInt32(x::UInt128)  = checked_trunc_uint(UInt32, x)
++#toUInt32(x::UInt128)  = checked_trunc_uint(UInt32, x)
+ toUInt32(x::Bool)     = and_int(zext_int(UInt32, x), UInt32(1))
+ toUInt64(x::Int8)     = sext_int(UInt64, check_top_bit(UInt64, x))
+ toUInt64(x::Int16)    = sext_int(UInt64, check_top_bit(UInt64, x))
+ toUInt64(x::Int32)    = sext_int(UInt64, check_top_bit(UInt64, x))
+ toUInt64(x::Int64)    = bitcast(UInt64, check_top_bit(UInt64, x))
+-toUInt64(x::Int128)   = checked_trunc_uint(UInt64, x)
++#toUInt64(x::Int128)   = checked_trunc_uint(UInt64, x)
+ toUInt64(x::UInt8)    = zext_int(UInt64, x)
+ toUInt64(x::UInt16)   = zext_int(UInt64, x)
+ toUInt64(x::UInt32)   = zext_int(UInt64, x)
+ toUInt64(x::UInt64)   = x
+-toUInt64(x::UInt128)  = checked_trunc_uint(UInt64, x)
++#toUInt64(x::UInt128)  = checked_trunc_uint(UInt64, x)
+ toUInt64(x::Bool)     = and_int(zext_int(UInt64, x), UInt64(1))
+-toUInt128(x::Int8)    = sext_int(UInt128, check_top_bit(UInt128, x))
+-toUInt128(x::Int16)   = sext_int(UInt128, check_top_bit(UInt128, x))
+-toUInt128(x::Int32)   = sext_int(UInt128, check_top_bit(UInt128, x))
+-toUInt128(x::Int64)   = sext_int(UInt128, check_top_bit(UInt128, x))
+-toUInt128(x::Int128)  = bitcast(UInt128, check_top_bit(UInt128, x))
+-toUInt128(x::UInt8)   = zext_int(UInt128, x)
+-toUInt128(x::UInt16)  = zext_int(UInt128, x)
+-toUInt128(x::UInt32)  = zext_int(UInt128, x)
+-toUInt128(x::UInt64)  = zext_int(UInt128, x)
+-toUInt128(x::UInt128) = x
+-toUInt128(x::Bool)    = and_int(zext_int(UInt128, x), UInt128(1))
++#toUInt128(x::Int8)    = sext_int(UInt128, check_top_bit(UInt128, x))
++#toUInt128(x::Int16)   = sext_int(UInt128, check_top_bit(UInt128, x))
++#toUInt128(x::Int32)   = sext_int(UInt128, check_top_bit(UInt128, x))
++#toUInt128(x::Int64)   = sext_int(UInt128, check_top_bit(UInt128, x))
++#toUInt128(x::Int128)  = bitcast(UInt128, check_top_bit(UInt128, x))
++#toUInt128(x::UInt8)   = zext_int(UInt128, x)
++#toUInt128(x::UInt16)  = zext_int(UInt128, x)
++#toUInt128(x::UInt32)  = zext_int(UInt128, x)
++#toUInt128(x::UInt64)  = zext_int(UInt128, x)
++#toUInt128(x::UInt128) = x
++#toUInt128(x::Bool)    = and_int(zext_int(UInt128, x), UInt128(1))
+ 
+ # TODO: this is here to work around the 4 method limit in inference (#23210).
+ const BuiltinInts = Union{Int128, Int16, Int32, Int64, Int8, UInt128, UInt16, UInt32, UInt64, UInt8, Bool}
+@@ -779,12 +779,12 @@ Int8(x::BuiltinInts)    = toInt8(x)::Int8
+ Int16(x::BuiltinInts)   = toInt16(x)::Int16
+ Int32(x::BuiltinInts)   = toInt32(x)::Int32
+ Int64(x::BuiltinInts)   = toInt64(x)::Int64
+-Int128(x::BuiltinInts)  = toInt128(x)::Int128
++#Int128(x::BuiltinInts)  = toInt128(x)::Int128
+ UInt8(x::BuiltinInts)   = toUInt8(x)::UInt8
+ UInt16(x::BuiltinInts)  = toUInt16(x)::UInt16
+ UInt32(x::BuiltinInts)  = toUInt32(x)::UInt32
+ UInt64(x::BuiltinInts)  = toUInt64(x)::UInt64
+-UInt128(x::BuiltinInts) = toUInt128(x)::UInt128
++#UInt128(x::BuiltinInts) = toUInt128(x)::UInt128
+ 
+ (::Type{T})(x::T) where {T<:Number} = x
+ 
+@@ -805,8 +805,8 @@ Signed(x::UInt32)   = Int32(x)
+ Unsigned(x::Int32)  = UInt32(x)
+ Signed(x::UInt64)   = Int64(x)
+ Unsigned(x::Int64)  = UInt64(x)
+-Signed(x::UInt128)  = Int128(x)
+-Unsigned(x::Int128) = UInt128(x)
++#Signed(x::UInt128)  = Int128(x)
++#Unsigned(x::Int128) = UInt128(x)
+ 
+ Signed(x::Union{Float16, Float32, Float64, Bool})   = Int(x)
+ Unsigned(x::Union{Float16, Float32, Float64, Bool}) = UInt(x)
+diff --git a/666f2a7e16-68a1f62e98.clean/base/checked.jl b/666f2a7e16-68a1f62e98/base/checked.jl
+index d5b411239..d37f1262c 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/checked.jl
++++ b/666f2a7e16-68a1f62e98/base/checked.jl
+@@ -37,8 +37,8 @@ checked_cld(x::Integer, y::Integer) = checked_cld(promote(x,y)...)
+ # but no method exists to handle those types
+ checked_abs(x::T) where {T<:Integer} = no_op_err("checked_abs", T)
+ 
+-const SignedInt = Union{Int8,Int16,Int32,Int64,Int128}
+-const UnsignedInt = Union{UInt8,UInt16,UInt32,UInt64,UInt128}
++const SignedInt = Union{Int8,Int16,Int32,Int64}
++const UnsignedInt = Union{UInt8,UInt16,UInt32,UInt64}
+ 
+ # LLVM has several code generation bugs for checked integer arithmetic (see e.g.
+ # #4905). We thus distinguish between operations that can be implemented via
+@@ -66,8 +66,8 @@ const llvm_version = Int(ccall(:jl_get_LLVM_VERSION, UInt32, ()))
+ 
+ brokenSignedInt = Union{}
+ brokenUnsignedInt = Union{}
+-brokenSignedIntMul = Int128
+-brokenUnsignedIntMul = UInt128
++#brokenSignedIntMul = Int128
++#brokenUnsignedIntMul = UInt128
+ if Core.sizeof(Ptr{Cvoid}) == 4
+     brokenSignedIntMul = Union{brokenSignedIntMul, Int64}
+     brokenUnsignedIntMul = Union{brokenUnsignedIntMul, UInt64}
+@@ -244,45 +244,45 @@ mul_with_overflow(x::T, y::T) where {T<:SignedInt}   = checked_smul_int(x, y)
+ mul_with_overflow(x::T, y::T) where {T<:UnsignedInt} = checked_umul_int(x, y)
+ mul_with_overflow(x::Bool, y::Bool) = (x*y, false)
+ 
+-if BrokenSignedIntMul != Union{} && BrokenSignedIntMul != Int128
+-function mul_with_overflow(x::T, y::T) where T<:BrokenSignedIntMul
+-    r = widemul(x, y)
+-    f = r % T != r
+-    r % T, f
+-end
+-end
+-if BrokenUnsignedIntMul != Union{} && BrokenUnsignedIntMul != UInt128
+-function mul_with_overflow(x::T, y::T) where T<:BrokenUnsignedIntMul
+-    r = widemul(x, y)
+-    f = r % T != r
+-    r % T, f
+-end
+-end
+-if Int128 <: BrokenSignedIntMul
+-    # Avoid BigInt
+-    function mul_with_overflow(x::T, y::T) where T<:Int128
+-        f = if y > 0
+-            # x * y > typemax(T)
+-            # x * y < typemin(T)
+-            x > fld(typemax(T), y) || x < cld(typemin(T), y)
+-        elseif y < 0
+-            # x * y > typemax(T)
+-            # x * y < typemin(T)
+-            # y == -1 can overflow fld
+-            x < cld(typemax(T), y) || y != -1 && x > fld(typemin(T), y)
+-        else
+-            false
+-        end
+-        x*y, f
+-    end
+-end
+-if UInt128 <: BrokenUnsignedIntMul
+-    # Avoid BigInt
+-    function mul_with_overflow(x::T, y::T) where T<:UInt128
+-        # x * y > typemax(T)
+-        x * y, y > 0 && x > fld(typemax(T), y)
+-    end
+-end
++#if BrokenSignedIntMul != Union{} && BrokenSignedIntMul != Int128
++#function mul_with_overflow(x::T, y::T) where T<:BrokenSignedIntMul
++#    r = widemul(x, y)
++#    f = r % T != r
++#    r % T, f
++#end
++#end
++#if BrokenUnsignedIntMul != Union{} && BrokenUnsignedIntMul != UInt128
++#function mul_with_overflow(x::T, y::T) where T<:BrokenUnsignedIntMul
++#    r = widemul(x, y)
++#    f = r % T != r
++#    r % T, f
++#end
++#end
++#if Int128 <: BrokenSignedIntMul
++#    # Avoid BigInt
++#    function mul_with_overflow(x::T, y::T) where T<:Int128
++#       f = if y > 0
++#            # x * y > typemax(T)
++#            # x * y < typemin(T)
++#            x > fld(typemax(T), y) || x < cld(typemin(T), y)
++#        elseif y < 0
++#            # x * y > typemax(T)
++#            # x * y < typemin(T)
++#            # y == -1 can overflow fld
++#            x < cld(typemax(T), y) || y != -1 && x > fld(typemin(T), y)
++#        else
++#            false
++#        end
++#        x*y, f
++#    end
++#end
++#if UInt128 <: BrokenUnsignedIntMul
++#    # Avoid BigInt
++#    function mul_with_overflow(x::T, y::T) where T<:UInt128
++#        # x * y > typemax(T)
++#        x * y, y > 0 && x > fld(typemax(T), y)
++#    end
++#end
+ 
+ """
+     Base.checked_mul(x, y)
+diff --git a/666f2a7e16-68a1f62e98.clean/base/combinatorics.jl b/666f2a7e16-68a1f62e98/base/combinatorics.jl
+index d09a5b6c0..c14e441ca 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/combinatorics.jl
++++ b/666f2a7e16-68a1f62e98/base/combinatorics.jl
+@@ -8,11 +8,11 @@ for n in 2:20
+     _fact_table64[n] = _fact_table64[n-1] * n
+ end
+ 
+-const _fact_table128 = Vector{UInt128}(undef, 34)
+-_fact_table128[1] = 1
+-for n in 2:34
+-    _fact_table128[n] = _fact_table128[n-1] * n
+-end
++#const _fact_table128 = Vector{UInt128}(undef, 34)
++#_fact_table128[1] = 1
++#for n in 2:34
++#    _fact_table128[n] = _fact_table128[n-1] * n
++#end
+ 
+ function factorial_lookup(n::Integer, table, lim)
+     n < 0 && throw(DomainError(n, "`n` must not be negative."))
+@@ -22,8 +22,8 @@ function factorial_lookup(n::Integer, table, lim)
+     return oftype(n, f)
+ end
+ 
+-factorial(n::Int128) = factorial_lookup(n, _fact_table128, 33)
+-factorial(n::UInt128) = factorial_lookup(n, _fact_table128, 34)
++#factorial(n::Int128) = factorial_lookup(n, _fact_table128, 33)
++#factorial(n::UInt128) = factorial_lookup(n, _fact_table128, 34)
+ factorial(n::Union{Int64,UInt64}) = factorial_lookup(n, _fact_table64, 20)
+ 
+ if Int === Int32
+diff --git a/666f2a7e16-68a1f62e98.clean/base/compiler/compiler.jl b/666f2a7e16-68a1f62e98/base/compiler/compiler.jl
+index 0a1b852b0..8327eb90a 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/compiler/compiler.jl
++++ b/666f2a7e16-68a1f62e98/base/compiler/compiler.jl
+@@ -90,8 +90,8 @@ end
+ # checked arithmetic
+ const checked_add = +
+ const checked_sub = -
+-const SignedInt = Union{Int8,Int16,Int32,Int64,Int128}
+-const UnsignedInt = Union{UInt8,UInt16,UInt32,UInt64,UInt128}
++const SignedInt = Union{Int8,Int16,Int32,Int64}
++const UnsignedInt = Union{UInt8,UInt16,UInt32,UInt64}
+ sub_with_overflow(x::T, y::T) where {T<:SignedInt}   = checked_ssub_int(x, y)
+ sub_with_overflow(x::T, y::T) where {T<:UnsignedInt} = checked_usub_int(x, y)
+ sub_with_overflow(x::Bool, y::Bool) = (x-y, false)
+diff --git a/666f2a7e16-68a1f62e98.clean/base/div.jl b/666f2a7e16-68a1f62e98/base/div.jl
+index 9c2187e66..6bc0c7e73 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/div.jl
++++ b/666f2a7e16-68a1f62e98/base/div.jl
+@@ -318,10 +318,10 @@ function div(x::Bool, y::Bool, rnd::Union{typeof(RoundNearest),
+ end
+ fld(a::T, b::T) where {T<:Union{Integer,AbstractFloat}} = div(a, b, RoundDown)
+ cld(a::T, b::T) where {T<:Union{Integer,AbstractFloat}} = div(a, b, RoundUp)
+-div(a::Int128, b::Int128, ::typeof(RoundToZero)) = div(a, b)
+-div(a::UInt128, b::UInt128, ::typeof(RoundToZero)) = div(a, b)
+-rem(a::Int128, b::Int128, ::typeof(RoundToZero)) = rem(a, b)
+-rem(a::UInt128, b::UInt128, ::typeof(RoundToZero)) = rem(a, b)
++#div(a::Int128, b::Int128, ::typeof(RoundToZero)) = div(a, b)
++#div(a::UInt128, b::UInt128, ::typeof(RoundToZero)) = div(a, b)
++#rem(a::Int128, b::Int128, ::typeof(RoundToZero)) = rem(a, b)
++#rem(a::UInt128, b::UInt128, ::typeof(RoundToZero)) = rem(a, b)
+ 
+ # These are kept for compatibility with external packages overriding fld / cld.
+ # In 2.0, packages should extend div(a, b, r) instead, in which case, these can
+diff --git a/666f2a7e16-68a1f62e98.clean/base/exports.jl b/666f2a7e16-68a1f62e98/base/exports.jl
+index ec151df0b..35ffe5b07 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/exports.jl
++++ b/666f2a7e16-68a1f62e98/base/exports.jl
+@@ -992,8 +992,8 @@ export
+     @__DIR__,
+     @__LINE__,
+     @__MODULE__,
+-    @int128_str,
+-    @uint128_str,
++#    @int128_str,
++#    @uint128_str,
+     @big_str,
+     @cmd,    # `commands`
+ 
+diff --git a/666f2a7e16-68a1f62e98.clean/base/file.jl b/666f2a7e16-68a1f62e98/base/file.jl
+index 866e82b6e..83437df7b 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/file.jl
++++ b/666f2a7e16-68a1f62e98/base/file.jl
+@@ -53,7 +53,7 @@ function pwd()
+     buf = Base.StringVector(AVG_PATH - 1) # space for null-terminator implied by StringVector
+     sz = RefValue{Csize_t}(length(buf) + 1) # total buffer size including null
+     while true
+-        rc = ccall(:uv_cwd, Cint, (Ptr{UInt8}, Ptr{Csize_t}), buf, sz)
++        rc = ccall((:uv_cwd, libuv), Cint, (Ptr{UInt8}, Ptr{Csize_t}), buf, sz)
+         if rc == 0
+             resize!(buf, sz[])
+             return String(buf)
+@@ -87,7 +87,7 @@ julia> pwd()
+ ```
+ """
+ function cd(dir::AbstractString)
+-    err = ccall(:uv_chdir, Cint, (Cstring,), dir)
++    err = ccall((:uv_chdir, libuv), Cint, (Cstring,), dir)
+     err < 0 && uv_error("cd($(repr(dir)))", err)
+     return nothing
+ end
+@@ -177,7 +177,7 @@ julia> pwd()
+ function mkdir(path::AbstractString; mode::Integer = 0o777)
+     req = Libc.malloc(_sizeof_uv_fs)
+     try
+-        ret = ccall(:uv_fs_mkdir, Cint,
++        ret = ccall((:uv_fs_mkdir, libuv), Cint,
+                     (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Cint, Ptr{Cvoid}),
+                     C_NULL, req, path, checkmode(mode), C_NULL)
+         if ret < 0
+@@ -301,7 +301,7 @@ function rm(path::AbstractString; force::Bool=false, recursive::Bool=false)
+         end
+         req = Libc.malloc(_sizeof_uv_fs)
+         try
+-            ret = ccall(:uv_fs_rmdir, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Ptr{Cvoid}), C_NULL, req, path, C_NULL)
++            ret = ccall((:uv_fs_rmdir, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Ptr{Cvoid}), C_NULL, req, path, C_NULL)
+             uv_fs_req_cleanup(req)
+             ret < 0 && uv_error("rm($(repr(path)))", ret)
+             nothing
+@@ -475,7 +475,7 @@ function tempdir()
+     buf = Base.StringVector(AVG_PATH - 1) # space for null-terminator implied by StringVector
+     sz = RefValue{Csize_t}(length(buf) + 1) # total buffer size including null
+     while true
+-        rc = ccall(:uv_os_tmpdir, Cint, (Ptr{UInt8}, Ptr{Csize_t}), buf, sz)
++        rc = ccall((:uv_os_tmpdir, libuv), Cint, (Ptr{UInt8}, Ptr{Csize_t}), buf, sz)
+         if rc == 0
+             resize!(buf, sz[])
+             return String(buf)
+@@ -705,7 +705,7 @@ function mktempdir(parent::AbstractString=tempdir();
+ 
+     req = Libc.malloc(_sizeof_uv_fs)
+     try
+-        ret = ccall(:uv_fs_mkdtemp, Cint,
++        ret = ccall((:uv_fs_mkdtemp, libuv), Cint,
+                     (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Ptr{Cvoid}),
+                     C_NULL, req, tpath, C_NULL)
+         if ret < 0
+@@ -862,14 +862,14 @@ function readdir(dir::AbstractString; join::Bool=false, sort::Bool=true)
+     req = Libc.malloc(_sizeof_uv_fs)
+     try
+         # defined in sys.c, to call uv_fs_readdir, which sets errno on error.
+-        err = ccall(:uv_fs_scandir, Int32, (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Cint, Ptr{Cvoid}),
++        err = ccall((:uv_fs_scandir, libuv), Int32, (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Cint, Ptr{Cvoid}),
+                     C_NULL, req, dir, 0, C_NULL)
+         err < 0 && uv_error("readdir($(repr(dir)))", err)
+ 
+         # iterate the listing into entries
+         entries = String[]
+         ent = Ref{uv_dirent_t}()
+-        while Base.UV_EOF != ccall(:uv_fs_scandir_next, Cint, (Ptr{Cvoid}, Ptr{uv_dirent_t}), req, ent)
++        while Base.UV_EOF != ccall((:uv_fs_scandir_next, libuv), Cint, (Ptr{Cvoid}, Ptr{uv_dirent_t}), req, ent)
+             name = unsafe_string(ent[].name)
+             push!(entries, join ? joinpath(dir, name) : name)
+         end
+@@ -1120,7 +1120,7 @@ Return the target location a symbolic link `path` points to.
+ function readlink(path::AbstractString)
+     req = Libc.malloc(_sizeof_uv_fs)
+     try
+-        ret = ccall(:uv_fs_readlink, Int32,
++        ret = ccall((:uv_fs_readlink, libuv), Int32,
+             (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Ptr{Cvoid}),
+             C_NULL, req, path, C_NULL)
+         if ret < 0
+@@ -1221,7 +1221,7 @@ working directory are returned.
+ """
+ function diskstat(path::AbstractString=pwd())
+     req = zeros(UInt8, _sizeof_uv_fs)
+-    err = ccall(:uv_fs_statfs, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Ptr{Cvoid}),
++    err = ccall((:uv_fs_statfs, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Ptr{Cvoid}),
+                 C_NULL, req, path, C_NULL)
+     err < 0 && uv_error("diskstat($(repr(path)))", err)
+     statfs_ptr = ccall(:jl_uv_fs_t_ptr, Ptr{Nothing}, (Ptr{Cvoid},), req)
+diff --git a/666f2a7e16-68a1f62e98.clean/base/filesystem.jl b/666f2a7e16-68a1f62e98/base/filesystem.jl
+index 63fe4281f..5ae54e883 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/filesystem.jl
++++ b/666f2a7e16-68a1f62e98/base/filesystem.jl
+@@ -83,9 +83,9 @@ end
+ # Average buffer size including null terminator for several filesystem operations.
+ # On Windows we use the MAX_PATH = 260 value on Win32.
+ const AVG_PATH = Sys.iswindows() ? 260 : 512
+-
++const libuv = "uv.dll"
+ # helper function to clean up libuv request
+-uv_fs_req_cleanup(req) = ccall(:uv_fs_req_cleanup, Cvoid, (Ptr{Cvoid},), req)
++uv_fs_req_cleanup(req) = ccall((:uv_fs_req_cleanup, libuv), Cvoid, (Ptr{Cvoid},), req)
+ 
+ include("path.jl")
+ include("stat.jl")
+@@ -113,10 +113,10 @@ function open(path::AbstractString, flags::Integer, mode::Integer=0)
+     req = Libc.malloc(_sizeof_uv_fs)
+     local handle
+     try
+-        ret = ccall(:uv_fs_open, Int32,
++        ret = ccall((:uv_fs_open, libuv), Int32,
+                     (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Int32, Int32, Ptr{Cvoid}),
+                     C_NULL, req, path, flags, mode, C_NULL)
+-        handle = ccall(:uv_fs_get_result, Cssize_t, (Ptr{Cvoid},), req)
++        handle = ccall((:uv_fs_get_result, libuv), Cssize_t, (Ptr{Cvoid},), req)
+         uv_fs_req_cleanup(req)
+         ret < 0 && uv_error("open($(repr(path)), $flags, $mode)", ret)
+     finally # conversion to Cstring could cause an exception
+@@ -172,7 +172,7 @@ write(f::File, c::UInt8) = write(f, Ref{UInt8}(c))
+ function truncate(f::File, n::Integer)
+     check_open(f)
+     req = Libc.malloc(_sizeof_uv_fs)
+-    err = ccall(:uv_fs_ftruncate, Int32,
++    err = ccall((:uv_fs_ftruncate, libuv), Int32,
+                 (Ptr{Cvoid}, Ptr{Cvoid}, OS_HANDLE, Int64, Ptr{Cvoid}),
+                 C_NULL, req, f.handle, n, C_NULL)
+     Libc.free(req)
+@@ -183,7 +183,7 @@ end
+ function futime(f::File, atime::Float64, mtime::Float64)
+     check_open(f)
+     req = Libc.malloc(_sizeof_uv_fs)
+-    err = ccall(:uv_fs_futime, Int32,
++    err = ccall((:uv_fs_futime, libuv), Int32,
+                 (Ptr{Cvoid}, Ptr{Cvoid}, OS_HANDLE, Float64, Float64, Ptr{Cvoid}),
+                 C_NULL, req, f.handle, atime, mtime, C_NULL)
+     Libc.free(req)
+diff --git a/666f2a7e16-68a1f62e98.clean/base/float.jl b/666f2a7e16-68a1f62e98/base/float.jl
+index fad714665..c6aca35b4 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/float.jl
++++ b/666f2a7e16-68a1f62e98/base/float.jl
+@@ -170,33 +170,33 @@ end
+ 
+ Bool(x::Real) = x==0 ? false : x==1 ? true : throw(InexactError(:Bool, Bool, x))
+ 
+-promote_rule(::Type{Float64}, ::Type{UInt128}) = Float64
+-promote_rule(::Type{Float64}, ::Type{Int128}) = Float64
+-promote_rule(::Type{Float32}, ::Type{UInt128}) = Float32
+-promote_rule(::Type{Float32}, ::Type{Int128}) = Float32
+-promote_rule(::Type{Float16}, ::Type{UInt128}) = Float16
+-promote_rule(::Type{Float16}, ::Type{Int128}) = Float16
+-
+-function Float64(x::UInt128)
+-    if x < UInt128(1) << 104 # Can fit it in two 52 bits mantissas
+-        low_exp = 0x1p52
+-        high_exp = 0x1p104
+-        low_bits = (x % UInt64) & Base.significand_mask(Float64)
+-        low_value = reinterpret(Float64, reinterpret(UInt64, low_exp) | low_bits) - low_exp
+-        high_bits = ((x >> 52) % UInt64)
+-        high_value = reinterpret(Float64, reinterpret(UInt64, high_exp) | high_bits) - high_exp
+-        low_value + high_value
+-    else # Large enough that low bits only affect rounding, pack low bits
+-        low_exp = 0x1p76
+-        high_exp = 0x1p128
+-        low_bits = ((x >> 12) % UInt64) >> 12 | (x % UInt64) & 0xFFFFFF
+-        low_value = reinterpret(Float64, reinterpret(UInt64, low_exp) | low_bits) - low_exp
+-        high_bits = ((x >> 76) % UInt64)
+-        high_value = reinterpret(Float64, reinterpret(UInt64, high_exp) | high_bits) - high_exp
+-        low_value + high_value
+-    end
+-end
+-
++#promote_rule(::Type{Float64}, ::Type{UInt128}) = Float64
++#promote_rule(::Type{Float64}, ::Type{Int128}) = Float64
++#promote_rule(::Type{Float32}, ::Type{UInt128}) = Float32
++#promote_rule(::Type{Float32}, ::Type{Int128}) = Float32
++#promote_rule(::Type{Float16}, ::Type{UInt128}) = Float16
++#promote_rule(::Type{Float16}, ::Type{Int128}) = Float16
++
++#function Float64(x::UInt128)
++#    if x < UInt128(1) << 104 # Can fit it in two 52 bits mantissas
++#        low_exp = 0x1p52
++#        high_exp = 0x1p104
++#        low_bits = (x % UInt64) & Base.significand_mask(Float64)
++#        low_value = reinterpret(Float64, reinterpret(UInt64, low_exp) | low_bits) - low_exp
++#        high_bits = ((x >> 52) % UInt64)
++#        high_value = reinterpret(Float64, reinterpret(UInt64, high_exp) | high_bits) - high_exp
++#        low_value + high_value
++#    else # Large enough that low bits only affect rounding, pack low bits
++#        low_exp = 0x1p76
++#        high_exp = 0x1p128
++#        low_bits = ((x >> 12) % UInt64) >> 12 | (x % UInt64) & 0xFFFFFF
++#        low_value = reinterpret(Float64, reinterpret(UInt64, low_exp) | low_bits) - low_exp
++#        high_bits = ((x >> 76) % UInt64)
++#        high_value = reinterpret(Float64, reinterpret(UInt64, high_exp) | high_bits) - high_exp
++#        low_value + high_value
++#    end
++#end
++#=
+ function Float64(x::Int128)
+     sign_bit = ((x >> 127) % UInt64) << 63
+     ux = uabs(x)
+@@ -248,7 +248,7 @@ function Float32(x::Int128)
+     d = ((n+126) % UInt32) << 23
+     reinterpret(Float32, s | d + y)
+ end
+-
++=#
+ # TODO: optimize
+ Float16(x::UInt128) = convert(Float16, Float64(x))
+ Float16(x::Int128)  = convert(Float16, Float64(x))
+@@ -266,12 +266,12 @@ AbstractFloat(x::Int8)    = Float64(x)
+ AbstractFloat(x::Int16)   = Float64(x)
+ AbstractFloat(x::Int32)   = Float64(x)
+ AbstractFloat(x::Int64)   = Float64(x) # LOSSY
+-AbstractFloat(x::Int128)  = Float64(x) # LOSSY
++#AbstractFloat(x::Int128)  = Float64(x) # LOSSY
+ AbstractFloat(x::UInt8)   = Float64(x)
+ AbstractFloat(x::UInt16)  = Float64(x)
+ AbstractFloat(x::UInt32)  = Float64(x)
+ AbstractFloat(x::UInt64)  = Float64(x) # LOSSY
+-AbstractFloat(x::UInt128) = Float64(x) # LOSSY
++#AbstractFloat(x::UInt128) = Float64(x) # LOSSY
+ 
+ Bool(x::Float16) = x==0 ? false : x==1 ? true : throw(InexactError(:Bool, Bool, x))
+ 
+@@ -341,7 +341,7 @@ for Ti in (UInt8, UInt16, UInt32, UInt64)
+         unsafe_trunc(::Type{$Ti}, x::IEEEFloat) = fptoui($Ti, x)
+     end
+ end
+-
++#=
+ function unsafe_trunc(::Type{UInt128}, x::Float64)
+     xu = reinterpret(UInt64,x)
+     k = Int(xu >> 52) & 0x07ff - 1075
+@@ -372,7 +372,7 @@ end
+ 
+ unsafe_trunc(::Type{UInt128}, x::Float16) = unsafe_trunc(UInt128, Float32(x))
+ unsafe_trunc(::Type{Int128}, x::Float16) = unsafe_trunc(Int128, Float32(x))
+-
++=#
+ # matches convert methods
+ # also determines floor, ceil, round
+ trunc(::Type{Signed}, x::IEEEFloat) = trunc(Int,x)
+@@ -564,7 +564,8 @@ end
+ #  a. convert fy back to Ti and compare with original y
+ #  b. unsafe_convert undefined behaviour if fy == Tf(typemax(Ti))
+ #     (but consequently x == fy > y)
+-for Ti in (Int64,UInt64,Int128,UInt128)
++
++for Ti in (Int64,UInt64)
+     for Tf in (Float32,Float64)
+         @eval begin
+             function ==(x::$Tf, y::$Ti)
+@@ -595,8 +596,8 @@ for Ti in (Int64,UInt64,Int128,UInt128)
+ end
+ for op in (:(==), :<, :<=)
+     @eval begin
+-        ($op)(x::Float16, y::Union{Int128,UInt128,Int64,UInt64}) = ($op)(Float64(x), Float64(y))
+-        ($op)(x::Union{Int128,UInt128,Int64,UInt64}, y::Float16) = ($op)(Float64(x), Float64(y))
++        ($op)(x::Float16, y::Union{Int64,UInt64}) = ($op)(Float64(x), Float64(y))
++        ($op)(x::Union{Int64,UInt64}, y::Float16) = ($op)(Float64(x), Float64(y))
+ 
+         ($op)(x::Union{Float16,Float32}, y::Union{Int32,UInt32}) = ($op)(Float64(x), Float64(y))
+         ($op)(x::Union{Int32,UInt32}, y::Union{Float16,Float32}) = ($op)(Float64(x), Float64(y))
+@@ -606,7 +607,6 @@ for op in (:(==), :<, :<=)
+     end
+ end
+ 
+-
+ abs(x::IEEEFloat) = abs_float(x)
+ 
+ """
+@@ -860,7 +860,7 @@ such `y` exists (e.g. if `x` is `-Inf` or `NaN`), then return `x`.
+ """
+ prevfloat(x::AbstractFloat) = nextfloat(x,-1)
+ 
+-for Ti in (Int8, Int16, Int32, Int64, Int128, UInt8, UInt16, UInt32, UInt64, UInt128)
++for Ti in (Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32, UInt64)
+     for Tf in (Float16, Float32, Float64)
+         if Ti <: Unsigned || sizeof(Ti) < sizeof(Tf)
+             # Here `Tf(typemin(Ti))-1` is exact, so we can compare the lower-bound
+diff --git a/666f2a7e16-68a1f62e98.clean/base/gmp.jl b/666f2a7e16-68a1f62e98/base/gmp.jl
+index 69926f4ad..d0bceacc0 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/gmp.jl
++++ b/666f2a7e16-68a1f62e98/base/gmp.jl
+@@ -22,7 +22,7 @@ end
+ const CdoubleMax = Union{Float16, Float32, Float64}
+ 
+ if Sys.iswindows()
+-    const libgmp = "libgmp-10.dll"
++    const libgmp = "gmp-10.dll"
+ elseif Sys.isapple()
+     const libgmp = "@rpath/libgmp.10.dylib"
+ else
+@@ -272,8 +272,8 @@ const ZERO = BigInt()
+ const ONE  = BigInt()
+ const _ONE = Limb[1]
+ 
+-widen(::Type{Int128})  = BigInt
+-widen(::Type{UInt128}) = BigInt
++#widen(::Type{Int128})  = BigInt
++#widen(::Type{UInt128}) = BigInt
+ widen(::Type{BigInt})  = BigInt
+ 
+ signed(x::BigInt) = x
+diff --git a/666f2a7e16-68a1f62e98.clean/base/int.jl b/666f2a7e16-68a1f62e98/base/int.jl
+index 4b2f542bb..c7aba1487 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/int.jl
++++ b/666f2a7e16-68a1f62e98/base/int.jl
+@@ -15,8 +15,8 @@ const BitSigned64_types      = (BitSigned32_types..., Int64)
+ const BitUnsigned64_types    = (BitUnsigned32_types..., UInt64)
+ const BitInteger64_types     = (BitSigned64_types..., BitUnsigned64_types...)
+ 
+-const BitSigned_types        = (BitSigned64_types..., Int128)
+-const BitUnsigned_types      = (BitUnsigned64_types..., UInt128)
++#const BitSigned_types        = (BitSigned64_types..., Int128)
++#const BitUnsigned_types      = (BitUnsigned64_types..., UInt128)
+ const BitInteger_types       = (BitSigned_types..., BitUnsigned_types...)
+ 
+ const BitSignedSmall_types   = Int === Int64 ? ( Int8,  Int16,  Int32) : ( Int8,  Int16)
+@@ -75,7 +75,7 @@ signed(::Type{UInt8}) = Int8
+ signed(::Type{UInt16}) = Int16
+ signed(::Type{UInt32}) = Int32
+ signed(::Type{UInt64}) = Int64
+-signed(::Type{UInt128}) = Int128
++#signed(::Type{UInt128}) = Int128
+ signed(::Type{T}) where {T<:Signed} = T
+ 
+ ## integer comparisons ##
+@@ -395,7 +395,7 @@ julia> string(bswap(1), base = 2)
+ ```
+ """
+ bswap(x::Union{Int8, UInt8, Bool}) = x
+-bswap(x::Union{Int16, UInt16, Int32, UInt32, Int64, UInt64, Int128, UInt128}) =
++bswap(x::Union{Int16, UInt16, Int32, UInt32, Int64, UInt64}) =
+     bswap_int(x)
+ 
+ """
+@@ -711,9 +711,9 @@ ERROR: LoadError: ArgumentError: invalid base 10 digit '.' in "123456789123.4"
+ [...]
+ ```
+ """
+-macro int128_str(s)
+-    return parse(Int128, s)
+-end
++#macro int128_str(s)
++#    return parse(Int128, s)
++#end
+ 
+ """
+     @uint128_str str
+@@ -788,17 +788,17 @@ end
+ promote_rule(::Type{Int16}, ::Union{Type{Int8}, Type{UInt8}}) = Int16
+ promote_rule(::Type{Int32}, ::Union{Type{Int16}, Type{Int8}, Type{UInt16}, Type{UInt8}}) = Int32
+ promote_rule(::Type{Int64}, ::Union{Type{Int16}, Type{Int32}, Type{Int8}, Type{UInt16}, Type{UInt32}, Type{UInt8}}) = Int64
+-promote_rule(::Type{Int128}, ::Union{Type{Int16}, Type{Int32}, Type{Int64}, Type{Int8}, Type{UInt16}, Type{UInt32}, Type{UInt64}, Type{UInt8}}) = Int128
++#promote_rule(::Type{Int128}, ::Union{Type{Int16}, Type{Int32}, Type{Int64}, Type{Int8}, Type{UInt16}, Type{UInt32}, Type{UInt64}, Type{UInt8}}) = Int128
+ promote_rule(::Type{UInt16}, ::Union{Type{Int8}, Type{UInt8}}) = UInt16
+ promote_rule(::Type{UInt32}, ::Union{Type{Int16}, Type{Int8}, Type{UInt16}, Type{UInt8}}) = UInt32
+ promote_rule(::Type{UInt64}, ::Union{Type{Int16}, Type{Int32}, Type{Int8}, Type{UInt16}, Type{UInt32}, Type{UInt8}}) = UInt64
+-promote_rule(::Type{UInt128}, ::Union{Type{Int16}, Type{Int32}, Type{Int64}, Type{Int8}, Type{UInt16}, Type{UInt32}, Type{UInt64}, Type{UInt8}}) = UInt128
++#promote_rule(::Type{UInt128}, ::Union{Type{Int16}, Type{Int32}, Type{Int64}, Type{Int8}, Type{UInt16}, Type{UInt32}, Type{UInt64}, Type{UInt8}}) = UInt128
+ # with mixed signedness and same size, Unsigned wins
+ promote_rule(::Type{UInt8},   ::Type{Int8}  ) = UInt8
+ promote_rule(::Type{UInt16},  ::Type{Int16} ) = UInt16
+ promote_rule(::Type{UInt32},  ::Type{Int32} ) = UInt32
+ promote_rule(::Type{UInt64},  ::Type{Int64} ) = UInt64
+-promote_rule(::Type{UInt128}, ::Type{Int128}) = UInt128
++#promote_rule(::Type{UInt128}, ::Type{Int128}) = UInt128
+ 
+ ## traits ##
+ 
+@@ -872,20 +872,20 @@ typemin(::Type{Int64 }) = -9223372036854775808
+ typemax(::Type{Int64 }) = 9223372036854775807
+ typemin(::Type{UInt64}) = UInt64(0)
+ typemax(::Type{UInt64}) = 0xffffffffffffffff
+-@eval typemin(::Type{UInt128}) = $(convert(UInt128, 0))
+-@eval typemax(::Type{UInt128}) = $(bitcast(UInt128, convert(Int128, -1)))
+-@eval typemin(::Type{Int128} ) = $(convert(Int128, 1) << 127)
+-@eval typemax(::Type{Int128} ) = $(bitcast(Int128, typemax(UInt128) >> 1))
++#@eval typemin(::Type{UInt128}) = $(convert(UInt128, 0))
++#@eval typemax(::Type{UInt128}) = $(bitcast(UInt128, convert(Int128, -1)))
++#@eval typemin(::Type{Int128} ) = $(convert(Int128, 1) << 127)
++#@eval typemax(::Type{Int128} ) = $(bitcast(Int128, typemax(UInt128) >> 1))
+ 
+ 
+ widen(::Type{Int8}) = Int16
+ widen(::Type{Int16}) = Int32
+ widen(::Type{Int32}) = Int64
+-widen(::Type{Int64}) = Int128
++#widen(::Type{Int64}) = Int128
+ widen(::Type{UInt8}) = UInt16
+ widen(::Type{UInt16}) = UInt32
+ widen(::Type{UInt32}) = UInt64
+-widen(::Type{UInt64}) = UInt128
++#widen(::Type{UInt64}) = UInt128
+ 
+ # a few special cases,
+ # Int64*UInt64 => Int128
+@@ -900,6 +900,7 @@ widemul(x::Number,y::Bool) = x * y
+ 
+ ## wide multiplication, Int128 multiply and divide ##
+ 
++#=
+ if Core.sizeof(Int) == 4
+     function widemul(u::Int64, v::Int64)
+         local u0::UInt64, v0::UInt64, w0::UInt64
+@@ -1058,7 +1059,7 @@ else
+     rem(x::Int128,  y::Int128)  = checked_srem_int(x, y)
+     rem(x::UInt128, y::UInt128) = checked_urem_int(x, y)
+ end
+-
++=#
+ # issue #15489: since integer ops are unchecked, they shouldn't check promotion
+ for op in (:+, :-, :*, :&, :|, :xor)
+     @eval function $op(a::Integer, b::Integer)
+@@ -1069,9 +1070,9 @@ for op in (:+, :-, :*, :&, :|, :xor)
+     end
+ end
+ 
+-const _mask1_uint128 = (UInt128(0x5555555555555555) << 64) | UInt128(0x5555555555555555)
+-const _mask2_uint128 = (UInt128(0x3333333333333333) << 64) | UInt128(0x3333333333333333)
+-const _mask4_uint128 = (UInt128(0x0f0f0f0f0f0f0f0f) << 64) | UInt128(0x0f0f0f0f0f0f0f0f)
++#const _mask1_uint128 = (UInt128(0x5555555555555555) << 64) | UInt128(0x5555555555555555)
++#const _mask2_uint128 = (UInt128(0x3333333333333333) << 64) | UInt128(0x3333333333333333)
++#const _mask4_uint128 = (UInt128(0x0f0f0f0f0f0f0f0f) << 64) | UInt128(0x0f0f0f0f0f0f0f0f)
+ 
+ """
+     bitreverse(x)
+@@ -1091,6 +1092,7 @@ julia> reverse(bitstring(0xa06e)) == bitstring(bitreverse(0xa06e))
+ true
+ ```
+ """
++#=
+ function bitreverse(x::BitInteger)
+     # TODO: consider using llvm.bitreverse intrinsic
+     z = unsigned(x)
+@@ -1102,3 +1104,4 @@ function bitreverse(x::BitInteger)
+     z = ((z & mask4) << 4) | ((z >> 4) & mask4)
+     return bswap(z) % typeof(x)
+ end
++=#
+\ No newline at end of file
+diff --git a/666f2a7e16-68a1f62e98.clean/base/intfuncs.jl b/666f2a7e16-68a1f62e98/base/intfuncs.jl
+index 1b007700f..56cb4afdd 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/intfuncs.jl
++++ b/666f2a7e16-68a1f62e98/base/intfuncs.jl
+@@ -415,7 +415,7 @@ function powermod(x::Integer, p::Integer, m::T) where T<:Integer
+ end
+ 
+ # optimization: promote the modulus m to BigInt only once (cf. widemul in generic powermod above)
+-powermod(x::Integer, p::Integer, m::Union{Int128,UInt128}) = oftype(m, powermod(x, p, big(m)))
++#powermod(x::Integer, p::Integer, m::Union{Int128,UInt128}) = oftype(m, powermod(x, p, big(m)))
+ 
+ _nextpow2(x::Unsigned) = oneunit(x)<<(top_set_bit(x-oneunit(x)))
+ _nextpow2(x::Integer) = reinterpret(typeof(x),x < 0 ? -_nextpow2(unsigned(-x)) : _nextpow2(unsigned(x)))
+@@ -556,6 +556,7 @@ function bit_ndigits0z(x::Base.BitUnsigned64)
+     nd = (1233*lz)>>12+1
+     nd -= x < powers_of_ten[nd]
+ end
++#=
+ function bit_ndigits0z(x::UInt128)
+     n = 0
+     while x > 0x8ac7230489e80000
+@@ -564,7 +565,7 @@ function bit_ndigits0z(x::UInt128)
+     end
+     return n + ndigits0z(UInt64(x))
+ end
+-
++=#
+ ndigits0z(x::BitSigned) = bit_ndigits0z(unsigned(abs(x)))
+ ndigits0z(x::BitUnsigned) = bit_ndigits0z(x)
+ ndigits0z(x::Integer) = ndigits0zpb(x, 10)
+@@ -1011,7 +1012,7 @@ julia> isqrt(5)
+ """
+ isqrt(x::Integer) = oftype(x, trunc(sqrt(x)))
+ 
+-function isqrt(x::Union{Int64,UInt64,Int128,UInt128})
++function isqrt(x::Union{Int64,UInt64})
+     x==0 && return x
+     s = oftype(x, trunc(sqrt(x)))
+     # fix with a Newton iteration, since conversion to float discards
+diff --git a/666f2a7e16-68a1f62e98.clean/base/io.jl b/666f2a7e16-68a1f62e98/base/io.jl
+index 9c00c5757..99f3f8b35 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/io.jl
++++ b/666f2a7e16-68a1f62e98/base/io.jl
+@@ -687,7 +687,7 @@ end
+ unsafe_write(s::IO, p::Ptr, n::Integer) = unsafe_write(s, convert(Ptr{UInt8}, p), convert(UInt, n))
+ write(s::IO, x::Ref{T}) where {T} = unsafe_write(s, x, Core.sizeof(T))
+ write(s::IO, x::Int8) = write(s, reinterpret(UInt8, x))
+-function write(s::IO, x::Union{Int16,UInt16,Int32,UInt32,Int64,UInt64,Int128,UInt128,Float16,Float32,Float64})
++function write(s::IO, x::Union{Int16,UInt16,Int32,UInt32,Int64,UInt64,Float16,Float32,Float64})
+     return write(s, Ref(x))
+ end
+ 
+@@ -764,7 +764,7 @@ unsafe_read(s::IO, p::Ptr, n::Integer) = unsafe_read(s, convert(Ptr{UInt8}, p),
+ read!(s::IO, x::Ref{T}) where {T} = (unsafe_read(s, x, Core.sizeof(T)); x)
+ 
+ read(s::IO, ::Type{Int8}) = reinterpret(Int8, read(s, UInt8))
+-function read(s::IO, T::Union{Type{Int16},Type{UInt16},Type{Int32},Type{UInt32},Type{Int64},Type{UInt64},Type{Int128},Type{UInt128},Type{Float16},Type{Float32},Type{Float64}})
++function read(s::IO, T::Union{Type{Int16},Type{UInt16},Type{Int32},Type{UInt32},Type{Int64},Type{UInt64},Type{Float16},Type{Float32},Type{Float64}})
+     return read!(s, Ref{T}(0))[]::T
+ end
+ 
+diff --git a/666f2a7e16-68a1f62e98.clean/base/iobuffer.jl b/666f2a7e16-68a1f62e98/base/iobuffer.jl
+index 6c95285f2..d505bfef7 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/iobuffer.jl
++++ b/666f2a7e16-68a1f62e98/base/iobuffer.jl
+@@ -177,7 +177,7 @@ function unsafe_read(from::GenericIOBuffer, p::Ptr{UInt8}, nb::UInt)
+     nothing
+ end
+ 
+-function peek(from::GenericIOBuffer, T::Union{Type{Int16},Type{UInt16},Type{Int32},Type{UInt32},Type{Int64},Type{UInt64},Type{Int128},Type{UInt128},Type{Float16},Type{Float32},Type{Float64}})
++function peek(from::GenericIOBuffer, T::Union{Type{Int16},Type{UInt16},Type{Int32},Type{UInt32},Type{Int64},Type{UInt64},Type{Float16},Type{Float32},Type{Float64}})
+     from.readable || _throw_not_readable()
+     avail = bytesavailable(from)
+     nb = sizeof(T)
+@@ -191,7 +191,7 @@ function peek(from::GenericIOBuffer, T::Union{Type{Int16},Type{UInt16},Type{Int3
+     return x
+ end
+ 
+-function read(from::GenericIOBuffer, T::Union{Type{Int16},Type{UInt16},Type{Int32},Type{UInt32},Type{Int64},Type{UInt64},Type{Int128},Type{UInt128},Type{Float16},Type{Float32},Type{Float64}})
++function read(from::GenericIOBuffer, T::Union{Type{Int16},Type{UInt16},Type{Int32},Type{UInt32},Type{Int64},Type{UInt64},Type{Float16},Type{Float32},Type{Float64}})
+     x = peek(from, T)
+     from.ptr += sizeof(T)
+     return x
+diff --git a/666f2a7e16-68a1f62e98.clean/base/libc.jl b/666f2a7e16-68a1f62e98/base/libc.jl
+index 82286fbf0..d3324ce01 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/libc.jl
++++ b/666f2a7e16-68a1f62e98/base/libc.jl
+@@ -255,7 +255,8 @@ time() = ccall(:jl_clock_now, Float64, ())
+ 
+ Get Julia's process ID.
+ """
+-getpid() = ccall(:uv_os_getpid, Int32, ())
++const libuv = "uv.dll"
++getpid() = ccall((:uv_os_getpid, libuv), Int32, ())
+ 
+ ## network functions ##
+ 
+@@ -378,7 +379,7 @@ free(p::Cwstring) = free(convert(Ptr{Cwchar_t}, p))
+ 
+ # Access to very high quality (kernel) randomness
+ function getrandom!(A::Union{Array,Base.RefValue})
+-    ret = ccall(:uv_random, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Csize_t,   Cuint, Ptr{Cvoid}),
++    ret = ccall((:uv_random, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Csize_t,   Cuint, Ptr{Cvoid}),
+                                    C_NULL,     C_NULL,     A,          sizeof(A), 0,     C_NULL)
+     Base.uv_error("getrandom", ret)
+     return A
+@@ -437,7 +438,7 @@ end
+ 
+ function getpwuid(uid::Unsigned, throw_error::Bool=true)
+     ref_pd = Ref(Cpasswd())
+-    ret = ccall(:uv_os_get_passwd2, Cint, (Ref{Cpasswd}, Culong), ref_pd, uid)
++    ret = ccall((:uv_os_get_passwd2, libuv), Cint, (Ref{Cpasswd}, Culong), ref_pd, uid)
+     if ret != 0
+         throw_error && Base.uv_error("getpwuid", ret)
+         return
+@@ -451,12 +452,12 @@ function getpwuid(uid::Unsigned, throw_error::Bool=true)
+         pd.homedir == C_NULL ? "" : unsafe_string(pd.homedir),
+         pd.gecos == C_NULL ? "" : unsafe_string(pd.gecos),
+     )
+-    ccall(:uv_os_free_passwd, Cvoid, (Ref{Cpasswd},), ref_pd)
++    ccall((:uv_os_free_passwd, libuv), Cvoid, (Ref{Cpasswd},), ref_pd)
+     return pd
+ end
+ function getgrgid(gid::Unsigned, throw_error::Bool=true)
+     ref_gp = Ref(Cgroup())
+-    ret = ccall(:uv_os_get_group, Cint, (Ref{Cgroup}, Culong), ref_gp, gid)
++    ret = ccall((:uv_os_get_group, libuv), Cint, (Ref{Cgroup}, Culong), ref_gp, gid)
+     if ret != 0
+         throw_error && Base.uv_error("getgrgid", ret)
+         return
+@@ -475,7 +476,7 @@ function getgrgid(gid::Unsigned, throw_error::Bool=true)
+          gp.gid,
+          members,
+     )
+-    ccall(:uv_os_free_group, Cvoid, (Ref{Cgroup},), ref_gp)
++    ccall((:uv_os_free_group, libuv), Cvoid, (Ref{Cgroup},), ref_gp)
+     return gp
+ end
+ 
+diff --git a/666f2a7e16-68a1f62e98.clean/base/libuv.jl b/666f2a7e16-68a1f62e98/base/libuv.jl
+index 24a04f5bc..87e553ee7 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/libuv.jl
++++ b/666f2a7e16-68a1f62e98/base/libuv.jl
+@@ -4,19 +4,21 @@
+ 
+ include(string(length(Core.ARGS) >= 2 ? Core.ARGS[2] : "", "uv_constants.jl"))  # include($BUILDROOT/base/uv_constants.jl)
+ 
++const libuv = "uv.dll"
++
+ # convert UV handle data to julia object, checking for null
+ function uv_sizeof_handle(handle)
+     if !(UV_UNKNOWN_HANDLE < handle < UV_HANDLE_TYPE_MAX)
+         throw(DomainError(handle))
+     end
+-    return ccall(:uv_handle_size, Csize_t, (Int32,), handle)
++    return ccall((:uv_handle_size, libuv), Csize_t, (Int32,), handle)
+ end
+ 
+ function uv_sizeof_req(req)
+     if !(UV_UNKNOWN_REQ < req < UV_REQ_TYPE_MAX)
+         throw(DomainError(req))
+     end
+-    return ccall(:uv_req_size, Csize_t, (Int32,), req)
++    return ccall((:uv_req_size, libuv), Csize_t, (Int32,), req)
+ end
+ 
+ for h in uv_handle_types
+@@ -93,8 +95,8 @@ function _UVError(pfx::AbstractString, code::Integer, sfxs::AbstractString...)
+     IOError(string(pfx, ": ", struverror(code), " (", uverrorname(code), ")", " ", sfxs...), code)
+ end
+ 
+-struverror(err::Int32) = unsafe_string(ccall(:uv_strerror, Cstring, (Int32,), err))
+-uverrorname(err::Int32) = unsafe_string(ccall(:uv_err_name, Cstring, (Int32,), err))
++struverror(err::Int32) = unsafe_string(ccall((:uv_strerror, libuv), Cstring, (Int32,), err))
++uverrorname(err::Int32) = unsafe_string(ccall((:uv_err_name, libuv), Cstring, (Int32,), err))
+ 
+ uv_error(prefix::Symbol, c::Integer) = uv_error(string(prefix), c)
+ uv_error(prefix::AbstractString, c::Integer) = c < 0 ? throw(_UVError(prefix, c)) : nothing
+@@ -103,8 +105,8 @@ uv_error(prefix::AbstractString, c::Integer) = c < 0 ? throw(_UVError(prefix, c)
+ 
+ eventloop() = ccall(:jl_global_event_loop, Ptr{Cvoid}, ())
+ 
+-uv_unref(h::Ptr{Cvoid}) = ccall(:uv_unref, Cvoid, (Ptr{Cvoid},), h)
+-uv_ref(h::Ptr{Cvoid}) = ccall(:uv_ref, Cvoid, (Ptr{Cvoid},), h)
++uv_unref(h::Ptr{Cvoid}) = ccall((:uv_unref, libuv), Cvoid, (Ptr{Cvoid},), h)
++uv_ref(h::Ptr{Cvoid}) = ccall((:uv_ref, libuv), Cvoid, (Ptr{Cvoid},), h)
+ 
+ function process_events()
+     return ccall(:jl_process_events, Int32, ())
+diff --git a/666f2a7e16-68a1f62e98.clean/base/loading.jl b/666f2a7e16-68a1f62e98/base/loading.jl
+index 9cc2f1375..c30d50aa0 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/loading.jl
++++ b/666f2a7e16-68a1f62e98/base/loading.jl
+@@ -145,14 +145,14 @@ hash(a::SHA1, h::UInt) = hash((SHA1, a.bytes), h)
+ # TODO: delete and use real uuid5 once it's in stdlib
+ 
+ function uuid5(namespace::UUID, key::String)
+-    u::UInt128 = 0
++    u::UInt64 = 0
+     h = hash(namespace)
+     for _ = 1:sizeof(u)÷sizeof(h)
+         u <<= sizeof(h) << 3
+         u |= (h = hash(key, h))
+     end
+-    u &= 0xffffffffffff0fff3fffffffffffffff
+-    u |= 0x00000000000050008000000000000000
++    u &= 0xffffffffffff0fff
++    u |= 0x0000000000005000
+     return UUID(u)
+ end
+ 
+@@ -1362,7 +1362,7 @@ end
+ # End extensions
+ 
+ # loads a precompile cache file, after checking stale_cachefile tests
+-function _tryrequire_from_serialized(modkey::PkgId, build_id::UInt128)
++function _tryrequire_from_serialized(modkey::PkgId, build_id::UInt64)
+     assert_havelock(require_lock)
+     loaded = nothing
+     if root_module_exists(modkey)
+@@ -1404,7 +1404,7 @@ function _tryrequire_from_serialized(modkey::PkgId, path::String, ocachepath::Un
+                 for i in 1:length(depmods)
+                     dep = depmods[i]
+                     dep isa Module && continue
+-                    _, depkey, depbuild_id = dep::Tuple{String, PkgId, UInt128}
++                    _, depkey, depbuild_id = dep::Tuple{String, PkgId, UInt64}
+                     @assert root_module_exists(depkey)
+                     dep = root_module(depkey)
+                     depmods[i] = dep
+@@ -1465,7 +1465,7 @@ end
+ 
+ # returns `nothing` if require found a precompile cache for this sourcepath, but couldn't load it
+ # returns the set of modules restored if the cache load succeeded
+-@constprop :none function _require_search_from_serialized(pkg::PkgId, sourcepath::String, build_id::UInt128)
++@constprop :none function _require_search_from_serialized(pkg::PkgId, sourcepath::String, build_id::UInt64)
+     assert_havelock(require_lock)
+     paths = find_all_in_cache_path(pkg)
+     for path_to_try in paths::Vector{String}
+@@ -1478,7 +1478,7 @@ end
+         for i in 1:length(staledeps)
+             dep = staledeps[i]
+             dep isa Module && continue
+-            modpath, modkey, modbuild_id = dep::Tuple{String, PkgId, UInt128}
++            modpath, modkey, modbuild_id = dep::Tuple{String, PkgId, UInt64}
+             modpaths = find_all_in_cache_path(modkey)
+             for modpath_to_try in modpaths
+                 modstaledeps = stale_cachefile(modkey, modbuild_id, modpath, modpath_to_try)
+@@ -1590,7 +1590,7 @@ const package_callbacks = Any[]
+ const include_callbacks = Any[]
+ 
+ # used to optionally track dependencies when requiring a module:
+-const _concrete_dependencies = Pair{PkgId,UInt128}[] # these dependency versions are "set in stone", and the process should try to avoid invalidating them
++const _concrete_dependencies = Pair{PkgId,UInt64}[] # these dependency versions are "set in stone", and the process should try to avoid invalidating them
+ const _require_dependencies = Any[] # a list of (mod, path, mtime) tuples that are the file dependencies of the module currently being precompiled
+ const _track_dependencies = Ref(false) # set this to true to track the list of file dependencies
+ function _include_dependency(mod::Module, _path::AbstractString)
+@@ -1849,7 +1849,7 @@ function _require(pkg::PkgId, env=nothing)
+         # attempt to load the module file via the precompile cache locations
+         if JLOptions().use_compiled_modules != 0
+             @label load_from_cache
+-            m = _require_search_from_serialized(pkg, path, UInt128(0))
++            m = _require_search_from_serialized(pkg, path, UInt64(0))
+             if m isa Module
+                 return m
+             end
+@@ -2378,7 +2378,7 @@ end
+ 
+ function module_build_id(m::Module)
+     hi, lo = ccall(:jl_module_build_id, NTuple{2,UInt64}, (Any,), m)
+-    return (UInt128(hi) << 64) | lo
++    return (UInt64(hi) << 32) | lo
+ end
+ 
+ function isvalid_cache_header(f::IOStream)
+@@ -2833,8 +2833,8 @@ end
+             @debug "Rejecting cache file $cachefile for $modkey since it is for $id instead"
+             return true
+         end
+-        if build_id != UInt128(0)
+-            id_build = (UInt128(checksum) << 64) | id.second
++        if build_id != UInt64(0)
++            id_build = (UInt64(checksum) << 32) | id.second
+             if id_build != build_id
+                 @debug "Ignoring cache file $cachefile for $modkey ($((UUID(id_build)))) since it is does not provide desired build_id ($((UUID(build_id))))"
+                 return true
+diff --git a/666f2a7e16-68a1f62e98.clean/base/mpfr.jl b/666f2a7e16-68a1f62e98/base/mpfr.jl
+index ff85fc615..55b42e488 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/mpfr.jl
++++ b/666f2a7e16-68a1f62e98/base/mpfr.jl
+@@ -26,7 +26,7 @@ import ..GMP: ClongMax, CulongMax, CdoubleMax, Limb, libgmp
+ import ..FastMath.sincos_fast
+ 
+ if Sys.iswindows()
+-    const libmpfr = "libmpfr-6.dll"
++    const libmpfr = "mpfr-6.dll"
+ elseif Sys.isapple()
+     const libmpfr = "@rpath/libmpfr.6.dylib"
+ else
+diff --git a/666f2a7e16-68a1f62e98.clean/base/multinverses.jl b/666f2a7e16-68a1f62e98/base/multinverses.jl
+index 21d8e53d2..84f762f41 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/multinverses.jl
++++ b/666f2a7e16-68a1f62e98/base/multinverses.jl
+@@ -11,7 +11,7 @@ unsigned(::Type{Int8}) = UInt8
+ unsigned(::Type{Int16}) = UInt16
+ unsigned(::Type{Int32}) = UInt32
+ unsigned(::Type{Int64}) = UInt64
+-unsigned(::Type{Int128}) = UInt128
++#unsigned(::Type{Int128}) = UInt128
+ unsigned(::Type{T}) where {T<:Unsigned} = T
+ 
+ abstract type  MultiplicativeInverse{T} <: Number end
+@@ -138,7 +138,7 @@ UnsignedMultiplicativeInverse(x::Unsigned) = UnsignedMultiplicativeInverse{typeo
+ function _mul_high(a::T, b::T) where {T<:Union{Signed, Unsigned}}
+     ((widen(a)*b) >>> (sizeof(a)*8)) % T
+ end
+-
++#=
+ function _mul_high(a::UInt128, b::UInt128)
+     shift = sizeof(a)*4
+     mask = typemax(UInt128) >> shift
+@@ -153,7 +153,7 @@ function _mul_high(a::Int128, b::Int128)
+     t1, t2 = (a >> shift) & b % UInt128, (b >> shift) & a % UInt128
+     (_mul_high(a % UInt128, b % UInt128) - t1 - t2) % Int128
+ end
+-
++=#
+ function div(a::T, b::SignedMultiplicativeInverse{T}) where T
+     x = _mul_high(a, b.multiplier)
+     x += (a*b.addmul) % T
+diff --git a/666f2a7e16-68a1f62e98.clean/base/path.jl b/666f2a7e16-68a1f62e98/base/path.jl
+index c439a2800..414c8156e 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/path.jl
++++ b/666f2a7e16-68a1f62e98/base/path.jl
+@@ -61,11 +61,12 @@ Return the current user's home directory.
+     (for example on how to specify the home directory via environment variables), see the
+     [`uv_os_homedir` documentation](http://docs.libuv.org/en/v1.x/misc.html#c.uv_os_homedir).
+ """
++const libuv = "uv.dll"
+ function homedir()
+     buf = Base.StringVector(AVG_PATH - 1) # space for null-terminator implied by StringVector
+     sz = RefValue{Csize_t}(length(buf) + 1) # total buffer size including null
+     while true
+-        rc = ccall(:uv_os_homedir, Cint, (Ptr{UInt8}, Ptr{Csize_t}), buf, sz)
++        rc = ccall((:uv_os_homedir, libuv), Cint, (Ptr{UInt8}, Ptr{Csize_t}), buf, sz)
+         if rc == 0
+             resize!(buf, sz[])
+             return String(buf)
+@@ -479,7 +480,7 @@ filesystem's stored case for the path is returned.
+ function realpath(path::AbstractString)
+     req = Libc.malloc(_sizeof_uv_fs)
+     try
+-        ret = ccall(:uv_fs_realpath, Cint,
++        ret = ccall((:uv_fs_realpath, libuv), Cint,
+                     (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Ptr{Cvoid}),
+                     C_NULL, req, path, C_NULL)
+         if ret < 0
+diff --git a/666f2a7e16-68a1f62e98.clean/base/pcre.jl b/666f2a7e16-68a1f62e98/base/pcre.jl
+index 7597c1217..93e30161b 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/pcre.jl
++++ b/666f2a7e16-68a1f62e98/base/pcre.jl
+@@ -9,7 +9,7 @@ import ..RefValue
+ # include($BUILDROOT/base/pcre_h.jl)
+ include(string(length(Core.ARGS) >= 2 ? Core.ARGS[2] : "", "pcre_h.jl"))
+ 
+-const PCRE_LIB = "libpcre2-8"
++const PCRE_LIB = "pcre2-8"
+ 
+ function create_match_context()
+     JIT_STACK_START_SIZE = 32768
+diff --git a/666f2a7e16-68a1f62e98.clean/base/pkgid.jl b/666f2a7e16-68a1f62e98/base/pkgid.jl
+index 20d9de559..9ed9c38f6 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/pkgid.jl
++++ b/666f2a7e16-68a1f62e98/base/pkgid.jl
+@@ -4,14 +4,14 @@ struct PkgId
+     uuid::Union{UUID,Nothing}
+     name::String
+ 
+-    PkgId(u::UUID, name::AbstractString) = new(UInt128(u) == 0 ? nothing : u, name)
++    PkgId(u::UUID, name::AbstractString) = new(UInt64(u) == 0 ? nothing : u, name)
+     PkgId(::Nothing, name::AbstractString) = new(nothing, name)
+ end
+ PkgId(name::AbstractString) = PkgId(nothing, name)
+ 
+ function PkgId(m::Module, name::String = String(nameof(moduleroot(m))))
+     uuid = UUID(ccall(:jl_module_uuid, NTuple{2, UInt64}, (Any,), m))
+-    UInt128(uuid) == 0 ? PkgId(name) : PkgId(uuid, name)
++    UInt64(uuid) == 0 ? PkgId(name) : PkgId(uuid, name)
+ end
+ 
+ ==(a::PkgId, b::PkgId) = a.uuid == b.uuid && a.name == b.name
+@@ -30,7 +30,7 @@ function binpack(pkg::PkgId)
+     io = IOBuffer()
+     write(io, UInt8(0))
+     uuid = pkg.uuid
+-    write(io, uuid === nothing ? UInt128(0) : UInt128(uuid))
++    write(io, uuid === nothing ? UInt64(0) : UInt64(uuid))
+     write(io, pkg.name)
+     return String(take!(io))
+ end
+@@ -38,7 +38,7 @@ end
+ function binunpack(s::String)
+     io = IOBuffer(s)
+     @assert read(io, UInt8) === 0x00
+-    uuid = read(io, UInt128)
++    uuid = read(io, UInt64)
+     name = read(io, String)
+     return PkgId(UUID(uuid), name)
+ end
+diff --git a/666f2a7e16-68a1f62e98.clean/base/process.jl b/666f2a7e16-68a1f62e98/base/process.jl
+index ed51a30ae..43d5ceb65 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/process.jl
++++ b/666f2a7e16-68a1f62e98/base/process.jl
+@@ -76,9 +76,9 @@ end
+ 
+ const SpawnIO  = Union{IO, RawFD, OS_HANDLE}
+ const SpawnIOs = Vector{SpawnIO} # convenience name for readability
+-
++const libuv = "uv.dll"
+ function as_cpumask(cpus::Vector{UInt16})
+-    n = max(Int(maximum(cpus)), Int(ccall(:uv_cpumask_size, Cint, ())))
++    n = max(Int(maximum(cpus)), Int(ccall((:uv_cpumask_size, libuv), Cint, ())))
+     cpumask = zeros(Bool, n)
+     for i in cpus
+         cpumask[i] = true
+@@ -590,7 +590,7 @@ function kill(p::Process, signum::Integer=SIGTERM)
+     iolock_begin()
+     if process_running(p)
+         @assert p.handle != C_NULL
+-        err = ccall(:uv_process_kill, Int32, (Ptr{Cvoid}, Int32), p.handle, signum)
++        err = ccall((:uv_process_kill, libuv), Int32, (Ptr{Cvoid}, Int32), p.handle, signum)
+         if err != 0 && err != UV_ESRCH
+             throw(_UVError("kill", err))
+         end
+diff --git a/666f2a7e16-68a1f62e98.clean/base/range.jl b/666f2a7e16-68a1f62e98/base/range.jl
+index f7dc35703..4b50664f0 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/range.jl
++++ b/666f2a7e16-68a1f62e98/base/range.jl
+@@ -765,7 +765,7 @@ length(r::OneTo) = Integer(r.stop - zero(r.stop))
+ length(r::StepRangeLen) = r.len
+ length(r::LinRange) = r.len
+ 
+-let bigints = Union{Int, UInt, Int64, UInt64, Int128, UInt128},
++let bigints = Union{Int, UInt, Int64, UInt64},
+     smallints = (Int === Int64 ?
+                 Union{Int8, UInt8, Int16, UInt16, Int32, UInt32} :
+                 Union{Int8, UInt8, Int16, UInt16}),
+@@ -911,8 +911,8 @@ function getindex(v::UnitRange{T}, i::Integer) where T
+     val
+ end
+ 
+-const OverflowSafe = Union{Bool,Int8,Int16,Int32,Int64,Int128,
+-                           UInt8,UInt16,UInt32,UInt64,UInt128}
++const OverflowSafe = Union{Bool,Int8,Int16,Int32,Int64,
++                           UInt8,UInt16,UInt32,UInt64}
+ 
+ function getindex(v::UnitRange{T}, i::Integer) where {T<:OverflowSafe}
+     @inline
+diff --git a/666f2a7e16-68a1f62e98.clean/base/ryu/utils.jl b/666f2a7e16-68a1f62e98/base/ryu/utils.jl
+index 4fe0b7d39..e3b2cce79 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/ryu/utils.jl
++++ b/666f2a7e16-68a1f62e98/base/ryu/utils.jl
+@@ -137,6 +137,7 @@ end
+ 
+ Compute `p = a*b` where `b = bLo + bHi<<64`, returning the result as `pLo, pHi` where `p = pLo + pHi<<128`.
+ """
++#=
+ function umul256(a, bHi, bLo)
+     aLo = a % UInt64
+     aHi = (a >> 64) % UInt64
+@@ -161,7 +162,7 @@ function umul256(a, bHi, bLo)
+     pLo = (UInt128(mid2Lo) << 64) | b00Lo
+     return pLo, pHi
+ end
+-
++=#
+ """
+     Ryu.umul256_hi(a::UInt128, bHi::UInt64, bLo::UInt64)::UInt128
+ 
+@@ -174,6 +175,7 @@ umul256_hi(a, bHi, bLo) = umul256(a, bHi, bLo)[2]
+ 
+ Compute `(m * mul) >> j % 10^9` where `mul = mula + mulb<<64 + mulc<<128`, and `j >= 128`.
+ """
++#=
+ function mulshiftmod1e9(m, mula, mulb, mulc, j)
+     b0 = UInt128(m) * mula
+     b1 = UInt128(m) * mulb
+@@ -185,7 +187,7 @@ function mulshiftmod1e9(m, mula, mulb, mulc, j)
+     shifted = (multiplied >> 29) % UInt32
+     return (v % UInt32) - UInt32(1000000000) * shifted
+ end
+-
++=#
+ function append_sign(x, plus, space, buf, pos)
+     if signbit(x) && !isnan(x)  # suppress minus sign for signaling NaNs
+         buf[pos] = UInt8('-')
+diff --git a/666f2a7e16-68a1f62e98.clean/base/special/rem_pio2.jl b/666f2a7e16-68a1f62e98/base/special/rem_pio2.jl
+index de5c4151d..34a5bb48f 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/special/rem_pio2.jl
++++ b/666f2a7e16-68a1f62e98/base/special/rem_pio2.jl
+@@ -101,6 +101,7 @@ Compute a tuple of values `(z1,z2)` such that
+     ``z1 + z2 == f / 2^128``
+ and the significand of `z1` has 27 trailing zeros.
+ """
++#=
+ function fromfraction(f::Int128)
+     if f == 0
+         return (0.0,0.0)
+@@ -211,7 +212,7 @@ Base.@assume_effects :consistent function paynehanek(x::Float64)
+     y_lo = (((z_hi*pio2_hi - y_hi) + z_hi*pio2_lo) + z_lo*pio2_hi) + z_lo*pio2_lo
+     return q, DoubleFloat64(y_hi, y_lo)
+ end
+-
++=#
+ """
+     rem_pio2_kernel(x::Union{Float32, Float64})
+ Calculate `x` divided by `π/2` accurately for arbitrarily large `x`.
+diff --git a/666f2a7e16-68a1f62e98.clean/base/stream.jl b/666f2a7e16-68a1f62e98/base/stream.jl
+index 0b6c9a937..fcb8e9dd5 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/stream.jl
++++ b/666f2a7e16-68a1f62e98/base/stream.jl
+@@ -99,6 +99,7 @@ end
+ 
+ # Redirectable = Union{IO, FileRedirect, Libc.RawFD} (not exported)
+ 
++const libuv = "uv.dll"
+ bytesavailable(s::LibuvStream) = bytesavailable(s.buffer)
+ 
+ function eof(s::LibuvStream)
+@@ -193,7 +194,7 @@ end
+ function PipeEndpoint()
+     pipe = PipeEndpoint(Libc.malloc(_sizeof_uv_named_pipe), StatusUninit)
+     iolock_begin()
+-    err = ccall(:uv_pipe_init, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Cint), eventloop(), pipe.handle, 0)
++    err = ccall((:uv_pipe_init, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Cint), eventloop(), pipe.handle, 0)
+     uv_error("failed to create pipe endpoint", err)
+     pipe.status = StatusInit
+     iolock_end()
+@@ -203,7 +204,7 @@ end
+ function PipeEndpoint(fd::OS_HANDLE)
+     pipe = PipeEndpoint()
+     iolock_begin()
+-    err = ccall(:uv_pipe_open, Int32, (Ptr{Cvoid}, OS_HANDLE), pipe.handle, fd)
++    err = ccall((:uv_pipe_open, libuv), Int32, (Ptr{Cvoid}, OS_HANDLE), pipe.handle, fd)
+     uv_error("pipe_open", err)
+     pipe.status = StatusOpen
+     iolock_end()
+@@ -246,7 +247,7 @@ end
+ function TTY(fd::OS_HANDLE)
+     tty = TTY(Libc.malloc(_sizeof_uv_tty), StatusUninit)
+     iolock_begin()
+-    err = ccall(:uv_tty_init, Int32, (Ptr{Cvoid}, Ptr{Cvoid}, OS_HANDLE, Int32),
++    err = ccall((:uv_tty_init, libuv), Int32, (Ptr{Cvoid}, Ptr{Cvoid}, OS_HANDLE, Int32),
+         eventloop(), tty.handle, fd, 0)
+     uv_error("TTY", err)
+     tty.status = StatusOpen
+@@ -271,13 +272,13 @@ function isreadable(io::LibuvStream)
+     bytesavailable(io) > 0 && return true
+     isopen(io) || return false
+     io.status == StatusEOF && return false
+-    return ccall(:uv_is_readable, Cint, (Ptr{Cvoid},), io.handle) != 0
++    return ccall((:uv_is_readable, libuv), Cint, (Ptr{Cvoid},), io.handle) != 0
+ end
+ 
+ function iswritable(io::LibuvStream)
+     isopen(io) || return false
+     io.status == StatusClosing && return false
+-    return ccall(:uv_is_writable, Cint, (Ptr{Cvoid},), io.handle) != 0
++    return ccall((:uv_is_writable, libuv), Cint, (Ptr{Cvoid},), io.handle) != 0
+ end
+ 
+ lock(s::LibuvStream) = lock(s.lock)
+@@ -329,7 +330,7 @@ of the original handle.
+ """
+ function open(h::OS_HANDLE)
+     iolock_begin()
+-    t = ccall(:uv_guess_handle, Cint, (OS_HANDLE,), h)
++    t = ccall((:uv_guess_handle, libuv), Cint, (OS_HANDLE,), h)
+     local io
+     if t == UV_FILE
+         @static if Sys.iswindows()
+@@ -439,7 +440,7 @@ function closewrite(s::LibuvStream)
+     check_open(s)
+     req = Libc.malloc(_sizeof_uv_shutdown)
+     uv_req_set_data(req, C_NULL) # in case we get interrupted before arriving at the wait call
+-    err = ccall(:uv_shutdown, Int32, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
++    err = ccall((:uv_shutdown, libuv), Int32, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+                 req, s, @cfunction(uv_shutdowncb_task, Cvoid, (Ptr{Cvoid}, Cint)))
+     if err < 0
+         Libc.free(req)
+@@ -470,7 +471,7 @@ function closewrite(s::LibuvStream)
+         unpreserve_handle(ct)
+     end
+     if isopen(s)
+-        if status < 0 || ccall(:uv_is_readable, Cint, (Ptr{Cvoid},), s.handle) == 0
++        if status < 0 || ccall((:uv_is_readable, libuv), Cint, (Ptr{Cvoid},), s.handle) == 0
+             close(s)
+         end
+     end
+@@ -588,7 +589,7 @@ function displaysize(io::TTY)
+     s1 = Ref{Int32}(0)
+     s2 = Ref{Int32}(0)
+     iolock_begin()
+-    Base.uv_error("size (TTY)", ccall(:uv_tty_get_winsize,
++    Base.uv_error("size (TTY)", ccall((:uv_tty_get_winsize, libuv),
+                                       Int32, (Ptr{Cvoid}, Ptr{Int32}, Ptr{Int32}),
+                                       io, s1, s2) != 0)
+     iolock_end()
+@@ -668,7 +669,7 @@ function uv_readcb(handle::Ptr{Cvoid}, nread::Cssize_t, buf::Ptr{Cvoid})
+                     notify(stream.cond)
+                     if stream isa TTY
+                         # stream can still be used by reseteof (or possibly write)
+-                    elseif !(stream isa PipeEndpoint) && ccall(:uv_is_writable, Cint, (Ptr{Cvoid},), stream.handle) != 0
++                    elseif !(stream isa PipeEndpoint) && ccall((:uv_is_writable, libuv), Cint, (Ptr{Cvoid},), stream.handle) != 0
+                         # stream can still be used by write
+                     else
+                         # underlying stream is no longer useful: begin finalization
+@@ -698,7 +699,7 @@ function uv_readcb(handle::Ptr{Cvoid}, nread::Cssize_t, buf::Ptr{Cvoid})
+             ((bytesavailable(stream.buffer) >= stream.throttle) ||
+              (bytesavailable(stream.buffer) >= stream.buffer.maxsize)))
+             # save cycles by stopping kernel notifications from arriving
+-            ccall(:uv_read_stop, Cint, (Ptr{Cvoid},), stream)
++            ccall((:uv_read_stop, libuv), Cint, (Ptr{Cvoid},), stream)
+             stream.status = StatusOpen
+         end
+         nothing
+@@ -781,7 +782,7 @@ function open_pipe!(p::PipeEndpoint, handle::OS_HANDLE)
+     if p.status != StatusInit
+         error("pipe is already in use or has been closed")
+     end
+-    err = ccall(:uv_pipe_open, Int32, (Ptr{Cvoid}, OS_HANDLE), p.handle, handle)
++    err = ccall((:uv_pipe_open, libuv), Int32, (Ptr{Cvoid}, OS_HANDLE), p.handle, handle)
+     uv_error("pipe_open", err)
+     p.status = StatusOpen
+     iolock_end()
+@@ -810,7 +811,7 @@ end
+ function link_pipe(reader_supports_async::Bool, writer_supports_async::Bool)
+     UV_NONBLOCK_PIPE = 0x40
+     fildes = Ref{Pair{OS_HANDLE, OS_HANDLE}}(INVALID_OS_HANDLE => INVALID_OS_HANDLE) # read (in) => write (out)
+-    err = ccall(:uv_pipe, Int32, (Ptr{Pair{OS_HANDLE, OS_HANDLE}}, Cint, Cint),
++    err = ccall((:uv_pipe, libuv), Int32, (Ptr{Pair{OS_HANDLE, OS_HANDLE}}, Cint, Cint),
+                 fildes,
+                 reader_supports_async * UV_NONBLOCK_PIPE,
+                 writer_supports_async * UV_NONBLOCK_PIPE)
+@@ -843,7 +844,7 @@ function start_reading(stream::LibuvStream)
+         # libuv may call the alloc callback immediately
+         # for a TTY on Windows, so ensure the status is set first
+         stream.status = StatusActive
+-        ret = ccall(:uv_read_start, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
++        ret = ccall((:uv_read_start, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+                     stream, @cfunction(uv_alloc_buf, Cvoid, (Ptr{Cvoid}, Csize_t, Ptr{Cvoid})),
+                     @cfunction(uv_readcb, Cvoid, (Ptr{Cvoid}, Cssize_t, Ptr{Cvoid})))
+     elseif stream.status == StatusPaused
+@@ -868,7 +869,7 @@ if Sys.iswindows()
+         iolock_begin()
+         if stream.status == StatusActive
+             stream.status = StatusOpen
+-            ccall(:uv_read_stop, Cint, (Ptr{Cvoid},), stream)
++            ccall((:uv_read_stop, libuv), Cint, (Ptr{Cvoid},), stream)
+         end
+         iolock_end()
+         nothing
+@@ -1191,7 +1192,7 @@ _fd(x::Union{OS_HANDLE, RawFD}) = x
+ function _fd(x::Union{LibuvStream, LibuvServer})
+     fd = Ref{OS_HANDLE}(INVALID_OS_HANDLE)
+     if x.status != StatusUninit && x.status != StatusClosed && x.handle != C_NULL
+-        err = ccall(:uv_fileno, Int32, (Ptr{Cvoid}, Ptr{OS_HANDLE}), x.handle, fd)
++        err = ccall((:uv_fileno, libuv), Int32, (Ptr{Cvoid}, Ptr{OS_HANDLE}), x.handle, fd)
+         # handle errors by returning INVALID_OS_HANDLE
+     end
+     return fd[]
+diff --git a/666f2a7e16-68a1f62e98.clean/base/strings/unicode.jl b/666f2a7e16-68a1f62e98/base/strings/unicode.jl
+index 17c5d66c1..77d9d84c5 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/strings/unicode.jl
++++ b/666f2a7e16-68a1f62e98/base/strings/unicode.jl
+@@ -143,20 +143,22 @@ const UTF8PROC_STRIPMARK = (1<<13)
+ 
+ ############################################################################
+ 
+-utf8proc_error(result) = error(unsafe_string(ccall(:utf8proc_errmsg, Cstring, (Cssize_t,), result)))
++utf8proc_error(result) = error(unsafe_string(ccall((:utf8proc_errmsg, libutf8proc), Cstring, (Cssize_t,), result)))
+ 
+ # static wrapper around user callback function
+ utf8proc_custom_func(codepoint::UInt32, callback::Any) =
+     UInt32(callback(codepoint))::UInt32
+ 
++const libutf8proc = "utf8proc.dll"
++
+ function utf8proc_decompose(str, options, buffer, nwords, chartransform::typeof(identity))
+-    ret = ccall(:utf8proc_decompose, Int, (Ptr{UInt8}, Int, Ptr{UInt8}, Int, Cint),
++    ret = ccall((:utf8proc_decompose, libutf8proc), Int, (Ptr{UInt8}, Int, Ptr{UInt8}, Int, Cint),
+                 str, sizeof(str), buffer, nwords, options)
+     ret < 0 && utf8proc_error(ret)
+     return ret
+ end
+ function utf8proc_decompose(str, options, buffer, nwords, chartransform::T) where T
+-    ret = ccall(:utf8proc_decompose_custom, Int, (Ptr{UInt8}, Int, Ptr{UInt8}, Int, Cint, Ptr{Cvoid}, Ref{T}),
++    ret = ccall((:utf8proc_decompose_custom, libutf8proc), Int, (Ptr{UInt8}, Int, Ptr{UInt8}, Int, Cint, Ptr{Cvoid}, Ref{T}),
+                 str, sizeof(str), buffer, nwords, options,
+                 @cfunction(utf8proc_custom_func, UInt32, (UInt32, Ref{T})), chartransform)
+     ret < 0 && utf8proc_error(ret)
+@@ -167,7 +169,7 @@ function utf8proc_map(str::Union{String,SubString{String}}, options::Integer, ch
+     nwords = utf8proc_decompose(str, options, C_NULL, 0, chartransform)
+     buffer = Base.StringVector(nwords*4)
+     nwords = utf8proc_decompose(str, options, buffer, nwords, chartransform)
+-    nbytes = ccall(:utf8proc_reencode, Int, (Ptr{UInt8}, Int, Cint), buffer, nwords, options)
++    nbytes = ccall((:utf8proc_reencode, libutf8proc), Int, (Ptr{UInt8}, Int, Cint), buffer, nwords, options)
+     nbytes < 0 && utf8proc_error(nbytes)
+     return String(resize!(buffer, nbytes))
+ end
+@@ -254,7 +256,7 @@ julia> textwidth('⛵')
+ """
+ function textwidth(c::AbstractChar)
+     ismalformed(c) && return 1
+-    Int(ccall(:utf8proc_charwidth, Cint, (UInt32,), c))
++    Int(ccall((:utf8proc_charwidth, libutf8proc), Cint, (UInt32,), c))
+ end
+ 
+ """
+@@ -287,7 +289,7 @@ julia> lowercase('Ö')
+ ```
+ """
+ lowercase(c::T) where {T<:AbstractChar} = isascii(c) ? ('A' <= c <= 'Z' ? c + 0x20 : c) :
+-    T(ccall(:utf8proc_tolower, UInt32, (UInt32,), c))
++    T(ccall((:utf8proc_tolower, libutf8proc), UInt32, (UInt32,), c))
+ 
+ """
+     uppercase(c::AbstractChar)
+@@ -306,7 +308,7 @@ julia> uppercase('ê')
+ ```
+ """
+ uppercase(c::T) where {T<:AbstractChar} = isascii(c) ? ('a' <= c <= 'z' ? c - 0x20 : c) :
+-    T(ccall(:utf8proc_toupper, UInt32, (UInt32,), c))
++    T(ccall((:utf8proc_toupper, libutf8proc), UInt32, (UInt32,), c))
+ 
+ """
+     titlecase(c::AbstractChar)
+@@ -329,7 +331,7 @@ julia> uppercase('ǆ')
+ ```
+ """
+ titlecase(c::T) where {T<:AbstractChar} = isascii(c) ? ('a' <= c <= 'z' ? c - 0x20 : c) :
+-    T(ccall(:utf8proc_totitle, UInt32, (UInt32,), c))
++    T(ccall((:utf8proc_totitle, libutf8proc), UInt32, (UInt32,), c))
+ 
+ ############################################################################
+ 
+@@ -339,14 +341,14 @@ function category_code(c::AbstractChar)
+ end
+ 
+ function category_code(x::Integer)
+-    x ≤ 0x10ffff ? ccall(:utf8proc_category, Cint, (UInt32,), x) : Cint(30)
++    x ≤ 0x10ffff ? ccall((:utf8proc_category, libutf8proc), Cint, (UInt32,), x) : Cint(30)
+ end
+ 
+ # more human-readable representations of the category code
+ function category_abbrev(c::AbstractChar)
+     ismalformed(c) && return "Ma"
+     c ≤ '\U10ffff' || return "In"
+-    unsafe_string(ccall(:utf8proc_category_string, Cstring, (UInt32,), c))
++    unsafe_string(ccall((:utf8proc_category_string, libutf8proc), Cstring, (UInt32,), c))
+ end
+ 
+ category_string(c) = category_strings[category_code(c)+1]
+@@ -375,7 +377,7 @@ julia> islowercase('❤')
+ false
+ ```
+ """
+-islowercase(c::AbstractChar) = ismalformed(c) ? false : Bool(ccall(:utf8proc_islower, Cint, (UInt32,), UInt32(c)))
++islowercase(c::AbstractChar) = ismalformed(c) ? false : Bool(ccall((:utf8proc_islower, libutf8proc), Cint, (UInt32,), UInt32(c)))
+ 
+ # true for Unicode upper and mixed case
+ 
+@@ -399,7 +401,7 @@ julia> isuppercase('❤')
+ false
+ ```
+ """
+-isuppercase(c::AbstractChar) = ismalformed(c) ? false : Bool(ccall(:utf8proc_isupper, Cint, (UInt32,), UInt32(c)))
++isuppercase(c::AbstractChar) = ismalformed(c) ? false : Bool(ccall((:utf8proc_isupper, libutf8proc), Cint, (UInt32,), UInt32(c)))
+ 
+ """
+     iscased(c::AbstractChar) -> Bool
+@@ -719,7 +721,7 @@ end
+ 
+ isgraphemebreak(c1::AbstractChar, c2::AbstractChar) =
+     ismalformed(c1) || ismalformed(c2) ||
+-    ccall(:utf8proc_grapheme_break, Bool, (UInt32, UInt32), c1, c2)
++    ccall((:utf8proc_grapheme_break, libutf8proc), Bool, (UInt32, UInt32), c1, c2)
+ 
+ # Stateful grapheme break required by Unicode-9 rules: the string
+ # must be processed in sequence, with state initialized to Ref{Int32}(0).
+@@ -729,7 +731,7 @@ function isgraphemebreak!(state::Ref{Int32}, c1::AbstractChar, c2::AbstractChar)
+         state[] = 0
+         return true
+     end
+-    ccall(:utf8proc_grapheme_break_stateful, Bool,
++    ccall((:utf8proc_grapheme_break_stateful, libutf8proc), Bool,
+           (UInt32, UInt32, Ref{Int32}), c1, c2, state)
+ end
+ 
+diff --git a/666f2a7e16-68a1f62e98.clean/base/sysinfo.jl b/666f2a7e16-68a1f62e98/base/sysinfo.jl
+index 2c9620884..c56ba355c 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/sysinfo.jl
++++ b/666f2a7e16-68a1f62e98/base/sysinfo.jl
+@@ -215,13 +215,13 @@ end
+ function cpu_info()
+     UVcpus = Ref{Ptr{UV_cpu_info_t}}()
+     count = Ref{Int32}()
+-    err = ccall(:uv_cpu_info, Int32, (Ptr{Ptr{UV_cpu_info_t}}, Ptr{Int32}), UVcpus, count)
++    err = ccall((:uv_cpu_info, libuv), Int32, (Ptr{Ptr{UV_cpu_info_t}}, Ptr{Int32}), UVcpus, count)
+     Base.uv_error("uv_cpu_info", err)
+     cpus = Vector{CPUinfo}(undef, count[])
+     for i = 1:length(cpus)
+         cpus[i] = CPUinfo(unsafe_load(UVcpus[], i))
+     end
+-    ccall(:uv_free_cpu_info, Cvoid, (Ptr{UV_cpu_info_t}, Int32), UVcpus[], count[])
++    ccall((:uv_free_cpu_info, libuv), Cvoid, (Ptr{UV_cpu_info_t}, Int32), UVcpus[], count[])
+     return cpus
+ end
+ 
+@@ -232,7 +232,7 @@ Gets the current system uptime in seconds.
+ """
+ function uptime()
+     uptime_ = Ref{Float64}()
+-    err = ccall(:uv_uptime, Int32, (Ptr{Float64},), uptime_)
++    err = ccall((:uv_uptime, libuv), Int32, (Ptr{Float64},), uptime_)
+     Base.uv_error("uv_uptime", err)
+     return uptime_[]
+ end
+@@ -244,7 +244,7 @@ Get the load average. See: https://en.wikipedia.org/wiki/Load_(computing).
+ """
+ function loadavg()
+     loadavg_ = Vector{Float64}(undef, 3)
+-    ccall(:uv_loadavg, Cvoid, (Ptr{Float64},), loadavg_)
++    ccall((:uv_loadavg, libuv), Cvoid, (Ptr{Float64},), loadavg_)
+     return loadavg_
+ end
+ 
+@@ -254,7 +254,7 @@ end
+ Get the free memory of the system in bytes. The entire amount may not be available to the
+ current process; use `Sys.free_memory()` for the actually available amount.
+ """
+-free_physical_memory() = ccall(:uv_get_free_memory, UInt64, ())
++free_physical_memory() = ccall((:uv_get_free_memory, libuv), UInt64, ())
+ 
+ """
+     Sys.total_physical_memory()
+@@ -262,14 +262,14 @@ free_physical_memory() = ccall(:uv_get_free_memory, UInt64, ())
+ Get the total memory in RAM (including that which is currently used) in bytes. The entire
+ amount may not be available to the current process; see `Sys.total_memory()`.
+ """
+-total_physical_memory() = ccall(:uv_get_total_memory, UInt64, ())
++total_physical_memory() = ccall((:uv_get_total_memory, libuv), UInt64, ())
+ 
+ """
+     Sys.free_memory()
+ 
+ Get the total free memory in RAM in bytes.
+ """
+-free_memory() = ccall(:uv_get_available_memory, UInt64, ())
++free_memory() = ccall((:uv_get_available_memory, libuv), UInt64, ())
+ 
+ """
+     Sys.total_memory()
+@@ -279,7 +279,7 @@ This amount may be constrained, e.g., by Linux control groups. For the unconstra
+ amount, see `Sys.physical_memory()`.
+ """
+ function total_memory()
+-    constrained = ccall(:uv_get_constrained_memory, UInt64, ())
++    constrained = ccall((:uv_get_constrained_memory, libuv), UInt64, ())
+     physical = total_physical_memory()
+     if 0 < constrained <= physical
+         return constrained
+@@ -295,7 +295,7 @@ Get the process title. On some systems, will always return an empty string.
+ """
+ function get_process_title()
+     buf = Vector{UInt8}(undef, 512)
+-    err = ccall(:uv_get_process_title, Cint, (Ptr{UInt8}, Cint), buf, 512)
++    err = ccall((:uv_get_process_title, libuv), Cint, (Ptr{UInt8}, Cint), buf, 512)
+     Base.uv_error("get_process_title", err)
+     return unsafe_string(pointer(buf))
+ end
+@@ -306,7 +306,7 @@ end
+ Set the process title. No-op on some operating systems.
+ """
+ function set_process_title(title::AbstractString)
+-    err = ccall(:uv_set_process_title, Cint, (Cstring,), title)
++    err = ccall((:uv_set_process_title, libuv), Cint, (Cstring,), title)
+     Base.uv_error("set_process_title", err)
+ end
+ 
+diff --git a/666f2a7e16-68a1f62e98.clean/base/toml_parser.jl b/666f2a7e16-68a1f62e98/base/toml_parser.jl
+index 6c4ff6e2a..b2528ec15 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/toml_parser.jl
++++ b/666f2a7e16-68a1f62e98/base/toml_parser.jl
+@@ -899,19 +899,17 @@ function parse_float(l::Parser, contains_underscore)::Err{Float64}
+     return v
+ end
+ 
+-for (name, T1, T2, n1, n2) in (("int", Int64,  Int128,  17,  33),
+-                               ("hex", UInt64, UInt128, 18,  34),
+-                               ("oct", UInt64, UInt128, 24,  45),
+-                               ("bin", UInt64, UInt128, 66, 130),
++for (name, T1, n1) in (("int", Int64,  17),
++                               ("hex", UInt64, 18),
++                               ("oct", UInt64, 24),
++                               ("bin", UInt64, 66),
+                                )
+-    @eval function $(Symbol("parse_", name))(l::Parser, contains_underscore, base=nothing)::Err{Union{$(T1), $(T2), BigInt}}
++    @eval function $(Symbol("parse_", name))(l::Parser, contains_underscore, base=nothing)::Err{Union{$(T1), BigInt}}
+         s = take_string_or_substring(l, contains_underscore)
+         len = length(s)
+         v = try
+             if len ≤ $(n1)
+                 Base.parse($(T1), s; base)
+-            elseif $(n1) < len ≤ $(n2)
+-                Base.parse($(T2), s; base)
+             else
+                 Base.parse(BigInt, s; base)
+             end
+diff --git a/666f2a7e16-68a1f62e98.clean/base/util.jl b/666f2a7e16-68a1f62e98/base/util.jl
+index 6f424f80d..a2d829241 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/util.jl
++++ b/666f2a7e16-68a1f62e98/base/util.jl
+@@ -514,8 +514,9 @@ end
+ _crc32c(io::IO, crc::UInt32=0x00000000) = _crc32c(io, typemax(Int64), crc)
+ _crc32c(io::IOStream, crc::UInt32=0x00000000) = _crc32c(io, filesize(io)-position(io), crc)
+ _crc32c(uuid::UUID, crc::UInt32=0x00000000) = _crc32c(uuid.value, crc)
+-_crc32c(x::UInt128, crc::UInt32=0x00000000) =
+-    ccall(:jl_crc32c, UInt32, (UInt32, Ref{UInt128}, Csize_t), crc, x, 16)
++
++#_crc32c(x::UInt128, crc::UInt32=0x00000000) =
++#    ccall(:jl_crc32c, UInt32, (UInt32, Ref{UInt128}, Csize_t), crc, x, 16)
+ _crc32c(x::UInt64, crc::UInt32=0x00000000) =
+     ccall(:jl_crc32c, UInt32, (UInt32, Ref{UInt64}, Csize_t), crc, x, 8)
+ _crc32c(x::UInt32, crc::UInt32=0x00000000) =
+@@ -676,6 +677,7 @@ to the standard libraries before running the tests.
+ If a seed is provided via the keyword argument, it is used to seed the
+ global RNG in the context where the tests are run; otherwise the seed is chosen randomly.
+ """
++#=
+ function runtests(tests = ["all"]; ncores::Int = ceil(Int, Sys.CPU_THREADS / 2),
+                   exit_on_error::Bool=false,
+                   revise::Bool=false,
+@@ -705,7 +707,7 @@ function runtests(tests = ["all"]; ncores::Int = ceil(Int, Sys.CPU_THREADS / 2),
+               "including error messages above and the output of versioninfo():\n$(read(buf, String))")
+     end
+ end
+-
++=#
+ """
+     isdebugbuild()
+ 
+diff --git a/666f2a7e16-68a1f62e98.clean/base/uuid.jl b/666f2a7e16-68a1f62e98/base/uuid.jl
+index ff4df68dd..67bb06e43 100644
+--- a/666f2a7e16-68a1f62e98.clean/base/uuid.jl
++++ b/666f2a7e16-68a1f62e98/base/uuid.jl
+@@ -9,9 +9,9 @@ struct UUID
+     value::UInt128
+ end
+ UUID(u::UUID) = u
+-UUID(u::NTuple{2, UInt64}) = UUID((UInt128(u[1]) << 64) | UInt128(u[2]))
+-UUID(u::NTuple{4, UInt32}) = UUID((UInt128(u[1]) << 96) | (UInt128(u[2]) << 64) |
+-                                  (UInt128(u[3]) << 32) | UInt128(u[4]))
++#UUID(u::NTuple{2, UInt64}) = UUID((UInt128(u[1]) << 64) | UInt128(u[2]))
++#UUID(u::NTuple{4, UInt32}) = UUID((UInt128(u[1]) << 96) | (UInt128(u[2]) << 64) |
++#                                  (UInt128(u[3]) << 32) | UInt128(u[4]))
+ 
+ function convert(::Type{NTuple{2, UInt64}}, uuid::UUID)
+     bytes = uuid.value
+@@ -29,7 +29,7 @@ function convert(::Type{NTuple{4, UInt32}}, uuid::UUID)
+     return (hh, hl, lh, ll)
+ end
+ 
+-UInt128(u::UUID) = u.value
++#UInt128(u::UUID) = u.value
+ 
+ let
+     uuid_hash_seed = UInt === UInt64 ? 0xd06fa04f86f11b53 : 0x96a1f36d
+diff --git a/666f2a7e16-68a1f62e98.clean/cli/Makefile b/666f2a7e16-68a1f62e98/cli/Makefile
+index 394f68f58..a343a68cf 100644
+--- a/666f2a7e16-68a1f62e98.clean/cli/Makefile
++++ b/666f2a7e16-68a1f62e98/cli/Makefile
+@@ -11,14 +11,14 @@ LOADER_CFLAGS = $(JCFLAGS) -I$(BUILDROOT)/src -I$(JULIAHOME)/src -I$(JULIAHOME)/
+ LOADER_LDFLAGS = $(JLDFLAGS) -L$(build_shlibdir) -L$(build_libdir)
+ 
+ ifeq ($(OS),WINNT)
+-LOADER_CFLAGS += -municode -mconsole
++LOADER_CFLAGS += -municode -mconsole -Z7
+ #-nostdlib -fno-stack-check -fno-stack-protector -mno-stack-arg-probe
+ else ifeq ($(OS),Linux)
+ LOADER_CFLAGS += -DGLIBCXX_LEAST_VERSION_SYMBOL=\"$(shell echo "$(CSL_NEXT_GLIBCXX_VERSION)" | cut -d'|' -f1 | sed 's/\\//g')\"
+ endif
+ 
+ ifeq ($(OS),WINNT)
+-LOADER_LDFLAGS += -municode -mconsole -nostdlib -lntdll -lkernel32 -lpsapi -lShell32
++LOADER_LDFLAGS += -municode -mconsole -nostdlib -lntdll -lkernel32 -lpsapi -lShell32 -Xlinker -DEBUG
+ # --disable-auto-import --disable-runtime-pseudo-reloc
+ else ifeq ($(OS),Linux)
+ LOADER_LDFLAGS += -Wl,--no-as-needed -ldl -lpthread -rdynamic -lc -Wl,--as-needed
+@@ -46,6 +46,7 @@ LIB_OBJS := $(BUILDDIR)/loader_lib.o
+ LIB_DOBJS := $(BUILDDIR)/loader_lib.dbg.obj
+ 
+ # If this is an architecture that supports dynamic linking, link in a trampoline definition
++ARCH := x86_64
+ ifneq (,$(wildcard $(SRCDIR)/trampolines/trampolines_$(ARCH).S))
+ LIB_OBJS += $(BUILDDIR)/loader_trampolines.o
+ LIB_DOBJS += $(BUILDDIR)/loader_trampolines.o
+@@ -64,7 +65,7 @@ $(BUILDDIR)/loader_exe.o : $(SRCDIR)/loader_exe.c $(HEADERS) $(JULIAHOME)/VERSIO
+ $(BUILDDIR)/loader_exe.dbg.obj : $(SRCDIR)/loader_exe.c $(HEADERS) $(JULIAHOME)/VERSION
+ 	@$(call PRINT_CC, $(CC) $(DEBUGFLAGS) $(LOADER_CFLAGS) -c $< -o $@)
+ $(BUILDDIR)/loader_trampolines.o : $(SRCDIR)/trampolines/trampolines_$(ARCH).S $(HEADERS) $(SRCDIR)/trampolines/common.h
+-	@$(call PRINT_CC, $(CC) $(SHIPFLAGS) $(LOADER_CFLAGS) $< -c -o $@)
++	@$(call PRINT_CC, $(CCAS) $(CCASFLAGS) $(SHIPFLAGS) $(LOADER_CFLAGS) $< -c -o $@)
+ 
+ # Debugging target to help us see what kind of code is being generated for our trampolines
+ dump-trampolines: $(SRCDIR)/trampolines/trampolines_$(ARCH).S
+diff --git a/666f2a7e16-68a1f62e98.clean/cli/loader.h b/666f2a7e16-68a1f62e98/cli/loader.h
+index b778976ce..b5e5c07b5 100644
+--- a/666f2a7e16-68a1f62e98.clean/cli/loader.h
++++ b/666f2a7e16-68a1f62e98/cli/loader.h
+@@ -5,7 +5,7 @@
+ #include "../src/support/dirpath.h"
+ #include "../src/julia_fasttls.h"
+ 
+-#ifdef _OS_WINDOWS_
++#if defined(_OS_WINDOWS_) && !defined(_MSC_VER)
+ /* We need to reimplement a bunch of standard library stuff on windows,
+  * but we want to make sure that it doesn't conflict with the actual implementations
+  * once those get linked into this process. */
+@@ -21,13 +21,19 @@
+ #define malloc loader_malloc
+ #define realloc loader_realloc
+ #define free loader_free
++#elif defined(_MSC_VER)
++#include <stdlib.h>
++#include <malloc.h>
++#include <stdio.h>
++#define dirname loader_dirname
+ #endif
+ 
+ #ifdef _OS_WINDOWS_
+ 
+ #define WIN32_LEAN_AND_MEAN
+ #include <windows.h>
+-
++#include <stdlib.h>
++#include <malloc.h>
+ #else
+ 
+ #ifdef _OS_DARWIN_
+@@ -72,9 +78,9 @@
+  * see what this value should look like.  Note that the last entry must always be
+  * `libjulia`, and that all paths should be relative to this loader library path.
+  */
+-#if !defined(DEP_LIBS)
+-#define DEP_LIBS "../lib/example.so:../lib/libjulia.so"
+-#endif
++//#if !defined(DEP_LIBS)
++#define DEP_LIBS "@../bin/libjulia-internal.dll:@../bin/libjulia-codegen.dll:"
++//#endif
+ 
+ // We need to dlopen() ourselves in order to introspect the libdir.
+ #if defined(JL_DEBUG_BUILD)
+diff --git a/666f2a7e16-68a1f62e98.clean/cli/loader_exe.c b/666f2a7e16-68a1f62e98/cli/loader_exe.c
+index a9d61aab7..a8d05e359 100644
+--- a/666f2a7e16-68a1f62e98.clean/cli/loader_exe.c
++++ b/666f2a7e16-68a1f62e98/cli/loader_exe.c
+@@ -10,6 +10,8 @@ extern "C" {
+ /* Bring in helper functions for windows without libgcc. */
+ #ifdef _OS_WINDOWS_
+ #include "loader_win_utils.c"
++#include <dbghelp.h>
++#pragma comment(lib, "Dbghelp.lib")
+ #endif
+ 
+ JULIA_DEFINE_FAST_TLS
+@@ -24,7 +26,7 @@ JL_DLLEXPORT const char* __asan_default_options(void)
+ }
+ #endif
+ 
+-#ifdef _OS_WINDOWS_
++#if defined(_OS_WINDOWS_) && !defined(_MSC_VER)
+ #include <shellapi.h>
+ int mainCRTStartup(void)
+ {
+@@ -32,6 +34,11 @@ int mainCRTStartup(void)
+     LPWSTR * wargv = CommandLineToArgvW(GetCommandLineW(), &argc);
+     char ** argv = (char **)malloc(sizeof(char*) * (argc + 1));
+     setup_stdio();
++#elif defined(_MSC_VER)
++int wmain(int argc, wchar_t *wargv[])
++{
++     SymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS | SYMOPT_LOAD_LINES | SYMOPT_IGNORE_CVREC);
++    char **argv = (char **)malloc(sizeof(char *) * (argc + 1));
+ #else
+ int main(int argc, char * argv[])
+ {
+diff --git a/666f2a7e16-68a1f62e98.clean/cli/loader_lib.c b/666f2a7e16-68a1f62e98/cli/loader_lib.c
+index e2f615c68..5d77da6f6 100644
+--- a/666f2a7e16-68a1f62e98.clean/cli/loader_lib.c
++++ b/666f2a7e16-68a1f62e98/cli/loader_lib.c
+@@ -382,7 +382,12 @@ __attribute__((constructor)) void jl_load_libjulia_internal(void) {
+     //   libstdc++
+     //   libjulia-internal
+     //   libjulia-codegen
++#ifndef _MSC_VER
+     const int NUM_SPECIAL_LIBRARIES = 3;
++#else
++    //We don't use libstdc++ in this case. Using normal Windows CRT
++    const int NUM_SPECIAL_LIBRARIES = 2;
++#endif()
+     int special_idx = 0;
+     while (1) {
+         // try to find next colon character; if we can't, break out
+@@ -431,6 +436,7 @@ __attribute__((constructor)) void jl_load_libjulia_internal(void) {
+             // Skip the `@` for future function calls.
+             curr_dep += 1;
+ 
++#ifndef _MSC_VER
+             // First special library to be loaded is `libstdc++`; perform probing here.
+             if (special_idx == 0) {
+ #if defined(_OS_LINUX_)
+@@ -473,6 +479,16 @@ __attribute__((constructor)) void jl_load_libjulia_internal(void) {
+                 libjulia_codegen = load_library(curr_dep, lib_dir, 0);
+             }
+             special_idx++;
++#else
++            if (special_idx == 0) {
++                // This special library is `libjulia-internal`
++                libjulia_internal = load_library(curr_dep, lib_dir, 1);
++            } else if (special_idx == 1) {
++                // This special library is `libjulia-codegen`
++                libjulia_codegen = load_library(curr_dep, lib_dir, 0);
++            }
++            special_idx++;
++#endif
+         } else {
+             // Otherwise, just load it as "normal"
+             load_library(curr_dep, lib_dir, 1);
+@@ -561,16 +577,46 @@ JL_DLLEXPORT int jl_load_repl(int argc, char * argv[]) {
+     return entrypoint(argc, (char **)argv);
+ }
+ 
+-#ifdef _OS_WINDOWS_
+-int __stdcall DllMainCRTStartup(void *instance, unsigned reason, void *reserved) {
++#if defined(_OS_WINDOWS_) && !defined(_MSC_VER)
++int __stdcall DllMainCRTStartup(HINSTANCE hinstDLL, DWORD fdwReason,
++LPVOID lpReserved) {
+     setup_stdio();
+-
+     // Because we override DllMainCRTStartup, we have to manually call our constructor methods
+     jl_load_libjulia_internal();
+     return 1;
+ }
+ #endif
+ 
++#ifdef _MSC_VER
++BOOL WINAPI DllMain(
++    HINSTANCE hinstDLL,  // handle to DLL module
++    DWORD fdwReason,     // reason for calling function
++    LPVOID lpvReserved )  // reserved
++{
++    // Perform actions based on the reason for calling.
++    switch( fdwReason ) 
++    { 
++        case DLL_PROCESS_ATTACH:
++        case DLL_THREAD_ATTACH:
++         // Initialize once for each new process.
++         // Return FALSE to fail DLL load.
++            jl_load_libjulia_internal();
++            break;
++
++        case DLL_THREAD_DETACH:
++        case DLL_PROCESS_DETACH:
++            if (lpvReserved != NULL)
++            {
++                break; // do not do cleanup if process termination scenario
++            }
++            
++         // Perform any necessary cleanup.
++            break;
++    }
++    return TRUE;  // Successful DLL_PROCESS_ATTACH.
++}
++#endif 
++
+ #ifdef __cplusplus
+ } // extern "C"
+ #endif
+diff --git a/666f2a7e16-68a1f62e98.clean/cli/loader_win_utils.c b/666f2a7e16-68a1f62e98/cli/loader_win_utils.c
+index 284b55317..c5d47df2b 100644
+--- a/666f2a7e16-68a1f62e98.clean/cli/loader_win_utils.c
++++ b/666f2a7e16-68a1f62e98/cli/loader_win_utils.c
+@@ -4,6 +4,7 @@
+ #include <Windows.h>
+ 
+ // Workarounds for compiling via mingw without using libgcc_s
++#ifndef _MSC_VER
+ typedef struct {
+     HANDLE fd;
+     BOOL isconsole;
+@@ -15,6 +16,8 @@ static FILE _stderr = { INVALID_HANDLE_VALUE };
+ FILE *stdout = &_stdout;
+ FILE *stderr = &_stderr;
+ 
++#endif
++
+ void * loader_malloc(const size_t size) {
+     return HeapAlloc(GetProcessHeap(), HEAP_GENERATE_EXCEPTIONS, size);
+ }
+@@ -23,6 +26,7 @@ void loader_free(void* mem) {
+     HeapFree(GetProcessHeap(), 0, mem);
+ }
+ 
++#ifndef _MSC_VER
+ int loader_fwrite(const char *str, size_t nchars, FILE *out) {
+     DWORD written;
+     if (out->isconsole) {
+@@ -42,11 +46,19 @@ int loader_fwrite(const char *str, size_t nchars, FILE *out) {
+     }
+     return -1;
+ }
+-
+ int loader_fputs(const char *str, FILE *out) {
+     return loader_fwrite(str, loader_strlen(str), out);
+ }
+ 
++#endif
++
++size_t loader_strlen(const char * x) {
++    int idx = 0;
++    while (x[idx] != 0)
++        idx++;
++    return idx;
++}
++
+ void * loader_realloc(void * mem, const size_t size) {
+     return HeapReAlloc(GetProcessHeap(), HEAP_GENERATE_EXCEPTIONS, mem, size);
+ }
+@@ -105,6 +117,7 @@ LPWSTR *CommandLineToArgv(LPWSTR lpCmdLine, int *pNumArgs) {
+     }
+ }
+ 
++#ifndef _MSC_VER
+ void setup_stdio() {
+     DWORD mode = 0;
+     _stdout.fd = GetStdHandle(STD_OUTPUT_HANDLE);
+@@ -112,7 +125,7 @@ void setup_stdio() {
+     _stderr.fd = GetStdHandle(STD_ERROR_HANDLE);
+     _stderr.isconsole = GetConsoleMode(_stderr.fd, &mode);
+ }
+-
++#endif
+ void loader_exit(int code) {
+     ExitProcess(code);
+ }
+@@ -151,13 +164,6 @@ wchar_t *utf8_to_wchar(const char * str) {
+     return wstr;
+ }
+ 
+-size_t loader_strlen(const char * x) {
+-    int idx = 0;
+-    while (x[idx] != 0)
+-        idx++;
+-    return idx;
+-}
+-
+ size_t loader_wcslen(const wchar_t * x) {
+     int idx = 0;
+     while (x[idx] != 0)
+diff --git a/666f2a7e16-68a1f62e98/configure b/666f2a7e16-68a1f62e98/configure
+new file mode 100644
+index 000000000..e69de29bb
+diff --git a/666f2a7e16-68a1f62e98.clean/contrib/normalize_triplet.py b/666f2a7e16-68a1f62e98/contrib/normalize_triplet.py
+index 77c047b36..698de4c6f 100644
+--- a/666f2a7e16-68a1f62e98.clean/contrib/normalize_triplet.py
++++ b/666f2a7e16-68a1f62e98/contrib/normalize_triplet.py
+@@ -19,7 +19,7 @@ arch_mapping = {
+ platform_mapping = {
+     'darwin': "-apple-darwin[\\d\\.]*",
+     'freebsd': "-(.*-)?freebsd[\\d\\.]*",
+-    'windows': "-w64-mingw32",
++    'windows': "-pc-windows-msvc",
+     'linux': "-(.*-)?linux",
+ }
+ libc_mapping = {
+@@ -94,7 +94,7 @@ def p(x):
+     # capture group names, unfortunately:
+     os_remapping = {
+         'darwin': 'apple-darwin',
+-        'windows': 'w64-mingw32',
++        'windows': 'pc-windows-msvc',
+         'freebsd': 'unknown-freebsd',
+     }
+     x = r(x)
+diff --git a/666f2a7e16-68a1f62e98.clean/src/Makefile b/666f2a7e16-68a1f62e98/src/Makefile
+index 498bd0adb..6b470d910 100644
+--- a/666f2a7e16-68a1f62e98.clean/src/Makefile
++++ b/666f2a7e16-68a1f62e98/src/Makefile
+@@ -9,7 +9,7 @@ JCXXFLAGS += $(CXXFLAGS)
+ JCPPFLAGS += $(CPPFLAGS)
+ JLDFLAGS += $(LDFLAGS)
+ 
+-EXTRA_LIBS := -lgetopt -lLLVMWindowsManifest -lLLVMWindowsDriver -lLLVMXRay -lLLVMLibDriver -lLLVMDlltoolDriver -lLLVMCoverage -lLLVMLineEditor -lLLVMX86TargetMCA -lLLVMX86Disassembler -lLLVMX86AsmParser -lLLVMX86CodeGen -lLLVMX86Desc -lLLVMX86Info -lLLVMOrcJIT -lLLVMMCJIT -lLLVMJITLink -lLLVMInterpreter -lLLVMExecutionEngine -lLLVMRuntimeDyld -lLLVMOrcTargetProcess -lLLVMOrcShared -lLLVMDWP -lLLVMDebugInfoGSYM -lLLVMOption -lLLVMObjectYAML -lLLVMObjCopy -lLLVMMCA -lLLVMMCDisassembler -lLLVMLTO -lLLVMPasses -lLLVMCFGuard -lLLVMCoroutines -lLLVMObjCARCOpts -lLLVMipo -lLLVMVectorize -lLLVMLinker -lLLVMInstrumentation -lLLVMFrontendOpenMP -lLLVMFrontendOpenACC -lLLVMExtensions -lLLVMDWARFLinker -lLLVMGlobalISel -lLLVMMIRParser -lLLVMAsmPrinter -lLLVMSelectionDAG -lLLVMCodeGen -lLLVMIRReader -lLLVMAsmParser -lLLVMInterfaceStub -lLLVMFileCheck -lLLVMFuzzMutate -lLLVMTarget -lLLVMScalarOpts -lLLVMInstCombine -lLLVMAggressiveInstCombine -lLLVMTransformUtils -lLLVMBitWriter -lLLVMAnalysis -lLLVMProfileData -lLLVMSymbolize -lLLVMDebugInfoPDB -lLLVMDebugInfoMSF -lLLVMDebugInfoDWARF -lLLVMObject -lLLVMTextAPI -lLLVMMCParser -lLLVMMC -lLLVMDebugInfoCodeView -lLLVMBitReader -lLLVMFuzzerCLI -lLLVMCore -lLLVMRemarks -lLLVMBitstreamReader -lLLVMBinaryFormat -lLLVMTableGen -lLLVMSupport -lLLVMDemangle
++EXTRA_LIBS := -lgetopt -lLLVMWindowsManifest -lLLVMWindowsDriver -lLLVMXRay -lLLVMLibDriver -lLLVMDlltoolDriver -lLLVMCoverage -lLLVMLineEditor -lLLVMX86TargetMCA -lLLVMX86Disassembler -lLLVMX86AsmParser -lLLVMX86CodeGen -lLLVMX86Desc -lLLVMX86Info -lLLVMOrcJIT -lLLVMMCJIT -lLLVMJITLink -lLLVMInterpreter -lLLVMExecutionEngine -lLLVMRuntimeDyld -lLLVMOrcTargetProcess -lLLVMOrcShared -lLLVMDWP -lLLVMDebugInfoGSYM -lLLVMOption -lLLVMObjectYAML -lLLVMObjCopy -lLLVMMCA -lLLVMMCDisassembler -lLLVMLTO -lLLVMPasses -lLLVMCFGuard -lLLVMCoroutines -lLLVMObjCARCOpts -lLLVMipo -lLLVMVectorize -lLLVMLinker -lLLVMInstrumentation -lLLVMFrontendOpenMP -lLLVMFrontendOpenACC -lLLVMExtensions -lLLVMDWARFLinker -lLLVMGlobalISel -lLLVMMIRParser -lLLVMAsmPrinter -lLLVMSelectionDAG -lLLVMCodeGen -lLLVMIRReader -lLLVMAsmParser -lLLVMInterfaceStub -lLLVMFileCheck -lLLVMFuzzMutate -lLLVMTarget -lLLVMScalarOpts -lLLVMInstCombine -lLLVMAggressiveInstCombine -lLLVMTransformUtils -lLLVMBitWriter -lLLVMAnalysis -lLLVMProfileData -lLLVMSymbolize -lLLVMDebugInfoPDB -lLLVMDebugInfoMSF -lLLVMDebugInfoDWARF -lLLVMObject -lLLVMTextAPI -lLLVMMCParser -lLLVMMC -lLLVMDebugInfoCodeView -lLLVMBitReader -lLLVMFuzzerCLI -lLLVMCore -lLLVMRemarks -lLLVMBitstreamReader -lLLVMBinaryFormat -lLLVMTableGen -lLLVMSupport -lLLVMDemangle -lzstd -lzlib -luv
+ 
+ # -I BUILDDIR comes before -I SRCDIR so that the user can override <options.h> on a per-build-directory basis
+ #  for gcc/clang, suggested content is:
+@@ -160,7 +160,7 @@ endif
+ 
+ COMMON_LIBPATHS := -L$(build_libdir) -L$(build_shlibdir)
+ RT_LIBS := $(LIBUV) $(LIBUTF8PROC) $(NO_WHOLE_ARCHIVE) $(LIBUNWIND) $(RT_LLVMLINK) $(OSLIBS) $(LIBTRACYCLIENT) $(LIBITTAPI)
+-CG_LIBS := $(LIBUNWIND) $(CG_LLVMLINK) $(OSLIBS) $(LIBTRACYCLIENT) $(LIBITTAPI) $(EXTRA_LIBS)
++CG_LIBS := $(LIBUNWIND) $(CG_LLVMLINK) $(OSLIBS) $(LIBTRACYCLIENT) $(LIBITTAPI)
+ RT_DEBUG_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp-debug.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport-debug.a libjulia-debug.dll.a $(RT_LIBS)
+ CG_DEBUG_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) libjulia-debug.dll.a libjulia-internal-debug.dll.a
+ RT_RELEASE_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport.a libjulia.dll.a $(RT_LIBS)
+@@ -245,7 +245,7 @@ endef
+ $(foreach HEADER,$(PUBLIC_HEADERS),$(eval $(call public_header_target,$(HEADER))))
+ 
+ $(eval $(call dir_target,$(build_includedir)/julia/uv))
+-$(build_includedir)/julia/uv/*.h: $(LIBUV_INC)/uv/*.h | $(build_includedir)/julia/uv
++$(build_includedir)/julia/uv/*.h:  $(build_includedir)/julia/uv
+ 	$(INSTALL_F) $^ $(build_includedir)/julia/uv
+ 
+ libccalltest: $(build_shlibdir)/libccalltest.$(SHLIB_EXT)
+@@ -364,16 +364,16 @@ $(BUILDDIR)/julia_version.h: $(JULIAHOME)/VERSION
+ 	mv $@.$(JULIA_BUILD_MODE).tmp $@
+ 
+ CXXLD = $(CXX) -Xlinker -DLL
+-
++#error: section larger than 4 GiB: .data
+ $(build_shlibdir)/libjulia-internal.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(OBJS) $(BUILDDIR)/flisp/libflisp.a $(BUILDDIR)/support/libsupport.a
+-	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(OBJS) $(RPATH_LIB) $(WHOLE_ARCHIVE) libjulia.dll.a -o $@ \
+-		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_RELEASE_LIBS) $(call SONAME_FLAGS,libjulia-internal.$(JL_MAJOR_SHLIB_EXT)))
++	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(OBJS) $(RPATH_LIB) $(WHOLE_ARCHIVE) -llibjulia.dll -o $@ \
++		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_RELEASE_LIBS) $(EXTRA_LIBS) $(call SONAME_FLAGS,libjulia-internal.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-internal.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+ 
+ $(build_shlibdir)/libjulia-internal-debug.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(DOBJS) $(BUILDDIR)/flisp/libflisp-debug.a $(BUILDDIR)/support/libsupport-debug.a
+-	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(DOBJS) $(RPATH_LIB) $(WHOLE_ARCHIVE) libjulia.dll -o $@ \
+-		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_DEBUG_LIBS) $(call SONAME_FLAGS,libjulia-internal-debug.$(JL_MAJOR_SHLIB_EXT)))
++	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(DOBJS) $(RPATH_LIB) $(WHOLE_ARCHIVE) -llibjulia.dll -o $@ \
++		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_DEBUG_LIBS) $(EXTRA_LIBS) $(call SONAME_FLAGS,libjulia-internal-debug.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-internal-debug.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+ 
+@@ -395,13 +395,13 @@ libjulia-internal-debug libjulia-internal-release: $(PUBLIC_HEADER_TARGETS)
+ 
+ $(build_shlibdir)/libjulia-codegen.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(CODEGEN_OBJS) $(BUILDDIR)/support/libsupport.a $(build_shlibdir)/libjulia-internal.$(JL_MAJOR_MINOR_SHLIB_EXT)
+ 	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(CODEGEN_OBJS) $(RPATH_LIB) -o $@ \
+-		$(JLDFLAGS) $(JLIBLDFLAGS) $(CG_RELEASE_LIBS) $(call SONAME_FLAGS,libjulia-codegen.$(JL_MAJOR_SHLIB_EXT)))
++		$(JLDFLAGS) $(JLIBLDFLAGS) $(CG_RELEASE_LIBS) $(EXTRA_LIBS) $(call SONAME_FLAGS,libjulia-codegen.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-codegen.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+ 
+ $(build_shlibdir)/libjulia-codegen-debug.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(CODEGEN_DOBJS) $(BUILDDIR)/support/libsupport-debug.a $(build_shlibdir)/libjulia-internal-debug.$(JL_MAJOR_MINOR_SHLIB_EXT)
+ 	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(CODEGEN_DOBJS) $(RPATH_LIB) -o $@ \
+-		$(JLDFLAGS) $(JLIBLDFLAGS) $(CG_DEBUG_LIBS) $(call SONAME_FLAGS,libjulia-codegen-debug.$(JL_MAJOR_SHLIB_EXT)))
++		$(JLDFLAGS) $(JLIBLDFLAGS) $(CG_DEBUG_LIBS) $(EXTRA_LIBS) $(call SONAME_FLAGS,libjulia-codegen-debug.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-codegen-debug.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+ 
+diff --git a/666f2a7e16-68a1f62e98.clean/src/codegen.cpp b/666f2a7e16-68a1f62e98/src/codegen.cpp
+index a5d54f16e..180e6abdd 100644
+--- a/666f2a7e16-68a1f62e98.clean/src/codegen.cpp
++++ b/666f2a7e16-68a1f62e98/src/codegen.cpp
+@@ -645,6 +645,7 @@ static const auto jlsmall_typeof_var = new JuliaVariable{
+     [](Type *T_size) -> Type * { return getInt8Ty(T_size->getContext()); },
+ };
+ 
++__declspec(dllimport) extern "C" uintptr_t __stack_chk_guard;
+ static const auto jlstack_chk_guard_var = new JuliaVariable{
+     XSTR(__stack_chk_guard),
+     true,
+@@ -9187,7 +9188,7 @@ extern "C" JL_DLLEXPORT_CODEGEN jl_value_t *jl_get_libllvm_impl(void) JL_NOTSAFE
+ {
+ #if defined(_OS_WINDOWS_)
+     HMODULE mod;
+-    if (!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCSTR)&llvm::DebugFlag, &mod))
++    if (!GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCSTR)&llvm::DebugFlag, &mod))
+         return jl_nothing;
+     wchar_t path16[MAX_PATH];
+     DWORD n16 = GetModuleFileNameW(mod, path16, MAX_PATH);
+diff --git a/666f2a7e16-68a1f62e98.clean/src/gc-heap-snapshot.cpp b/666f2a7e16-68a1f62e98/src/gc-heap-snapshot.cpp
+index b1401653d..538a27197 100644
+--- a/666f2a7e16-68a1f62e98.clean/src/gc-heap-snapshot.cpp
++++ b/666f2a7e16-68a1f62e98/src/gc-heap-snapshot.cpp
+@@ -121,7 +121,7 @@ struct HeapSnapshot {
+ // when snapshotting is on.
+ int gc_heap_snapshot_enabled = 0;
+ HeapSnapshot *g_snapshot = nullptr;
+-extern jl_mutex_t heapsnapshot_lock;
++extern "C" JL_DLLIMPORT jl_mutex_t heapsnapshot_lock;
+ 
+ void serialize_heap_snapshot(ios_t *stream, HeapSnapshot &snapshot, char all_one);
+ static inline void _record_gc_edge(const char *edge_type,
+diff --git a/666f2a7e16-68a1f62e98.clean/src/gc.c b/666f2a7e16-68a1f62e98/src/gc.c
+index fee39b9e7..8e3b3e9ce 100644
+--- a/666f2a7e16-68a1f62e98.clean/src/gc.c
++++ b/666f2a7e16-68a1f62e98/src/gc.c
+@@ -130,7 +130,7 @@ static jl_mutex_t finalizers_lock;
+ static uv_mutex_t gc_cache_lock;
+ 
+ // mutex for gc-heap-snapshot.
+-jl_mutex_t heapsnapshot_lock;
++JL_DLLEXPORT jl_mutex_t heapsnapshot_lock;
+ 
+ // Flag that tells us whether we need to support conservative marking
+ // of objects.
+diff --git a/666f2a7e16-68a1f62e98.clean/src/init.c b/666f2a7e16-68a1f62e98/src/init.c
+index d0512bc8e..679841af0 100644
+--- a/666f2a7e16-68a1f62e98.clean/src/init.c
++++ b/666f2a7e16-68a1f62e98/src/init.c
+@@ -623,6 +623,29 @@ static const char *absformat(const char *in)
+     return out;
+ }
+ 
++#ifdef _MSC_VER
++#define PATHSEPSTRING "\\"
++char * dirname(char * x) {
++    int idx = strlen(x);
++    while (idx > 0 && x[idx] != PATHSEPSTRING[0]) {
++        idx -= 1;
++    }
++    if (x[idx] == PATHSEPSTRING[0]) {
++        // Special-case x == "/"
++        if (idx == 0) {
++            x[1] = '\0';
++            return x;
++        } else {
++            x[idx] = '\0';
++            return x;
++        }
++    }
++    x[0] = '.';
++    x[1] = '\0';
++    return x;
++}
++#endif
++
+ static void jl_resolve_sysimg_location(JL_IMAGE_SEARCH rel)
+ {   // this function resolves the paths in jl_options to absolute file locations as needed
+     // and it replaces the pointers to `julia_bindir`, `julia_bin`, `image_file`, and output file paths
+@@ -645,20 +668,7 @@ static void jl_resolve_sysimg_location(JL_IMAGE_SEARCH rel)
+     if (!jl_options.julia_bindir) {
+         jl_options.julia_bindir = getenv("JULIA_BINDIR");
+         if (!jl_options.julia_bindir) {
+-#ifdef _MSC_VER
+-        char dir[JL_PATH_MAX];
+-        strcpy(dir, free_path);
+-        char * last_path_sep = strrchr(dir,'\\');
+-        if(last_path_sep != NULL) {
+-          last_path_sep[0] = '\0';
+-        } else {
+-          dir[0] = '.';
+-          dir[1] = '\0';
+-        }
+-        strcpy(jl_options.julia_bindir, dir);
+-#else
+         jl_options.julia_bindir = dirname(free_path);
+-#endif
+         }
+     }
+     if (jl_options.julia_bindir)
+diff --git a/666f2a7e16-68a1f62e98.clean/src/jltypes.c b/666f2a7e16-68a1f62e98/src/jltypes.c
+index 1a30df637..0a599758a 100644
+--- a/666f2a7e16-68a1f62e98.clean/src/jltypes.c
++++ b/666f2a7e16-68a1f62e98/src/jltypes.c
+@@ -20,7 +20,7 @@ extern "C" {
+ #endif
+ 
+ _Atomic(jl_value_t*) cmpswap_names JL_GLOBALLY_ROOTED;
+-jl_datatype_t *small_typeof[(jl_max_tags << 4) / sizeof(*small_typeof)]; // 16-bit aligned, like the GC
++//jl_datatype_t *small_typeof[(jl_max_tags << 4) / sizeof(*small_typeof)]; // 16-bit aligned, like the GC
+ 
+ // compute empirical max-probe for a given size
+ #define max_probe(size) ((size) <= 1024 ? 16 : (size) >> 6)
+diff --git a/666f2a7e16-68a1f62e98.clean/src/julia.h b/666f2a7e16-68a1f62e98/src/julia.h
+index 286bef615..4e9c93caa 100644
+--- a/666f2a7e16-68a1f62e98.clean/src/julia.h
++++ b/666f2a7e16-68a1f62e98/src/julia.h
+@@ -747,7 +747,7 @@ enum jlsmall_typeof_tags {
+     jl_bitstags_first = jl_char_tag, // n.b. bool is not considered a bitstype, since it can be compared by pointer
+     jl_max_tags = 64
+ };
+-extern jl_datatype_t *small_typeof[(jl_max_tags << 4) / sizeof(jl_datatype_t*)];
++extern JL_DLLIMPORT jl_datatype_t *small_typeof[(jl_max_tags << 4) / sizeof(jl_datatype_t*)];
+ static inline jl_value_t *jl_to_typeof(uintptr_t t)
+ {
+     if (t < (jl_max_tags << 4))
+diff --git a/666f2a7e16-68a1f62e98.clean/src/julia_internal.h b/666f2a7e16-68a1f62e98/src/julia_internal.h
+index 14fb8ab18..49e9b8f0e 100644
+--- a/666f2a7e16-68a1f62e98.clean/src/julia_internal.h
++++ b/666f2a7e16-68a1f62e98/src/julia_internal.h
+@@ -148,8 +148,9 @@ JL_DLLIMPORT void __tsan_switch_to_fiber(void *fiber, unsigned flags);
+ #if defined(_CPU_X86_64_) && !defined(_MSC_VER)
+     // install the unhandled exception handler at the top of our stack
+     // to call directly into our personality handler
++    // yields error: all .cv_loc directives for a function must be in the same section
+ #define CFI_NORETURN \
+-    asm volatile ("\t.seh_handler __julia_personality, @except\n\t.text");
++    __asm__ __volatile__ ("\t.seh_handler __julia_personality, @except\n\t.text");
+ #else
+ #define CFI_NORETURN
+ #endif
+@@ -172,8 +173,13 @@ JL_DLLIMPORT void __tsan_switch_to_fiber(void *fiber, unsigned flags);
+ #endif
+ #endif
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ extern JL_DLLEXPORT uintptr_t __stack_chk_guard;
+-
++#ifdef __cplusplus
++}
++#endif
+ // If this is detected in a backtrace of segfault, it means the functions
+ // that use this value must be reworked into their async form with cb arg
+ // provided and with JL_UV_LOCK used around the calls
+diff --git a/666f2a7e16-68a1f62e98.clean/src/threading.c b/666f2a7e16-68a1f62e98/src/threading.c
+index 83d2e942e..22b8e1891 100644
+--- a/666f2a7e16-68a1f62e98.clean/src/threading.c
++++ b/666f2a7e16-68a1f62e98/src/threading.c
+@@ -727,7 +727,7 @@ void jl_start_threads(void)
+         else {
+             uv_thread_create(&uvtid, jl_gc_threadfun, t);
+         }
+-        uv_thread_detach(&uvtid);
++        //uv_thread_detach(&uvtid);
+     }
+ 
+     uv_barrier_wait(&thread_init_done);
+diff --git a/666f2a7e16-68a1f62e98.clean/src/uv_constants.h b/666f2a7e16-68a1f62e98/src/uv_constants.h
+index c403bd737..c07da5c1e 100644
+--- a/666f2a7e16-68a1f62e98.clean/src/uv_constants.h
++++ b/666f2a7e16-68a1f62e98/src/uv_constants.h
+@@ -1,6 +1,6 @@
+ // This file is a part of Julia. License is MIT: https://julialang.org/license
+ 
+-#include "uv.h"
++#include <uv.h>
+ #if EDOM > 0
+ # define UV__ERR(x) (-(x))
+ #else
+diff --git a/666f2a7e16-68a1f62e98.clean/stdlib/CompilerSupportLibraries_jll/src/CompilerSupportLibraries_jll.jl b/666f2a7e16-68a1f62e98/stdlib/CompilerSupportLibraries_jll/src/CompilerSupportLibraries_jll.jl
+index bd7a0571f..ab5c07e6a 100644
+--- a/666f2a7e16-68a1f62e98.clean/stdlib/CompilerSupportLibraries_jll/src/CompilerSupportLibraries_jll.jl
++++ b/666f2a7e16-68a1f62e98/stdlib/CompilerSupportLibraries_jll/src/CompilerSupportLibraries_jll.jl
+@@ -53,20 +53,20 @@ else
+ end
+ 
+ function __init__()
+-    global libgcc_s_handle = dlopen(libgcc_s)
+-    global libgcc_s_path = dlpath(libgcc_s_handle)
+-    global libgfortran_handle = dlopen(libgfortran)
+-    global libgfortran_path = dlpath(libgfortran_handle)
+-    global libstdcxx_handle = dlopen(libstdcxx)
+-    global libstdcxx_path = dlpath(libstdcxx_handle)
+-    global libgomp_handle = dlopen(libgomp)
+-    global libgomp_path = dlpath(libgomp_handle)
+-    @static if libc(HostPlatform()) != "musl"
+-        dlopen(libssp; throw_error = false)
+-    end
++    #global libgcc_s_handle = dlopen(libgcc_s)
++    #global libgcc_s_path = dlpath(libgcc_s_handle)
++    #global libgfortran_handle = dlopen(libgfortran)
++    #global libgfortran_path = dlpath(libgfortran_handle)
++    #global libstdcxx_handle = dlopen(libstdcxx)
++    #global libstdcxx_path = dlpath(libstdcxx_handle)
++    #global libgomp_handle = dlopen(libgomp)
++    #global libgomp_path = dlpath(libgomp_handle)
++    #@static if libc(HostPlatform()) != "musl"
++    #    dlopen(libssp; throw_error = false)
++    #end
+     global artifact_dir = dirname(Sys.BINDIR)
+-    LIBPATH[] = dirname(libgcc_s_path)
+-    push!(LIBPATH_list, LIBPATH[])
++    #LIBPATH[] = dirname(libgcc_s_path)
++    #push!(LIBPATH_list, LIBPATH[])
+ end
+ 
+ # JLLWrappers API compatibility shims.  Note that not all of these will really make sense.
+diff --git a/666f2a7e16-68a1f62e98.clean/stdlib/GMP_jll/src/GMP_jll.jl b/666f2a7e16-68a1f62e98/stdlib/GMP_jll/src/GMP_jll.jl
+index fde2fc15a..5d9d03bbc 100644
+--- a/666f2a7e16-68a1f62e98.clean/stdlib/GMP_jll/src/GMP_jll.jl
++++ b/666f2a7e16-68a1f62e98/stdlib/GMP_jll/src/GMP_jll.jl
+@@ -20,8 +20,8 @@ libgmpxx_handle::Ptr{Cvoid} = C_NULL
+ libgmpxx_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libgmp = "libgmp-10.dll"
+-    const libgmpxx = "libgmpxx-4.dll"
++    const libgmp = "gmp-10.dll"
++    const libgmpxx = "gmpxx-4.dll"
+ elseif Sys.isapple()
+     const libgmp = "@rpath/libgmp.10.dylib"
+     const libgmpxx = "@rpath/libgmpxx.4.dylib"
+diff --git a/666f2a7e16-68a1f62e98.clean/stdlib/LibCURL_jll/src/LibCURL_jll.jl b/666f2a7e16-68a1f62e98/stdlib/LibCURL_jll/src/LibCURL_jll.jl
+index cd67bfac0..6588f70d5 100644
+--- a/666f2a7e16-68a1f62e98.clean/stdlib/LibCURL_jll/src/LibCURL_jll.jl
++++ b/666f2a7e16-68a1f62e98/stdlib/LibCURL_jll/src/LibCURL_jll.jl
+@@ -19,7 +19,7 @@ libcurl_handle::Ptr{Cvoid} = C_NULL
+ libcurl_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libcurl = "libcurl-4.dll"
++    const libcurl = "libcurl.dll"
+ elseif Sys.isapple()
+     const libcurl = "@rpath/libcurl.4.dylib"
+ else
+diff --git a/666f2a7e16-68a1f62e98.clean/stdlib/LibGit2_jll/src/LibGit2_jll.jl b/666f2a7e16-68a1f62e98/stdlib/LibGit2_jll/src/LibGit2_jll.jl
+index f8e814f1f..667fd50c9 100644
+--- a/666f2a7e16-68a1f62e98.clean/stdlib/LibGit2_jll/src/LibGit2_jll.jl
++++ b/666f2a7e16-68a1f62e98/stdlib/LibGit2_jll/src/LibGit2_jll.jl
+@@ -19,7 +19,7 @@ libgit2_handle::Ptr{Cvoid} = C_NULL
+ libgit2_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libgit2 = "libgit2.dll"
++    const libgit2 = "git2.dll"
+ elseif Sys.isapple()
+     const libgit2 = "@rpath/libgit2.1.6.dylib"
+ else
+diff --git a/666f2a7e16-68a1f62e98.clean/stdlib/LibUV_jll/src/LibUV_jll.jl b/666f2a7e16-68a1f62e98/stdlib/LibUV_jll/src/LibUV_jll.jl
+index f6714fae5..62c70b26d 100644
+--- a/666f2a7e16-68a1f62e98.clean/stdlib/LibUV_jll/src/LibUV_jll.jl
++++ b/666f2a7e16-68a1f62e98/stdlib/LibUV_jll/src/LibUV_jll.jl
+@@ -19,7 +19,7 @@ libuv_handle::Ptr{Cvoid} = C_NULL
+ libuv_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libuv = "libuv-2.dll"
++    const libuv = "uv.dll"
+ elseif Sys.isapple()
+     const libuv = "@rpath/libuv.2.dylib"
+ else
+diff --git a/666f2a7e16-68a1f62e98.clean/stdlib/MPFR_jll/src/MPFR_jll.jl b/666f2a7e16-68a1f62e98/stdlib/MPFR_jll/src/MPFR_jll.jl
+index c184a9801..a56a030bb 100644
+--- a/666f2a7e16-68a1f62e98.clean/stdlib/MPFR_jll/src/MPFR_jll.jl
++++ b/666f2a7e16-68a1f62e98/stdlib/MPFR_jll/src/MPFR_jll.jl
+@@ -18,7 +18,7 @@ libmpfr_handle::Ptr{Cvoid} = C_NULL
+ libmpfr_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libmpfr = "libmpfr-6.dll"
++    const libmpfr = "mpfr-6.dll"
+ elseif Sys.isapple()
+     const libmpfr = "@rpath/libmpfr.6.dylib"
+ else
+diff --git a/666f2a7e16-68a1f62e98.clean/stdlib/OpenBLAS_jll/src/OpenBLAS_jll.jl b/666f2a7e16-68a1f62e98/stdlib/OpenBLAS_jll/src/OpenBLAS_jll.jl
+index 4f1c57a7d..274cecafd 100644
+--- a/666f2a7e16-68a1f62e98.clean/stdlib/OpenBLAS_jll/src/OpenBLAS_jll.jl
++++ b/666f2a7e16-68a1f62e98/stdlib/OpenBLAS_jll/src/OpenBLAS_jll.jl
+@@ -24,6 +24,7 @@ else
+ end
+ 
+ if Sys.iswindows()
++    #const libopenblas = "libopenblas$(libsuffix).dll"
+     const libopenblas = "libopenblas$(libsuffix).dll"
+ elseif Sys.isapple()
+     const libopenblas = "@rpath/libopenblas$(libsuffix).dylib"
+diff --git a/666f2a7e16-68a1f62e98.clean/stdlib/PCRE2_jll/src/PCRE2_jll.jl b/666f2a7e16-68a1f62e98/stdlib/PCRE2_jll/src/PCRE2_jll.jl
+index e7f685820..a26abff22 100644
+--- a/666f2a7e16-68a1f62e98.clean/stdlib/PCRE2_jll/src/PCRE2_jll.jl
++++ b/666f2a7e16-68a1f62e98/stdlib/PCRE2_jll/src/PCRE2_jll.jl
+@@ -18,7 +18,7 @@ libpcre2_8_handle::Ptr{Cvoid} = C_NULL
+ libpcre2_8_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libpcre2_8 = "libpcre2-8-0.dll"
++    const libpcre2_8 = "pcre2-8-0.dll"
+ elseif Sys.isapple()
+     const libpcre2_8 = "@rpath/libpcre2-8.0.dylib"
+ else
+diff --git a/666f2a7e16-68a1f62e98.clean/stdlib/Zlib_jll/src/Zlib_jll.jl b/666f2a7e16-68a1f62e98/stdlib/Zlib_jll/src/Zlib_jll.jl
+index ea381b8b0..fce83f945 100644
+--- a/666f2a7e16-68a1f62e98.clean/stdlib/Zlib_jll/src/Zlib_jll.jl
++++ b/666f2a7e16-68a1f62e98/stdlib/Zlib_jll/src/Zlib_jll.jl
+@@ -18,7 +18,7 @@ libz_handle::Ptr{Cvoid} = C_NULL
+ libz_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libz = "libz.dll"
++    const libz = "zlib1.dll"
+ elseif Sys.isapple()
+     const libz = "@rpath/libz.1.dylib"
+ else
+diff --git a/666f2a7e16-68a1f62e98.clean/stdlib/dSFMT_jll/src/dSFMT_jll.jl b/666f2a7e16-68a1f62e98/stdlib/dSFMT_jll/src/dSFMT_jll.jl
+index 35ada2377..842671569 100644
+--- a/666f2a7e16-68a1f62e98.clean/stdlib/dSFMT_jll/src/dSFMT_jll.jl
++++ b/666f2a7e16-68a1f62e98/stdlib/dSFMT_jll/src/dSFMT_jll.jl
+@@ -19,7 +19,7 @@ libdSFMT_handle::Ptr{Cvoid} = C_NULL
+ libdSFMT_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libdSFMT = "libdSFMT.dll"
++    const libdSFMT = "dSFMT.dll"
+ elseif Sys.isapple()
+     const libdSFMT = "@rpath/libdSFMT.dylib"
+ else
+diff --git a/666f2a7e16-68a1f62e98.clean/test/binaryplatforms.jl b/666f2a7e16-68a1f62e98/test/binaryplatforms.jl
+index 8de522e9c..08074a3c8 100644
+--- a/666f2a7e16-68a1f62e98.clean/test/binaryplatforms.jl
++++ b/666f2a7e16-68a1f62e98/test/binaryplatforms.jl
+@@ -167,7 +167,7 @@ end
+     @test R("aarch64-unknown-linux-gnu") == P("aarch64", "linux")
+     @test R("powerpc64le-linux-gnu") == P("powerpc64le", "linux")
+     @test R("ppc64le-linux-gnu") == P("powerpc64le", "linux")
+-    @test R("x86_64-w64-mingw32") == P("x86_64", "windows")
++    @test R("x86_64-pc-windows-msvc") == P("x86_64", "windows")
+     @test R("i686-w64-mingw32") == P("i686", "windows")
+ 
+     # FreeBSD has lots of arch names that don't match elsewhere
+diff --git a/666f2a7e16-68a1f62e98.clean/test/strings/basic.jl b/666f2a7e16-68a1f62e98/test/strings/basic.jl
+index 602c38551..9cbbeeebb 100644
+--- a/666f2a7e16-68a1f62e98.clean/test/strings/basic.jl
++++ b/666f2a7e16-68a1f62e98/test/strings/basic.jl
+@@ -233,7 +233,7 @@ end
+ 
+ @testset "parsing Int types" begin
+     let b, n
+-    for T = (UInt8,Int8,UInt16,Int16,UInt32,Int32,UInt64,Int64,UInt128,Int128,BigInt),
++    for T = (UInt8,Int8,UInt16,Int16,UInt32,Int32,UInt64,Int64,BigInt),
+             b = 2:62,
+             _ = 1:10
+         n = (T != BigInt) ? rand(T) : BigInt(rand(Int128))

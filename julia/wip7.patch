@@ -1,7 +1,7 @@
-diff --git a/666f2a7e16-dd3ce346c3.clean/Makefile b/666f2a7e16-dd3ce346c3/Makefile
+diff --git a/Makefile b/Makefile
 index 392cc2ebb..aa6b8ee49 100644
---- a/666f2a7e16-dd3ce346c3.clean/Makefile
-+++ b/666f2a7e16-dd3ce346c3/Makefile
+--- a/Makefile
++++ b/Makefile
 @@ -503,7 +503,7 @@ endif
  exe:
  	# run Inno Setup to compile installer.
@@ -11,10 +11,10 @@ index 392cc2ebb..aa6b8ee49 100644
  	chmod a+x "$(BUILDROOT)/$(JULIA_BINARYDIST_FILENAME).exe"
  
  app:
-diff --git a/666f2a7e16-dd3ce346c3.clean/cli/Makefile b/666f2a7e16-dd3ce346c3/cli/Makefile
+diff --git a/cli/Makefile b/cli/Makefile
 index 1bf0ba39c..d7fa47eaa 100644
---- a/666f2a7e16-dd3ce346c3.clean/cli/Makefile
-+++ b/666f2a7e16-dd3ce346c3/cli/Makefile
+--- a/cli/Makefile
++++ b/cli/Makefile
 @@ -7,18 +7,19 @@ include $(JULIAHOME)/deps/llvm-ver.make
  
  HEADERS := $(addprefix $(SRCDIR)/,jl_exports.h loader.h) $(addprefix $(JULIAHOME)/src/,julia_fasttls.h support/platform.h support/dirpath.h jl_exported_data.inc jl_exported_funcs.inc)
@@ -76,10 +76,10 @@ index 1bf0ba39c..d7fa47eaa 100644
  endif
  
  ifneq ($(OS), WINNT)
-diff --git a/666f2a7e16-dd3ce346c3.clean/src/Makefile b/666f2a7e16-dd3ce346c3/src/Makefile
+diff --git a/src/Makefile b/src/Makefile
 index 41d8423a4..4d46cba73 100644
---- a/666f2a7e16-dd3ce346c3.clean/src/Makefile
-+++ b/666f2a7e16-dd3ce346c3/src/Makefile
+--- a/src/Makefile
++++ b/src/Makefile
 @@ -9,6 +9,8 @@ JCXXFLAGS += $(CXXFLAGS)
  JCPPFLAGS += $(CPPFLAGS)
  JLDFLAGS += $(LDFLAGS)
@@ -151,10 +151,10 @@ index 41d8423a4..4d46cba73 100644
  ifeq ($(OS),Darwin)
  ANALYSIS_DEPS += llvmunwind
  else ifneq ($(OS),WINNT)
-diff --git a/666f2a7e16-dd3ce346c3.clean/src/flisp/Makefile b/666f2a7e16-dd3ce346c3/src/flisp/Makefile
+diff --git a/src/flisp/Makefile b/src/flisp/Makefile
 index 762540c5f..38e5b96b4 100644
---- a/666f2a7e16-dd3ce346c3.clean/src/flisp/Makefile
-+++ b/666f2a7e16-dd3ce346c3/src/flisp/Makefile
+--- a/src/flisp/Makefile
++++ b/src/flisp/Makefile
 @@ -26,15 +26,15 @@ NATIVE_BUILDDIR := $(BUILDDIR)
  LLT_BUILDDIR := $(BUILDDIR)/$(LLTDIR)
  endif
@@ -186,10 +186,10 @@ index 762540c5f..38e5b96b4 100644
  ifneq ($(OS), emscripten)
  FLAGS += -DUSE_COMPUTED_GOTO
  endif
-diff --git a/666f2a7e16-dd3ce346c3.clean/src/gc.h b/666f2a7e16-dd3ce346c3/src/gc.h
+diff --git a/src/gc.h b/src/gc.h
 index eb20dd0ac..2145a20cc 100644
---- a/666f2a7e16-dd3ce346c3.clean/src/gc.h
-+++ b/666f2a7e16-dd3ce346c3/src/gc.h
+--- a/src/gc.h
++++ b/src/gc.h
 @@ -12,7 +12,9 @@
  #include <stddef.h>
  #include <stdlib.h>
@@ -200,10 +200,10 @@ index eb20dd0ac..2145a20cc 100644
  #include <inttypes.h>
  #include "julia.h"
  #include "julia_threads.h"
-diff --git a/666f2a7e16-dd3ce346c3.clean/src/jl_uv.c b/666f2a7e16-dd3ce346c3/src/jl_uv.c
+diff --git a/src/jl_uv.c b/src/jl_uv.c
 index f292d974f..8a9ed4d2d 100644
---- a/666f2a7e16-dd3ce346c3.clean/src/jl_uv.c
-+++ b/666f2a7e16-dd3ce346c3/src/jl_uv.c
+--- a/src/jl_uv.c
++++ b/src/jl_uv.c
 @@ -45,7 +45,7 @@ static void walk_print_cb(uv_handle_t *h, void *arg)
          type = "<unknown>";
      uv_os_fd_t fd;
@@ -213,10 +213,10 @@ index f292d974f..8a9ed4d2d 100644
      else if (uv_fileno(h, &fd))
          fd = (uv_os_fd_t)-1;
      const char *pad = "                "; // 16 spaces
-diff --git a/666f2a7e16-dd3ce346c3.clean/src/julia_internal.h b/666f2a7e16-dd3ce346c3/src/julia_internal.h
+diff --git a/src/julia_internal.h b/src/julia_internal.h
 index 4acb19190..8a4b49b5c 100644
---- a/666f2a7e16-dd3ce346c3.clean/src/julia_internal.h
-+++ b/666f2a7e16-dd3ce346c3/src/julia_internal.h
+--- a/src/julia_internal.h
++++ b/src/julia_internal.h
 @@ -26,7 +26,9 @@
  #endif
  
@@ -253,10 +253,10 @@ index 4acb19190..8a4b49b5c 100644
  
  #ifdef USE_DTRACE
  // Generated file, needs to be searched in include paths so that the builddir
-diff --git a/666f2a7e16-dd3ce346c3.clean/src/processor.h b/666f2a7e16-dd3ce346c3/src/processor.h
+diff --git a/src/processor.h b/src/processor.h
 index 3e83bbb22..c2606cb64 100644
---- a/666f2a7e16-dd3ce346c3.clean/src/processor.h
-+++ b/666f2a7e16-dd3ce346c3/src/processor.h
+--- a/src/processor.h
++++ b/src/processor.h
 @@ -245,14 +245,14 @@ extern JL_DLLEXPORT bool jl_processor_print_help;
   * If the detected/specified CPU name is not available on the LLVM version specified,
   * a fallback CPU name will be used. Unsupported features will be ignored.
@@ -283,10 +283,10 @@ index 3e83bbb22..c2606cb64 100644
  std::string jl_get_cpu_name_llvm(void) JL_NOTSAFEPOINT;
  std::string jl_get_cpu_features_llvm(void) JL_NOTSAFEPOINT;
  #endif
-diff --git a/666f2a7e16-dd3ce346c3.clean/src/processor_fallback.cpp b/666f2a7e16-dd3ce346c3/src/processor_fallback.cpp
+diff --git a/src/processor_fallback.cpp b/src/processor_fallback.cpp
 index 1aebde6da..bed16f04d 100644
---- a/666f2a7e16-dd3ce346c3.clean/src/processor_fallback.cpp
-+++ b/666f2a7e16-dd3ce346c3/src/processor_fallback.cpp
+--- a/src/processor_fallback.cpp
++++ b/src/processor_fallback.cpp
 @@ -142,7 +142,7 @@ const std::pair<std::string,std::string> &jl_get_llvm_disasm_target(void)
      return res;
  }
@@ -296,10 +296,10 @@ index 1aebde6da..bed16f04d 100644
  {
      if (jit_targets.empty())
          jl_error("JIT targets not initialized");
-diff --git a/666f2a7e16-dd3ce346c3.clean/src/support/Makefile b/666f2a7e16-dd3ce346c3/src/support/Makefile
+diff --git a/src/support/Makefile b/src/support/Makefile
 index bfd233edc..5fba69216 100644
---- a/666f2a7e16-dd3ce346c3.clean/src/support/Makefile
-+++ b/666f2a7e16-dd3ce346c3/src/support/Makefile
+--- a/src/support/Makefile
++++ b/src/support/Makefile
 @@ -21,14 +21,14 @@ SRCS += _setjmp.win64
  endif
  endif
@@ -319,10 +319,10 @@ index bfd233edc..5fba69216 100644
  
  DEBUGFLAGS += $(FLAGS)
  SHIPFLAGS += $(FLAGS)
-diff --git a/666f2a7e16-dd3ce346c3.clean/src/sys.c b/666f2a7e16-dd3ce346c3/src/sys.c
+diff --git a/src/sys.c b/src/sys.c
 index aafdc9377..3f28b5d4f 100644
---- a/666f2a7e16-dd3ce346c3.clean/src/sys.c
-+++ b/666f2a7e16-dd3ce346c3/src/sys.c
+--- a/src/sys.c
++++ b/src/sys.c
 @@ -728,7 +728,7 @@ JL_DLLEXPORT size_t jl_maxrss(void)
  
  // Simple `rand()` like function, with global seed and added thread-safety
