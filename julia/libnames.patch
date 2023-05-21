@@ -1,0 +1,298 @@
+diff --git a/base/gmp.jl b/base/gmp.jl
+index 69926f4ad..d22eb9425 100644
+--- a/base/gmp.jl
++++ b/base/gmp.jl
+@@ -22,7 +22,7 @@ end
+ const CdoubleMax = Union{Float16, Float32, Float64}
+ 
+ if Sys.iswindows()
+-    const libgmp = "libgmp-10.dll"
++    const libgmp = "gmp-10.dll"
+ elseif Sys.isapple()
+     const libgmp = "@rpath/libgmp.10.dylib"
+ else
+diff --git a/base/irrationals.jl b/base/irrationals.jl
+index 6513e3269..15341c124 100644
+--- a/base/irrationals.jl
++++ b/base/irrationals.jl
+@@ -215,8 +215,9 @@ function irrational(sym, val, def)
+     bigconvert = isa(def,Symbol) ? quote
+         function Base.BigFloat(::Irrational{$qsym}, r::MPFR.MPFRRoundingMode=MPFR.ROUNDING_MODE[]; precision=precision(BigFloat))
+             c = BigFloat(;precision=precision)
++            const libmpfr = "mpfr-6.dll"
+-            ccall(($(string("mpfr_const_", def)), :libmpfr),
+-                  Cint, (Ref{BigFloat}, MPFR.MPFRRoundingMode), c, r)
++            ccall(($(string("mpfr_const_", def)), libmpfr),
++                  Cint, (Ref{BigFloat}, MPFR.MPFRRoundingMode), c, r)
+             return c
+         end
+     end : quote
+@@ -234,8 +234,8 @@ function irrational(sym, val, def)
+             Base.Float32(::Irrational{$qsym}) = v32
+         end
+         @assert isa(big($esym), BigFloat)
+-        @assert Float64($esym) == Float64(big($esym))
+-        @assert Float32($esym) == Float32(big($esym))
++        @assert Float64($esym) == Float64(big($esym))
++        @assert Float32($esym) == Float32(big($esym))
+     end
+ end
+ 
+diff --git a/base/mpfr.jl b/base/mpfr.jl
+index ff85fc615..55b42e488 100644
+--- a/base/mpfr.jl
++++ b/base/mpfr.jl
+@@ -26,7 +26,7 @@ import ..GMP: ClongMax, CulongMax, CdoubleMax, Limb, libgmp
+ import ..FastMath.sincos_fast
+ 
+ if Sys.iswindows()
+-    const libmpfr = "libmpfr-6.dll"
++    const libmpfr = "mpfr-6.dll"
+ elseif Sys.isapple()
+     const libmpfr = "@rpath/libmpfr.6.dylib"
+ else
+diff --git a/base/pcre.jl b/base/pcre.jl
+index 7597c1217..93e30161b 100644
+--- a/base/pcre.jl
++++ b/base/pcre.jl
+@@ -9,7 +9,7 @@ import ..RefValue
+ # include($BUILDROOT/base/pcre_h.jl)
+ include(string(length(Core.ARGS) >= 2 ? Core.ARGS[2] : "", "pcre_h.jl"))
+ 
+-const PCRE_LIB = "libpcre2-8"
++const PCRE_LIB = "pcre2-8"
+ 
+ function create_match_context()
+     JIT_STACK_START_SIZE = 32768
+diff --git a/stdlib/GMP_jll/src/GMP_jll.jl b/stdlib/GMP_jll/src/GMP_jll.jl
+index fde2fc15a..5d9d03bbc 100644
+--- a/stdlib/GMP_jll/src/GMP_jll.jl
++++ b/stdlib/GMP_jll/src/GMP_jll.jl
+@@ -20,8 +20,8 @@ libgmpxx_handle::Ptr{Cvoid} = C_NULL
+ libgmpxx_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libgmp = "libgmp-10.dll"
+-    const libgmpxx = "libgmpxx-4.dll"
++    const libgmp = "gmp-10.dll"
++    const libgmpxx = "gmpxx-4.dll"
+ elseif Sys.isapple()
+     const libgmp = "@rpath/libgmp.10.dylib"
+     const libgmpxx = "@rpath/libgmpxx.4.dylib"
+diff --git a/stdlib/LibCURL_jll/src/LibCURL_jll.jl b/stdlib/LibCURL_jll/src/LibCURL_jll.jl
+index cd67bfac0..6588f70d5 100644
+--- a/stdlib/LibCURL_jll/src/LibCURL_jll.jl
++++ b/stdlib/LibCURL_jll/src/LibCURL_jll.jl
+@@ -19,7 +19,7 @@ libcurl_handle::Ptr{Cvoid} = C_NULL
+ libcurl_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libcurl = "libcurl-4.dll"
++    const libcurl = "libcurl.dll"
+ elseif Sys.isapple()
+     const libcurl = "@rpath/libcurl.4.dylib"
+ else
+diff --git a/stdlib/LibGit2/src/utils.jl b/stdlib/LibGit2/src/utils.jl
+index 5234e9b6f..f5c535899 100644
+--- a/stdlib/LibGit2/src/utils.jl
++++ b/stdlib/LibGit2/src/utils.jl
+@@ -1,5 +1,7 @@
+ # This file is a part of Julia. License is MIT: https://julialang.org/license
+ 
++const libgit2 = "git2.dll"
++
+ # Parse "GIT URLs" syntax (URLs and a scp-like syntax). For details see:
+ # https://git-scm.com/docs/git-clone#_git_urls_a_id_urls_a
+ # Note that using a Regex like this is inherently insecure with regards to its
+@@ -37,7 +39,7 @@ function version()
+     major = Ref{Cint}(0)
+     minor = Ref{Cint}(0)
+     patch = Ref{Cint}(0)
+-    @check ccall((:git_libgit2_version, :libgit2), Cint,
++    @check ccall((:git_libgit2_version, libgit2), Cint,
+                  (Ref{Cint}, Ref{Cint}, Ref{Cint}), major, minor, patch)
+     return VersionNumber(major[], minor[], patch[])
+ end
+@@ -72,7 +74,7 @@ Return a list of git features the current version of libgit2 supports, such as
+ threading or using HTTPS or SSH.
+ """
+ function features()
+-    feat = ccall((:git_libgit2_features, :libgit2), Cint, ())
++    feat = ccall((:git_libgit2_features, libgit2), Cint, ())
+     res = Consts.GIT_FEATURE[]
+     for f in instances(Consts.GIT_FEATURE)
+         isset(feat, Cuint(f)) && Base.push!(res, f)
+diff --git a/stdlib/LibGit2_jll/src/LibGit2_jll.jl b/stdlib/LibGit2_jll/src/LibGit2_jll.jl
+index f8e814f1f..667fd50c9 100644
+--- a/stdlib/LibGit2_jll/src/LibGit2_jll.jl
++++ b/stdlib/LibGit2_jll/src/LibGit2_jll.jl
+@@ -19,7 +19,7 @@ libgit2_handle::Ptr{Cvoid} = C_NULL
+ libgit2_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libgit2 = "libgit2.dll"
++    const libgit2 = "git2.dll"
+ elseif Sys.isapple()
+     const libgit2 = "@rpath/libgit2.1.6.dylib"
+ else
+
+diff --git a/stdlib/MPFR_jll/src/MPFR_jll.jl b/stdlib/MPFR_jll/src/MPFR_jll.jl
+index c184a9801..a56a030bb 100644
+--- a/stdlib/MPFR_jll/src/MPFR_jll.jl
++++ b/stdlib/MPFR_jll/src/MPFR_jll.jl
+@@ -18,7 +18,7 @@ libmpfr_handle::Ptr{Cvoid} = C_NULL
+ libmpfr_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libmpfr = "libmpfr-6.dll"
++    const libmpfr = "mpfr-6.dll"
+ elseif Sys.isapple()
+     const libmpfr = "@rpath/libmpfr.6.dylib"
+ else
+diff --git a/stdlib/OpenBLAS_jll/src/OpenBLAS_jll.jl b/stdlib/OpenBLAS_jll/src/OpenBLAS_jll.jl
+index a0c11ab04..055818c1b 100644
+--- a/stdlib/OpenBLAS_jll/src/OpenBLAS_jll.jl
++++ b/stdlib/OpenBLAS_jll/src/OpenBLAS_jll.jl
+@@ -34,8 +34,7 @@ else
+ end
+ 
+ if Sys.iswindows()
+-    const libopenblas = "libopenblas$(libsuffix).dll"
+-    const _libgfortran = string("libgfortran-", libgfortran_version(HostPlatform()).major, ".dll")
++    const libopenblas = "mkl_rt.2.dll"
+ elseif Sys.isapple()
+     const libopenblas = "@rpath/libopenblas$(libsuffix).dylib"
+     const _libgfortran = string("@rpath/", "libgfortran.", libgfortran_version(HostPlatform()).major, ".dylib")
+@@ -65,7 +64,7 @@ function __init__()
+ 
+     # As mentioned above, we are sneaking this in here so that we don't have to
+     # depend on CSL_jll and load _all_ of its libraries.
+-    dlopen(_libgfortran)
++    # dlopen(_libgfortran)
+ 
+     global libopenblas_handle = dlopen(libopenblas)
+     global libopenblas_path = dlpath(libopenblas_handle)
+diff --git a/stdlib/PCRE2_jll/src/PCRE2_jll.jl b/stdlib/PCRE2_jll/src/PCRE2_jll.jl
+index e7f685820..a26abff22 100644
+--- a/stdlib/PCRE2_jll/src/PCRE2_jll.jl
++++ b/stdlib/PCRE2_jll/src/PCRE2_jll.jl
+@@ -18,7 +18,7 @@ libpcre2_8_handle::Ptr{Cvoid} = C_NULL
+ libpcre2_8_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libpcre2_8 = "libpcre2-8-0.dll"
++    const libpcre2_8 = "pcre2-8-0.dll"
+ elseif Sys.isapple()
+     const libpcre2_8 = "@rpath/libpcre2-8.0.dylib"
+ else
+diff --git a/stdlib/Random/src/DSFMT.jl b/stdlib/Random/src/DSFMT.jl
+index f72a9dd5e..5df6e62dd 100644
+--- a/stdlib/Random/src/DSFMT.jl
++++ b/stdlib/Random/src/DSFMT.jl
+@@ -22,6 +22,7 @@ Size: (DSFMT state array of Int128 + 1)*4 + Int32 index + Int32 padding
+ """
+ const JN32 = (N+1)*4+1+1
+ 
++    const libdSFMT = "dSFMT.dll"
+ 
+ struct DSFMT_state
+     val::Vector{Int32}
+@@ -44,14 +45,14 @@ hash(s::DSFMT_state, h::UInt) = hash(s.val, h)
+ ## wrapper functions
+ 
+ function dsfmt_get_idstring()
+-    idstring = ccall((:dsfmt_get_idstring,:libdSFMT),
++    idstring = ccall((:dsfmt_get_idstring,libdSFMT),
+                      Ptr{UInt8},
+                      ())
+     return unsafe_string(idstring)
+ end
+ 
+ function dsfmt_get_min_array_size()
+-    min_array_size = ccall((:dsfmt_get_min_array_size,:libdSFMT),
++    min_array_size = ccall((:dsfmt_get_min_array_size,libdSFMT),
+                            Int32,
+                            ())
+ end
+@@ -59,21 +60,21 @@ end
+ const dsfmt_min_array_size = dsfmt_get_min_array_size()
+ 
+ function dsfmt_init_gen_rand(s::DSFMT_state, seed::UInt32)
+-    ccall((:dsfmt_init_gen_rand,:libdSFMT),
++    ccall((:dsfmt_init_gen_rand,libdSFMT),
+           Cvoid,
+           (Ptr{Cvoid}, UInt32,),
+           s.val, seed)
+ end
+ 
+ function dsfmt_init_by_array(s::DSFMT_state, seed::Vector{UInt32})
+-    ccall((:dsfmt_init_by_array,:libdSFMT),
++    ccall((:dsfmt_init_by_array,libdSFMT),
+           Cvoid,
+           (Ptr{Cvoid}, Ptr{UInt32}, Int32),
+           s.val, seed, length(seed))
+ end
+ 
+ function dsfmt_gv_init_by_array(seed::Vector{UInt32})
+-    ccall((:dsfmt_gv_init_by_array,:libdSFMT),
++    ccall((:dsfmt_gv_init_by_array,libdSFMT),
+           Cvoid,
+           (Ptr{UInt32}, Int32),
+           seed, length(seed))
+@@ -82,7 +83,7 @@ end
+ function dsfmt_fill_array_close1_open2!(s::DSFMT_state, A::Ptr{Float64}, n::Int)
+     @assert Csize_t(A) % 16 == 0 # the underlying C array must be 16-byte aligned
+     @assert dsfmt_min_array_size <= n && iseven(n)
+-    ccall((:dsfmt_fill_array_close1_open2,:libdSFMT),
++    ccall((:dsfmt_fill_array_close1_open2,libdSFMT),
+           Cvoid,
+           (Ptr{Cvoid}, Ptr{Float64}, Int),
+           s.val, A, n)
+@@ -91,7 +92,7 @@ end
+ function dsfmt_fill_array_close_open!(s::DSFMT_state, A::Ptr{Float64}, n::Int)
+     @assert Csize_t(A) % 16 == 0 # the underlying C array must be 16-byte aligned
+     @assert dsfmt_min_array_size <= n && iseven(n)
+-    ccall((:dsfmt_fill_array_close_open,:libdSFMT),
++    ccall((:dsfmt_fill_array_close_open,libdSFMT),
+           Cvoid,
+           (Ptr{Cvoid}, Ptr{Float64}, Int),
+           s.val, A, n)
+diff --git a/stdlib/Zlib_jll/src/Zlib_jll.jl b/stdlib/Zlib_jll/src/Zlib_jll.jl
+index ea381b8b0..fce83f945 100644
+--- a/stdlib/Zlib_jll/src/Zlib_jll.jl
++++ b/stdlib/Zlib_jll/src/Zlib_jll.jl
+@@ -18,7 +18,7 @@ libz_handle::Ptr{Cvoid} = C_NULL
+ libz_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libz = "libz.dll"
++    const libz = "zlib1.dll"
+ elseif Sys.isapple()
+     const libz = "@rpath/libz.1.dylib"
+ else
+diff --git a/stdlib/dSFMT_jll/src/dSFMT_jll.jl b/stdlib/dSFMT_jll/src/dSFMT_jll.jl
+index 35ada2377..842671569 100644
+--- a/stdlib/dSFMT_jll/src/dSFMT_jll.jl
++++ b/stdlib/dSFMT_jll/src/dSFMT_jll.jl
+@@ -19,7 +19,7 @@ libdSFMT_handle::Ptr{Cvoid} = C_NULL
+ libdSFMT_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libdSFMT = "libdSFMT.dll"
++    const libdSFMT = "dSFMT.dll"
+ elseif Sys.isapple()
+     const libdSFMT = "@rpath/libdSFMT.dylib"
+ else
+diff --git a/stdlib/nghttp2_jll/src/nghttp2_jll.jl b/stdlib/nghttp2_jll/src/nghttp2_jll.jl
+index 76e8d3582..6e2e77a83 100644
+--- a/stdlib/nghttp2_jll/src/nghttp2_jll.jl
++++ b/stdlib/nghttp2_jll/src/nghttp2_jll.jl
+@@ -18,7 +18,7 @@ libnghttp2_handle::Ptr{Cvoid} = C_NULL
+ libnghttp2_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libnghttp2 = "libnghttp2-14.dll"
++    const libnghttp2 = "nghttp2.dll"
+ elseif Sys.isapple()
+     const libnghttp2 = "@rpath/libnghttp2.14.dylib"
+ else

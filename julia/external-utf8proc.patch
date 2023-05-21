@@ -1,0 +1,128 @@
+diff --git a/base/strings/unicode.jl b/base/strings/unicode.jl
+index 17c5d66c1..77d9d84c5 100644
+--- a/base/strings/unicode.jl
++++ b/base/strings/unicode.jl
+@@ -143,20 +143,22 @@ const UTF8PROC_STRIPMARK = (1<<13)
+ 
+ ############################################################################
++const libutf8proc = "utf8proc.dll"
++
+ 
+-utf8proc_error(result) = error(unsafe_string(ccall(:utf8proc_errmsg, Cstring, (Cssize_t,), result)))
++utf8proc_error(result) = error(unsafe_string(ccall((:utf8proc_errmsg, libutf8proc), Cstring, (Cssize_t,), result)))
+ 
+ # static wrapper around user callback function
+ utf8proc_custom_func(codepoint::UInt32, callback::Any) =
+     UInt32(callback(codepoint))::UInt32
+ 
+ function utf8proc_decompose(str, options, buffer, nwords, chartransform::typeof(identity))
+-    ret = ccall(:utf8proc_decompose, Int, (Ptr{UInt8}, Int, Ptr{UInt8}, Int, Cint),
++    ret = ccall((:utf8proc_decompose, libutf8proc), Int, (Ptr{UInt8}, Int, Ptr{UInt8}, Int, Cint),
+                 str, sizeof(str), buffer, nwords, options)
+     ret < 0 && utf8proc_error(ret)
+     return ret
+ end
+ function utf8proc_decompose(str, options, buffer, nwords, chartransform::T) where T
+-    ret = ccall(:utf8proc_decompose_custom, Int, (Ptr{UInt8}, Int, Ptr{UInt8}, Int, Cint, Ptr{Cvoid}, Ref{T}),
++    ret = ccall((:utf8proc_decompose_custom, libutf8proc), Int, (Ptr{UInt8}, Int, Ptr{UInt8}, Int, Cint, Ptr{Cvoid}, Ref{T}),
+                 str, sizeof(str), buffer, nwords, options,
+                 @cfunction(utf8proc_custom_func, UInt32, (UInt32, Ref{T})), chartransform)
+     ret < 0 && utf8proc_error(ret)
+@@ -167,7 +169,7 @@ function utf8proc_map(str::Union{String,SubString{String}}, options::Integer, ch
+     nwords = utf8proc_decompose(str, options, C_NULL, 0, chartransform)
+     buffer = Base.StringVector(nwords*4)
+     nwords = utf8proc_decompose(str, options, buffer, nwords, chartransform)
+-    nbytes = ccall(:utf8proc_reencode, Int, (Ptr{UInt8}, Int, Cint), buffer, nwords, options)
++    nbytes = ccall((:utf8proc_reencode, libutf8proc), Int, (Ptr{UInt8}, Int, Cint), buffer, nwords, options)
+     nbytes < 0 && utf8proc_error(nbytes)
+     return String(resize!(buffer, nbytes))
+ end
+@@ -254,7 +256,7 @@ julia> textwidth('⛵')
+ """
+ function textwidth(c::AbstractChar)
+     ismalformed(c) && return 1
+-    Int(ccall(:utf8proc_charwidth, Cint, (UInt32,), c))
++    Int(ccall((:utf8proc_charwidth, libutf8proc), Cint, (UInt32,), c))
+ end
+ 
+ """
+@@ -287,7 +289,7 @@ julia> lowercase('Ö')
+ ```
+ """
+ lowercase(c::T) where {T<:AbstractChar} = isascii(c) ? ('A' <= c <= 'Z' ? c + 0x20 : c) :
+-    T(ccall(:utf8proc_tolower, UInt32, (UInt32,), c))
++    T(ccall((:utf8proc_tolower, libutf8proc), UInt32, (UInt32,), c))
+ 
+ """
+     uppercase(c::AbstractChar)
+@@ -306,7 +308,7 @@ julia> uppercase('ê')
+ ```
+ """
+ uppercase(c::T) where {T<:AbstractChar} = isascii(c) ? ('a' <= c <= 'z' ? c - 0x20 : c) :
+-    T(ccall(:utf8proc_toupper, UInt32, (UInt32,), c))
++    T(ccall((:utf8proc_toupper, libutf8proc), UInt32, (UInt32,), c))
+ 
+ """
+     titlecase(c::AbstractChar)
+@@ -329,7 +331,7 @@ julia> uppercase('ǆ')
+ ```
+ """
+ titlecase(c::T) where {T<:AbstractChar} = isascii(c) ? ('a' <= c <= 'z' ? c - 0x20 : c) :
+-    T(ccall(:utf8proc_totitle, UInt32, (UInt32,), c))
++    T(ccall((:utf8proc_totitle, libutf8proc), UInt32, (UInt32,), c))
+ 
+ ############################################################################
+ 
+@@ -339,14 +341,14 @@ function category_code(c::AbstractChar)
+ end
+ 
+ function category_code(x::Integer)
+-    x ≤ 0x10ffff ? ccall(:utf8proc_category, Cint, (UInt32,), x) : Cint(30)
++    x ≤ 0x10ffff ? ccall((:utf8proc_category, libutf8proc), Cint, (UInt32,), x) : Cint(30)
+ end
+ 
+ # more human-readable representations of the category code
+ function category_abbrev(c::AbstractChar)
+     ismalformed(c) && return "Ma"
+     c ≤ '\U10ffff' || return "In"
+-    unsafe_string(ccall(:utf8proc_category_string, Cstring, (UInt32,), c))
++    unsafe_string(ccall((:utf8proc_category_string, libutf8proc), Cstring, (UInt32,), c))
+ end
+ 
+ category_string(c) = category_strings[category_code(c)+1]
+@@ -375,7 +377,7 @@ julia> islowercase('❤')
+ false
+ ```
+ """
+-islowercase(c::AbstractChar) = ismalformed(c) ? false : Bool(ccall(:utf8proc_islower, Cint, (UInt32,), UInt32(c)))
++islowercase(c::AbstractChar) = ismalformed(c) ? false : Bool(ccall((:utf8proc_islower, libutf8proc), Cint, (UInt32,), UInt32(c)))
+ 
+ # true for Unicode upper and mixed case
+ 
+@@ -399,7 +401,7 @@ julia> isuppercase('❤')
+ false
+ ```
+ """
+-isuppercase(c::AbstractChar) = ismalformed(c) ? false : Bool(ccall(:utf8proc_isupper, Cint, (UInt32,), UInt32(c)))
++isuppercase(c::AbstractChar) = ismalformed(c) ? false : Bool(ccall((:utf8proc_isupper, libutf8proc), Cint, (UInt32,), UInt32(c)))
+ 
+ """
+     iscased(c::AbstractChar) -> Bool
+@@ -719,7 +721,7 @@ end
+ 
+ isgraphemebreak(c1::AbstractChar, c2::AbstractChar) =
+     ismalformed(c1) || ismalformed(c2) ||
+-    ccall(:utf8proc_grapheme_break, Bool, (UInt32, UInt32), c1, c2)
++    ccall((:utf8proc_grapheme_break, libutf8proc), Bool, (UInt32, UInt32), c1, c2)
+ 
+ # Stateful grapheme break required by Unicode-9 rules: the string
+ # must be processed in sequence, with state initialized to Ref{Int32}(0).
+@@ -729,7 +731,7 @@ function isgraphemebreak!(state::Ref{Int32}, c1::AbstractChar, c2::AbstractChar)
+         state[] = 0
+         return true
+     end
+-    ccall(:utf8proc_grapheme_break_stateful, Bool,
++    ccall((:utf8proc_grapheme_break_stateful, libutf8proc), Bool,
+           (UInt32, UInt32, Ref{Int32}), c1, c2, state)
+ end
+ 

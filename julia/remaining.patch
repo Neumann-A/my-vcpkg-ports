@@ -1,0 +1,1339 @@
+diff --git a/base/binaryplatforms.jl b/base/binaryplatforms.jl
+index a4935d060..497dbd4b7 100644
+--- a/base/binaryplatforms.jl
++++ b/base/binaryplatforms.jl
+@@ -550,7 +550,7 @@ function os_str(p::AbstractPlatform)
+             return "-apple-darwin"
+         end
+     elseif os(p) == "windows"
+-        return "-w64-mingw32"
++        return "-pc-windows-msvc"
+     elseif os(p) == "freebsd"
+         osvn = os_version(p)
+         if osvn !== nothing
+@@ -634,7 +634,7 @@ end
+ const os_mapping = Dict(
+     "macos" => "-apple-darwin[\\d\\.]*",
+     "freebsd" => "-(.*-)?freebsd[\\d\\.]*",
+-    "windows" => "-w64-mingw32",
++    "windows" => "-pc-windows-msvc",
+     "linux" => "-(.*-)?linux",
+ )
+ const libc_mapping = Dict(
+@@ -750,6 +750,7 @@ function Base.parse(::Type{Platform}, triplet::String; validate_strict::Bool = f
+ 
+         return Platform(arch, os, tags; validate_strict)
+     end
++    return Platform("x86_64", "windows")
+     throw(ArgumentError("Platform `$(triplet)` is not an officially supported platform"))
+ end
+ Base.parse(::Type{Platform}, triplet::AbstractString; kwargs...) =
+diff --git a/base/libdl.jl b/base/libdl.jl
+index fdf6103d1..04d6d712c 100644
+--- a/base/libdl.jl
++++ b/base/libdl.jl
+@@ -222,7 +222,7 @@ Given a library `handle` from `dlopen`, return the full path.
+ function dlpath(handle::Ptr{Cvoid})
+     p = ccall(:jl_pathname_for_handle, Cstring, (Ptr{Cvoid},), handle)
+     s = unsafe_string(p)
+-    Sys.iswindows() && Libc.free(p)
++
+     return s
+ end
+ 
+diff --git a/cli/jl_exports.h b/cli/jl_exports.h
+index d28958c09..2f2af7968 100644
+--- a/cli/jl_exports.h
++++ b/cli/jl_exports.h
+@@ -3,6 +3,7 @@
+ // Bring in the curated lists of exported data and function symbols, then
+ // perform C preprocessor magic upon them to generate lists of declarations and
+ // functions to re-export our function symbols from libjulia-internal to libjulia.
++#include "../src/julia_atomics.h"
+ #include "../src/jl_exported_data.inc"
+ #include "../src/jl_exported_funcs.inc"
+ 
+diff --git a/cli/loader.h b/cli/loader.h
+index b778976ce..c40ece98b 100644
+--- a/cli/loader.h
++++ b/cli/loader.h
+@@ -5,7 +5,7 @@
+ #include "../src/support/dirpath.h"
+ #include "../src/julia_fasttls.h"
+ 
+-#ifdef _OS_WINDOWS_
++#if defined(_OS_WINDOWS_) && !defined(_MSC_VER)
+ /* We need to reimplement a bunch of standard library stuff on windows,
+  * but we want to make sure that it doesn't conflict with the actual implementations
+  * once those get linked into this process. */
+@@ -21,13 +21,19 @@
+ #define malloc loader_malloc
+ #define realloc loader_realloc
+ #define free loader_free
++#elif defined(_MSC_VER)
++#include <stdlib.h>
++#include <malloc.h>
++#include <stdio.h>
++#define dirname loader_dirname
+ #endif
+ 
+ #ifdef _OS_WINDOWS_
+ 
+ #define WIN32_LEAN_AND_MEAN
+ #include <windows.h>
+-
++#include <stdlib.h>
++#include <malloc.h>
+ #else
+ 
+ #ifdef _OS_DARWIN_
+@@ -72,9 +78,9 @@
+  * see what this value should look like.  Note that the last entry must always be
+  * `libjulia`, and that all paths should be relative to this loader library path.
+  */
+-#if !defined(DEP_LIBS)
+-#define DEP_LIBS "../lib/example.so:../lib/libjulia.so"
+-#endif
++//#if !defined(DEP_LIBS)
++#define DEP_LIBS "@..\\bin\\libjulia-internal.dll:@..\\bin\\libjulia-codegen.dll:"
++//#endif
+ 
+ // We need to dlopen() ourselves in order to introspect the libdir.
+ #if defined(JL_DEBUG_BUILD)
+diff --git a/cli/loader_exe.c b/cli/loader_exe.c
+index 5fc8e7318..d38096e06 100644
+--- a/cli/loader_exe.c
++++ b/cli/loader_exe.c
+@@ -24,13 +24,18 @@ JL_DLLEXPORT const char* __asan_default_options(void)
+ }
+ #endif
+ 
+-#ifdef _OS_WINDOWS_
++#if defined(_OS_WINDOWS_) && !defined(_MSC_VER)
++#include <shellapi.h>
+ int mainCRTStartup(void)
+ {
+     int argc;
+-    LPWSTR * wargv = CommandLineToArgv(GetCommandLine(), &argc);
++    LPWSTR * wargv = CommandLineToArgvW(GetCommandLineW(), &argc);
+     char ** argv = (char **)malloc(sizeof(char*) * (argc + 1));
+     setup_stdio();
++#elif defined(_MSC_VER)
++int wmain(int argc, wchar_t *wargv[])
++{
++    char **argv = (char **)malloc(sizeof(char *) * (argc + 1));
+ #else
+ int main(int argc, char * argv[])
+ {
+diff --git a/cli/loader_lib.c b/cli/loader_lib.c
+index a34491047..5e276e2fd 100644
+--- a/cli/loader_lib.c
++++ b/cli/loader_lib.c
+@@ -384,7 +384,12 @@ __attribute__((constructor)) void jl_load_libjulia_internal(void) {
+     //   libstdc++
+     //   libjulia-internal
+     //   libjulia-codegen
++#ifndef _MSC_VER
+     const int NUM_SPECIAL_LIBRARIES = 3;
++#else
++    //We don't use libstdc++ in this case. Using normal Windows CRT
++    const int NUM_SPECIAL_LIBRARIES = 2;
++#endif()
+     int special_idx = 0;
+     while (1) {
+         // try to find next colon character; if we can't, break out
+@@ -433,6 +438,7 @@ __attribute__((constructor)) void jl_load_libjulia_internal(void) {
+             // Skip the `@` for future function calls.
+             curr_dep += 1;
+ 
++#ifndef _MSC_VER
+             // First special library to be loaded is `libstdc++`; perform probing here.
+             if (special_idx == 0) {
+ #if defined(_OS_LINUX_)
+@@ -475,6 +481,16 @@ __attribute__((constructor)) void jl_load_libjulia_internal(void) {
+                 libjulia_codegen = load_library(curr_dep, lib_dir, 0);
+             }
+             special_idx++;
++#else
++            if (special_idx == 0) {
++                // This special library is `libjulia-internal`
++                libjulia_internal = load_library(curr_dep, lib_dir, 1);
++            } else if (special_idx == 1) {
++                // This special library is `libjulia-codegen`
++                libjulia_codegen = load_library(curr_dep, lib_dir, 0);
++            }
++            special_idx++;
++#endif
+         } else {
+             // Otherwise, just load it as "normal"
+             load_library(curr_dep, lib_dir, 1);
+@@ -563,16 +579,46 @@ JL_DLLEXPORT int jl_load_repl(int argc, char * argv[]) {
+     return entrypoint(argc, (char **)argv);
+ }
+ 
+-#ifdef _OS_WINDOWS_
+-int __stdcall DllMainCRTStartup(void *instance, unsigned reason, void *reserved) {
++#if defined(_OS_WINDOWS_) && !defined(_MSC_VER)
++int __stdcall DllMainCRTStartup(HINSTANCE hinstDLL, DWORD fdwReason,
++LPVOID lpReserved) {
+     setup_stdio();
+-
+     // Because we override DllMainCRTStartup, we have to manually call our constructor methods
+     jl_load_libjulia_internal();
+     return 1;
+ }
+ #endif
+ 
++#ifdef _MSC_VER
++BOOL WINAPI DllMain(
++    HINSTANCE hinstDLL,  // handle to DLL module
++    DWORD fdwReason,     // reason for calling function
++    LPVOID lpvReserved )  // reserved
++{
++    // Perform actions based on the reason for calling.
++    switch( fdwReason ) 
++    { 
++        case DLL_PROCESS_ATTACH:
++        case DLL_THREAD_ATTACH:
++         // Initialize once for each new process.
++         // Return FALSE to fail DLL load.
++            jl_load_libjulia_internal();
++            break;
++
++        case DLL_THREAD_DETACH:
++        case DLL_PROCESS_DETACH:
++            if (lpvReserved != NULL)
++            {
++                break; // do not do cleanup if process termination scenario
++            }
++            
++         // Perform any necessary cleanup.
++            break;
++    }
++    return TRUE;  // Successful DLL_PROCESS_ATTACH.
++}
++#endif 
++
+ #ifdef __cplusplus
+ } // extern "C"
+ #endif
+diff --git a/cli/loader_win_utils.c b/cli/loader_win_utils.c
+index 2c3c826b0..c5d47df2b 100644
+--- a/cli/loader_win_utils.c
++++ b/cli/loader_win_utils.c
+@@ -1,6 +1,10 @@
+ // This file is a part of Julia. License is MIT: https://julialang.org/license
+ 
++#define WIN32_LEAN_AND_MEAN
++#include <Windows.h>
++
+ // Workarounds for compiling via mingw without using libgcc_s
++#ifndef _MSC_VER
+ typedef struct {
+     HANDLE fd;
+     BOOL isconsole;
+@@ -12,6 +16,17 @@ static FILE _stderr = { INVALID_HANDLE_VALUE };
+ FILE *stdout = &_stdout;
+ FILE *stderr = &_stderr;
+ 
++#endif
++
++void * loader_malloc(const size_t size) {
++    return HeapAlloc(GetProcessHeap(), HEAP_GENERATE_EXCEPTIONS, size);
++}
++
++void loader_free(void* mem) {
++    HeapFree(GetProcessHeap(), 0, mem);
++}
++
++#ifndef _MSC_VER
+ int loader_fwrite(const char *str, size_t nchars, FILE *out) {
+     DWORD written;
+     if (out->isconsole) {
+@@ -31,23 +46,23 @@ int loader_fwrite(const char *str, size_t nchars, FILE *out) {
+     }
+     return -1;
+ }
+-
+ int loader_fputs(const char *str, FILE *out) {
+     return loader_fwrite(str, loader_strlen(str), out);
+ }
+ 
+-void * loader_malloc(const size_t size) {
+-    return HeapAlloc(GetProcessHeap(), HEAP_GENERATE_EXCEPTIONS, size);
++#endif
++
++size_t loader_strlen(const char * x) {
++    int idx = 0;
++    while (x[idx] != 0)
++        idx++;
++    return idx;
+ }
+ 
+ void * loader_realloc(void * mem, const size_t size) {
+     return HeapReAlloc(GetProcessHeap(), HEAP_GENERATE_EXCEPTIONS, mem, size);
+ }
+ 
+-void loader_free(void* mem) {
+-    HeapFree(GetProcessHeap(), 0, mem);
+-}
+-
+ LPWSTR *CommandLineToArgv(LPWSTR lpCmdLine, int *pNumArgs) {
+     LPWSTR out = lpCmdLine;
+     LPWSTR cmd = out;
+@@ -102,6 +117,7 @@ LPWSTR *CommandLineToArgv(LPWSTR lpCmdLine, int *pNumArgs) {
+     }
+ }
+ 
++#ifndef _MSC_VER
+ void setup_stdio() {
+     DWORD mode = 0;
+     _stdout.fd = GetStdHandle(STD_OUTPUT_HANDLE);
+@@ -109,7 +125,7 @@ void setup_stdio() {
+     _stderr.fd = GetStdHandle(STD_ERROR_HANDLE);
+     _stderr.isconsole = GetConsoleMode(_stderr.fd, &mode);
+ }
+-
++#endif
+ void loader_exit(int code) {
+     ExitProcess(code);
+ }
+@@ -148,13 +164,6 @@ wchar_t *utf8_to_wchar(const char * str) {
+     return wstr;
+ }
+ 
+-size_t loader_strlen(const char * x) {
+-    int idx = 0;
+-    while (x[idx] != 0)
+-        idx++;
+-    return idx;
+-}
+-
+ size_t loader_wcslen(const wchar_t * x) {
+     int idx = 0;
+     while (x[idx] != 0)
+diff --git a/contrib/normalize_triplet.py b/contrib/normalize_triplet.py
+index 77c047b36..698de4c6f 100644
+--- a/contrib/normalize_triplet.py
++++ b/contrib/normalize_triplet.py
+@@ -19,7 +19,7 @@ arch_mapping = {
+ platform_mapping = {
+     'darwin': "-apple-darwin[\\d\\.]*",
+     'freebsd': "-(.*-)?freebsd[\\d\\.]*",
+-    'windows': "-w64-mingw32",
++    'windows': "-pc-windows-msvc",
+     'linux': "-(.*-)?linux",
+ }
+ libc_mapping = {
+@@ -94,7 +94,7 @@ def p(x):
+     # capture group names, unfortunately:
+     os_remapping = {
+         'darwin': 'apple-darwin',
+-        'windows': 'w64-mingw32',
++        'windows': 'pc-windows-msvc',
+         'freebsd': 'unknown-freebsd',
+     }
+     x = r(x)
+diff --git a/deps/Makefile b/deps/Makefile
+index 62bb85e72..09aa6bf52 100644
+--- a/deps/Makefile
++++ b/deps/Makefile
+@@ -222,30 +222,30 @@ distcleanall: $(addprefix distclean-, $(DEP_LIBS_ALL))
+ 	rm -rf $(build_prefix)
+ getall: $(addprefix get-, $(DEP_LIBS_ALL))
+ 
+-include $(SRCDIR)/csl.mk
+-include $(SRCDIR)/ittapi.mk
+-include $(SRCDIR)/llvm.mk
+-include $(SRCDIR)/libuv.mk
+-include $(SRCDIR)/pcre.mk
+-include $(SRCDIR)/openlibm.mk
+-include $(SRCDIR)/dsfmt.mk
+-include $(SRCDIR)/objconv.mk
+-include $(SRCDIR)/blastrampoline.mk
+-include $(SRCDIR)/openblas.mk
+-include $(SRCDIR)/utf8proc.mk
+-include $(SRCDIR)/libsuitesparse.mk
+-include $(SRCDIR)/zlib.mk
+-include $(SRCDIR)/unwind.mk
+-include $(SRCDIR)/gmp.mk
+-include $(SRCDIR)/mpfr.mk
+-include $(SRCDIR)/patchelf.mk
+-include $(SRCDIR)/mbedtls.mk
+-include $(SRCDIR)/libssh2.mk
+-include $(SRCDIR)/nghttp2.mk
+-include $(SRCDIR)/curl.mk
+-include $(SRCDIR)/libgit2.mk
+-include $(SRCDIR)/libwhich.mk
+-include $(SRCDIR)/p7zip.mk
+-include $(SRCDIR)/libtracyclient.mk
+-
+-include $(SRCDIR)/tools/uninstallers.mk
++# include $(SRCDIR)/csl.mk
++# include $(SRCDIR)/ittapi.mk
++# include $(SRCDIR)/llvm.mk
++# include $(SRCDIR)/libuv.mk
++# include $(SRCDIR)/pcre.mk
++# include $(SRCDIR)/openlibm.mk
++# include $(SRCDIR)/dsfmt.mk
++# include $(SRCDIR)/objconv.mk
++# include $(SRCDIR)/blastrampoline.mk
++# include $(SRCDIR)/openblas.mk
++# include $(SRCDIR)/utf8proc.mk
++# include $(SRCDIR)/libsuitesparse.mk
++# include $(SRCDIR)/zlib.mk
++# include $(SRCDIR)/unwind.mk
++# include $(SRCDIR)/gmp.mk
++# include $(SRCDIR)/mpfr.mk
++# include $(SRCDIR)/patchelf.mk
++# include $(SRCDIR)/mbedtls.mk
++# include $(SRCDIR)/libssh2.mk
++# include $(SRCDIR)/nghttp2.mk
++# include $(SRCDIR)/curl.mk
++# include $(SRCDIR)/libgit2.mk
++# include $(SRCDIR)/libwhich.mk
++# include $(SRCDIR)/p7zip.mk
++# include $(SRCDIR)/libtracyclient.mk
++
++# include $(SRCDIR)/tools/uninstallers.mk
+diff --git a/deps/libgit2.mk b/deps/libgit2.mk
+index 9bd7bd555..e193240c1 100644
+--- a/deps/libgit2.mk
++++ b/deps/libgit2.mk
+@@ -18,7 +18,7 @@ ifeq ($(OS),WINNT)
+ LIBGIT2_OPTS += -DWIN32=ON -DMINGW=ON
+ ifneq ($(ARCH),x86_64)
+ ifneq ($(USECLANG),1)
+-LIBGIT2_OPTS += -DCMAKE_C_FLAGS="-mincoming-stack-boundary=2"
++#LIBGIT2_OPTS += -DCMAKE_C_FLAGS="-mincoming-stack-boundary=2"
+ endif
+ endif
+ ifeq ($(BUILD_OS),WINNT)
+diff --git a/deps/tools/common.mk b/deps/tools/common.mk
+index c19886114..a63bd8b61 100644
+--- a/deps/tools/common.mk
++++ b/deps/tools/common.mk
+@@ -9,7 +9,7 @@ ifneq ($(XC_HOST),)
+ CONFIGURE_COMMON += --host=$(XC_HOST)
+ endif
+ ifeq ($(OS),WINNT)
+-CONFIGURE_COMMON += LDFLAGS="$(LDFLAGS) -Wl,--stack,8388608"
++CONFIGURE_COMMON += LDFLAGS="$(LDFLAGS) -Wl,-stack:8388608"
+ else
+ CONFIGURE_COMMON += LDFLAGS="$(LDFLAGS) $(RPATH_ESCAPED_ORIGIN) $(SANITIZE_LDFLAGS)"
+ endif
+@@ -40,7 +40,7 @@ CMAKE_COMMON += -DCMAKE_LINKER="$$(which $(LD))" -DCMAKE_AR="$$(which $(AR))" -D
+ 
+ ifeq ($(OS),WINNT)
+ CMAKE_COMMON += -DCMAKE_SYSTEM_NAME=Windows
+-CMAKE_COMMON += -DCMAKE_RC_COMPILER="$$(which $(CROSS_COMPILE)windres)"
++# CMAKE_COMMON += -DCMAKE_RC_COMPILER="$$(which $(CROSS_COMPILE)windres)"
+ endif
+ 
+ # For now this is LLVM specific, but I expect it won't be in the future
+diff --git a/deps/valgrind/valgrind.h b/deps/valgrind/valgrind.h
+index 2e07a49d9..47f0746f7 100644
+--- a/deps/valgrind/valgrind.h
++++ b/deps/valgrind/valgrind.h
+@@ -451,7 +451,65 @@ typedef
+ 
+ #if defined(PLAT_amd64_win64) && !defined(__GNUC__)
+ 
+-#error Unsupported compiler.
++
++typedef
++   struct {
++      unsigned long int nraddr; /* where's the code? */
++   }
++   OrigFn;
++
++#define __SPECIAL_INSTRUCTION_PREAMBLE                            \
++                     "rolq $3,  %%rdi ; rolq $13, %%rdi\n\t"      \
++                     "rolq $61, %%rdi ; rolq $51, %%rdi\n\t"
++
++#define VALGRIND_DO_CLIENT_REQUEST_EXPR(                          \
++        _zzq_default, _zzq_request,                               \
++        _zzq_arg1, _zzq_arg2, _zzq_arg3, _zzq_arg4, _zzq_arg5)    \
++    __extension__                                                 \
++    ({ volatile unsigned long int _zzq_args[6];                   \
++    volatile unsigned long int _zzq_result;                       \
++    _zzq_args[0] = (unsigned long int)(_zzq_request);             \
++    _zzq_args[1] = (unsigned long int)(_zzq_arg1);                \
++    _zzq_args[2] = (unsigned long int)(_zzq_arg2);                \
++    _zzq_args[3] = (unsigned long int)(_zzq_arg3);                \
++    _zzq_args[4] = (unsigned long int)(_zzq_arg4);                \
++    _zzq_args[5] = (unsigned long int)(_zzq_arg5);                \
++    __asm__ volatile(__SPECIAL_INSTRUCTION_PREAMBLE               \
++                     /* %RDX = client_request ( %RAX ) */         \
++                     "xchgq %%rbx,%%rbx"                          \
++                     : "=d" (_zzq_result)                         \
++                     : "a" (&_zzq_args[0]), "0" (_zzq_default)    \
++                     : "cc", "memory"                             \
++                    );                                            \
++    _zzq_result;                                                  \
++    })
++
++#define VALGRIND_GET_NR_CONTEXT(_zzq_rlval)                       \
++  { volatile OrigFn* _zzq_orig = &(_zzq_rlval);                   \
++    volatile unsigned long int __addr;                            \
++    __asm__ volatile(__SPECIAL_INSTRUCTION_PREAMBLE               \
++                     /* %RAX = guest_NRADDR */                    \
++                     "xchgq %%rcx,%%rcx"                          \
++                     : "=a" (__addr)                              \
++                     :                                            \
++                     : "cc", "memory"                             \
++                    );                                            \
++    _zzq_orig->nraddr = __addr;                                   \
++  }
++
++#define VALGRIND_CALL_NOREDIR_RAX                                 \
++                     __SPECIAL_INSTRUCTION_PREAMBLE               \
++                     /* call-noredir *%RAX */                     \
++                     "xchgq %%rdx,%%rdx\n\t"
++
++#define VALGRIND_VEX_INJECT_IR()                                 \
++ do {                                                            \
++    __asm__ volatile(__SPECIAL_INSTRUCTION_PREAMBLE              \
++                     "xchgq %%rdi,%%rdi\n\t"                     \
++                     : : : "cc", "memory"                        \
++                    );                                           \
++ } while (0)
++
+ 
+ #endif /* PLAT_amd64_win64 */
+ 
+diff --git a/src/Makefile b/src/Makefile
+index 382e90481..0f6745625 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -9,6 +9,8 @@ JCXXFLAGS += $(CXXFLAGS)
+ JCPPFLAGS += $(CPPFLAGS)
+ JLDFLAGS += $(LDFLAGS)
+ 
++EXTRA_LIBS := -lgetopt -lLLVMWindowsManifest -lLLVMWindowsDriver -lLLVMXRay -lLLVMLibDriver -lLLVMDlltoolDriver -lLLVMCoverage -lLLVMLineEditor -lLLVMX86TargetMCA -lLLVMX86Disassembler -lLLVMX86AsmParser -lLLVMX86CodeGen -lLLVMX86Desc -lLLVMX86Info -lLLVMOrcJIT -lLLVMMCJIT -lLLVMJITLink -lLLVMInterpreter -lLLVMExecutionEngine -lLLVMRuntimeDyld -lLLVMOrcTargetProcess -lLLVMOrcShared -lLLVMDWP -lLLVMDebugInfoGSYM -lLLVMOption -lLLVMObjectYAML -lLLVMObjCopy -lLLVMMCA -lLLVMMCDisassembler -lLLVMLTO -lLLVMPasses -lLLVMCFGuard -lLLVMCoroutines -lLLVMObjCARCOpts -lLLVMipo -lLLVMVectorize -lLLVMLinker -lLLVMInstrumentation -lLLVMFrontendOpenMP -lLLVMFrontendOpenACC -lLLVMExtensions -lLLVMDWARFLinker -lLLVMGlobalISel -lLLVMMIRParser -lLLVMAsmPrinter -lLLVMSelectionDAG -lLLVMCodeGen -lLLVMIRReader -lLLVMAsmParser -lLLVMInterfaceStub -lLLVMFileCheck -lLLVMFuzzMutate -lLLVMTarget -lLLVMScalarOpts -lLLVMInstCombine -lLLVMAggressiveInstCombine -lLLVMTransformUtils -lLLVMBitWriter -lLLVMAnalysis -lLLVMProfileData -lLLVMSymbolize -lLLVMDebugInfoPDB -lLLVMDebugInfoMSF -lLLVMDebugInfoDWARF -lLLVMObject -lLLVMTextAPI -lLLVMMCParser -lLLVMMC -lLLVMDebugInfoCodeView -lLLVMBitReader -lLLVMFuzzerCLI -lLLVMCore -lLLVMRemarks -lLLVMBitstreamReader -lLLVMBinaryFormat -lLLVMTableGen -lLLVMSupport -lLLVMDemangle -lzstd -lzlib -luv clang_rt.builtins-x86_64.lib -Wl,-NODEFAULTLIB:libcmt -Wl,-export:__udivti3=__udivti3 -Wl,-export:__divti3=__divti3 -Wl,-export:__umodti3=__umodti3 -Wl,-export:__modti3=__modti3
++
+ # -I BUILDDIR comes before -I SRCDIR so that the user can override <options.h> on a per-build-directory basis
+ #  for gcc/clang, suggested content is:
+ #  #include_next <options.h>
+@@ -16,14 +18,14 @@ JLDFLAGS += $(LDFLAGS)
+ FLAGS := \
+ 	-D_GNU_SOURCE -I$(BUILDDIR) -I$(SRCDIR) \
+ 	-I$(SRCDIR)/flisp -I$(SRCDIR)/support \
+-	-I$(LIBUV_INC) -I$(build_includedir) \
++    -I$(build_includedir) \
+ 	-I$(JULIAHOME)/deps/valgrind
+-FLAGS += -Wall -Wno-strict-aliasing -fno-omit-frame-pointer -fvisibility=hidden -fno-common \
+-		 -Wno-comment -Wpointer-arith -Wundef
++#FLAGS += -Wall -Wno-strict-aliasing -fno-omit-frame-pointer -fvisibility=hidden -fno-common \
++#		 -Wno-comment -Wpointer-arith -Wundef
+ ifeq ($(USEGCC),1) # GCC bug #25509 (void)__attribute__((warn_unused_result))
+ FLAGS += -Wno-unused-result
+ endif
+-JCFLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
++#JCFLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
+ 
+ ifeq ($(USECLANG),1)
+ FLAGS += -Wno-return-type-c-linkage
+@@ -108,7 +110,7 @@ PUBLIC_HEADERS += $(addprefix $(SRCDIR)/,julia_gcext.h)
+ PUBLIC_HEADER_TARGETS := $(addprefix $(build_includedir)/julia/,$(notdir $(PUBLIC_HEADERS)) $(UV_HEADERS))
+ 
+ LLVM_LDFLAGS := $(shell $(LLVM_CONFIG_HOST) --ldflags)
+-LLVM_CXXFLAGS := $(shell $(LLVM_CONFIG_HOST) --cxxflags)
++LLVM_CXXFLAGS := $(subst /,-,$(shell $(LLVM_CONFIG_HOST) --cxxflags))
+ 
+ # llvm-config --cxxflags does not return -DNDEBUG
+ ifeq ($(shell $(LLVM_CONFIG_HOST) --assertion-mode),OFF)
+@@ -118,7 +120,7 @@ endif
+ ifeq ($(JULIACODEGEN),LLVM)
+ ifneq ($(USE_SYSTEM_LLVM),0)
+ # USE_SYSTEM_LLVM != 0
+-CG_LLVMLINK += $(LLVM_LDFLAGS) $(shell $(LLVM_CONFIG_HOST) --libs --system-libs)
++# CG_LLVMLINK += $(LLVM_LDFLAGS) $(shell $(LLVM_CONFIG_HOST) --libs --system-libs)
+ # HACK: llvm-config doesn't correctly point to shared libs on all platforms
+ #       https://github.com/JuliaLang/julia/issues/29981
+ else
+@@ -141,7 +143,7 @@ FLAGS += -DLLVM_SHLIB
+ endif # USE_LLVM_SHLIB == 1
+ endif # JULIACODEGEN == LLVM
+ 
+-RT_LLVM_LINK_ARGS := $(shell $(LLVM_CONFIG_HOST) --libs $(RT_LLVM_LIBS) --system-libs --link-static)
++# RT_LLVM_LINK_ARGS := $(shell $(LLVM_CONFIG_HOST) --libs $(RT_LLVM_LIBS) --system-libs --link-static)
+ RT_LLVMLINK += $(LLVM_LDFLAGS) $(RT_LLVM_LINK_ARGS)
+ ifeq ($(OS), WINNT)
+ RT_LLVMLINK += -luuid -lole32
+@@ -157,12 +159,12 @@ LIBJULIA_PATH_REL := libjulia
+ endif
+ 
+ COMMON_LIBPATHS := -L$(build_libdir) -L$(build_shlibdir)
+-RT_LIBS := $(WHOLE_ARCHIVE) $(LIBUV) $(WHOLE_ARCHIVE) $(LIBUTF8PROC) $(NO_WHOLE_ARCHIVE) $(LIBUNWIND) $(RT_LLVMLINK) $(OSLIBS) $(LIBTRACYCLIENT) $(LIBITTAPI)
++RT_LIBS := $(LIBUV) $(LIBUTF8PROC) $(NO_WHOLE_ARCHIVE) $(LIBUNWIND) $(RT_LLVMLINK) $(OSLIBS) $(LIBTRACYCLIENT) $(LIBITTAPI)
+ CG_LIBS := $(LIBUNWIND) $(CG_LLVMLINK) $(OSLIBS) $(LIBTRACYCLIENT) $(LIBITTAPI)
+-RT_DEBUG_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp-debug.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport-debug.a -ljulia-debug $(RT_LIBS)
+-CG_DEBUG_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) -ljulia-debug -ljulia-internal-debug
+-RT_RELEASE_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport.a -ljulia $(RT_LIBS)
+-CG_RELEASE_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) -ljulia -ljulia-internal
++RT_DEBUG_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp-debug.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport-debug.a libjulia-debug.dll.a $(RT_LIBS)
++CG_DEBUG_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) libjulia-debug.dll.a libjulia-internal-debug.dll.a
++RT_RELEASE_LIBS := $(COMMON_LIBPATHS) $(WHOLE_ARCHIVE) $(BUILDDIR)/flisp/libflisp.a $(WHOLE_ARCHIVE) $(BUILDDIR)/support/libsupport.a libjulia.dll.a $(RT_LIBS)
++CG_RELEASE_LIBS := $(COMMON_LIBPATHS) $(CG_LIBS) libjulia.dll.a libjulia-internal.dll.a
+ 
+ OBJS := $(SRCS:%=$(BUILDDIR)/%.o)
+ DOBJS := $(SRCS:%=$(BUILDDIR)/%.dbg.obj)
+@@ -240,10 +242,10 @@ define public_header_target
+ $$(build_includedir)/julia/$$(notdir $(1)): $(1) | $$(build_includedir)/julia
+ 	$$(INSTALL_F) $$^ $$(build_includedir)/julia/
+ endef
+-$(foreach HEADER,$(PUBLIC_HEADERS) $(LIBUV_INC)/uv.h,$(eval $(call public_header_target,$(HEADER))))
++$(foreach HEADER,$(PUBLIC_HEADERS),$(eval $(call public_header_target,$(HEADER))))
+ 
+ $(eval $(call dir_target,$(build_includedir)/julia/uv))
+-$(build_includedir)/julia/uv/*.h: $(LIBUV_INC)/uv/*.h | $(build_includedir)/julia/uv
++$(build_includedir)/julia/uv/*.h:  $(build_includedir)/julia/uv
+ 	$(INSTALL_F) $^ $(build_includedir)/julia/uv
+ 
+ libccalltest: $(build_shlibdir)/libccalltest.$(SHLIB_EXT)
+@@ -361,17 +363,17 @@ $(BUILDDIR)/julia_version.h: $(JULIAHOME)/VERSION
+ 	@echo "#endif" >> $@.$(JULIA_BUILD_MODE).tmp
+ 	mv $@.$(JULIA_BUILD_MODE).tmp $@
+ 
+-CXXLD = $(CXX) -shared
+-
+-$(build_shlibdir)/libjulia-internal.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(OBJS) $(BUILDDIR)/flisp/libflisp.a $(BUILDDIR)/support/libsupport.a $(LIBUV)
+-	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(OBJS) $(RPATH_LIB) -o $@ \
+-		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_RELEASE_LIBS) $(call SONAME_FLAGS,libjulia-internal.$(JL_MAJOR_SHLIB_EXT)))
++CXXLD = $(CXX) -Xlinker -DLL
++#error: section larger than 4 GiB: .data
++$(build_shlibdir)/libjulia-internal.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(OBJS) $(BUILDDIR)/flisp/libflisp.a $(BUILDDIR)/support/libsupport.a
++	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(OBJS) $(RPATH_LIB) $(WHOLE_ARCHIVE) -llibjulia.dll -o $@ \
++		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_RELEASE_LIBS) $(EXTRA_LIBS) $(call SONAME_FLAGS,libjulia-internal.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-internal.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+ 
+-$(build_shlibdir)/libjulia-internal-debug.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(DOBJS) $(BUILDDIR)/flisp/libflisp-debug.a $(BUILDDIR)/support/libsupport-debug.a $(LIBUV)
+-	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(DOBJS) $(RPATH_LIB) -o $@ \
+-		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_DEBUG_LIBS) $(call SONAME_FLAGS,libjulia-internal-debug.$(JL_MAJOR_SHLIB_EXT)))
++$(build_shlibdir)/libjulia-internal-debug.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(DOBJS) $(BUILDDIR)/flisp/libflisp-debug.a $(BUILDDIR)/support/libsupport-debug.a
++	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(DOBJS) $(RPATH_LIB) $(WHOLE_ARCHIVE) -llibjulia.dll -o $@ \
++		$(JLDFLAGS) $(JLIBLDFLAGS) $(RT_DEBUG_LIBS) $(EXTRA_LIBS) $(call SONAME_FLAGS,libjulia-internal-debug.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-internal-debug.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+ 
+@@ -393,13 +395,13 @@ libjulia-internal-debug libjulia-internal-release: $(PUBLIC_HEADER_TARGETS)
+ 
+ $(build_shlibdir)/libjulia-codegen.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(CODEGEN_OBJS) $(BUILDDIR)/support/libsupport.a $(build_shlibdir)/libjulia-internal.$(JL_MAJOR_MINOR_SHLIB_EXT)
+ 	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(SHIPFLAGS) $(CODEGEN_OBJS) $(RPATH_LIB) -o $@ \
+-		$(JLDFLAGS) $(JLIBLDFLAGS) $(CG_RELEASE_LIBS) $(call SONAME_FLAGS,libjulia-codegen.$(JL_MAJOR_SHLIB_EXT)))
++		$(JLDFLAGS) $(JLIBLDFLAGS) $(CG_RELEASE_LIBS) $(EXTRA_LIBS) $(call SONAME_FLAGS,libjulia-codegen.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-codegen.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+ 
+ $(build_shlibdir)/libjulia-codegen-debug.$(JL_MAJOR_MINOR_SHLIB_EXT): $(SRCDIR)/julia.expmap $(CODEGEN_DOBJS) $(BUILDDIR)/support/libsupport-debug.a $(build_shlibdir)/libjulia-internal-debug.$(JL_MAJOR_MINOR_SHLIB_EXT)
+ 	@$(call PRINT_LINK, $(CXXLD) $(call IMPLIB_FLAGS,$@) $(JCXXFLAGS) $(JL_CXXFLAGS) $(CXXLDFLAGS) $(DEBUGFLAGS) $(CODEGEN_DOBJS) $(RPATH_LIB) -o $@ \
+-		$(JLDFLAGS) $(JLIBLDFLAGS) $(CG_DEBUG_LIBS) $(call SONAME_FLAGS,libjulia-codegen-debug.$(JL_MAJOR_SHLIB_EXT)))
++		$(JLDFLAGS) $(JLIBLDFLAGS) $(CG_DEBUG_LIBS) $(EXTRA_LIBS) $(call SONAME_FLAGS,libjulia-codegen-debug.$(JL_MAJOR_SHLIB_EXT)))
+ 	@$(INSTALL_NAME_CMD)libjulia-codegen-debug.$(SHLIB_EXT) $@
+ 	$(DSYMUTIL) $@
+ 
+@@ -446,7 +448,7 @@ $(build_shlibdir)/lib%Plugin.$(SHLIB_EXT): $(SRCDIR)/clangsa/%.cpp $(LLVM_CONFIG
+ # before attempting this static analysis, so that all necessary headers
+ # and dependencies are properly installed:
+ #   make -C src install-analysis-deps
+-ANALYSIS_DEPS := llvm clang llvm-tools libuv utf8proc
++ANALYSIS_DEPS := llvm clang llvm-tools
+ ifeq ($(OS),Darwin)
+ ANALYSIS_DEPS += llvmunwind
+ else ifneq ($(OS),WINNT)
+diff --git a/src/cgutils.cpp b/src/cgutils.cpp
+index 21d58cc20..802eb6795 100644
+--- a/src/cgutils.cpp
++++ b/src/cgutils.cpp
+@@ -257,14 +257,21 @@ void jl_debugcache_t::initialize(Module *m) {
+         julia_h,
+         71, // At the time of this writing. Not sure if it's worth it to keep this in sync
+         0 * 8, // sizeof(jl_value_t) * 8,
++#ifdef _MSC_VER
++        alignof(void*) * 8, // __alignof__(jl_value_t) * 8,
++#else
+         __alignof__(void*) * 8, // __alignof__(jl_value_t) * 8,
++#endif
+         DINode::FlagZero, // Flags
+         nullptr,    // Derived from
+         nullptr);  // Elements - will be corrected later
+ 
+     jl_pvalue_dillvmt = dbuilder.createPointerType(jl_value_dillvmt, sizeof(jl_value_t*) * 8,
++#ifdef _MSC_VER
++                                                alignof(jl_value_t*) * 8);
++#else
+                                                 __alignof__(jl_value_t*) * 8);
+-
++#endif
+     SmallVector<llvm::Metadata *, 1> Elts;
+     std::vector<Metadata*> diargs(0);
+     Elts.push_back(jl_pvalue_dillvmt);
+@@ -272,8 +279,11 @@ void jl_debugcache_t::initialize(Module *m) {
+     dbuilder.getOrCreateArray(Elts));
+ 
+     jl_ppvalue_dillvmt = dbuilder.createPointerType(jl_pvalue_dillvmt, sizeof(jl_value_t**) * 8,
++#ifdef _MSC_VER
++                                                    alignof(jl_value_t**) * 8);
++#else
+                                                     __alignof__(jl_value_t**) * 8);
+-
++#endif
+     diargs.push_back(jl_pvalue_dillvmt);    // Return Type (ret value)
+     diargs.push_back(jl_pvalue_dillvmt);    // First Argument (function)
+     diargs.push_back(jl_ppvalue_dillvmt);   // Second Argument (argv)
+diff --git a/src/codegen.cpp b/src/codegen.cpp
+index 3992631c8..a38855991 100644
+--- a/src/codegen.cpp
++++ b/src/codegen.cpp
+@@ -645,6 +645,7 @@ static const auto jlsmall_typeof_var = new JuliaVariable{
+     [](Type *T_size) -> Type * { return getInt8Ty(T_size->getContext()); },
+ };
+ 
++__declspec(dllimport) extern "C" uintptr_t __stack_chk_guard;
+ static const auto jlstack_chk_guard_var = new JuliaVariable{
+     XSTR(__stack_chk_guard),
+     true,
+@@ -9189,7 +9190,7 @@ extern "C" JL_DLLEXPORT_CODEGEN jl_value_t *jl_get_libllvm_impl(void) JL_NOTSAFE
+ {
+ #if defined(_OS_WINDOWS_)
+     HMODULE mod;
+-    if (!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCSTR)&llvm::DebugFlag, &mod))
++    if (!GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCSTR)&llvm::DebugFlag, &mod))
+         return jl_nothing;
+     wchar_t path16[MAX_PATH];
+     DWORD n16 = GetModuleFileNameW(mod, path16, MAX_PATH);
+diff --git a/src/flisp/Makefile b/src/flisp/Makefile
+index c2bf30300..0ad633f5a 100644
+--- a/src/flisp/Makefile
++++ b/src/flisp/Makefile
+@@ -26,15 +26,15 @@ NATIVE_BUILDDIR := $(BUILDDIR)
+ LLT_BUILDDIR := $(BUILDDIR)/$(LLTDIR)
+ endif
+ 
+-HEADERS := $(wildcard *.h) $(LIBUV_INC)/uv.h $(wildcard $(LLTDIR)/*.h)
++HEADERS := $(wildcard *.h) $(wildcard $(LLTDIR)/*.h)
+ 
+ OBJS := $(SRCS:%.c=$(BUILDDIR)/%.o)
+ DOBJS := $(SRCS:%.c=$(BUILDDIR)/%.dbg.obj)
+ LLT_release := $(LLT_BUILDDIR)/libsupport.a
+ LLT_debug := $(LLT_BUILDDIR)/libsupport-debug.a
+-LIBFILES_release := $(LLT_release) $(LIBUV)
+-LIBFILES_debug := $(LLT_debug) $(LIBUV)
+-LIBS :=
++LIBFILES_release := $(LLT_release)
++LIBFILES_debug := $(LLT_debug)
++LIBS :=  $(LIBUV)
+ ifneq ($(OS),WINNT)
+ LIBS += -lpthread
+ endif
+@@ -48,13 +48,13 @@ endif
+ 
+ 
+ FLAGS := -I$(LLTSRCDIR) $(JCFLAGS) $(HFILEDIRS:%=-I%) \
+-        -I$(LIBUV_INC) -I$(UTF8PROC_INC) -I$(build_includedir) $(LIBDIRS:%=-L%) \
+-        -DJL_LIBRARY_EXPORTS_INTERNAL -DUTF8PROC_EXPORTS
++         -I$(build_includedir) $(LIBDIRS:%=-L%) \
++        -DJL_LIBRARY_EXPORTS_INTERNAL
+ ifneq ($(OS), emscripten)
+ FLAGS += -DUSE_COMPUTED_GOTO
+ endif
+-FLAGS += -Wall -Wno-strict-aliasing -fvisibility=hidden -Wpointer-arith -Wundef
+-FLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
++#FLAGS += -Wall -Wno-strict-aliasing -fvisibility=hidden -Wpointer-arith -Wundef
++#FLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
+ 
+ DEBUGFLAGS += $(FLAGS)
+ SHIPFLAGS += $(FLAGS)
+diff --git a/src/flisp/flisp.c b/src/flisp/flisp.c
+index 32c000802..fe53517c1 100644
+--- a/src/flisp/flisp.c
++++ b/src/flisp/flisp.c
+@@ -41,8 +41,9 @@
+ #include <locale.h>
+ #include <limits.h>
+ #include <errno.h>
++#ifndef _MSC_VER
+ #include <libgen.h> // defines dirname
+-
++#endif
+ #include "platform.h"
+ #include "libsupport.h"
+ #include "flisp.h"
+@@ -915,7 +916,11 @@ static uint32_t process_keys(fl_context_t *fl_ctx, value_t kwtable,
+     uintptr_t n;
+     uint32_t extr = nopt+nkw;
+     uint32_t ntot = nreq+extr;
++#ifndef _MSC_VER 
+     value_t *args = (value_t*)alloca(extr*sizeof(value_t));
++#else
++    value_t *args = (value_t*)_alloca(extr*sizeof(value_t));
++#endif
+     value_t v;
+     uint32_t i, a = 0, nrestargs;
+     value_t s1 = fl_ctx->Stack[fl_ctx->SP-1];
+@@ -2406,7 +2411,20 @@ static void lisp_init(fl_context_t *fl_ctx, size_t initial_heapsize)
+     char exename[1024];
+     size_t exe_size = sizeof(exename) / sizeof(exename[0]);
+     if ( uv_exepath(exename, &exe_size) == 0 ) {
++#ifdef _MSC_VER
++        char dir[1024];
++        strcpy(dir, exename);
++        char * last_path_sep = strrchr(dir,'\\');
++        if(last_path_sep != NULL) {
++          last_path_sep[0] = '\0';
++        } else {
++          dir[0] = '.';
++          dir[1] = '\0';
++        }
++        setc(symbol(fl_ctx, "*install-dir*"), cvalue_static_cstring(fl_ctx, strdup(dir)));
++#else
+         setc(symbol(fl_ctx, "*install-dir*"), cvalue_static_cstring(fl_ctx, strdup(dirname(exename))));
++#endif
+     }
+ 
+     fl_ctx->memory_exception_value = fl_list2(fl_ctx, fl_ctx->OutOfMemoryError,
+diff --git a/src/gc-heap-snapshot.cpp b/src/gc-heap-snapshot.cpp
+index b1401653d..538a27197 100644
+--- a/src/gc-heap-snapshot.cpp
++++ b/src/gc-heap-snapshot.cpp
+@@ -121,7 +121,7 @@ struct HeapSnapshot {
+ // when snapshotting is on.
+ int gc_heap_snapshot_enabled = 0;
+ HeapSnapshot *g_snapshot = nullptr;
+-extern jl_mutex_t heapsnapshot_lock;
++extern "C" JL_DLLIMPORT jl_mutex_t heapsnapshot_lock;
+ 
+ void serialize_heap_snapshot(ios_t *stream, HeapSnapshot &snapshot, char all_one);
+ static inline void _record_gc_edge(const char *edge_type,
+diff --git a/src/gc.c b/src/gc.c
+index 846ade33b..7836b9583 100644
+--- a/src/gc.c
++++ b/src/gc.c
+@@ -130,7 +130,7 @@ static jl_mutex_t finalizers_lock;
+ static uv_mutex_t gc_cache_lock;
+ 
+ // mutex for gc-heap-snapshot.
+-jl_mutex_t heapsnapshot_lock;
++JL_DLLEXPORT jl_mutex_t heapsnapshot_lock;
+ 
+ // Flag that tells us whether we need to support conservative marking
+ // of objects.
+diff --git a/src/gc.h b/src/gc.h
+index eb20dd0ac..2145a20cc 100644
+--- a/src/gc.h
++++ b/src/gc.h
+@@ -12,7 +12,9 @@
+ #include <stddef.h>
+ #include <stdlib.h>
+ #include <string.h>
++#ifndef _MSC_VER
+ #include <strings.h>
++#endif
+ #include <inttypes.h>
+ #include "julia.h"
+ #include "julia_threads.h"
+diff --git a/src/init.c b/src/init.c
+index 02769e03c..f32abd2c5 100644
+--- a/src/init.c
++++ b/src/init.c
+@@ -618,6 +623,29 @@ static const char *absformat(const char *in)
+     return out;
+ }
+ 
++#ifdef _MSC_VER
++#define PATHSEPSTRING "\\"
++char * dirname(char * x) {
++    int idx = strlen(x);
++    while (idx > 0 && x[idx] != PATHSEPSTRING[0]) {
++        idx -= 1;
++    }
++    if (x[idx] == PATHSEPSTRING[0]) {
++        // Special-case x == "/"
++        if (idx == 0) {
++            x[1] = '\0';
++            return x;
++        } else {
++            x[idx] = '\0';
++            return x;
++        }
++    }
++    x[0] = '.';
++    x[1] = '\0';
++    return x;
++}
++#endif
++
+ static void jl_resolve_sysimg_location(JL_IMAGE_SEARCH rel)
+ {   // this function resolves the paths in jl_options to absolute file locations as needed
+     // and it replaces the pointers to `julia_bindir`, `julia_bin`, `image_file`, and output file paths
+diff --git a/src/interpreter.c b/src/interpreter.c
+index c08496f72..db7b21177 100644
+--- a/src/interpreter.c
++++ b/src/interpreter.c
+@@ -655,7 +655,7 @@ jl_code_info_t *jl_code_for_interpreter(jl_method_instance_t *mi, size_t world)
+ 
+ // interpreter entry points
+ 
+-jl_value_t *NOINLINE jl_fptr_interpret_call(jl_value_t *f, jl_value_t **args, uint32_t nargs, jl_code_instance_t *codeinst)
++NOINLINE jl_value_t * jl_fptr_interpret_call(jl_value_t *f, jl_value_t **args, uint32_t nargs, jl_code_instance_t *codeinst)
+ {
+     interpreter_state *s;
+     jl_method_instance_t *mi = codeinst->def;
+@@ -742,7 +742,7 @@ jl_value_t *jl_interpret_opaque_closure(jl_opaque_closure_t *oc, jl_value_t **ar
+     return r;
+ }
+ 
+-jl_value_t *NOINLINE jl_interpret_toplevel_thunk(jl_module_t *m, jl_code_info_t *src)
++NOINLINE jl_value_t * jl_interpret_toplevel_thunk(jl_module_t *m, jl_code_info_t *src)
+ {
+     interpreter_state *s;
+     unsigned nroots = jl_source_nslots(src) + jl_source_nssavalues(src);
+@@ -766,7 +766,7 @@ jl_value_t *NOINLINE jl_interpret_toplevel_thunk(jl_module_t *m, jl_code_info_t
+ // deprecated: do not use this method in new code
+ // it uses special scoping / evaluation / error rules
+ // which should instead be handled in lowering
+-jl_value_t *NOINLINE jl_interpret_toplevel_expr_in(jl_module_t *m, jl_value_t *e, jl_code_info_t *src, jl_svec_t *sparam_vals)
++NOINLINE jl_value_t * jl_interpret_toplevel_expr_in(jl_module_t *m, jl_value_t *e, jl_code_info_t *src, jl_svec_t *sparam_vals)
+ {
+     interpreter_state *s;
+     jl_value_t **locals;
+diff --git a/src/jl_uv.c b/src/jl_uv.c
+index 281dd798d..6a01d2c2c 100644
+--- a/src/jl_uv.c
++++ b/src/jl_uv.c
+@@ -41,7 +45,7 @@ static void walk_print_cb(uv_handle_t *h, void *arg)
+         type = "<unknown>";
+     uv_os_fd_t fd;
+     if (h->type == UV_PROCESS)
+-        fd = uv_process_get_pid((uv_process_t*)h);
++        fd = (void *)uv_process_get_pid((uv_process_t*)h);
+     else if (uv_fileno(h, &fd))
+         fd = (uv_os_fd_t)-1;
+     const char *pad = "                "; // 16 spaces
+diff --git a/src/jloptions.c b/src/jloptions.c
+index 4c0b59f81..18911076c 100644
+--- a/src/jloptions.c
++++ b/src/jloptions.c
+@@ -6,7 +6,9 @@
+ #include "julia.h"
+ #include "julia_internal.h"
+ 
++#ifndef _MSC_VER
+ #include <unistd.h>
++#endif
+ #include <getopt.h>
+ #include "julia_assert.h"
+ 
+diff --git a/src/jltypes.c b/src/jltypes.c
+index 5fc981947..2239c7db2 100644
+--- a/src/jltypes.c
++++ b/src/jltypes.c
+@@ -20,7 +20,7 @@ extern "C" {
+ #endif
+ 
+ _Atomic(jl_value_t*) cmpswap_names JL_GLOBALLY_ROOTED;
+-jl_datatype_t *small_typeof[(jl_max_tags << 4) / sizeof(*small_typeof)]; // 16-bit aligned, like the GC
++//jl_datatype_t *small_typeof[(jl_max_tags << 4) / sizeof(*small_typeof)]; // 16-bit aligned, like the GC
+ 
+ // compute empirical max-probe for a given size
+ #define max_probe(size) ((size) <= 1024 ? 16 : (size) >> 6)
+diff --git a/src/julia.h b/src/julia.h
+index 286bef615..4e9c93caa 100644
+--- a/src/julia.h
++++ b/src/julia.h
+@@ -747,7 +747,7 @@ enum jlsmall_typeof_tags {
+     jl_bitstags_first = jl_char_tag, // n.b. bool is not considered a bitstype, since it can be compared by pointer
+     jl_max_tags = 64
+ };
+-extern jl_datatype_t *small_typeof[(jl_max_tags << 4) / sizeof(jl_datatype_t*)];
++extern JL_DLLIMPORT jl_datatype_t *small_typeof[(jl_max_tags << 4) / sizeof(jl_datatype_t*)];
+ static inline jl_value_t *jl_to_typeof(uintptr_t t)
+ {
+     if (t < (jl_max_tags << 4))
+diff --git a/src/julia_internal.h b/src/julia_internal.h
+index 49f0b19ec..49e9b8f0e 100644
+--- a/src/julia_internal.h
++++ b/src/julia_internal.h
+@@ -26,7 +26,9 @@
+ #endif
+ 
+ // pragma visibility is more useful than -fvisibility
++#ifndef _MSC_VER
+ #pragma GCC visibility push(hidden)
++#endif
+ 
+ #ifdef __cplusplus
+ extern "C" {
+@@ -143,11 +145,12 @@ JL_DLLIMPORT void __tsan_switch_to_fiber(void *fiber, unsigned flags);
+ // If we've smashed the stack, (and not just normal NORETURN)
+ // this will smash stack-unwind too
+ #ifdef _OS_WINDOWS_
+-#if defined(_CPU_X86_64_)
++#if defined(_CPU_X86_64_) && !defined(_MSC_VER)
+     // install the unhandled exception handler at the top of our stack
+     // to call directly into our personality handler
++    // yields error: all .cv_loc directives for a function must be in the same section
+ #define CFI_NORETURN \
+-    asm volatile ("\t.seh_handler __julia_personality, @except\n\t.text");
++    __asm__ __volatile__ ("\t.seh_handler __julia_personality, @except\n\t.text");
+ #else
+ #define CFI_NORETURN
+ #endif
+@@ -170,8 +173,13 @@ JL_DLLIMPORT void __tsan_switch_to_fiber(void *fiber, unsigned flags);
+ #endif
+ #endif
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ extern JL_DLLEXPORT uintptr_t __stack_chk_guard;
+-
++#ifdef __cplusplus
++}
++#endif
+ // If this is detected in a backtrace of segfault, it means the functions
+ // that use this value must be reworked into their async form with cb arg
+ // provided and with JL_UV_LOCK used around the calls
+@@ -207,7 +215,9 @@ JL_DLLEXPORT void jl_unlock_profile_wr(void) JL_NOTSAFEPOINT JL_NOTSAFEPOINT_LEA
+ // number of cycles since power-on
+ static inline uint64_t cycleclock(void) JL_NOTSAFEPOINT
+ {
+-#if defined(_CPU_X86_64_)
++#ifdef _MSC_VER
++  return __rdtsc(); 
++#elif defined(_CPU_X86_64_)
+     uint64_t low, high;
+     __asm__ volatile("rdtsc" : "=a"(low), "=d"(high));
+     return (high << 32) | low;
+@@ -1118,9 +1128,13 @@ extern JL_DLLEXPORT uv_mutex_t jl_in_stackwalk;
+ #elif !defined(JL_DISABLE_LIBUNWIND)
+ // This gives unwind only local unwinding options ==> faster code
+ #  define UNW_LOCAL_ONLY
++#ifndef _MSC_VER
+ #pragma GCC visibility push(default)
++#endif
+ #  include <libunwind.h>
++#ifndef _MSC_VER
+ #pragma GCC visibility pop
++#endif
+ typedef unw_context_t bt_context_t;
+ typedef unw_cursor_t bt_cursor_t;
+ #  if (!defined(SYSTEM_LIBUNWIND) || UNW_VERSION_MAJOR > 1 ||   \
+@@ -1681,9 +1695,9 @@ JL_DLLIMPORT uint64_t jl_getUnwindInfo(uint64_t dwBase);
+ #ifdef __cplusplus
+ }
+ #endif
+-
++#ifndef _MSC_VER
+ #pragma GCC visibility pop
+-
++#endif
+ 
+ #ifdef USE_DTRACE
+ // Generated file, needs to be searched in include paths so that the builddir
+diff --git a/src/partr.c b/src/partr.c
+index 403f911b1..126003970 100644
+--- a/src/partr.c
++++ b/src/partr.c
+@@ -3,8 +3,9 @@
+ #include <assert.h>
+ #include <stdio.h>
+ #include <stdlib.h>
++#ifndef _MSC_VER
+ #include <strings.h>
+-
++#endif
+ #include "julia.h"
+ #include "julia_internal.h"
+ #include "gc.h"
+diff --git a/src/processor.h b/src/processor.h
+index 3e83bbb22..c2606cb64 100644
+--- a/src/processor.h
++++ b/src/processor.h
+@@ -245,14 +245,14 @@ extern JL_DLLEXPORT bool jl_processor_print_help;
+  * If the detected/specified CPU name is not available on the LLVM version specified,
+  * a fallback CPU name will be used. Unsupported features will be ignored.
+  */
+-extern "C" JL_DLLEXPORT std::pair<std::string,std::vector<std::string>> jl_get_llvm_target(bool imaging, uint32_t &flags) JL_NOTSAFEPOINT;
++extern JL_DLLEXPORT std::pair<std::string,std::vector<std::string>> jl_get_llvm_target(bool imaging, uint32_t &flags) JL_NOTSAFEPOINT;
+ 
+ /**
+  * Returns the CPU name and feature string to be used by LLVM disassembler.
+  *
+  * This will return a generic CPU name and a full feature string.
+  */
+-extern "C" JL_DLLEXPORT const std::pair<std::string,std::string> &jl_get_llvm_disasm_target(void) JL_NOTSAFEPOINT;
++JL_DLLEXPORT const std::pair<std::string,std::string> &jl_get_llvm_disasm_target(void) JL_NOTSAFEPOINT;
+ 
+ struct jl_target_spec_t {
+     // LLVM target name
+@@ -269,7 +269,7 @@ struct jl_target_spec_t {
+ /**
+  * Return the list of targets to clone
+  */
+-extern "C" JL_DLLEXPORT std::vector<jl_target_spec_t> jl_get_llvm_clone_targets(void) JL_NOTSAFEPOINT;
++extern JL_DLLEXPORT std::vector<jl_target_spec_t> jl_get_llvm_clone_targets(void) JL_NOTSAFEPOINT;
+ std::string jl_get_cpu_name_llvm(void) JL_NOTSAFEPOINT;
+ std::string jl_get_cpu_features_llvm(void) JL_NOTSAFEPOINT;
+ #endif
+diff --git a/src/processor_fallback.cpp b/src/processor_fallback.cpp
+index 1aebde6da..bed16f04d 100644
+--- a/src/processor_fallback.cpp
++++ b/src/processor_fallback.cpp
+@@ -142,7 +142,7 @@ const std::pair<std::string,std::string> &jl_get_llvm_disasm_target(void)
+     return res;
+ }
+ 
+-extern "C" std::vector<jl_target_spec_t> jl_get_llvm_clone_targets(void)
++extern std::vector<jl_target_spec_t> jl_get_llvm_clone_targets(void)
+ {
+     if (jit_targets.empty())
+         jl_error("JIT targets not initialized");
+diff --git a/src/processor_x86.cpp b/src/processor_x86.cpp
+index 30a6ff9b3..49e46f761 100644
+--- a/src/processor_x86.cpp
++++ b/src/processor_x86.cpp
+@@ -1055,21 +1055,21 @@ jl_image_t jl_init_processor_pkgimg(void *hdl)
+     return parse_sysimg(hdl, pkgimg_init_cb);
+ }
+ 
+-extern "C" JL_DLLEXPORT std::pair<std::string,std::vector<std::string>> jl_get_llvm_target(bool imaging, uint32_t &flags)
++JL_DLLEXPORT std::pair<std::string,std::vector<std::string>> jl_get_llvm_target(bool imaging, uint32_t &flags)
+ {
+     ensure_jit_target(imaging);
+     flags = jit_targets[0].en.flags;
+     return get_llvm_target_vec(jit_targets[0]);
+ }
+ 
+-extern "C" JL_DLLEXPORT const std::pair<std::string,std::string> &jl_get_llvm_disasm_target(void)
++JL_DLLEXPORT const std::pair<std::string,std::string> &jl_get_llvm_disasm_target(void)
+ {
+     static const auto res = get_llvm_target_str(TargetData<feature_sz>{"generic", "",
+             {feature_masks, 0}, {{}, 0}, 0});
+     return res;
+ }
+ 
+-extern "C" JL_DLLEXPORT std::vector<jl_target_spec_t> jl_get_llvm_clone_targets(void)
++JL_DLLEXPORT std::vector<jl_target_spec_t> jl_get_llvm_clone_targets(void)
+ {
+     if (jit_targets.empty())
+         jl_error("JIT targets not initialized");
+diff --git a/src/signal-handling.c b/src/signal-handling.c
+index e241fd22e..151bfadf0 100644
+--- a/src/signal-handling.c
++++ b/src/signal-handling.c
+@@ -6,8 +6,8 @@
+ #include <inttypes.h>
+ #include "julia.h"
+ #include "julia_internal.h"
+-#include <unistd.h>
+ #ifndef _OS_WINDOWS_
++#include <unistd.h>
+ #include <sys/mman.h>
+ #endif
+ 
+diff --git a/src/support/Makefile b/src/support/Makefile
+index 1ee98a4ea..7550bd006 100644
+--- a/src/support/Makefile
++++ b/src/support/Makefile
+@@ -7,7 +9,7 @@ JCFLAGS += $(CFLAGS)
+ JCXXFLAGS += $(CXXFLAGS)
+ JCPPFLAGS += $(CPPFLAGS)
+ JLDFLAGS += $(LDFLAGS)
+-
++ARCH := x86_64
+ SRCS := hashing timefuncs ptrhash operators utf8 ios htable bitvector \
+ 	int2str libsupportinit arraylist strtod rle
+ ifeq ($(OS),WINNT)
+@@ -19,14 +21,14 @@ SRCS += _setjmp.win64
+ endif
+ endif
+ 
+-HEADERS := $(wildcard *.h) $(LIBUV_INC)/uv.h
++HEADERS := $(wildcard *.h)
+ 
+ OBJS := $(SRCS:%=$(BUILDDIR)/%.o)
+ DOBJS := $(SRCS:%=$(BUILDDIR)/%.dbg.obj)
+ 
+-FLAGS := $(HFILEDIRS:%=-I%) -I$(LIBUV_INC) -I$(UTF8PROC_INC) -DJL_LIBRARY_EXPORTS_INTERNAL -DUTF8PROC_EXPORTS
+-FLAGS += -Wall -Wno-strict-aliasing -fvisibility=hidden -Wpointer-arith -Wundef
+-JCFLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
++FLAGS := $(HFILEDIRS:%=-I%) -DJL_LIBRARY_EXPORTS_INTERNAL -DUTF8PROC_EXPORTS
++#FLAGS += -Wall -Wno-strict-aliasing -fvisibility=hidden -Wpointer-arith -Wundef
++#JCFLAGS += -Wold-style-definition -Wstrict-prototypes -Wc++-compat
+ 
+ DEBUGFLAGS += $(FLAGS)
+ SHIPFLAGS += $(FLAGS)
+@@ -36,14 +38,14 @@ default: release
+ $(BUILDDIR):
+ 	mkdir -p $(BUILDDIR)
+ 
+ $(BUILDDIR)/%.o: $(SRCDIR)/%.c $(HEADERS) | $(BUILDDIR)
+ 	@$(call PRINT_CC, $(CC) $(JCPPFLAGS) $(JCFLAGS) $(SHIPFLAGS) $(DISABLE_ASSERTIONS) -c $< -o $@)
+ $(BUILDDIR)/%.dbg.obj: $(SRCDIR)/%.c $(HEADERS) | $(BUILDDIR)
+ 	@$(call PRINT_CC, $(CC) $(JCPPFLAGS) $(JCFLAGS) $(DEBUGFLAGS) -c $< -o $@)
+ $(BUILDDIR)/%.o: $(SRCDIR)/%.S | $(BUILDDIR)
+-	@$(call PRINT_CC, $(CC) $(JCPPFLAGS) $(SHIPFLAGS) -c $< -o $@)
++	@$(call PRINT_CC, $(CCAS) $(JCPPFLAGS) $(SHIPFLAGS) -c $< -o $@)
+ $(BUILDDIR)/%.dbg.obj: $(SRCDIR)/%.S | $(BUILDDIR)
+-	@$(call PRINT_CC, $(CC) $(JCPPFLAGS) $(DEBUGFLAGS) -c $< -o $@)
++	@$(call PRINT_CC, $(CCAS) $(JCPPFLAGS) $(DEBUGFLAGS) -c $< -o $@)
+ 
+ $(BUILDDIR)/host/Makefile:
+ 	mkdir -p $(BUILDDIR)/host
+diff --git a/src/support/dtypes.h b/src/support/dtypes.h
+index a30fe85cc..ccf861858 100644
+--- a/src/support/dtypes.h
++++ b/src/support/dtypes.h
+@@ -25,6 +25,7 @@
+ #include <stdlib.h>
+ #include <sys/stat.h>
+ #define WIN32_LEAN_AND_MEAN
++#define NOMINMAX
+ #include <windows.h>
+ 
+ #if defined(_COMPILER_MICROSOFT_) && !defined(_SSIZE_T_) && !defined(_SSIZE_T_DEFINED)
+diff --git a/src/support/platform.h b/src/support/platform.h
+index 56f8cafbc..7a07cd449 100644
+--- a/src/support/platform.h
++++ b/src/support/platform.h
+@@ -33,7 +33,7 @@
+ *                               Compiler                                       *
+ *******************************************************************************/
+ 
+-#if defined(__clang__)
++#if defined(__clang__) && !defined(_MSC_VER)
+ #define _COMPILER_CLANG_
+ #elif defined(__GNUC__)
+ #define _COMPILER_GCC_
+diff --git a/src/task.c b/src/task.c
+index 477ae4810..6cfe570d3 100644
+--- a/src/task.c
++++ b/src/task.c
+@@ -29,7 +29,9 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <signal.h>
++#ifndef _MSC_VER
+ #include <unistd.h>
++#endif
+ #include <errno.h>
+ #include <inttypes.h>
+ #include "julia.h"
+diff --git a/src/uv_constants.h b/src/uv_constants.h
+index c403bd737..c07da5c1e 100644
+--- a/src/uv_constants.h
++++ b/src/uv_constants.h
+@@ -1,6 +1,6 @@
+ // This file is a part of Julia. License is MIT: https://julialang.org/license
+ 
+-#include "uv.h"
++#include <uv.h>
+ #if EDOM > 0
+ # define UV__ERR(x) (-(x))
+ #else
+diff --git a/src/win32_ucontext.c b/src/win32_ucontext.c
+index c6d437230..75a01be20 100644
+--- a/src/win32_ucontext.c
++++ b/src/win32_ucontext.c
+@@ -3,6 +3,7 @@
+ #include "win32_ucontext.h"
+ 
+ #define WIN32_LEAN_AND_MEAN
++#define NOMINMAX
+ #include <windows.h>
+ 
+ #ifdef __cplusplus
+@@ -27,7 +28,7 @@ JL_DLLEXPORT EXCEPTION_DISPOSITION NTAPI __julia_personality(
+     EXCEPTION_DISPOSITION rval;
+     switch (jl_exception_handler(&ExceptionInfo)) {
+         case EXCEPTION_EXECUTE_HANDLER:
+-            rval = ExceptionExecuteHandler;
++            rval = 4; //ExceptionExecuteHandler;
+             break;
+         case EXCEPTION_CONTINUE_EXECUTION:
+             rval = ExceptionContinueExecution;
+diff --git a/stdlib/CompilerSupportLibraries_jll/src/CompilerSupportLibraries_jll.jl b/stdlib/CompilerSupportLibraries_jll/src/CompilerSupportLibraries_jll.jl
+index bd7a0571f..ab5c07e6a 100644
+--- a/stdlib/CompilerSupportLibraries_jll/src/CompilerSupportLibraries_jll.jl
++++ b/stdlib/CompilerSupportLibraries_jll/src/CompilerSupportLibraries_jll.jl
+@@ -53,20 +53,20 @@ else
+ end
+ 
+ function __init__()
+-    global libgcc_s_handle = dlopen(libgcc_s)
+-    global libgcc_s_path = dlpath(libgcc_s_handle)
+-    global libgfortran_handle = dlopen(libgfortran)
+-    global libgfortran_path = dlpath(libgfortran_handle)
+-    global libstdcxx_handle = dlopen(libstdcxx)
+-    global libstdcxx_path = dlpath(libstdcxx_handle)
+-    global libgomp_handle = dlopen(libgomp)
+-    global libgomp_path = dlpath(libgomp_handle)
+-    @static if libc(HostPlatform()) != "musl"
+-        dlopen(libssp; throw_error = false)
+-    end
++    #global libgcc_s_handle = dlopen(libgcc_s)
++    #global libgcc_s_path = dlpath(libgcc_s_handle)
++    #global libgfortran_handle = dlopen(libgfortran)
++    #global libgfortran_path = dlpath(libgfortran_handle)
++    #global libstdcxx_handle = dlopen(libstdcxx)
++    #global libstdcxx_path = dlpath(libstdcxx_handle)
++    #global libgomp_handle = dlopen(libgomp)
++    #global libgomp_path = dlpath(libgomp_handle)
++    #@static if libc(HostPlatform()) != "musl"
++    #    dlopen(libssp; throw_error = false)
++    #end
+     global artifact_dir = dirname(Sys.BINDIR)
+-    LIBPATH[] = dirname(libgcc_s_path)
+-    push!(LIBPATH_list, LIBPATH[])
++    #LIBPATH[] = dirname(libgcc_s_path)
++    #push!(LIBPATH_list, LIBPATH[])
+ end
+ 
+ # JLLWrappers API compatibility shims.  Note that not all of these will really make sense.
+diff --git a/sysimage.mk b/sysimage.mk
+index 7ed61d471..484e56bc2 100644
+--- a/sysimage.mk
++++ b/sysimage.mk
+@@ -15,7 +15,7 @@ VERSDIR := v$(shell cut -d. -f1-2 < $(JULIAHOME)/VERSION)
+ $(build_private_libdir)/%.$(SHLIB_EXT): $(build_private_libdir)/%-o.a
+ 	@$(call PRINT_LINK, $(CXX) $(LDFLAGS) -shared $(fPIC) -L$(build_private_libdir) -L$(build_libdir) -L$(build_shlibdir) -o $@ \
+ 		$(WHOLE_ARCHIVE) $< $(NO_WHOLE_ARCHIVE) \
+-		$(if $(findstring -debug,$(notdir $@)),-ljulia-internal-debug -ljulia-debug,-ljulia-internal -ljulia) \
++		$(if $(findstring -debug,$(notdir $@)),libjulia-internal-debug.dll.a libjulia-debug.dll.a,libjulia.dll.a libjulia-internal.dll.a) \
+ 		$$([ $(OS) = WINNT ] && echo '' -lssp))
+ 	@$(INSTALL_NAME_CMD)$(notdir $@) $@
+ 	@$(DSYMUTIL) $@
+@@ -66,7 +66,7 @@ $(build_private_libdir)/corecompiler.ji: $(COMPILER_SRCS)
+ $(build_private_libdir)/sys.ji: $(build_private_libdir)/corecompiler.ji $(JULIAHOME)/VERSION $(BASE_SRCS) $(STDLIB_SRCS)
+ 	@$(call PRINT_JULIA, cd $(JULIAHOME)/base && \
+ 	if ! JULIA_BINDIR=$(call cygpath_w,$(build_bindir)) WINEPATH="$(call cygpath_w,$(build_bindir));$$WINEPATH" \
+-			$(call spawn, $(JULIA_EXECUTABLE)) -g1 -O0 -C "$(JULIA_CPU_TARGET)" --output-ji $(call cygpath_w,$@).tmp $(JULIA_SYSIMG_BUILD_FLAGS) \
++			$(call spawn, $(JULIA_EXECUTABLE)) --trace-compile=stderr -g2 -O0 -C "$(JULIA_CPU_TARGET)" --output-ji $(call cygpath_w,$@).tmp $(JULIA_SYSIMG_BUILD_FLAGS) \
+ 			--startup-file=no --warn-overwrite=yes --sysimage $(call cygpath_w,$<) sysimg.jl $(RELBUILDROOT); then \
+ 		echo '*** This error might be fixed by running `make clean`. If the error persists$(COMMA) try `make cleanall`. ***'; \
+ 		false; \
+@@ -78,7 +78,7 @@ $$(build_private_libdir)/sys$1-o.a $$(build_private_libdir)/sys$1-bc.a : $$(buil
+ 	@$$(call PRINT_JULIA, cd $$(JULIAHOME)/base && \
+ 	if ! JULIA_BINDIR=$$(call cygpath_w,$(build_bindir)) WINEPATH="$$(call cygpath_w,$$(build_bindir));$$$$WINEPATH" \
+ 			JULIA_NUM_THREADS=1 \
+-			$$(call spawn, $3) $2 -C "$$(JULIA_CPU_TARGET)" --output-$$* $$(call cygpath_w,$$@).tmp $$(JULIA_SYSIMG_BUILD_FLAGS) \
++			$$(call spawn, $3) $2 -C "$$(JULIA_CPU_TARGET)" --trace-compile=stderr -g2 --output-$$* $$(call cygpath_w,$$@).tmp $$(JULIA_SYSIMG_BUILD_FLAGS) \
+ 			--startup-file=no --warn-overwrite=yes --sysimage $$(call cygpath_w,$$<) $$(call cygpath_w,$$(JULIAHOME)/contrib/generate_precompile.jl) $(JULIA_PRECOMPILE); then \
+ 		echo '*** This error is usually fixed by running `make clean`. If the error persists$$(COMMA) try `make cleanall`. ***'; \
+ 		false; \
+diff --git a/test/binaryplatforms.jl b/test/binaryplatforms.jl
+index 8de522e9c..08074a3c8 100644
+--- a/test/binaryplatforms.jl
++++ b/test/binaryplatforms.jl
+@@ -167,7 +167,7 @@ end
+     @test R("aarch64-unknown-linux-gnu") == P("aarch64", "linux")
+     @test R("powerpc64le-linux-gnu") == P("powerpc64le", "linux")
+     @test R("ppc64le-linux-gnu") == P("powerpc64le", "linux")
+-    @test R("x86_64-w64-mingw32") == P("x86_64", "windows")
++    @test R("x86_64-pc-windows-msvc") == P("x86_64", "windows")
+     @test R("i686-w64-mingw32") == P("i686", "windows")
+ 
+     # FreeBSD has lots of arch names that don't match elsewhere

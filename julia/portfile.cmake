@@ -1,16 +1,15 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO JuliaLang/julia
-    REF 78fbf1bd74ded2a8a830f9f4b35c98666f2a7e16 #8e630552924eac54c809aa7bc30871c7df1582d3
-    SHA512 3984ece9df04ef3448df7a80013e65205ab0d8c6016f7d9468934e09dffceddb38bb435f70c6888a043c87d5788c731b18c8e897659feb1364c7f51bd793fac9 #6b7513322f3a10d58cbce81a526138bbe23ffa07274c74e7846f68fddd78aeec5ec375624957d688887c02e787258a71f648f465ef4933f4aa7b514924ba8cb1
+    REF d2f5bbd7cfbac902db952b465b83d242efcf6f08 # 78fbf1bd74ded2a8a830f9f4b35c98666f2a7e16 #8e630552924eac54c809aa7bc30871c7df1582d3
+    SHA512 fcf204f0900399d40f535377b400110f1b997fbe4baf5bc9a055c7fa54d238f50887c2025379ccacf7789e8ae6566972bc77def114b21f22bd1a512a4678a1c9 # 3984ece9df04ef3448df7a80013e65205ab0d8c6016f7d9468934e09dffceddb38bb435f70c6888a043c87d5788c731b18c8e897659feb1364c7f51bd793fac9 #6b7513322f3a10d58cbce81a526138bbe23ffa07274c74e7846f68fddd78aeec5ec375624957d688887c02e787258a71f648f465ef4933f4aa7b514924ba8cb1
     HEAD_REF master
     PATCHES 
-        wip.patch
-        wip2.patch
-        wip3.patch
-        wip4.patch
-        wip5.patch
-        wip7.patch
+        makefiles.patch
+        libnames.patch
+        external-libuv.patch
+        external-utf8proc.patch
+        remaining.patch
 )
 
 vcpkg_find_acquire_program(PYTHON3)
@@ -64,6 +63,7 @@ set(ENV{CXX} "compile clang-cl")
 #    BUILD_TARGET all
 #    SUBPATH deps
 #)
+set(ENV{LBT_DEFAULT_LIBS} "mkl_rt.2.dll;mkl_blacs_ilp64.2.dll;mkl_blacs_lp64.2.dll;mkl_core.2.dll")
 set(VCPKG_CONCURRENCY 1)
 vcpkg_build_make(
     ADD_BIN_TO_PATH

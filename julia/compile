@@ -212,19 +212,22 @@ func_cl_wrapper ()
         -l*)
           func_cl_dashl "${2#-l}"
           libname="$lib"
+          linker_opts="$linker_opts -WHOLEARCHIVE:$libname"
           ;;
         *)
           libname="$2"
+          linker_opts="$linker_opts -WHOLEARCHIVE:$libname"
           ;;
 	  esac
-	  linker_opts="$linker_opts -WHOLEARCHIVE:$libname"
 	  ;;
 	-Wl,*)
 	  arg=${1#-Wl,}
-	  save_ifs="$IFS"; IFS=','
+	  save_ifs="$IFS"
+    IFS=','
+    #echo HELPME:$arg
 	  for flag in $arg; do
-	    IFS="$save_ifs"
 	    linker_opts="$linker_opts $flag"
+      #echo FLAG:$flag
 	  done
 	  IFS="$save_ifs"
 	  ;;
@@ -277,7 +280,7 @@ func_cl_wrapper ()
   if test -n "$linker_opts"; then
     linker_opts="/link$linker_opts"
   fi
-  export MSYS2_ARG_CONV_EXCL="/link;-Fo;-Fe;-LIBPATH:;-WHOLEARCHIVE:;-IMPLIB:;-Tp;-I;-L;-SUBSYSTEM:;/SUBSYSTEM;$MSYS2_ARG_CONV_EXCL"
+  export MSYS2_ARG_CONV_EXCL="/NODEFAULTLIB:;-export:;/FORCE;/link;-Fo;-Fe;-LIBPATH:;-WHOLEARCHIVE:;-IMPLIB:;-Tp;-I;-L;-SUBSYSTEM:;/SUBSYSTEM:;$MSYS2_ARG_CONV_EXCL"
   #echo "!!!Compiling: $@ $linker_opts"
   exec "$@" $linker_opts
   exit 1

@@ -1,0 +1,594 @@
+diff --git a/base/asyncevent.jl b/base/asyncevent.jl
+index a26945bbb..a3e5446f8 100644
+--- a/base/asyncevent.jl
++++ b/base/asyncevent.jl
+@@ -23,7 +23,7 @@ mutable struct AsyncCondition
+         this = new(Libc.malloc(_sizeof_uv_async), ThreadSynchronizer(), true, false)
+         iolock_begin()
+         associate_julia_struct(this.handle, this)
+-        err = ccall(:uv_async_init, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
++        err = ccall((:uv_async_init, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+             eventloop(), this, @cfunction(uv_asynccb, Cvoid, (Ptr{Cvoid},)))
+         if err != 0
+             #TODO: this codepath is currently not tested
+@@ -102,11 +102,11 @@ mutable struct Timer
+         this = new(Libc.malloc(_sizeof_uv_timer), ThreadSynchronizer(), true, false)
+         associate_julia_struct(this.handle, this)
+         iolock_begin()
+-        err = ccall(:uv_timer_init, Cint, (Ptr{Cvoid}, Ptr{Cvoid}), loop, this)
++        err = ccall((:uv_timer_init, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}), loop, this)
+         @assert err == 0
+         finalizer(uvfinalize, this)
+-        ccall(:uv_update_time, Cvoid, (Ptr{Cvoid},), loop)
+-        err = ccall(:uv_timer_start, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, UInt64, UInt64),
++        ccall((:uv_update_time, libuv), Cvoid, (Ptr{Cvoid},), loop)
++        err = ccall((:uv_timer_start, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}, UInt64, UInt64),
+             this, @cfunction(uv_timercb, Cvoid, (Ptr{Cvoid},)),
+             timeoutms, intervalms)
+         @assert err == 0
+@@ -218,7 +218,7 @@ function uv_timercb(handle::Ptr{Cvoid})
+     lock(t.cond)
+     try
+         @atomic :monotonic t.set = true
+-        if ccall(:uv_timer_get_repeat, UInt64, (Ptr{Cvoid},), t) == 0
++        if ccall((:uv_timer_get_repeat, libuv), UInt64, (Ptr{Cvoid},), t) == 0
+             # timer is stopped now
+             close(t)
+         end
+diff --git a/base/file.jl b/base/file.jl
+index 866e82b6e..83437df7b 100644
+--- a/base/file.jl
++++ b/base/file.jl
+@@ -53,7 +53,7 @@ function pwd()
+     buf = Base.StringVector(AVG_PATH - 1) # space for null-terminator implied by StringVector
+     sz = RefValue{Csize_t}(length(buf) + 1) # total buffer size including null
+     while true
+-        rc = ccall(:uv_cwd, Cint, (Ptr{UInt8}, Ptr{Csize_t}), buf, sz)
++        rc = ccall((:uv_cwd, libuv), Cint, (Ptr{UInt8}, Ptr{Csize_t}), buf, sz)
+         if rc == 0
+             resize!(buf, sz[])
+             return String(buf)
+@@ -87,7 +87,7 @@ julia> pwd()
+ ```
+ """
+ function cd(dir::AbstractString)
+-    err = ccall(:uv_chdir, Cint, (Cstring,), dir)
++    err = ccall((:uv_chdir, libuv), Cint, (Cstring,), dir)
+     err < 0 && uv_error("cd($(repr(dir)))", err)
+     return nothing
+ end
+@@ -177,7 +177,7 @@ julia> pwd()
+ function mkdir(path::AbstractString; mode::Integer = 0o777)
+     req = Libc.malloc(_sizeof_uv_fs)
+     try
+-        ret = ccall(:uv_fs_mkdir, Cint,
++        ret = ccall((:uv_fs_mkdir, libuv), Cint,
+                     (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Cint, Ptr{Cvoid}),
+                     C_NULL, req, path, checkmode(mode), C_NULL)
+         if ret < 0
+@@ -301,7 +301,7 @@ function rm(path::AbstractString; force::Bool=false, recursive::Bool=false)
+         end
+         req = Libc.malloc(_sizeof_uv_fs)
+         try
+-            ret = ccall(:uv_fs_rmdir, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Ptr{Cvoid}), C_NULL, req, path, C_NULL)
++            ret = ccall((:uv_fs_rmdir, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Ptr{Cvoid}), C_NULL, req, path, C_NULL)
+             uv_fs_req_cleanup(req)
+             ret < 0 && uv_error("rm($(repr(path)))", ret)
+             nothing
+@@ -475,7 +475,7 @@ function tempdir()
+     buf = Base.StringVector(AVG_PATH - 1) # space for null-terminator implied by StringVector
+     sz = RefValue{Csize_t}(length(buf) + 1) # total buffer size including null
+     while true
+-        rc = ccall(:uv_os_tmpdir, Cint, (Ptr{UInt8}, Ptr{Csize_t}), buf, sz)
++        rc = ccall((:uv_os_tmpdir, libuv), Cint, (Ptr{UInt8}, Ptr{Csize_t}), buf, sz)
+         if rc == 0
+             resize!(buf, sz[])
+             return String(buf)
+@@ -705,7 +705,7 @@ function mktempdir(parent::AbstractString=tempdir();
+ 
+     req = Libc.malloc(_sizeof_uv_fs)
+     try
+-        ret = ccall(:uv_fs_mkdtemp, Cint,
++        ret = ccall((:uv_fs_mkdtemp, libuv), Cint,
+                     (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Ptr{Cvoid}),
+                     C_NULL, req, tpath, C_NULL)
+         if ret < 0
+@@ -862,14 +862,14 @@ function readdir(dir::AbstractString; join::Bool=false, sort::Bool=true)
+     req = Libc.malloc(_sizeof_uv_fs)
+     try
+         # defined in sys.c, to call uv_fs_readdir, which sets errno on error.
+-        err = ccall(:uv_fs_scandir, Int32, (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Cint, Ptr{Cvoid}),
++        err = ccall((:uv_fs_scandir, libuv), Int32, (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Cint, Ptr{Cvoid}),
+                     C_NULL, req, dir, 0, C_NULL)
+         err < 0 && uv_error("readdir($(repr(dir)))", err)
+ 
+         # iterate the listing into entries
+         entries = String[]
+         ent = Ref{uv_dirent_t}()
+-        while Base.UV_EOF != ccall(:uv_fs_scandir_next, Cint, (Ptr{Cvoid}, Ptr{uv_dirent_t}), req, ent)
++        while Base.UV_EOF != ccall((:uv_fs_scandir_next, libuv), Cint, (Ptr{Cvoid}, Ptr{uv_dirent_t}), req, ent)
+             name = unsafe_string(ent[].name)
+             push!(entries, join ? joinpath(dir, name) : name)
+         end
+@@ -1120,7 +1120,7 @@ Return the target location a symbolic link `path` points to.
+ function readlink(path::AbstractString)
+     req = Libc.malloc(_sizeof_uv_fs)
+     try
+-        ret = ccall(:uv_fs_readlink, Int32,
++        ret = ccall((:uv_fs_readlink, libuv), Int32,
+             (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Ptr{Cvoid}),
+             C_NULL, req, path, C_NULL)
+         if ret < 0
+@@ -1221,7 +1221,7 @@ working directory are returned.
+ """
+ function diskstat(path::AbstractString=pwd())
+     req = zeros(UInt8, _sizeof_uv_fs)
+-    err = ccall(:uv_fs_statfs, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Ptr{Cvoid}),
++    err = ccall((:uv_fs_statfs, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Ptr{Cvoid}),
+                 C_NULL, req, path, C_NULL)
+     err < 0 && uv_error("diskstat($(repr(path)))", err)
+     statfs_ptr = ccall(:jl_uv_fs_t_ptr, Ptr{Nothing}, (Ptr{Cvoid},), req)
+diff --git a/base/filesystem.jl b/base/filesystem.jl
+index 63fe4281f..5ae54e883 100644
+--- a/base/filesystem.jl
++++ b/base/filesystem.jl
+@@ -83,9 +83,9 @@ end
+ # Average buffer size including null terminator for several filesystem operations.
+ # On Windows we use the MAX_PATH = 260 value on Win32.
+ const AVG_PATH = Sys.iswindows() ? 260 : 512
+-
++const libuv = "uv.dll"
+ # helper function to clean up libuv request
+-uv_fs_req_cleanup(req) = ccall(:uv_fs_req_cleanup, Cvoid, (Ptr{Cvoid},), req)
++uv_fs_req_cleanup(req) = ccall((:uv_fs_req_cleanup, libuv), Cvoid, (Ptr{Cvoid},), req)
+ 
+ include("path.jl")
+ include("stat.jl")
+@@ -113,10 +113,10 @@ function open(path::AbstractString, flags::Integer, mode::Integer=0)
+     req = Libc.malloc(_sizeof_uv_fs)
+     local handle
+     try
+-        ret = ccall(:uv_fs_open, Int32,
++        ret = ccall((:uv_fs_open, libuv), Int32,
+                     (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Int32, Int32, Ptr{Cvoid}),
+                     C_NULL, req, path, flags, mode, C_NULL)
+-        handle = ccall(:uv_fs_get_result, Cssize_t, (Ptr{Cvoid},), req)
++        handle = ccall((:uv_fs_get_result, libuv), Cssize_t, (Ptr{Cvoid},), req)
+         uv_fs_req_cleanup(req)
+         ret < 0 && uv_error("open($(repr(path)), $flags, $mode)", ret)
+     finally # conversion to Cstring could cause an exception
+@@ -172,7 +172,7 @@ write(f::File, c::UInt8) = write(f, Ref{UInt8}(c))
+ function truncate(f::File, n::Integer)
+     check_open(f)
+     req = Libc.malloc(_sizeof_uv_fs)
+-    err = ccall(:uv_fs_ftruncate, Int32,
++    err = ccall((:uv_fs_ftruncate, libuv), Int32,
+                 (Ptr{Cvoid}, Ptr{Cvoid}, OS_HANDLE, Int64, Ptr{Cvoid}),
+                 C_NULL, req, f.handle, n, C_NULL)
+     Libc.free(req)
+@@ -183,7 +183,7 @@ end
+ function futime(f::File, atime::Float64, mtime::Float64)
+     check_open(f)
+     req = Libc.malloc(_sizeof_uv_fs)
+-    err = ccall(:uv_fs_futime, Int32,
++    err = ccall((:uv_fs_futime, libuv), Int32,
+                 (Ptr{Cvoid}, Ptr{Cvoid}, OS_HANDLE, Float64, Float64, Ptr{Cvoid}),
+                 C_NULL, req, f.handle, atime, mtime, C_NULL)
+     Libc.free(req)
+diff --git a/base/libc.jl b/base/libc.jl
+index 82286fbf0..d3324ce01 100644
+--- a/base/libc.jl
++++ b/base/libc.jl
+@@ -255,7 +255,8 @@ time() = ccall(:jl_clock_now, Float64, ())
+ 
+ Get Julia's process ID.
+ """
+-getpid() = ccall(:uv_os_getpid, Int32, ())
++const libuv = "uv.dll"
++getpid() = ccall((:uv_os_getpid, libuv), Int32, ())
+ 
+ ## network functions ##
+ 
+@@ -378,7 +379,7 @@ free(p::Cwstring) = free(convert(Ptr{Cwchar_t}, p))
+ 
+ # Access to very high quality (kernel) randomness
+ function getrandom!(A::Union{Array,Base.RefValue})
+-    ret = ccall(:uv_random, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Csize_t,   Cuint, Ptr{Cvoid}),
++    ret = ccall((:uv_random, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Csize_t,   Cuint, Ptr{Cvoid}),
+                                    C_NULL,     C_NULL,     A,          sizeof(A), 0,     C_NULL)
+     Base.uv_error("getrandom", ret)
+     return A
+@@ -437,7 +438,7 @@ end
+ 
+ function getpwuid(uid::Unsigned, throw_error::Bool=true)
+     ref_pd = Ref(Cpasswd())
+-    ret = ccall(:uv_os_get_passwd2, Cint, (Ref{Cpasswd}, Culong), ref_pd, uid)
++    ret = ccall((:uv_os_get_passwd2, libuv), Cint, (Ref{Cpasswd}, Culong), ref_pd, uid)
+     if ret != 0
+         throw_error && Base.uv_error("getpwuid", ret)
+         return
+@@ -451,12 +452,12 @@ function getpwuid(uid::Unsigned, throw_error::Bool=true)
+         pd.homedir == C_NULL ? "" : unsafe_string(pd.homedir),
+         pd.gecos == C_NULL ? "" : unsafe_string(pd.gecos),
+     )
+-    ccall(:uv_os_free_passwd, Cvoid, (Ref{Cpasswd},), ref_pd)
++    ccall((:uv_os_free_passwd, libuv), Cvoid, (Ref{Cpasswd},), ref_pd)
+     return pd
+ end
+ function getgrgid(gid::Unsigned, throw_error::Bool=true)
+     ref_gp = Ref(Cgroup())
+-    ret = ccall(:uv_os_get_group, Cint, (Ref{Cgroup}, Culong), ref_gp, gid)
++    ret = ccall((:uv_os_get_group, libuv), Cint, (Ref{Cgroup}, Culong), ref_gp, gid)
+     if ret != 0
+         throw_error && Base.uv_error("getgrgid", ret)
+         return
+@@ -475,7 +476,7 @@ function getgrgid(gid::Unsigned, throw_error::Bool=true)
+          gp.gid,
+          members,
+     )
+-    ccall(:uv_os_free_group, Cvoid, (Ref{Cgroup},), ref_gp)
++    ccall((:uv_os_free_group, libuv), Cvoid, (Ref{Cgroup},), ref_gp)
+     return gp
+ end
+ 
+diff --git a/base/libuv.jl b/base/libuv.jl
+index 24a04f5bc..87e553ee7 100644
+--- a/base/libuv.jl
++++ b/base/libuv.jl
+@@ -4,19 +4,21 @@
+ 
+ include(string(length(Core.ARGS) >= 2 ? Core.ARGS[2] : "", "uv_constants.jl"))  # include($BUILDROOT/base/uv_constants.jl)
+ 
++const libuv = "uv.dll"
++
+ # convert UV handle data to julia object, checking for null
+ function uv_sizeof_handle(handle)
+     if !(UV_UNKNOWN_HANDLE < handle < UV_HANDLE_TYPE_MAX)
+         throw(DomainError(handle))
+     end
+-    return ccall(:uv_handle_size, Csize_t, (Int32,), handle)
++    return ccall((:uv_handle_size, libuv), Csize_t, (Int32,), handle)
+ end
+ 
+ function uv_sizeof_req(req)
+     if !(UV_UNKNOWN_REQ < req < UV_REQ_TYPE_MAX)
+         throw(DomainError(req))
+     end
+-    return ccall(:uv_req_size, Csize_t, (Int32,), req)
++    return ccall((:uv_req_size, libuv), Csize_t, (Int32,), req)
+ end
+ 
+ for h in uv_handle_types
+@@ -93,8 +95,8 @@ function _UVError(pfx::AbstractString, code::Integer, sfxs::AbstractString...)
+     IOError(string(pfx, ": ", struverror(code), " (", uverrorname(code), ")", " ", sfxs...), code)
+ end
+ 
+-struverror(err::Int32) = unsafe_string(ccall(:uv_strerror, Cstring, (Int32,), err))
+-uverrorname(err::Int32) = unsafe_string(ccall(:uv_err_name, Cstring, (Int32,), err))
++struverror(err::Int32) = unsafe_string(ccall((:uv_strerror, libuv), Cstring, (Int32,), err))
++uverrorname(err::Int32) = unsafe_string(ccall((:uv_err_name, libuv), Cstring, (Int32,), err))
+ 
+ uv_error(prefix::Symbol, c::Integer) = uv_error(string(prefix), c)
+ uv_error(prefix::AbstractString, c::Integer) = c < 0 ? throw(_UVError(prefix, c)) : nothing
+@@ -103,8 +105,8 @@ uv_error(prefix::AbstractString, c::Integer) = c < 0 ? throw(_UVError(prefix, c)
+ 
+ eventloop() = ccall(:jl_global_event_loop, Ptr{Cvoid}, ())
+ 
+-uv_unref(h::Ptr{Cvoid}) = ccall(:uv_unref, Cvoid, (Ptr{Cvoid},), h)
+-uv_ref(h::Ptr{Cvoid}) = ccall(:uv_ref, Cvoid, (Ptr{Cvoid},), h)
++uv_unref(h::Ptr{Cvoid}) = ccall((:uv_unref, libuv), Cvoid, (Ptr{Cvoid},), h)
++uv_ref(h::Ptr{Cvoid}) = ccall((:uv_ref, libuv), Cvoid, (Ptr{Cvoid},), h)
+ 
+ function process_events()
+     return ccall(:jl_process_events, Int32, ())
+diff --git a/base/path.jl b/base/path.jl
+index c439a2800..414c8156e 100644
+--- a/base/path.jl
++++ b/base/path.jl
+@@ -61,11 +61,12 @@ Return the current user's home directory.
+     (for example on how to specify the home directory via environment variables), see the
+     [`uv_os_homedir` documentation](http://docs.libuv.org/en/v1.x/misc.html#c.uv_os_homedir).
+ """
++const libuv = "uv.dll"
+ function homedir()
+     buf = Base.StringVector(AVG_PATH - 1) # space for null-terminator implied by StringVector
+     sz = RefValue{Csize_t}(length(buf) + 1) # total buffer size including null
+     while true
+-        rc = ccall(:uv_os_homedir, Cint, (Ptr{UInt8}, Ptr{Csize_t}), buf, sz)
++        rc = ccall((:uv_os_homedir, libuv), Cint, (Ptr{UInt8}, Ptr{Csize_t}), buf, sz)
+         if rc == 0
+             resize!(buf, sz[])
+             return String(buf)
+@@ -479,7 +480,7 @@ filesystem's stored case for the path is returned.
+ function realpath(path::AbstractString)
+     req = Libc.malloc(_sizeof_uv_fs)
+     try
+-        ret = ccall(:uv_fs_realpath, Cint,
++        ret = ccall((:uv_fs_realpath, libuv), Cint,
+                     (Ptr{Cvoid}, Ptr{Cvoid}, Cstring, Ptr{Cvoid}),
+                     C_NULL, req, path, C_NULL)
+         if ret < 0
+diff --git a/base/process.jl b/base/process.jl
+index ed51a30ae..43d5ceb65 100644
+--- a/base/process.jl
++++ b/base/process.jl
+@@ -76,9 +76,9 @@ end
+ 
+ const SpawnIO  = Union{IO, RawFD, OS_HANDLE}
+ const SpawnIOs = Vector{SpawnIO} # convenience name for readability
+-
++const libuv = "uv.dll"
+ function as_cpumask(cpus::Vector{UInt16})
+-    n = max(Int(maximum(cpus)), Int(ccall(:uv_cpumask_size, Cint, ())))
++    n = max(Int(maximum(cpus)), Int(ccall((:uv_cpumask_size, libuv), Cint, ())))
+     cpumask = zeros(Bool, n)
+     for i in cpus
+         cpumask[i] = true
+@@ -590,7 +590,7 @@ function kill(p::Process, signum::Integer=SIGTERM)
+     iolock_begin()
+     if process_running(p)
+         @assert p.handle != C_NULL
+-        err = ccall(:uv_process_kill, Int32, (Ptr{Cvoid}, Int32), p.handle, signum)
++        err = ccall((:uv_process_kill, libuv), Int32, (Ptr{Cvoid}, Int32), p.handle, signum)
+         if err != 0 && err != UV_ESRCH
+             throw(_UVError("kill", err))
+         end
+diff --git a/base/stream.jl b/base/stream.jl
+index 0b6c9a937..fcb8e9dd5 100644
+--- a/base/stream.jl
++++ b/base/stream.jl
+@@ -99,6 +99,7 @@ end
+ 
+ # Redirectable = Union{IO, FileRedirect, Libc.RawFD} (not exported)
+ 
++const libuv = "uv.dll"
+ bytesavailable(s::LibuvStream) = bytesavailable(s.buffer)
+ 
+ function eof(s::LibuvStream)
+@@ -193,7 +194,7 @@ end
+ function PipeEndpoint()
+     pipe = PipeEndpoint(Libc.malloc(_sizeof_uv_named_pipe), StatusUninit)
+     iolock_begin()
+-    err = ccall(:uv_pipe_init, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Cint), eventloop(), pipe.handle, 0)
++    err = ccall((:uv_pipe_init, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Cint), eventloop(), pipe.handle, 0)
+     uv_error("failed to create pipe endpoint", err)
+     pipe.status = StatusInit
+     iolock_end()
+@@ -203,7 +204,7 @@ end
+ function PipeEndpoint(fd::OS_HANDLE)
+     pipe = PipeEndpoint()
+     iolock_begin()
+-    err = ccall(:uv_pipe_open, Int32, (Ptr{Cvoid}, OS_HANDLE), pipe.handle, fd)
++    err = ccall((:uv_pipe_open, libuv), Int32, (Ptr{Cvoid}, OS_HANDLE), pipe.handle, fd)
+     uv_error("pipe_open", err)
+     pipe.status = StatusOpen
+     iolock_end()
+@@ -246,7 +247,7 @@ end
+ function TTY(fd::OS_HANDLE)
+     tty = TTY(Libc.malloc(_sizeof_uv_tty), StatusUninit)
+     iolock_begin()
+-    err = ccall(:uv_tty_init, Int32, (Ptr{Cvoid}, Ptr{Cvoid}, OS_HANDLE, Int32),
++    err = ccall((:uv_tty_init, libuv), Int32, (Ptr{Cvoid}, Ptr{Cvoid}, OS_HANDLE, Int32),
+         eventloop(), tty.handle, fd, 0)
+     uv_error("TTY", err)
+     tty.status = StatusOpen
+@@ -271,13 +272,13 @@ function isreadable(io::LibuvStream)
+     bytesavailable(io) > 0 && return true
+     isopen(io) || return false
+     io.status == StatusEOF && return false
+-    return ccall(:uv_is_readable, Cint, (Ptr{Cvoid},), io.handle) != 0
++    return ccall((:uv_is_readable, libuv), Cint, (Ptr{Cvoid},), io.handle) != 0
+ end
+ 
+ function iswritable(io::LibuvStream)
+     isopen(io) || return false
+     io.status == StatusClosing && return false
+-    return ccall(:uv_is_writable, Cint, (Ptr{Cvoid},), io.handle) != 0
++    return ccall((:uv_is_writable, libuv), Cint, (Ptr{Cvoid},), io.handle) != 0
+ end
+ 
+ lock(s::LibuvStream) = lock(s.lock)
+@@ -329,7 +330,7 @@ of the original handle.
+ """
+ function open(h::OS_HANDLE)
+     iolock_begin()
+-    t = ccall(:uv_guess_handle, Cint, (OS_HANDLE,), h)
++    t = ccall((:uv_guess_handle, libuv), Cint, (OS_HANDLE,), h)
+     local io
+     if t == UV_FILE
+         @static if Sys.iswindows()
+@@ -439,7 +440,7 @@ function closewrite(s::LibuvStream)
+     check_open(s)
+     req = Libc.malloc(_sizeof_uv_shutdown)
+     uv_req_set_data(req, C_NULL) # in case we get interrupted before arriving at the wait call
+-    err = ccall(:uv_shutdown, Int32, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
++    err = ccall((:uv_shutdown, libuv), Int32, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+                 req, s, @cfunction(uv_shutdowncb_task, Cvoid, (Ptr{Cvoid}, Cint)))
+     if err < 0
+         Libc.free(req)
+@@ -470,7 +471,7 @@ function closewrite(s::LibuvStream)
+         unpreserve_handle(ct)
+     end
+     if isopen(s)
+-        if status < 0 || ccall(:uv_is_readable, Cint, (Ptr{Cvoid},), s.handle) == 0
++        if status < 0 || ccall((:uv_is_readable, libuv), Cint, (Ptr{Cvoid},), s.handle) == 0
+             close(s)
+         end
+     end
+@@ -588,7 +589,7 @@ function displaysize(io::TTY)
+     s1 = Ref{Int32}(0)
+     s2 = Ref{Int32}(0)
+     iolock_begin()
+-    Base.uv_error("size (TTY)", ccall(:uv_tty_get_winsize,
++    Base.uv_error("size (TTY)", ccall((:uv_tty_get_winsize, libuv),
+                                       Int32, (Ptr{Cvoid}, Ptr{Int32}, Ptr{Int32}),
+                                       io, s1, s2) != 0)
+     iolock_end()
+@@ -668,7 +669,7 @@ function uv_readcb(handle::Ptr{Cvoid}, nread::Cssize_t, buf::Ptr{Cvoid})
+                     notify(stream.cond)
+                     if stream isa TTY
+                         # stream can still be used by reseteof (or possibly write)
+-                    elseif !(stream isa PipeEndpoint) && ccall(:uv_is_writable, Cint, (Ptr{Cvoid},), stream.handle) != 0
++                    elseif !(stream isa PipeEndpoint) && ccall((:uv_is_writable, libuv), Cint, (Ptr{Cvoid},), stream.handle) != 0
+                         # stream can still be used by write
+                     else
+                         # underlying stream is no longer useful: begin finalization
+@@ -698,7 +699,7 @@ function uv_readcb(handle::Ptr{Cvoid}, nread::Cssize_t, buf::Ptr{Cvoid})
+             ((bytesavailable(stream.buffer) >= stream.throttle) ||
+              (bytesavailable(stream.buffer) >= stream.buffer.maxsize)))
+             # save cycles by stopping kernel notifications from arriving
+-            ccall(:uv_read_stop, Cint, (Ptr{Cvoid},), stream)
++            ccall((:uv_read_stop, libuv), Cint, (Ptr{Cvoid},), stream)
+             stream.status = StatusOpen
+         end
+         nothing
+@@ -781,7 +782,7 @@ function open_pipe!(p::PipeEndpoint, handle::OS_HANDLE)
+     if p.status != StatusInit
+         error("pipe is already in use or has been closed")
+     end
+-    err = ccall(:uv_pipe_open, Int32, (Ptr{Cvoid}, OS_HANDLE), p.handle, handle)
++    err = ccall((:uv_pipe_open, libuv), Int32, (Ptr{Cvoid}, OS_HANDLE), p.handle, handle)
+     uv_error("pipe_open", err)
+     p.status = StatusOpen
+     iolock_end()
+@@ -810,7 +811,7 @@ end
+ function link_pipe(reader_supports_async::Bool, writer_supports_async::Bool)
+     UV_NONBLOCK_PIPE = 0x40
+     fildes = Ref{Pair{OS_HANDLE, OS_HANDLE}}(INVALID_OS_HANDLE => INVALID_OS_HANDLE) # read (in) => write (out)
+-    err = ccall(:uv_pipe, Int32, (Ptr{Pair{OS_HANDLE, OS_HANDLE}}, Cint, Cint),
++    err = ccall((:uv_pipe, libuv), Int32, (Ptr{Pair{OS_HANDLE, OS_HANDLE}}, Cint, Cint),
+                 fildes,
+                 reader_supports_async * UV_NONBLOCK_PIPE,
+                 writer_supports_async * UV_NONBLOCK_PIPE)
+@@ -843,7 +844,7 @@ function start_reading(stream::LibuvStream)
+         # libuv may call the alloc callback immediately
+         # for a TTY on Windows, so ensure the status is set first
+         stream.status = StatusActive
+-        ret = ccall(:uv_read_start, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
++        ret = ccall((:uv_read_start, libuv), Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+                     stream, @cfunction(uv_alloc_buf, Cvoid, (Ptr{Cvoid}, Csize_t, Ptr{Cvoid})),
+                     @cfunction(uv_readcb, Cvoid, (Ptr{Cvoid}, Cssize_t, Ptr{Cvoid})))
+     elseif stream.status == StatusPaused
+@@ -868,7 +869,7 @@ if Sys.iswindows()
+         iolock_begin()
+         if stream.status == StatusActive
+             stream.status = StatusOpen
+-            ccall(:uv_read_stop, Cint, (Ptr{Cvoid},), stream)
++            ccall((:uv_read_stop, libuv), Cint, (Ptr{Cvoid},), stream)
+         end
+         iolock_end()
+         nothing
+@@ -1191,7 +1192,7 @@ _fd(x::Union{OS_HANDLE, RawFD}) = x
+ function _fd(x::Union{LibuvStream, LibuvServer})
+     fd = Ref{OS_HANDLE}(INVALID_OS_HANDLE)
+     if x.status != StatusUninit && x.status != StatusClosed && x.handle != C_NULL
+-        err = ccall(:uv_fileno, Int32, (Ptr{Cvoid}, Ptr{OS_HANDLE}), x.handle, fd)
++        err = ccall((:uv_fileno, libuv), Int32, (Ptr{Cvoid}, Ptr{OS_HANDLE}), x.handle, fd)
+         # handle errors by returning INVALID_OS_HANDLE
+     end
+     return fd[]
+diff --git a/base/sysinfo.jl b/base/sysinfo.jl
+index 2c9620884..c56ba355c 100644
+--- a/base/sysinfo.jl
++++ b/base/sysinfo.jl
+@@ -215,13 +215,14 @@ end
++const libuv = "uv.dll"
+ function cpu_info()
+     UVcpus = Ref{Ptr{UV_cpu_info_t}}()
+     count = Ref{Int32}()
+-    err = ccall(:uv_cpu_info, Int32, (Ptr{Ptr{UV_cpu_info_t}}, Ptr{Int32}), UVcpus, count)
++    err = ccall((:uv_cpu_info, libuv), Int32, (Ptr{Ptr{UV_cpu_info_t}}, Ptr{Int32}), UVcpus, count)
+     Base.uv_error("uv_cpu_info", err)
+     cpus = Vector{CPUinfo}(undef, count[])
+     for i = 1:length(cpus)
+         cpus[i] = CPUinfo(unsafe_load(UVcpus[], i))
+     end
+-    ccall(:uv_free_cpu_info, Cvoid, (Ptr{UV_cpu_info_t}, Int32), UVcpus[], count[])
++    ccall((:uv_free_cpu_info, libuv), Cvoid, (Ptr{UV_cpu_info_t}, Int32), UVcpus[], count[])
+     return cpus
+ end
+ 
+@@ -232,7 +232,7 @@ Gets the current system uptime in seconds.
+ """
+ function uptime()
+     uptime_ = Ref{Float64}()
+-    err = ccall(:uv_uptime, Int32, (Ptr{Float64},), uptime_)
++    err = ccall((:uv_uptime, libuv), Int32, (Ptr{Float64},), uptime_)
+     Base.uv_error("uv_uptime", err)
+     return uptime_[]
+ end
+@@ -244,7 +244,7 @@ Get the load average. See: https://en.wikipedia.org/wiki/Load_(computing).
+ """
+ function loadavg()
+     loadavg_ = Vector{Float64}(undef, 3)
+-    ccall(:uv_loadavg, Cvoid, (Ptr{Float64},), loadavg_)
++    ccall((:uv_loadavg, libuv), Cvoid, (Ptr{Float64},), loadavg_)
+     return loadavg_
+ end
+ 
+@@ -254,7 +254,7 @@ end
+ Get the free memory of the system in bytes. The entire amount may not be available to the
+ current process; use `Sys.free_memory()` for the actually available amount.
+ """
+-free_physical_memory() = ccall(:uv_get_free_memory, UInt64, ())
++free_physical_memory() = ccall((:uv_get_free_memory, libuv), UInt64, ())
+ 
+ """
+     Sys.total_physical_memory()
+@@ -262,14 +262,14 @@ free_physical_memory() = ccall(:uv_get_free_memory, UInt64, ())
+ Get the total memory in RAM (including that which is currently used) in bytes. The entire
+ amount may not be available to the current process; see `Sys.total_memory()`.
+ """
+-total_physical_memory() = ccall(:uv_get_total_memory, UInt64, ())
++total_physical_memory() = ccall((:uv_get_total_memory, libuv), UInt64, ())
+ 
+ """
+     Sys.free_memory()
+ 
+ Get the total free memory in RAM in bytes.
+ """
+-free_memory() = ccall(:uv_get_available_memory, UInt64, ())
++free_memory() = ccall((:uv_get_available_memory, libuv), UInt64, ())
+ 
+ """
+     Sys.total_memory()
+@@ -279,7 +279,7 @@ This amount may be constrained, e.g., by Linux control groups. For the unconstra
+ amount, see `Sys.physical_memory()`.
+ """
+ function total_memory()
+-    constrained = ccall(:uv_get_constrained_memory, UInt64, ())
++    constrained = ccall((:uv_get_constrained_memory, libuv), UInt64, ())
+     physical = total_physical_memory()
+     if 0 < constrained <= physical
+         return constrained
+@@ -295,7 +295,7 @@ Get the process title. On some systems, will always return an empty string.
+ """
+ function get_process_title()
+     buf = Vector{UInt8}(undef, 512)
+-    err = ccall(:uv_get_process_title, Cint, (Ptr{UInt8}, Cint), buf, 512)
++    err = ccall((:uv_get_process_title, libuv), Cint, (Ptr{UInt8}, Cint), buf, 512)
+     Base.uv_error("get_process_title", err)
+     return unsafe_string(pointer(buf))
+ end
+@@ -306,7 +306,7 @@ end
+ Set the process title. No-op on some operating systems.
+ """
+ function set_process_title(title::AbstractString)
+-    err = ccall(:uv_set_process_title, Cint, (Cstring,), title)
++    err = ccall((:uv_set_process_title, libuv), Cint, (Cstring,), title)
+     Base.uv_error("set_process_title", err)
+ end
+ 
+diff --git a/stdlib/LibUV_jll/src/LibUV_jll.jl b/stdlib/LibUV_jll/src/LibUV_jll.jl
+index f6714fae5..62c70b26d 100644
+--- a/stdlib/LibUV_jll/src/LibUV_jll.jl
++++ b/stdlib/LibUV_jll/src/LibUV_jll.jl
+@@ -19,7 +19,7 @@ libuv_handle::Ptr{Cvoid} = C_NULL
+ libuv_path::String = ""
+ 
+ if Sys.iswindows()
+-    const libuv = "libuv-2.dll"
++    const libuv = "uv.dll"
+ elseif Sys.isapple()
+     const libuv = "@rpath/libuv.2.dylib"
+ else

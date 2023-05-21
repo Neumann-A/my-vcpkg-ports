@@ -1,0 +1,144 @@
+diff --git a/include/uv.h b/include/uv.h
+index 514fb6f0e11..e549979dcb5 100644
+--- a/include/uv.h
++++ b/include/uv.h
+@@ -1180,6 +1180,11 @@ struct uv_cpu_info_s {
+   struct uv_cpu_times_s cpu_times;
+ };
+ 
++/*
++ * IPv6 doesn't support broadcast but this is the closest thing
++ */
++#define UV_IN6ADDR_ALLHOSTS_GROUP	{ { { 0xff,2,0,0,0,0,0,0,0,0,0,0,0,0,0,1 } } }
++
+ struct uv_interface_address_s {
+   char* name;
+   char phys_addr[6];
+@@ -1192,6 +1197,9 @@ struct uv_interface_address_s {
+     struct sockaddr_in netmask4;
+     struct sockaddr_in6 netmask6;
+   } netmask;
++  union {
++    struct sockaddr_in broadcast4;
++  } broadcast;
+ };
+ 
+ struct uv_passwd_s {
+diff --git a/src/unix/aix.c b/src/unix/aix.c
+index 6a013d43e3a..9fdbe770e03 100644
+--- a/src/unix/aix.c
++++ b/src/unix/aix.c
+@@ -1219,6 +1219,9 @@ int uv_interface_addresses(uv_interface_address_t** addresses, int* count) {
+       address->netmask.netmask4 = *((struct sockaddr_in*) &p->ifr_addr);
+       /* Explicitly set family as the ioctl call appears to return it as 0. */
+       address->netmask.netmask4.sin_family = AF_INET;
++
++      if ((flg.ifr_flags & IFF_BROADCAST) != 0 && p->ifr_broadaddr != NULL)
++	address->broadcast.broadcast4 = *((struct sockaddr_in*) &p->ifr_broadaddr);
+     }
+ 
+     address->is_internal = flg.ifr_flags & IFF_LOOPBACK ? 1 : 0;
+diff --git a/src/unix/bsd-ifaddrs.c b/src/unix/bsd-ifaddrs.c
+index 11ca95591fc..e5757d933c7 100644
+--- a/src/unix/bsd-ifaddrs.c
++++ b/src/unix/bsd-ifaddrs.c
+@@ -121,6 +121,11 @@ int uv_interface_addresses(uv_interface_address_t** addresses, int* count) {
+       address->netmask.netmask4 = *((struct sockaddr_in*) ent->ifa_netmask);
+     }
+ 
++    if ((ent->ifa_flags & IFF_BROADCAST) != 0 && ent->ifa_broadaddr != NULL) {
++      if (ent->ifa_broadaddr->sa_family == AF_INET)
++        address->broadcast.broadcast4 = *((struct sockaddr_in*) ent->ifa_broadaddr);
++    }
++
+     address->is_internal = !!(ent->ifa_flags & IFF_LOOPBACK);
+ 
+     address++;
+diff --git a/src/unix/linux-core.c b/src/unix/linux-core.c
+index 23a7dafec81..d010711158c 100644
+--- a/src/unix/linux-core.c
++++ b/src/unix/linux-core.c
+@@ -689,6 +689,11 @@ int uv_interface_addresses(uv_interface_address_t** addresses, int* count) {
+       address->netmask.netmask4 = *((struct sockaddr_in*) ent->ifa_netmask);
+     }
+ 
++    if (ent->ifa_flags & IFF_BROADCAST && ent->ifa_broadaddr != NULL) {
++      if (ent->ifa_broadaddr->sa_family == AF_INET)
++        address->broadcast.broadcast4 = *((struct sockaddr_in*) ent->ifa_broadaddr);
++    }
++
+     address->is_internal = !!(ent->ifa_flags & IFF_LOOPBACK);
+ 
+     address++;
+diff --git a/src/unix/sunos.c b/src/unix/sunos.c
+index 7835bed75e0..8b837dfd6b0 100644
+--- a/src/unix/sunos.c
++++ b/src/unix/sunos.c
+@@ -864,6 +864,11 @@ int uv_interface_addresses(uv_interface_address_t** addresses, int* count) {
+       address->netmask.netmask4 = *((struct sockaddr_in*) ent->ifa_netmask);
+     }
+ 
++    if (ent->ifa_flags & IFF_BROADCAST && ent->ifa_broadaddr != NULL) {
++      if (ent->ifa_broadaddr->sa_family == AF_INET)
++        address->broadcast.broadcast4 = *((struct sockaddr_in*) ent->ifa_broadaddr);
++    }
++
+     address->is_internal = !!((ent->ifa_flags & IFF_PRIVATE) ||
+                            (ent->ifa_flags & IFF_LOOPBACK));
+ 
+diff --git a/src/win/core.c b/src/win/core.c
+index a13c6c45d64..ec3c63beb76 100644
+--- a/src/win/core.c
++++ b/src/win/core.c
+@@ -69,10 +69,6 @@ void uv__wake_all_loops() {
+ }
+ 
+ static void uv__init(void) {
+-  /* Tell Windows that we will handle critical errors. */
+-  SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX |
+-               SEM_NOOPENFILEERRORBOX);
+-
+   /* Initialize tracking of all uv loops */
+   uv__loops_init();
+ 
+diff --git a/src/win/process.c b/src/win/process.c
+index a6803add4ca..2d425b41613 100644
+--- a/src/win/process.c
++++ b/src/win/process.c
+@@ -85,7 +85,6 @@ static void uv__init_global_job_handle(void) {
+   info.BasicLimitInformation.LimitFlags =
+       JOB_OBJECT_LIMIT_BREAKAWAY_OK |
+       JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK |
+-      JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION |
+       JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+ 
+   uv_global_job_handle_ = CreateJobObjectW(&attr, NULL);
+@@ -1067,7 +1066,7 @@ int uv_spawn(uv_loop_t* loop,
+   startup.hStdOutput = uv__stdio_handle(process->child_stdio_buffer, 1);
+   startup.hStdError = uv__stdio_handle(process->child_stdio_buffer, 2);
+ 
+-  process_flags = CREATE_UNICODE_ENVIRONMENT;
++  process_flags = CREATE_UNICODE_ENVIRONMENT | CREATE_DEFAULT_ERROR_MODE;
+ 
+   if ((options->flags & UV_PROCESS_WINDOWS_HIDE_CONSOLE) ||
+       (options->flags & UV_PROCESS_WINDOWS_HIDE)) {
+diff --git a/src/win/util.c b/src/win/util.c
+index 8fda9c73bc6..521193465be 100644
+--- a/src/win/util.c
++++ b/src/win/util.c
+@@ -896,6 +896,15 @@ int uv_interface_addresses(uv_interface_address_t** addresses_ptr,
+         uv_address->netmask.netmask4.sin_family = AF_INET;
+         uv_address->netmask.netmask4.sin_addr.s_addr = (prefix_len > 0) ?
+             htonl(0xffffffff << (32 - prefix_len)) : 0;
++
++        /*
++         * This assumes contiguous bits in the netmask, which is asserted
++	 * in the calculation of the netmask above.
++         */
++        uv_address->broadcast.broadcast4.sin_family = AF_INET;
++        uv_address->broadcast.broadcast4.sin_addr.s_addr =
++             uv_address->address.address4.sin_addr.s_addr |
++            ~uv_address->netmask.netmask4.sin_addr.s_addr;
+       }
+ 
+       uv_address++;
