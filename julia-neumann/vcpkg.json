@@ -1,0 +1,42 @@
+{
+  "name": "julia-neumann",
+  "version": "1.9.0",
+  "description": "Julia is a high-level, high-performance dynamic language for technical computing. ",
+  "homepage": "julialang.org",
+  "license": "MIT",
+  "dependencies": [
+    "lapack",
+    "blas",
+    "gmp",
+    "mpfr",
+    "pcre2",
+    "libgit2",
+    "mbedtls",
+    "libssh2",
+    "curl",
+    "libuv",
+    "zlib",
+    "utf8proc",
+    "suitesparse",
+    "nghttp2",
+    "dsfmt",
+    "julia-libblastrampoline",
+    "libwhich",
+    "getopt",
+    {
+        "name": "llvm",
+        "default-features": false,
+        "features" : [
+            "lld"
+        ]
+    },
+    {
+      "name": "vcpkg-cmake-get-vars",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    }
+  ]
+}
