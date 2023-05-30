@@ -1,0 +1,12 @@
+diff --git a/src/LibCURL.jl b/src/LibCURL.jl
+index f259a5b..7a94892 100644
+--- a/src/LibCURL.jl
++++ b/src/LibCURL.jl
+@@ -3,6 +3,7 @@ module LibCURL
+ 
+ using LibCURL_jll
+ using MozillaCACerts_jll
++using Base.ExternalLibraryNames
+ 
+ const time_t = Int
+ const size_t = Csize_t

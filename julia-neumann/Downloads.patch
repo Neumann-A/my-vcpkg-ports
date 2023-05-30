@@ -1,0 +1,25 @@
+diff --git a/src/Curl/Curl.jl b/src/Curl/Curl.jl
+index fa76379..a1b71c5 100644
+--- a/src/Curl/Curl.jl
++++ b/src/Curl/Curl.jl
+@@ -30,6 +30,8 @@ using LibCURL
+ using LibCURL: curl_off_t, libcurl
+ # not exported: https://github.com/JuliaWeb/LibCURL.jl/issues/87
+ 
++using Base.ExternalLibraryNames
++
+ # constants that LibCURL should have but doesn't
+ const CURLE_PEER_FAILED_VERIFICATION = 60
+ const CURLSSLOPT_REVOKE_BEST_EFFORT = 1 << 3
+diff --git a/src/Downloads.jl b/src/Downloads.jl
+index 58e0422..99bc934 100644
+--- a/src/Downloads.jl
++++ b/src/Downloads.jl
+@@ -16,6 +16,7 @@ module Downloads
+ using Base.Experimental: @sync
+ using NetworkOptions
+ using ArgTools
++using Base.ExternalLibraryNames
+ 
+ include("Curl/Curl.jl")
+ using .Curl

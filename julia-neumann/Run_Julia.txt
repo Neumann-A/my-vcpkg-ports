@@ -1,0 +1,1 @@
+julia -O0 --sysimage E:\all\vcpkg\buildtrees\julia-neumann\x64-win-llvm-release-rel\usr\lib\julia\sys.ji --cpu-target=native --startup-file=no -i
