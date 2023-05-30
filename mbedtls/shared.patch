@@ -1,0 +1,169 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8d3f08a98..c3280ecd1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -69,6 +69,12 @@ string(REGEX MATCH "GNU" CMAKE_COMPILER_IS_GNU "${CMAKE_C_COMPILER_ID}")
+ string(REGEX MATCH "IAR" CMAKE_COMPILER_IS_IAR "${CMAKE_C_COMPILER_ID}")
+ string(REGEX MATCH "MSVC" CMAKE_COMPILER_IS_MSVC "${CMAKE_C_COMPILER_ID}")
+ 
++if(MSVC)
++  set(CMAKE_COMPILER_IS_MSVC TRUE)
++  set(CMAKE_COMPILER_IS_CLANG FALSE)
++endif()
++
++
+ # the test suites currently have compile errors with MSVC
+ if(CMAKE_COMPILER_IS_MSVC)
+     option(ENABLE_TESTING "Build mbed TLS tests." OFF)
+@@ -166,14 +172,12 @@ function(get_name_without_last_ext dest_var full_name)
+     set(${dest_var} ${no_ext_name} PARENT_SCOPE)
+ endfunction(get_name_without_last_ext)
+ 
+-string(REGEX MATCH "Clang" CMAKE_COMPILER_IS_CLANG "${CMAKE_C_COMPILER_ID}")
+-
+ include(CheckCCompilerFlag)
+ 
+ set(CMAKE_C_EXTENSIONS OFF)
+ set(CMAKE_C_STANDARD 99)
+ 
+-if(CMAKE_COMPILER_IS_GNU)
++if(0)
+     # some warnings we want are not available with old GCC versions
+     # note: starting with CMake 2.8 we could use CMAKE_C_COMPILER_VERSION
+     execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
+@@ -209,7 +213,7 @@ if(CMAKE_COMPILER_IS_GNU)
+     set(CMAKE_C_FLAGS_CHECKFULL   "${CMAKE_C_FLAGS_CHECK} -Wcast-qual")
+ endif(CMAKE_COMPILER_IS_GNU)
+ 
+-if(CMAKE_COMPILER_IS_CLANG)
++if(0)
+     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wwrite-strings -Wpointer-arith -Wimplicit-fallthrough -Wshadow -Wvla -Wformat=2 -Wno-format-nonliteral")
+     set(CMAKE_C_FLAGS_RELEASE     "-O2")
+     set(CMAKE_C_FLAGS_DEBUG       "-O0 -g3")
+diff --git a/include/mbedtls/check_config.h b/include/mbedtls/check_config.h
+index bd683ddd1..eaa999c40 100644
+--- a/include/mbedtls/check_config.h
++++ b/include/mbedtls/check_config.h
+@@ -40,6 +40,17 @@
+ #error "MBEDTLS_PLATFORM_C is required on Windows"
+ #endif
+ 
++#if defined(_WIN32)
++  #if !defined(MBEDTLS_STATIC)
++    #if defined(MBEDTLS_X509_EXPORTS)
++      #define MBEDTLS_X509_EXPORT __declspec(dllexport)
++    #else
++      #define MBEDTLS_X509_EXPORT __declspec(dllimport)
++    #endif
++  #else
++    #define MBEDTLS_X509_EXPORT
++  #endif
++#endif
+ /* Fix the config here. Not convenient to put an #ifdef _WIN32 in mbedtls_config.h as
+  * it would confuse config.py. */
+ #if !defined(MBEDTLS_PLATFORM_SNPRINTF_ALT) && \
+diff --git a/include/mbedtls/mbedtls_config.h b/include/mbedtls/mbedtls_config.h
+index 4292b493b..3907ceab7 100644
+--- a/include/mbedtls/mbedtls_config.h
++++ b/include/mbedtls/mbedtls_config.h
+@@ -3663,8 +3663,8 @@
+ //#define MBEDTLS_PLATFORM_FPRINTF_MACRO      fprintf /**< Default fprintf macro to use, can be undefined */
+ //#define MBEDTLS_PLATFORM_PRINTF_MACRO        printf /**< Default printf macro to use, can be undefined */
+ /* Note: your snprintf must correctly zero-terminate the buffer! */
+-//#define MBEDTLS_PLATFORM_SNPRINTF_MACRO    snprintf /**< Default snprintf macro to use, can be undefined */
+-//#define MBEDTLS_PLATFORM_VSNPRINTF_MACRO    vsnprintf /**< Default vsnprintf macro to use, can be undefined */
++#define MBEDTLS_PLATFORM_SNPRINTF_MACRO    snprintf /**< Default snprintf macro to use, can be undefined */
++#define MBEDTLS_PLATFORM_VSNPRINTF_MACRO    vsnprintf /**< Default vsnprintf macro to use, can be undefined */
+ //#define MBEDTLS_PLATFORM_NV_SEED_READ_MACRO   mbedtls_platform_std_nv_seed_read /**< Default nv_seed_read function to use, can be undefined */
+ //#define MBEDTLS_PLATFORM_NV_SEED_WRITE_MACRO  mbedtls_platform_std_nv_seed_write /**< Default nv_seed_write function to use, can be undefined */
+ 
+diff --git a/include/mbedtls/platform.h b/include/mbedtls/platform.h
+index f65158719..0dca3f4f8 100644
+--- a/include/mbedtls/platform.h
++++ b/include/mbedtls/platform.h
+@@ -230,6 +230,7 @@ int mbedtls_platform_win32_snprintf(char *s, size_t n, const char *fmt, ...);
+ #endif
+ 
+ #if defined(MBEDTLS_PLATFORM_SNPRINTF_ALT)
++#error ALT!
+ extern int (*mbedtls_snprintf)(char *s, size_t n, const char *format, ...);
+ 
+ /**
+diff --git a/include/mbedtls/x509_crt.h b/include/mbedtls/x509_crt.h
+index 11e5951f6..6d91a0c0a 100644
+--- a/include/mbedtls/x509_crt.h
++++ b/include/mbedtls/x509_crt.h
+@@ -317,25 +317,25 @@ typedef void mbedtls_x509_crt_restart_ctx;
+  * new algorithms are added to the library. New minor versions of Mbed TLS will
+  * not reduce this profile unless serious security concerns require it.
+  */
+-extern const mbedtls_x509_crt_profile mbedtls_x509_crt_profile_default;
++MBEDTLS_X509_EXPORT extern const mbedtls_x509_crt_profile mbedtls_x509_crt_profile_default;
+ 
+ /**
+  * Expected next default profile. Recommended for new deployments.
+  * Currently targets a 128-bit security level, except for allowing RSA-2048.
+  * This profile may change at any time.
+  */
+-extern const mbedtls_x509_crt_profile mbedtls_x509_crt_profile_next;
++MBEDTLS_X509_EXPORT extern const mbedtls_x509_crt_profile mbedtls_x509_crt_profile_next;
+ 
+ /**
+  * NSA Suite B profile.
+  */
+-extern const mbedtls_x509_crt_profile mbedtls_x509_crt_profile_suiteb;
++MBEDTLS_X509_EXPORT extern const mbedtls_x509_crt_profile mbedtls_x509_crt_profile_suiteb;
+ 
+ /**
+  * Empty profile that allows nothing. Useful as a basis for constructing
+  * custom profiles.
+  */
+-extern const mbedtls_x509_crt_profile mbedtls_x509_crt_profile_none;
++MBEDTLS_X509_EXPORT extern const mbedtls_x509_crt_profile mbedtls_x509_crt_profile_none;
+ 
+ /**
+  * \brief          Parse a single DER formatted certificate and add it
+diff --git a/library/CMakeLists.txt b/library/CMakeLists.txt
+index 535988303..c7e89047f 100644
+--- a/library/CMakeLists.txt
++++ b/library/CMakeLists.txt
+@@ -197,7 +197,7 @@ if(CMAKE_COMPILER_IS_CLANG)
+     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-declarations -Wmissing-prototypes -Wdocumentation -Wno-documentation-deprecated-sync -Wunreachable-code")
+ endif(CMAKE_COMPILER_IS_CLANG)
+ 
+-if(CMAKE_COMPILER_IS_MSVC)
++if(0)
+     option(MSVC_STATIC_RUNTIME "Build the libraries with /MT compiler flag" OFF)
+     if(MSVC_STATIC_RUNTIME)
+         foreach(flag_var
+@@ -274,6 +274,7 @@ if(USE_STATIC_MBEDTLS_LIBRARY)
+ 
+     add_library(${mbedx509_static_target} STATIC ${src_x509})
+     set_target_properties(${mbedx509_static_target} PROPERTIES OUTPUT_NAME mbedx509)
++    target_compile_definitions(${mbedx509_static_target} PUBLIC MBEDTLS_STATIC)
+     target_link_libraries(${mbedx509_static_target} PUBLIC ${libs} ${mbedcrypto_static_target})
+ 
+     add_library(${mbedtls_static_target} STATIC ${src_tls})
+@@ -294,6 +295,7 @@ if(USE_SHARED_MBEDTLS_LIBRARY)
+     add_library(${mbedx509_target} SHARED ${src_x509})
+     set_target_properties(${mbedx509_target} PROPERTIES VERSION 3.4.0 SOVERSION 5)
+     target_link_libraries(${mbedx509_target} PUBLIC ${libs} ${mbedcrypto_target})
++    target_compile_definitions(${mbedx509_target} PRIVATE MBEDTLS_X509_EXPORTS)
+ 
+     add_library(${mbedtls_target} SHARED ${src_tls})
+     set_target_properties(${mbedtls_target} PROPERTIES VERSION 3.4.0 SOVERSION 19)
+diff --git a/library/aesni.c b/library/aesni.c
+index a23c5b595..265e8c993 100644
+--- a/library/aesni.c
++++ b/library/aesni.c
+@@ -35,7 +35,10 @@
+ #if MBEDTLS_AESNI_HAVE_CODE == 2
+ #if !defined(_WIN32)
+ #include <cpuid.h>
++#else
++#include <intrin.h>
+ #endif
++
+ #include <immintrin.h>
+ #endif
+ 
