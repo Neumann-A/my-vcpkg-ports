@@ -1,0 +1,17 @@
+{
+  "name": "openlibm",
+  "version": "0.8.1",
+  "description": "High quality system independent, portable, open source libm implementation",
+  "homepage": "openlibm.org",
+  "license": null,
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake-get-vars",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    }
+  ]
+}

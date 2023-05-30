@@ -1,0 +1,2161 @@
+diff --git a/1146dccf85-e321e27f2f.clean/Make.inc b/1146dccf85-e321e27f2f/Make.inc
+index baf65b1e1..28153e40f 100644
+--- a/1146dccf85-e321e27f2f.clean/Make.inc
++++ b/1146dccf85-e321e27f2f/Make.inc
+@@ -47,7 +47,8 @@ CC ?= $(TOOLPREFIX)gcc
+ CFLAGS_add += -fno-gnu89-inline -fno-builtin
+ endif
+ 
+-ARCH ?= $(shell $(CC) -dumpmachine | sed "s/\([^-]*\).*$$/\1/")
++# ARCH ?= $(shell $(CC) -dumpmachine | sed "s/\([^-]*\).*$$/\1/")
++override ARCH = x86_64
+ 
+ ifeq ($(ARCH),mingw32)
+ $(error "the mingw32 compiler you are using fails the openblas testsuite. please see the Julia README.windows.md document for a replacement")
+@@ -90,6 +91,7 @@ ifeq ($(findstring -O,$(CFLAGS)),)
+ CFLAGS_add += -O3
+ endif
+ 
++override OS=WINNT
+ ifneq (,$(findstring MINGW,$(OS)))
+ override OS=WINNT
+ endif
+@@ -139,7 +141,7 @@ CFLAGS_add  += $(CFLAGS_arch)
+ SFLAGS_add  += $(SFLAGS_arch)
+ LDFLAGS_add += $(LDFLAGS_arch)
+ 
+-CFLAGS_add += -std=c99 -Wall -I$(OPENLIBM_HOME) -I$(OPENLIBM_HOME)/include -I$(OPENLIBM_HOME)/$(ARCH) -I$(OPENLIBM_HOME)/src -DASSEMBLER -D__BSD_VISIBLE -Wno-implicit-function-declaration
++CFLAGS_add += -std=c99 -Wall -I$(OPENLIBM_HOME) -I$(OPENLIBM_HOME)/include -I$(OPENLIBM_HOME)/$(ARCH) -I$(OPENLIBM_HOME)/src -DASSEMBLER -D__BSD_VISIBLE -Wno-reserved-macro-identifier -Wno-implicit-function-declaration
+ ifneq ($(filter $(ARCH),i387 amd64 powerpc),)
+ CFLAGS_add += -I$(OPENLIBM_HOME)/ld80
+ else
+@@ -158,12 +160,13 @@ ifeq ($(filter $(OS),Darwin WINNT),)
+ LONG_DOUBLE_NOT_DOUBLE := 1
+ endif
+ endif
++override LONG_DOUBLE_NOT_DOUBLE := 0
+ 
+ %.c.o: %.c
+-	$(CC) $(CPPFLAGS) $(CFLAGS) $(CFLAGS_add) -c $< -o $@
++	$(CC) $(CPPFLAGS) -DOPENLIBM_USE_HOST_COMPLEX_H -D_WIN64 $(CFLAGS) $(CFLAGS_add) -c $< -o $@
+ 
+ %.S.o: %.S
+-	$(CC) $(CPPFLAGS) $(SFLAGS) $(SFLAGS_add) $(filter -m% -B% -I% -D%,$(CFLAGS_add)) -c $< -o $@
++	$(CCAS) $(CCASFLAGS) -DOPENLIBM_USE_HOST_COMPLEX_H -D_WIN64 $(CPPFLAGS) $(SFLAGS) $(SFLAGS_add) $(filter -m% -B% -I% -D%,$(CFLAGS_add)) -c $< -o $@
+ 
+ 
+ # Makefile debugging trick:
+diff --git a/1146dccf85-e321e27f2f.clean/Makefile b/1146dccf85-e321e27f2f/Makefile
+index 2435144f7..e2976c43e 100644
+--- a/1146dccf85-e321e27f2f.clean/Makefile
++++ b/1146dccf85-e321e27f2f/Makefile
+@@ -68,7 +68,7 @@ libopenlibm.a: $(OBJS)
+ 	$(AR) -rcs libopenlibm.a $(OBJS)
+ 
+ libopenlibm.$(OLM_MAJOR_MINOR_SHLIB_EXT): $(OBJS)
+-	$(CC) -shared $(OBJS) $(LDFLAGS) $(LDFLAGS_add) -o $@
++	$(CC) -Wl,-dll $(OBJS) $(LDFLAGS) $(LDFLAGS_add)  -o $@
+ ifneq ($(OS),WINNT)
+ 	ln -sf $@ libopenlibm.$(OLM_MAJOR_SHLIB_EXT)
+ 	ln -sf $@ libopenlibm.$(SHLIB_EXT)
+diff --git a/1146dccf85-e321e27f2f.clean/amd64/bsd_asm.h b/1146dccf85-e321e27f2f/amd64/bsd_asm.h
+index b9c815b14..cd0846f9a 100644
+--- a/1146dccf85-e321e27f2f.clean/amd64/bsd_asm.h
++++ b/1146dccf85-e321e27f2f/amd64/bsd_asm.h
+@@ -68,7 +68,7 @@
+ #define	END(x)		.size x, . - x
+ 
+ #elif defined(_WIN32)
+-#ifndef _MSC_VER
++#if !defined(_MSC_VER) || defined(__clang__)
+ #define END(x) .end
+ #define _START_ENTRY_WIN .text; _START_ENTRY
+ #else
+diff --git a/1146dccf85-e321e27f2f/configure b/1146dccf85-e321e27f2f/configure
+new file mode 100644
+index 000000000..e69de29bb
+diff --git a/1146dccf85-e321e27f2f.clean/include/openlibm_complex.h b/1146dccf85-e321e27f2f/include/openlibm_complex.h
+index 7afc992e1..c09e81164 100644
+--- a/1146dccf85-e321e27f2f.clean/include/openlibm_complex.h
++++ b/1146dccf85-e321e27f2f/include/openlibm_complex.h
+@@ -17,12 +17,30 @@
+ 
+ #ifdef OPENLIBM_USE_HOST_COMPLEX_H
+ #include <complex.h>
++#ifndef _MSC_VER
++#  define FCOMPLEX float complex
++#  define DCOMPLEX double complex
++#  define LCOMPLEX long double complex
++#else
++#  define FCOMPLEX _Fcomplex
++#  define DCOMPLEX _Dcomplex
++#  define LCOMPLEX long  _Lcomplex
++#  define CMPLXF(x,y) _FCbuild(x,y)
++#  define CMPLX(x,y) _Cbuild(x,y)
++#  define CMPLXL(x,y) _LCbuild(x,y)
++#  define MULCMPLXRF(x,y) _FCmulcr(x,y)
++#  define MULCMPLXR(x,y) _Cmulcr(x,y)
++#  define MULCMPLXRL(x,y) _LCmulcr(x,y)
++#  define MULCMPLXCMPLXF(x,y) _FCmulcc(x,y)
++#  define MULCMPLXCMPLX(x,y) _Cmulcc(x,y)
++#  define MULCMPLXCMPLXL(x,y) _LCmulcc(x,y)
++#endif
+ #else /* !OPENLIBM_USE_HOST_COMPLEX_H */
+ 
+ #ifndef OPENLIBM_COMPLEX_H
+ #define	OPENLIBM_COMPLEX_H
+ 
+-#define complex _Complex
++
+ 
+ #define _Complex_I 1.0fi
+ #define I _Complex_I
+@@ -53,42 +71,42 @@
+  */
+ 
+ #ifdef __clang__
+-#  define CMPLXF(x, y) ((float complex){x, y})
+-#  define CMPLX(x, y) ((double complex){x, y})
+-#  define CMPLXL(x, y) ((long double complex){x, y})
++#  define CMPLXF(x, y) ((FCOMPLEX){x, y})
++#  define CMPLX(x, y) ((DCOMPLEX){x, y})
++#  define CMPLXL(x, y) ((LCOMPLEX){x, y})
+ #elif (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)) && !defined(__INTEL_COMPILER)
+ #  define CMPLXF(x,y) __builtin_complex ((float) (x), (float) (y))
+ #  define CMPLX(x,y) __builtin_complex ((double) (x), (double) (y))
+ #  define CMPLXL(x,y) __builtin_complex ((long double) (x), (long double) (y))
+ #else
+-static inline float complex
++static inline FCOMPLEX
+ CMPLXF(float x, float y)
+ {
+ 	union {
+ 		float a[2];
+-		float complex f;
++		FCOMPLEX f;
+ 	} z = {{ x, y }};
+ 
+ 	return (z.f);
+ }
+ 
+-static inline double complex
++static inline DCOMPLEX
+ CMPLX(double x, double y)
+ {
+ 	union {
+ 		double a[2];
+-		double complex f;
++		DCOMPLEX f;
+ 	} z = {{ x, y }};
+ 
+ 	return (z.f);
+ }
+ 
+-static inline long double complex
++static inline LCOMPLEX
+ CMPLXL(long double x, long double y)
+ {
+ 	union {
+ 		long double a[2];
+-		long double complex f;
++		LCOMPLEX f;
+ 	} z = {{ x, y }};
+ 
+ 	return (z.f);
+@@ -98,81 +116,81 @@ CMPLXL(long double x, long double y)
+ /*
+  * Double versions of C99 functions
+  */
+-double complex cacos(double complex);
+-double complex casin(double complex);
+-double complex catan(double complex);
+-double complex ccos(double complex);
+-double complex csin(double complex);
+-double complex ctan(double complex);
+-double complex cacosh(double complex);
+-double complex casinh(double complex);
+-double complex catanh(double complex);
+-double complex ccosh(double complex);
+-double complex csinh(double complex);
+-double complex ctanh(double complex);
+-double complex cexp(double complex);
+-double complex clog(double complex);
+-double cabs(double complex);
+-double complex cpow(double complex, double complex);
+-double complex csqrt(double complex);
+-double carg(double complex);
+-double cimag(double complex);
+-double complex conj(double complex);
+-double complex cproj(double complex);
+-double creal(double complex);
++DCOMPLEX cacos(DCOMPLEX);
++DCOMPLEX casin(DCOMPLEX);
++DCOMPLEX catan(DCOMPLEX);
++DCOMPLEX ccos(DCOMPLEX);
++DCOMPLEX csin(DCOMPLEX);
++DCOMPLEX ctan(DCOMPLEX);
++DCOMPLEX cacosh(DCOMPLEX);
++DCOMPLEX casinh(DCOMPLEX);
++DCOMPLEX catanh(DCOMPLEX);
++DCOMPLEX ccosh(DCOMPLEX);
++DCOMPLEX csinh(DCOMPLEX);
++DCOMPLEX ctanh(DCOMPLEX);
++DCOMPLEX cexp(DCOMPLEX);
++DCOMPLEX clog(DCOMPLEX);
++double cabs(DCOMPLEX);
++DCOMPLEX cpow(DCOMPLEX, DCOMPLEX);
++DCOMPLEX csqrt(DCOMPLEX);
++double carg(DCOMPLEX);
++double cimag(DCOMPLEX);
++DCOMPLEX conj(DCOMPLEX);
++DCOMPLEX cproj(DCOMPLEX);
++double creal(DCOMPLEX);
+ 
+ /*
+  * Float versions of C99 functions
+  */
+-float complex cacosf(float complex);
+-float complex casinf(float complex);
+-float complex catanf(float complex);
+-float complex ccosf(float complex);
+-float complex csinf(float complex);
+-float complex ctanf(float complex);
+-float complex cacoshf(float complex);
+-float complex casinhf(float complex);
+-float complex catanhf(float complex);
+-float complex ccoshf(float complex);
+-float complex csinhf(float complex);
+-float complex ctanhf(float complex);
+-float complex cexpf(float complex);
+-float complex clogf(float complex);
+-float cabsf(float complex);
+-float complex cpowf(float complex, float complex);
+-float complex csqrtf(float complex);
+-float cargf(float complex);
+-float cimagf(float complex);
+-float complex conjf(float complex);
+-float complex cprojf(float complex);
+-float crealf(float complex);
++FCOMPLEX cacosf(FCOMPLEX);
++FCOMPLEX casinf(FCOMPLEX);
++FCOMPLEX catanf(FCOMPLEX);
++FCOMPLEX ccosf(FCOMPLEX);
++FCOMPLEX csinf(FCOMPLEX);
++FCOMPLEX ctanf(FCOMPLEX);
++FCOMPLEX cacoshf(FCOMPLEX);
++FCOMPLEX casinhf(FCOMPLEX);
++FCOMPLEX catanhf(FCOMPLEX);
++FCOMPLEX ccoshf(FCOMPLEX);
++FCOMPLEX csinhf(FCOMPLEX);
++FCOMPLEX ctanhf(FCOMPLEX);
++FCOMPLEX cexpf(FCOMPLEX);
++FCOMPLEX clogf(FCOMPLEX);
++float cabsf(FCOMPLEX);
++FCOMPLEX cpowf(FCOMPLEX, FCOMPLEX);
++FCOMPLEX csqrtf(FCOMPLEX);
++float cargf(FCOMPLEX);
++float cimagf(FCOMPLEX);
++FCOMPLEX conjf(FCOMPLEX);
++FCOMPLEX cprojf(FCOMPLEX);
++float crealf(FCOMPLEX);
+ 
+ /*
+  * Long double versions of C99 functions
+  */
+-long double complex cacosl(long double complex);
+-long double complex casinl(long double complex);
+-long double complex catanl(long double complex);
+-long double complex ccosl(long double complex);
+-long double complex csinl(long double complex);
+-long double complex ctanl(long double complex);
+-long double complex cacoshl(long double complex);
+-long double complex casinhl(long double complex);
+-long double complex catanhl(long double complex);
+-long double complex ccoshl(long double complex);
+-long double complex csinhl(long double complex);
+-long double complex ctanhl(long double complex);
+-long double complex cexpl(long double complex);
+-long double complex clogl(long double complex);
+-long double cabsl(long double complex);
+-long double complex cpowl(long double complex,
+-	long double complex);
+-long double complex csqrtl(long double complex);
+-long double cargl(long double complex);
+-long double cimagl(long double complex);
+-long double complex conjl(long double complex);
+-long double complex cprojl(long double complex);
+-long double creall(long double complex);
++LCOMPLEX cacosl(LCOMPLEX);
++LCOMPLEX casinl(LCOMPLEX);
++LCOMPLEX catanl(LCOMPLEX);
++LCOMPLEX ccosl(LCOMPLEX);
++LCOMPLEX csinl(LCOMPLEX);
++LCOMPLEX ctanl(LCOMPLEX);
++LCOMPLEX cacoshl(LCOMPLEX);
++LCOMPLEX casinhl(LCOMPLEX);
++LCOMPLEX catanhl(LCOMPLEX);
++LCOMPLEX ccoshl(LCOMPLEX);
++LCOMPLEX csinhl(LCOMPLEX);
++LCOMPLEX ctanhl(LCOMPLEX);
++LCOMPLEX cexpl(LCOMPLEX);
++LCOMPLEX clogl(LCOMPLEX);
++long double cabsl(LCOMPLEX);
++LCOMPLEX cpowl(LCOMPLEX,
++	LCOMPLEX);
++LCOMPLEX csqrtl(LCOMPLEX);
++long double cargl(LCOMPLEX);
++long double cimagl(LCOMPLEX);
++LCOMPLEX conjl(LCOMPLEX);
++LCOMPLEX cprojl(LCOMPLEX);
++long double creall(LCOMPLEX);
+ 
+ #endif /* !OPENLIBM_COMPLEX_H */
+ 
+diff --git a/1146dccf85-e321e27f2f.clean/src/cdefs-compat.h b/1146dccf85-e321e27f2f/src/cdefs-compat.h
+index 834c5478a..7ef2678d1 100644
+--- a/1146dccf85-e321e27f2f.clean/src/cdefs-compat.h
++++ b/1146dccf85-e321e27f2f/src/cdefs-compat.h
+@@ -11,7 +11,7 @@
+ #endif
+ #endif /* !defined(__BEGIN_DECLS) */
+ 
+-#ifdef __GNUC__
++#if defined(__GNUC__) || (defined(__clang__) && defined(_MSC_VER))
+ #if defined(__strong_alias) && defined(__NetBSD__)
+ #define openlibm_strong_reference(sym,alias) __strong_alias(alias,sym)
+ #elif defined(__strong_reference)
+diff --git a/1146dccf85-e321e27f2f.clean/src/e_atanh.c b/1146dccf85-e321e27f2f/src/e_atanh.c
+index 5e1db914c..c621f59b5 100644
+--- a/1146dccf85-e321e27f2f.clean/src/e_atanh.c
++++ b/1146dccf85-e321e27f2f/src/e_atanh.c
+@@ -64,5 +64,8 @@ __ieee754_atanh(double x)
+ }
+ 
+ #if (LDBL_MANT_DIG == 53)
++#ifndef openlibm_weak_reference
++    #error "openlibm_weak_reference not defined"
++#endif
+ openlibm_weak_reference(atanh, atanhl);
+ #endif
+diff --git a/1146dccf85-e321e27f2f.clean/src/k_exp.c b/1146dccf85-e321e27f2f/src/k_exp.c
+index 4739e2008..f15cfedf4 100644
+--- a/1146dccf85-e321e27f2f.clean/src/k_exp.c
++++ b/1146dccf85-e321e27f2f/src/k_exp.c
+@@ -83,8 +83,8 @@ __ldexp_exp(double x, int expt)
+ 	return (exp_x * scale);
+ }
+ 
+-OLM_DLLEXPORT double complex
+-__ldexp_cexp(double complex z, int expt)
++OLM_DLLEXPORT DCOMPLEX
++__ldexp_cexp(DCOMPLEX z, int expt)
+ {
+ 	double x, y, exp_x, scale1, scale2;
+ 	int ex_expt, half_expt;
+diff --git a/1146dccf85-e321e27f2f.clean/src/k_expf.c b/1146dccf85-e321e27f2f/src/k_expf.c
+index bbf094c38..006a52e36 100644
+--- a/1146dccf85-e321e27f2f.clean/src/k_expf.c
++++ b/1146dccf85-e321e27f2f/src/k_expf.c
+@@ -66,8 +66,8 @@ __ldexp_expf(float x, int expt)
+ 	return (exp_x * scale);
+ }
+ 
+-OLM_DLLEXPORT float complex
+-__ldexp_cexpf(float complex z, int expt)
++OLM_DLLEXPORT FCOMPLEX
++__ldexp_cexpf(FCOMPLEX z, int expt)
+ {
+ 	float x, y, exp_x, scale1, scale2;
+ 	int ex_expt, half_expt;
+diff --git a/1146dccf85-e321e27f2f.clean/src/math_private.h b/1146dccf85-e321e27f2f/src/math_private.h
+index 15a27b284..663d30d02 100644
+--- a/1146dccf85-e321e27f2f.clean/src/math_private.h
++++ b/1146dccf85-e321e27f2f/src/math_private.h
+@@ -345,7 +345,7 @@ double	__kernel_sin(double,double,int);
+ double	__kernel_cos(double,double);
+ double	__kernel_tan(double,double,int);
+ double	__ldexp_exp(double,int);
+-double complex __ldexp_cexp(double complex,int);
++DCOMPLEX __ldexp_cexp(DCOMPLEX,int);
+ 
+ /* float precision kernel functions */
+ #ifdef INLINE_REM_PIO2F
+@@ -365,7 +365,7 @@ __inline
+ #endif
+ float	__kernel_tandf(double,int);
+ float	__ldexp_expf(float,int);
+-float complex __ldexp_cexpf(float complex,int);
++FCOMPLEX __ldexp_cexpf(FCOMPLEX,int);
+ 
+ /* long double precision kernel functions */
+ long double __kernel_sinl(long double, long double, int);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cabs.c b/1146dccf85-e321e27f2f/src/s_cabs.c
+index 481632aee..15d342ea4 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cabs.c
++++ b/1146dccf85-e321e27f2f/src/s_cabs.c
+@@ -22,7 +22,7 @@
+ #include "math_private.h"
+ 
+ double
+-cabs(double complex z)
++cabs(DCOMPLEX z)
+ {
+ 	return hypot(__real__ z, __imag__ z);
+ }
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cabsf.c b/1146dccf85-e321e27f2f/src/s_cabsf.c
+index 8d9bd9690..c9728a287 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cabsf.c
++++ b/1146dccf85-e321e27f2f/src/s_cabsf.c
+@@ -19,7 +19,7 @@
+ #include <openlibm_math.h>
+ 
+ float
+-cabsf(float complex z)
++cabsf(FCOMPLEX z)
+ {
+ 	return hypotf(__real__ z, __imag__ z);
+ }
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cabsl.c b/1146dccf85-e321e27f2f/src/s_cabsl.c
+index 847ded712..ae34ffb07 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cabsl.c
++++ b/1146dccf85-e321e27f2f/src/s_cabsl.c
+@@ -20,7 +20,7 @@
+ #include <openlibm_math.h>
+ 
+ long double
+-cabsl(long double complex z)
++cabsl(LCOMPLEX z)
+ {
+ 	return hypotl(__real__ z, __imag__ z);
+ }
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cacos.c b/1146dccf85-e321e27f2f/src/s_cacos.c
+index e29717b0f..3261dffad 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cacos.c
++++ b/1146dccf85-e321e27f2f/src/s_cacos.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * double complex cacos();
+- * double complex z, w;
++ * DCOMPLEX cacos();
++ * DCOMPLEX z, w;
+  *
+  * w = cacos (z);
+  *
+@@ -52,10 +52,10 @@
+ 
+ #include "math_private.h"
+ 
+-double complex
+-cacos(double complex z)
++DCOMPLEX
++cacos(DCOMPLEX z)
+ {
+-	double complex w;
++	DCOMPLEX w;
+ 
+ 	w = casin (z);
+ 	w = (M_PI_2 - creal (w)) - cimag (w) * I;
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cacosf.c b/1146dccf85-e321e27f2f/src/s_cacosf.c
+index f3c0eb9c0..8ee8b0ca0 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cacosf.c
++++ b/1146dccf85-e321e27f2f/src/s_cacosf.c
+@@ -49,10 +49,10 @@
+ #include <openlibm_complex.h>
+ #include <openlibm_math.h>
+ 
+-float complex
+-cacosf(float complex z)
++FCOMPLEX
++cacosf(FCOMPLEX z)
+ {
+-	float complex w;
++	FCOMPLEX w;
+ 
+ 	w = casinf( z );
+ 	w = ((float)M_PI_2 - crealf (w)) - cimagf (w) * I;
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cacosh.c b/1146dccf85-e321e27f2f/src/s_cacosh.c
+index f16c14ce8..3e410aa07 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cacosh.c
++++ b/1146dccf85-e321e27f2f/src/s_cacosh.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * double complex cacosh();
+- * double complex z, w;
++ * DCOMPLEX cacosh();
++ * DCOMPLEX z, w;
+  *
+  * w = cacosh (z);
+  *
+@@ -48,10 +48,10 @@
+ 
+ #include "math_private.h"
+ 
+-double complex
+-cacosh(double complex z)
++DCOMPLEX
++cacosh(DCOMPLEX z)
+ {
+-	double complex w;
++	DCOMPLEX w;
+ 
+ 	w = I * cacos (z);
+ 	return (w);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cacoshf.c b/1146dccf85-e321e27f2f/src/s_cacoshf.c
+index f3c40aedd..247a66ec2 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cacoshf.c
++++ b/1146dccf85-e321e27f2f/src/s_cacoshf.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * float complex cacoshf();
+- * float complex z, w;
++ * FCOMPLEX cacoshf();
++ * FCOMPLEX z, w;
+  *
+  * w = cacoshf (z);
+  *
+@@ -45,10 +45,10 @@
+ #include <openlibm_complex.h>
+ #include <openlibm_math.h>
+ 
+-float complex
+-cacoshf(float complex z)
++FCOMPLEX
++cacoshf(FCOMPLEX z)
+ {
+-	float complex w;
++	FCOMPLEX w;
+ 
+ 	w = I * cacosf (z);
+ 	return (w);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cacoshl.c b/1146dccf85-e321e27f2f/src/s_cacoshl.c
+index 5e5ae31d1..db5e6ad13 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cacoshl.c
++++ b/1146dccf85-e321e27f2f/src/s_cacoshl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex cacoshl();
+- * long double complex z, w;
++ * LCOMPLEX cacoshl();
++ * LCOMPLEX z, w;
+  *
+  * w = cacoshl (z);
+  *
+@@ -46,10 +46,10 @@
+ #include <openlibm_complex.h>
+ #include <openlibm_math.h>
+ 
+-long double complex
+-cacoshl(long double complex z)
++LCOMPLEX
++cacoshl(LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 
+ 	w = I * cacosl(z);
+ 	return (w);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cacosl.c b/1146dccf85-e321e27f2f/src/s_cacosl.c
+index 8a7b8a107..118a99f9f 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cacosl.c
++++ b/1146dccf85-e321e27f2f/src/s_cacosl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex cacosl();
+- * long double complex z, w;
++ * LCOMPLEX cacosl();
++ * LCOMPLEX z, w;
+  *
+  * w = cacosl( z );
+  *
+@@ -52,10 +52,10 @@
+ 
+ static const long double PIO2L = 1.570796326794896619231321691639751442098585L;
+ 
+-long double complex
+-cacosl(long double complex z)
++LCOMPLEX
++cacosl(LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 
+ 	w = casinl(z);
+ 	w = (PIO2L - creall(w)) - cimagl(w) * I;
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_carg.c b/1146dccf85-e321e27f2f/src/s_carg.c
+index 2ebfe1779..6308a6201 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_carg.c
++++ b/1146dccf85-e321e27f2f/src/s_carg.c
+@@ -33,7 +33,7 @@
+ #include "math_private.h"
+ 
+ OLM_DLLEXPORT double
+-carg(double complex z)
++carg(DCOMPLEX z)
+ {
+ 
+ 	return (atan2(cimag(z), creal(z)));
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cargf.c b/1146dccf85-e321e27f2f/src/s_cargf.c
+index 41e320b34..af9ccebb6 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cargf.c
++++ b/1146dccf85-e321e27f2f/src/s_cargf.c
+@@ -33,7 +33,7 @@
+ #include "math_private.h"
+ 
+ OLM_DLLEXPORT float
+-cargf(float complex z)
++cargf(FCOMPLEX z)
+ {
+ 
+ 	return (atan2f(cimagf(z), crealf(z)));
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cargl.c b/1146dccf85-e321e27f2f/src/s_cargl.c
+index 5052133e3..5289ce9eb 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cargl.c
++++ b/1146dccf85-e321e27f2f/src/s_cargl.c
+@@ -33,7 +33,7 @@
+ #include "math_private.h"
+ 
+ OLM_DLLEXPORT long double
+-cargl(long double complex z)
++cargl(LCOMPLEX z)
+ {
+ 
+ 	return (atan2l(cimagl(z), creall(z)));
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_casin.c b/1146dccf85-e321e27f2f/src/s_casin.c
+index 4e5daaa71..d392b37f1 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_casin.c
++++ b/1146dccf85-e321e27f2f/src/s_casin.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * double complex casin();
+- * double complex z, w;
++ * DCOMPLEX casin();
++ * DCOMPLEX z, w;
+  *
+  * w = casin (z);
+  *
+@@ -55,11 +55,11 @@
+ 
+ #include "math_private.h"
+ 
+-double complex
+-casin(double complex z)
++DCOMPLEX
++casin(DCOMPLEX z)
+ {
+-	double complex w;
+-	static double complex ca, ct, zz, z2;
++	DCOMPLEX w;
++	static DCOMPLEX ca, ct, zz, z2;
+ 	double x, y;
+ 
+ 	x = creal (z);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_casinf.c b/1146dccf85-e321e27f2f/src/s_casinf.c
+index 1573264de..9338f7693 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_casinf.c
++++ b/1146dccf85-e321e27f2f/src/s_casinf.c
+@@ -50,12 +50,12 @@
+ #include <openlibm_complex.h>
+ #include <openlibm_math.h>
+ 
+-float complex
+-casinf(float complex z)
++FCOMPLEX
++casinf(FCOMPLEX z)
+ {
+-	float complex w;
++	FCOMPLEX w;
+ 	float x, y;
+-	static float complex ca, ct, zz, z2;
++	static FCOMPLEX ca, ct, zz, z2;
+ 	/*
+ 	float cn, n;
+ 	static float a, b, s, t, u, v, y2;
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_casinh.c b/1146dccf85-e321e27f2f/src/s_casinh.c
+index 4b1154d9a..fc154ed01 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_casinh.c
++++ b/1146dccf85-e321e27f2f/src/s_casinh.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * double complex casinh();
+- * double complex z, w;
++ * DCOMPLEX casinh();
++ * DCOMPLEX z, w;
+  *
+  * w = casinh (z);
+  *
+@@ -48,10 +48,10 @@
+ 
+ #include "math_private.h"
+ 
+-double complex
+-casinh(double complex z)
++DCOMPLEX
++casinh(DCOMPLEX z)
+ {
+-	double complex w;
++	DCOMPLEX w;
+ 
+ 	w = -1.0 * I * casin (z * I);
+ 	return (w);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_casinhf.c b/1146dccf85-e321e27f2f/src/s_casinhf.c
+index 88946249f..ab1b23076 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_casinhf.c
++++ b/1146dccf85-e321e27f2f/src/s_casinhf.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * float complex casinhf();
+- * float complex z, w;
++ * FCOMPLEX casinhf();
++ * FCOMPLEX z, w;
+  *
+  * w = casinhf (z);
+  *
+@@ -45,10 +45,10 @@
+ #include <openlibm_complex.h>
+ #include <openlibm_math.h>
+ 
+-float complex
+-casinhf(float complex z)
++FCOMPLEX
++casinhf(FCOMPLEX z)
+ {
+-	float complex w;
++	FCOMPLEX w;
+ 
+ 	w = -1.0f * I * casinf (z * I);
+ 	return (w);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_casinhl.c b/1146dccf85-e321e27f2f/src/s_casinhl.c
+index 33ae2179f..45fae16a1 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_casinhl.c
++++ b/1146dccf85-e321e27f2f/src/s_casinhl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex casinhf();
+- * long double complex z, w;
++ * LCOMPLEX casinhf();
++ * LCOMPLEX z, w;
+  *
+  * w = casinhl (z);
+  *
+@@ -46,10 +46,10 @@
+ #include <openlibm_complex.h>
+ #include <openlibm_math.h>
+ 
+-long double complex
+-casinhl(long double complex z)
++LCOMPLEX
++casinhl(LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 
+ 	w = -1.0L * I * casinl(z * I);
+ 	return (w);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_casinl.c b/1146dccf85-e321e27f2f/src/s_casinl.c
+index b34627270..8eb08e7f5 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_casinl.c
++++ b/1146dccf85-e321e27f2f/src/s_casinl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex casinl();
+- * long double complex z, w;
++ * LCOMPLEX casinl();
++ * LCOMPLEX z, w;
+  *
+  * w = casinl( z );
+  *
+@@ -61,12 +61,12 @@ static const long double MACHEPL = 9.629649721936179265279889712924636592690508e
+ 
+ static const long double PIO2L = 1.570796326794896619231321691639751442098585L;
+ 
+-long double complex
+-casinl(long double complex z)
++LCOMPLEX
++casinl(LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 	long double x, y, b;
+-	static long double complex ca, ct, zz, z2;
++	static LCOMPLEX ca, ct, zz, z2;
+ 
+ 	x = creall(z);
+ 	y = cimagl(z);
+@@ -85,7 +85,7 @@ casinl(long double complex z)
+ 	/* Power series expansion */
+ 	b = cabsl(z);
+ 	if (b < 0.125L) {
+-		long double complex sum;
++		LCOMPLEX sum;
+ 		long double n, cn;
+ 
+ 		z2 = (x - y) * (x + y) + (2.0L * x * y) * I;
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_catan.c b/1146dccf85-e321e27f2f/src/s_catan.c
+index 9ee3dbb9e..2ccce01dd 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_catan.c
++++ b/1146dccf85-e321e27f2f/src/s_catan.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * double complex catan();
+- * double complex z, w;
++ * DCOMPLEX catan();
++ * DCOMPLEX z, w;
+  *
+  * w = catan (z);
+  *
+@@ -92,10 +92,10 @@ _redupi(double x)
+ 	return (t);
+ }
+ 
+-double complex
+-catan(double complex z)
++DCOMPLEX
++catan(DCOMPLEX z)
+ {
+-	double complex w;
++	DCOMPLEX w;
+ 	double a, t, x, x2, y;
+ 
+ 	x = creal (z);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_catanf.c b/1146dccf85-e321e27f2f/src/s_catanf.c
+index d40cb56c0..346e38992 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_catanf.c
++++ b/1146dccf85-e321e27f2f/src/s_catanf.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * float complex catanf();
+- * float complex z, w;
++ * FCOMPLEX catanf();
++ * FCOMPLEX z, w;
+  *
+  * w = catanf( z );
+  *
+@@ -87,10 +87,10 @@ _redupif(float xx)
+ 	return(t);
+ }
+ 
+-float complex
+-catanf(float complex z)
++FCOMPLEX
++catanf(FCOMPLEX z)
+ {
+-	float complex w;
++	FCOMPLEX w;
+ 	float a, t, x, x2, y;
+ 
+ 	x = crealf(z);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_catanh.c b/1146dccf85-e321e27f2f/src/s_catanh.c
+index 3e3eeafe9..a10342ef0 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_catanh.c
++++ b/1146dccf85-e321e27f2f/src/s_catanh.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * double complex catanh();
+- * double complex z, w;
++ * DCOMPLEX catanh();
++ * DCOMPLEX z, w;
+  *
+  * w = catanh (z);
+  *
+@@ -48,10 +48,10 @@
+ 
+ #include "math_private.h"
+ 
+-double complex
+-catanh(double complex z)
++DCOMPLEX
++catanh(DCOMPLEX z)
+ {
+-	double complex w;
++	DCOMPLEX w;
+ 
+ 	w = -1.0 * I * catan (z * I);
+ 	return (w);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_catanhf.c b/1146dccf85-e321e27f2f/src/s_catanhf.c
+index 7d43825ba..03754e2f9 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_catanhf.c
++++ b/1146dccf85-e321e27f2f/src/s_catanhf.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * float complex catanhf();
+- * float complex z, w;
++ * FCOMPLEX catanhf();
++ * FCOMPLEX z, w;
+  *
+  * w = catanhf (z);
+  *
+@@ -45,10 +45,10 @@
+ #include <openlibm_complex.h>
+ #include <openlibm_math.h>
+ 
+-float complex
+-catanhf(float complex z)
++FCOMPLEX
++catanhf(FCOMPLEX z)
+ {
+-	float complex w;
++	FCOMPLEX w;
+ 
+ 	w = -1.0f * I * catanf (z * I);
+ 	return (w);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_catanhl.c b/1146dccf85-e321e27f2f/src/s_catanhl.c
+index 711a2686c..d8dbc3eab 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_catanhl.c
++++ b/1146dccf85-e321e27f2f/src/s_catanhl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex catanhl();
+- * long double complex z, w;
++ * LCOMPLEX catanhl();
++ * LCOMPLEX z, w;
+  *
+  * w = catanhl (z);
+  *
+@@ -46,10 +46,10 @@
+ #include <openlibm_complex.h>
+ #include <openlibm_math.h>
+ 
+-long double complex
+-catanhl(long double complex z)
++LCOMPLEX
++catanhl(LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 
+ 	w = -1.0L * I * catanl(z * I);
+ 	return (w);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_catanl.c b/1146dccf85-e321e27f2f/src/s_catanl.c
+index acd51b0ed..61064e0f9 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_catanl.c
++++ b/1146dccf85-e321e27f2f/src/s_catanl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex catanl();
+- * long double complex z, w;
++ * LCOMPLEX catanl();
++ * LCOMPLEX z, w;
+  *
+  * w = catanl( z );
+  *
+@@ -90,10 +90,10 @@ redupil(long double x)
+ 	return (t);
+ }
+ 
+-long double complex
+-catanl(long double complex z)
++LCOMPLEX
++catanl(LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 	long double a, t, x, x2, y;
+ 
+ 	x = creall(z);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cbrtl.c b/1146dccf85-e321e27f2f/src/s_cbrtl.c
+index 2fe0360d9..fff62e1bf 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cbrtl.c
++++ b/1146dccf85-e321e27f2f/src/s_cbrtl.c
+@@ -139,7 +139,7 @@ cbrtl(long double x)
+ 	 */
+ 	t = dt + 0x2.0p-46 + 0x1.0p60L - 0x1.0p60;
+ #else
+-#error "Unsupported long double format"
++#error "Unsupported long double format: 'LDBL_MANT_DIG'"
+ #endif
+ 
+ 	/*
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_ccos.c b/1146dccf85-e321e27f2f/src/s_ccos.c
+index faafdb048..592106128 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_ccos.c
++++ b/1146dccf85-e321e27f2f/src/s_ccos.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * double complex ccos();
+- * double complex z, w;
++ * DCOMPLEX ccos();
++ * DCOMPLEX z, w;
+  *
+  * w = ccos (z);
+  *
+@@ -75,10 +75,10 @@ _cchsh(double x, double *c, double *s)
+ 	}
+ }
+ 
+-double complex
+-ccos(double complex z)
++DCOMPLEX
++ccos(DCOMPLEX z)
+ {
+-	double complex w;
++	DCOMPLEX w;
+ 	double ch, sh;
+ 
+ 	_cchsh( cimag(z), &ch, &sh );
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_ccosf.c b/1146dccf85-e321e27f2f/src/s_ccosf.c
+index ce382f08d..a83495204 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_ccosf.c
++++ b/1146dccf85-e321e27f2f/src/s_ccosf.c
+@@ -72,10 +72,10 @@ _cchshf(float xx, float *c, float *s)
+ 	}
+ }
+ 
+-float complex
+-ccosf(float complex z)
++FCOMPLEX
++ccosf(FCOMPLEX z)
+ {
+-	float complex w;
++	FCOMPLEX w;
+ 	float ch, sh;
+ 
+ 	_cchshf( cimagf(z), &ch, &sh );
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_ccosh.c b/1146dccf85-e321e27f2f/src/s_ccosh.c
+index 110494af5..e5b548f11 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_ccosh.c
++++ b/1146dccf85-e321e27f2f/src/s_ccosh.c
+@@ -44,8 +44,8 @@
+ 
+ static const double huge = 0x1p1023;
+ 
+-OLM_DLLEXPORT double complex
+-ccosh(double complex z)
++OLM_DLLEXPORT DCOMPLEX
++ccosh(DCOMPLEX z)
+ {
+ 	double x, y, h;
+ 	int32_t hx, hy, ix, iy, lx, ly;
+@@ -146,8 +146,8 @@ ccosh(double complex z)
+ 	return (CMPLX((x * x) * (y - y), (x + x) * (y - y)));
+ }
+ 
+-OLM_DLLEXPORT double complex
+-ccos(double complex z)
++OLM_DLLEXPORT DCOMPLEX
++ccos(DCOMPLEX z)
+ {
+ 
+ 	/* ccos(z) = ccosh(I * z) */
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_ccoshf.c b/1146dccf85-e321e27f2f/src/s_ccoshf.c
+index 53c8e7ae6..1895f7fbb 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_ccoshf.c
++++ b/1146dccf85-e321e27f2f/src/s_ccoshf.c
+@@ -38,8 +38,8 @@
+ 
+ static const float huge = 0x1p127;
+ 
+-OLM_DLLEXPORT float complex
+-ccoshf(float complex z)
++OLM_DLLEXPORT FCOMPLEX
++ccoshf(FCOMPLEX z)
+ {
+ 	float x, y, h;
+ 	int32_t hx, hy, ix, iy;
+@@ -96,8 +96,8 @@ ccoshf(float complex z)
+ 	return (CMPLXF((x * x) * (y - y), (x + x) * (y - y)));
+ }
+ 
+-OLM_DLLEXPORT float complex
+-ccosf(float complex z)
++OLM_DLLEXPORT FCOMPLEX
++ccosf(FCOMPLEX z)
+ {
+ 
+ 	return (ccoshf(CMPLXF(-cimagf(z), crealf(z))));
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_ccoshl.c b/1146dccf85-e321e27f2f/src/s_ccoshl.c
+index 0233d192a..8851b258e 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_ccoshl.c
++++ b/1146dccf85-e321e27f2f/src/s_ccoshl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex ccoshl();
+- * long double complex z, w;
++ * LCOMPLEX ccoshl();
++ * LCOMPLEX z, w;
+  *
+  * w = ccoshl (z);
+  *
+@@ -46,10 +46,10 @@
+ #include <openlibm_complex.h>
+ #include <openlibm_math.h>
+ 
+-long double complex
+-ccoshl(long double complex z)
++LCOMPLEX
++ccoshl(LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 	long double x, y;
+ 
+ 	x = creall(z);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_ccosl.c b/1146dccf85-e321e27f2f/src/s_ccosl.c
+index 0d5048369..28cbb92b4 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_ccosl.c
++++ b/1146dccf85-e321e27f2f/src/s_ccosl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex ccosl();
+- * long double complex z, w;
++ * LCOMPLEX ccosl();
++ * LCOMPLEX z, w;
+  *
+  * w = ccosl( z );
+  *
+@@ -70,10 +70,10 @@ cchshl(long double x, long double *c, long double *s)
+ 	}
+ }
+ 
+-long double complex
+-ccosl(long double complex z)
++LCOMPLEX
++ccosl(LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 	long double ch, sh;
+ 
+ 	cchshl(cimagl(z), &ch, &sh);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cexp.c b/1146dccf85-e321e27f2f/src/s_cexp.c
+index 151072137..a91a7e6e3 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cexp.c
++++ b/1146dccf85-e321e27f2f/src/s_cexp.c
+@@ -36,8 +36,8 @@ static const u_int32_t
+ exp_ovfl  = 0x40862e42,			/* high bits of MAX_EXP * ln2 ~= 710 */
+ cexp_ovfl = 0x4096b8e4;			/* (MAX_EXP - MIN_DENORM_EXP) * ln2 */
+ 
+-OLM_DLLEXPORT double complex
+-cexp(double complex z)
++OLM_DLLEXPORT DCOMPLEX
++cexp(DCOMPLEX z)
+ {
+ 	double x, y, exp_x;
+ 	u_int32_t hx, hy, lx, ly;
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cexpf.c b/1146dccf85-e321e27f2f/src/s_cexpf.c
+index 05f454400..055e5a5f6 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cexpf.c
++++ b/1146dccf85-e321e27f2f/src/s_cexpf.c
+@@ -36,8 +36,8 @@ static const u_int32_t
+ exp_ovfl  = 0x42b17218,		/* MAX_EXP * ln2 ~= 88.722839355 */
+ cexp_ovfl = 0x43400074;		/* (MAX_EXP - MIN_DENORM_EXP) * ln2 */
+ 
+-OLM_DLLEXPORT float complex
+-cexpf(float complex z)
++OLM_DLLEXPORT FCOMPLEX
++cexpf(FCOMPLEX z)
+ {
+ 	float x, y, exp_x;
+ 	u_int32_t hx, hy;
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cexpl.c b/1146dccf85-e321e27f2f/src/s_cexpl.c
+index f143d88e5..d6c64c298 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cexpl.c
++++ b/1146dccf85-e321e27f2f/src/s_cexpl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex cexpl();
+- * long double complex z, w;
++ * LCOMPLEX cexpl();
++ * LCOMPLEX z, w;
+  *
+  * w = cexpl( z );
+  *
+@@ -57,10 +57,10 @@
+ #include <openlibm_complex.h>
+ #include <openlibm_math.h>
+ 
+-long double complex
+-cexpl(long double complex z)
++LCOMPLEX
++cexpl(LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 	long double r;
+ 
+ 	r = expl(creall(z));
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cimag.c b/1146dccf85-e321e27f2f/src/s_cimag.c
+index 456ae99e2..2b7896f0b 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cimag.c
++++ b/1146dccf85-e321e27f2f/src/s_cimag.c
+@@ -31,7 +31,7 @@
+ #include "math_private.h"
+ 
+ OLM_DLLEXPORT double
+-cimag(double complex z)
++cimag(DCOMPLEX z)
+ {
+ 	return (__imag__ z);
+ }
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cimagf.c b/1146dccf85-e321e27f2f/src/s_cimagf.c
+index 8287412f4..d78922378 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cimagf.c
++++ b/1146dccf85-e321e27f2f/src/s_cimagf.c
+@@ -31,7 +31,7 @@
+ #include "math_private.h"
+ 
+ OLM_DLLEXPORT float
+-cimagf(float complex z)
++cimagf(FCOMPLEX z)
+ {
+ 	return (__imag__ z);
+ }
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cimagl.c b/1146dccf85-e321e27f2f/src/s_cimagl.c
+index 588c6a323..af09a104e 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cimagl.c
++++ b/1146dccf85-e321e27f2f/src/s_cimagl.c
+@@ -31,7 +31,7 @@
+ #include "math_private.h"
+ 
+ OLM_DLLEXPORT long double
+-cimagl(long double complex z)
++cimagl(LCOMPLEX z)
+ {
+ 	return (__imag__ z);
+ }
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_clog.c b/1146dccf85-e321e27f2f/src/s_clog.c
+index 6412df78f..c3051bd82 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_clog.c
++++ b/1146dccf85-e321e27f2f/src/s_clog.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * double complex clog();
+- * double complex z, w;
++ * DCOMPLEX clog();
++ * DCOMPLEX z, w;
+  *
+  * w = clog (z);
+  *
+@@ -60,10 +60,10 @@
+ 
+ #include "math_private.h"
+ 
+-double complex
+-clog(double complex z)
++DCOMPLEX
++clog(DCOMPLEX z)
+ {
+-	double complex w;
++	DCOMPLEX w;
+ 	double p, rr;
+ 
+ 	/*rr = sqrt( z->r * z->r  +  z->i * z->i );*/
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_clogf.c b/1146dccf85-e321e27f2f/src/s_clogf.c
+index e157aaeaf..1e66037fc 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_clogf.c
++++ b/1146dccf85-e321e27f2f/src/s_clogf.c
+@@ -56,10 +56,10 @@
+ #include <openlibm_complex.h>
+ #include <openlibm_math.h>
+ 
+-float complex
+-clogf(float complex z)
++FCOMPLEX
++clogf(FCOMPLEX z)
+ {
+-	float complex w;
++	FCOMPLEX w;
+ 	float p, rr, x, y;
+ 
+ 	x = crealf(z);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_clogl.c b/1146dccf85-e321e27f2f/src/s_clogl.c
+index c337103c7..6c0d7e579 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_clogl.c
++++ b/1146dccf85-e321e27f2f/src/s_clogl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex clogl();
+- * long double complex z, w;
++ * LCOMPLEX clogl();
++ * LCOMPLEX z, w;
+  *
+  * w = clogl( z );
+  *
+@@ -58,10 +58,10 @@
+ #include <openlibm_complex.h>
+ #include <openlibm_math.h>
+ 
+-long double complex
+-clogl(long double complex z)
++LCOMPLEX
++clogl(LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 	long double p, rr;
+ 
+ 	/*rr = sqrt(z->r * z->r  +  z->i * z->i);*/
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_conj.c b/1146dccf85-e321e27f2f/src/s_conj.c
+index a7c09404b..66a2e249e 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_conj.c
++++ b/1146dccf85-e321e27f2f/src/s_conj.c
+@@ -30,8 +30,8 @@
+ 
+ #include "math_private.h"
+ 
+-OLM_DLLEXPORT double complex
+-conj(double complex z)
++OLM_DLLEXPORT DCOMPLEX
++conj(DCOMPLEX z)
+ {
+ 
+ 	return (CMPLX(creal(z), -cimag(z)));
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_conjf.c b/1146dccf85-e321e27f2f/src/s_conjf.c
+index d2ff74362..8be6a6627 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_conjf.c
++++ b/1146dccf85-e321e27f2f/src/s_conjf.c
+@@ -30,8 +30,8 @@
+ 
+ #include "math_private.h"
+ 
+-OLM_DLLEXPORT float complex
+-conjf(float complex z)
++OLM_DLLEXPORT FCOMPLEX
++conjf(FCOMPLEX z)
+ {
+ 
+ 	return (CMPLXF(crealf(z), -cimagf(z)));
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_conjl.c b/1146dccf85-e321e27f2f/src/s_conjl.c
+index e4d7a01b7..ad41d487f 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_conjl.c
++++ b/1146dccf85-e321e27f2f/src/s_conjl.c
+@@ -30,8 +30,8 @@
+ 
+ #include "math_private.h"
+ 
+-OLM_DLLEXPORT long double complex
+-conjl(long double complex z)
++OLM_DLLEXPORT LCOMPLEX
++conjl(LCOMPLEX z)
+ {
+ 
+ 	return (CMPLXL(creall(z), -cimagl(z)));
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cosl.c b/1146dccf85-e321e27f2f/src/s_cosl.c
+index 886d3e3ba..89e2ffcbf 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cosl.c
++++ b/1146dccf85-e321e27f2f/src/s_cosl.c
+@@ -41,7 +41,7 @@
+ #elif LDBL_MANT_DIG == 113
+ #include "../ld128/e_rem_pio2l.h"
+ #else
+-#error "Unsupported long double format"
++#error "Unsupported long double format: 'LDBL_MANT_DIG'"
+ #endif
+ 
+ OLM_DLLEXPORT long double
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cpow.c b/1146dccf85-e321e27f2f/src/s_cpow.c
+index dae6251f6..f74526c7f 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cpow.c
++++ b/1146dccf85-e321e27f2f/src/s_cpow.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * double complex cpow();
+- * double complex a, z, w;
++ * DCOMPLEX cpow();
++ * DCOMPLEX a, z, w;
+  *
+  * w = cpow (a, z);
+  *
+@@ -50,17 +50,17 @@
+ 
+ #include "math_private.h"
+ 
+-OLM_DLLEXPORT double complex
+-cpow(double complex a, double complex z)
++OLM_DLLEXPORT DCOMPLEX
++cpow(DCOMPLEX a, DCOMPLEX z)
+ {
+-	double complex w;
++	DCOMPLEX w;
+ 	double x, y, r, theta, absa, arga;
+ 
+ 	x = creal (z);
+ 	y = cimag (z);
+ 	absa = cabs (a);
+ 	if (absa == 0.0) {
+-		return (0.0 + 0.0 * I);
++		return CMPLX(0.0, 0.0);
+ 	}
+ 	arga = carg (a);
+ 	r = pow (absa, x);
+@@ -69,7 +69,7 @@ cpow(double complex a, double complex z)
+ 		r = r * exp (-y * arga);
+ 		theta = theta + y * log (absa);
+ 	}
+-	w = r * cos (theta) + (r * sin (theta)) * I;
++	w = CMPLX(r * cos (theta) , (r * sin (theta)) );
+ 	return (w);
+ }
+ 
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cpowf.c b/1146dccf85-e321e27f2f/src/s_cpowf.c
+index 764053dc3..ef6de93da 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cpowf.c
++++ b/1146dccf85-e321e27f2f/src/s_cpowf.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * float complex cpowf();
+- * float complex a, z, w;
++ * FCOMPLEX cpowf();
++ * FCOMPLEX a, z, w;
+  *
+  * w = cpowf (a, z);
+  *
+@@ -49,17 +49,17 @@
+ 
+ #include "math_private.h"
+ 
+-OLM_DLLEXPORT float complex
+-cpowf(float complex a, float complex z)
++OLM_DLLEXPORT FCOMPLEX
++cpowf(FCOMPLEX a, FCOMPLEX z)
+ {
+-	float complex w;
++	FCOMPLEX w;
+ 	float x, y, r, theta, absa, arga;
+ 
+ 	x = crealf(z);
+ 	y = cimagf(z);
+ 	absa = cabsf (a);
+ 	if (absa == 0.0f) {
+-		return (0.0f + 0.0f * I);
++		return CMPLXF(0.0f , 0.0f);
+ 	}
+ 	arga = cargf (a);
+ 	r = powf (absa, x);
+@@ -68,6 +68,6 @@ cpowf(float complex a, float complex z)
+ 		r = r * expf (-y * arga);
+ 		theta = theta + y * logf (absa);
+ 	}
+-	w = r * cosf (theta) + (r * sinf (theta)) * I;
++	w = CMPLXF(r * cosf (theta) , (r * sinf (theta)));
+ 	return (w);
+ }
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cpowl.c b/1146dccf85-e321e27f2f/src/s_cpowl.c
+index 81c9afda2..9fe7c9bf4 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cpowl.c
++++ b/1146dccf85-e321e27f2f/src/s_cpowl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex cpowl();
+- * long double complex a, z, w;
++ * LCOMPLEX cpowl();
++ * LCOMPLEX a, z, w;
+  *
+  * w = cpowl (a, z);
+  *
+@@ -50,10 +50,10 @@
+ 
+ #include "math_private.h"
+ 
+-OLM_DLLEXPORT long double complex
+-cpowl(long double complex a, long double complex z)
++OLM_DLLEXPORT LCOMPLEX
++cpowl(LCOMPLEX a, LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 	long double x, y, r, theta, absa, arga;
+ 
+ 	x = creall(z);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cproj.c b/1146dccf85-e321e27f2f/src/s_cproj.c
+index b9faa2407..07c242ca7 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cproj.c
++++ b/1146dccf85-e321e27f2f/src/s_cproj.c
+@@ -32,8 +32,8 @@
+ 
+ #include "math_private.h"
+ 
+-OLM_DLLEXPORT double complex
+-cproj(double complex z)
++OLM_DLLEXPORT DCOMPLEX
++cproj(DCOMPLEX z)
+ {
+ 
+ 	if (!isinf(creal(z)) && !isinf(cimag(z)))
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cprojf.c b/1146dccf85-e321e27f2f/src/s_cprojf.c
+index 717c165b8..4b211b705 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cprojf.c
++++ b/1146dccf85-e321e27f2f/src/s_cprojf.c
+@@ -32,8 +32,8 @@
+ 
+ #include "math_private.h"
+ 
+-OLM_DLLEXPORT float complex
+-cprojf(float complex z)
++OLM_DLLEXPORT FCOMPLEX
++cprojf(FCOMPLEX z)
+ {
+ 
+ 	if (!isinf(crealf(z)) && !isinf(cimagf(z)))
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_cprojl.c b/1146dccf85-e321e27f2f/src/s_cprojl.c
+index 753ab4c3d..06ee57f55 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_cprojl.c
++++ b/1146dccf85-e321e27f2f/src/s_cprojl.c
+@@ -32,8 +32,8 @@
+ 
+ #include "math_private.h"
+ 
+-OLM_DLLEXPORT long double complex
+-cprojl(long double complex z)
++OLM_DLLEXPORT LCOMPLEX
++cprojl(LCOMPLEX z)
+ {
+ 
+ 	if (!isinf(creall(z)) && !isinf(cimagl(z)))
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_creal.c b/1146dccf85-e321e27f2f/src/s_creal.c
+index 28a0fbfa7..e67bc0cde 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_creal.c
++++ b/1146dccf85-e321e27f2f/src/s_creal.c
+@@ -31,7 +31,7 @@
+ #include "math_private.h"
+ 
+ OLM_DLLEXPORT double
+-creal(double complex z)
++creal(DCOMPLEX z)
+ {
+ 	return z;
+ }
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_crealf.c b/1146dccf85-e321e27f2f/src/s_crealf.c
+index 9aaed5f88..c6d8b1768 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_crealf.c
++++ b/1146dccf85-e321e27f2f/src/s_crealf.c
+@@ -31,7 +31,7 @@
+ #include "math_private.h"
+ 
+ OLM_DLLEXPORT float
+-crealf(float complex z)
++crealf(FCOMPLEX z)
+ {
+ 	return z;
+ }
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_creall.c b/1146dccf85-e321e27f2f/src/s_creall.c
+index 576666ede..ea2394e98 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_creall.c
++++ b/1146dccf85-e321e27f2f/src/s_creall.c
+@@ -31,7 +31,7 @@
+ #include "math_private.h"
+ 
+ OLM_DLLEXPORT long double
+-creall(long double complex z)
++creall(LCOMPLEX z)
+ {
+ 	return z;
+ }
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_csin.c b/1146dccf85-e321e27f2f/src/s_csin.c
+index a905991ea..4a1ae5c01 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_csin.c
++++ b/1146dccf85-e321e27f2f/src/s_csin.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * double complex csin();
+- * double complex z, w;
++ * DCOMPLEX csin();
++ * DCOMPLEX z, w;
+  *
+  * w = csin (z);
+  *
+@@ -77,10 +77,10 @@ cchsh(double x, double *c, double *s)
+ 	}
+ }
+ 
+-double complex
+-csin(double complex z)
++DCOMPLEX
++csin(DCOMPLEX z)
+ {
+-	double complex w;
++	DCOMPLEX w;
+ 	double ch, sh;
+ 
+ 	cchsh( cimag (z), &ch, &sh );
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_csinf.c b/1146dccf85-e321e27f2f/src/s_csinf.c
+index 42aa9817f..77e41bce8 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_csinf.c
++++ b/1146dccf85-e321e27f2f/src/s_csinf.c
+@@ -73,10 +73,10 @@ cchshf(float xx, float *c, float *s)
+ 	}
+ }
+ 
+-float complex
+-csinf(float complex z)
++FCOMPLEX
++csinf(FCOMPLEX z)
+ {
+-	float complex w;
++	FCOMPLEX w;
+ 	float ch, sh;
+ 
+ 	cchshf(cimagf(z), &ch, &sh);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_csinh.c b/1146dccf85-e321e27f2f/src/s_csinh.c
+index 3838f2522..dd9fa0c34 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_csinh.c
++++ b/1146dccf85-e321e27f2f/src/s_csinh.c
+@@ -44,8 +44,8 @@
+ 
+ static const double huge = 0x1p1023;
+ 
+-OLM_DLLEXPORT double complex
+-csinh(double complex z)
++OLM_DLLEXPORT DCOMPLEX
++csinh(DCOMPLEX z)
+ {
+ 	double x, y, h;
+ 	int32_t hx, hy, ix, iy, lx, ly;
+@@ -147,8 +147,8 @@ csinh(double complex z)
+ 	return (CMPLX((x * x) * (y - y), (x + x) * (y - y)));
+ }
+ 
+-OLM_DLLEXPORT double complex
+-csin(double complex z)
++OLM_DLLEXPORT DCOMPLEX
++csin(DCOMPLEX z)
+ {
+ 
+ 	/* csin(z) = -I * csinh(I * z) */
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_csinhf.c b/1146dccf85-e321e27f2f/src/s_csinhf.c
+index 94954b07b..c60825fed 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_csinhf.c
++++ b/1146dccf85-e321e27f2f/src/s_csinhf.c
+@@ -38,8 +38,8 @@
+ 
+ static const float huge = 0x1p127;
+ 
+-OLM_DLLEXPORT float complex
+-csinhf(float complex z)
++OLM_DLLEXPORT FCOMPLEX
++csinhf(FCOMPLEX z)
+ {
+ 	float x, y, h;
+ 	int32_t hx, hy, ix, iy;
+@@ -96,8 +96,8 @@ csinhf(float complex z)
+ 	return (CMPLXF((x * x) * (y - y), (x + x) * (y - y)));
+ }
+ 
+-OLM_DLLEXPORT float complex
+-csinf(float complex z)
++OLM_DLLEXPORT FCOMPLEX
++csinf(FCOMPLEX z)
+ {
+ 
+ 	z = csinhf(CMPLXF(-cimagf(z), crealf(z)));
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_csinhl.c b/1146dccf85-e321e27f2f/src/s_csinhl.c
+index 57b577ff4..70f9077bc 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_csinhl.c
++++ b/1146dccf85-e321e27f2f/src/s_csinhl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex csinhl();
+- * long double complex z, w;
++ * LCOMPLEX csinhl();
++ * LCOMPLEX z, w;
+  *
+  * w = csinhl (z);
+  *
+@@ -45,10 +45,10 @@
+ #include <openlibm_complex.h>
+ #include <openlibm_math.h>
+ 
+-long double complex
+-csinhl(long double complex z)
++LCOMPLEX
++csinhl(LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 	long double x, y;
+ 
+ 	x = creall(z);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_csinl.c b/1146dccf85-e321e27f2f/src/s_csinl.c
+index 3470ac5fd..65c1f217a 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_csinl.c
++++ b/1146dccf85-e321e27f2f/src/s_csinl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex csinl();
+- * long double complex z, w;
++ * LCOMPLEX csinl();
++ * LCOMPLEX z, w;
+  *
+  * w = csinl( z );
+  *
+@@ -72,10 +72,10 @@ cchshl(long double x, long double *c, long double *s)
+ 	}
+ }
+ 
+-long double complex
+-csinl(long double complex z)
++LCOMPLEX
++csinl(LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 	long double ch, sh;
+ 
+ 	cchshl(cimagl(z), &ch, &sh);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_csqrt.c b/1146dccf85-e321e27f2f/src/s_csqrt.c
+index 9cf42556c..4deea64fd 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_csqrt.c
++++ b/1146dccf85-e321e27f2f/src/s_csqrt.c
+@@ -47,10 +47,10 @@
+ /* We risk spurious overflow for components >= DBL_MAX / (1 + sqrt(2)). */
+ #define	THRESH	0x1.a827999fcef32p+1022
+ 
+-OLM_DLLEXPORT double complex
+-csqrt(double complex z)
++OLM_DLLEXPORT DCOMPLEX
++csqrt(DCOMPLEX z)
+ {
+-	double complex result;
++	DCOMPLEX result;
+ 	double a, b;
+ 	double t;
+ 	int scale;
+@@ -59,7 +59,7 @@ csqrt(double complex z)
+ 	b = cimag(z);
+ 
+ 	/* Handle special cases. */
+-	if (z == 0)
++	if (a == 0.0 && b == 0.0)
+ 		return (CMPLX(0, b));
+ 	if (isinf(b))
+ 		return (CMPLX(INFINITY, b));
+@@ -104,7 +104,7 @@ csqrt(double complex z)
+ 
+ 	/* Rescale. */
+ 	if (scale)
+-		return (result * 2);
++		return (MULCMPLXR(result,2));
+ 	else
+ 		return (result);
+ }
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_csqrtf.c b/1146dccf85-e321e27f2f/src/s_csqrtf.c
+index a1318290e..859d3c154 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_csqrtf.c
++++ b/1146dccf85-e321e27f2f/src/s_csqrtf.c
+@@ -43,14 +43,14 @@
+ #pragma	STDC CX_LIMITED_RANGE	ON
+ #endif
+ 
+-OLM_DLLEXPORT float complex
+-csqrtf(float complex z)
++OLM_DLLEXPORT FCOMPLEX
++csqrtf(FCOMPLEX z)
+ {
+ 	float a = crealf(z), b = cimagf(z);
+ 	double t;
+ 
+ 	/* Handle special cases. */
+-	if (z == 0)
++	if (a==0 && b==0)
+ 		return (CMPLXF(0, b));
+ 	if (isinf(b))
+ 		return (CMPLXF(INFINITY, b));
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_csqrtl.c b/1146dccf85-e321e27f2f/src/s_csqrtl.c
+index da97fb2db..8a517f3f4 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_csqrtl.c
++++ b/1146dccf85-e321e27f2f/src/s_csqrtl.c
+@@ -46,10 +46,10 @@
+ /* We risk spurious overflow for components >= LDBL_MAX / (1 + sqrt(2)). */
+ #define	THRESH	(LDBL_MAX / 2.414213562373095048801688724209698L)
+ 
+-OLM_DLLEXPORT long double complex
+-csqrtl(long double complex z)
++OLM_DLLEXPORT LCOMPLEX
++csqrtl(LCOMPLEX z)
+ {
+-	long double complex result;
++	LCOMPLEX result;
+ 	long double a, b;
+ 	long double t;
+ 	int scale;
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_ctan.c b/1146dccf85-e321e27f2f/src/s_ctan.c
+index 94200959c..0639ce908 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_ctan.c
++++ b/1146dccf85-e321e27f2f/src/s_ctan.c
+@@ -23,8 +23,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * double complex ctan();
+- * double complex z, w;
++ * DCOMPLEX ctan();
++ * DCOMPLEX z, w;
+  *
+  * w = ctan (z);
+  *
+@@ -90,7 +90,7 @@ _redupi(double x)
+ /*  Taylor series expansion for cosh(2y) - cos(2x)	*/
+ 
+ static double
+-_ctans(double complex z)
++_ctans(DCOMPLEX z)
+ {
+ 	double f, x, x2, y, y2, rn, t;
+ 	double d;
+@@ -133,10 +133,10 @@ _ctans(double complex z)
+ 	return (d);
+ }
+ 
+-double complex
+-ctan(double complex z)
++DCOMPLEX
++ctan(DCOMPLEX z)
+ {
+-	double complex w;
++	DCOMPLEX w;
+ 	double d;
+ 
+ 	d = cos (2.0 * creal (z)) + cosh (2.0 * cimag (z));
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_ctanf.c b/1146dccf85-e321e27f2f/src/s_ctanf.c
+index 3bb37425b..48bd2f309 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_ctanf.c
++++ b/1146dccf85-e321e27f2f/src/s_ctanf.c
+@@ -85,7 +85,7 @@ _redupif(float xx)
+ /*  Taylor series expansion for cosh(2y) - cos(2x)	*/
+ 
+ static float
+-_ctansf(float complex z)
++_ctansf(FCOMPLEX z)
+ {
+ 	float f, x, x2, y, y2, rn, t, d;
+ 
+@@ -127,10 +127,10 @@ _ctansf(float complex z)
+ 	return(d);
+ }
+ 
+-float complex
+-ctanf(float complex z)
++FCOMPLEX
++ctanf(FCOMPLEX z)
+ {
+-	float complex w;
++	FCOMPLEX w;
+ 	float d;
+ 
+ 	d = cosf( 2.0f * crealf(z) ) + coshf( 2.0f * cimagf(z) );
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_ctanh.c b/1146dccf85-e321e27f2f/src/s_ctanh.c
+index 8d452ee22..a0835c293 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_ctanh.c
++++ b/1146dccf85-e321e27f2f/src/s_ctanh.c
+@@ -71,8 +71,8 @@
+ 
+ #include "math_private.h"
+ 
+-OLM_DLLEXPORT double complex
+-ctanh(double complex z)
++OLM_DLLEXPORT DCOMPLEX
++ctanh(DCOMPLEX z)
+ {
+ 	double x, y;
+ 	double t, beta, s, rho, denom;
+@@ -134,8 +134,8 @@ ctanh(double complex z)
+ 	return (CMPLX((beta * rho * s) / denom, t / denom));
+ }
+ 
+-OLM_DLLEXPORT double complex
+-ctan(double complex z)
++OLM_DLLEXPORT DCOMPLEX
++ctan(DCOMPLEX z)
+ {
+ 
+ 	/* ctan(z) = -I * ctanh(I * z) */
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_ctanhf.c b/1146dccf85-e321e27f2f/src/s_ctanhf.c
+index b2f8f19a9..0af5b13b0 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_ctanhf.c
++++ b/1146dccf85-e321e27f2f/src/s_ctanhf.c
+@@ -36,8 +36,8 @@
+ 
+ #include "math_private.h"
+ 
+-OLM_DLLEXPORT float complex
+-ctanhf(float complex z)
++OLM_DLLEXPORT FCOMPLEX
++ctanhf(FCOMPLEX z)
+ {
+ 	float x, y;
+ 	float t, beta, s, rho, denom;
+@@ -74,8 +74,8 @@ ctanhf(float complex z)
+ 	return (CMPLXF((beta * rho * s) / denom, t / denom));
+ }
+ 
+-OLM_DLLEXPORT float complex
+-ctanf(float complex z)
++OLM_DLLEXPORT FCOMPLEX
++ctanf(FCOMPLEX z)
+ {
+ 
+ 	z = ctanhf(CMPLXF(-cimagf(z), crealf(z)));
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_ctanhl.c b/1146dccf85-e321e27f2f/src/s_ctanhl.c
+index 6d996d4c8..0f049991a 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_ctanhl.c
++++ b/1146dccf85-e321e27f2f/src/s_ctanhl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex ctanhl();
+- * long double complex z, w;
++ * LCOMPLEX ctanhl();
++ * LCOMPLEX z, w;
+  *
+  * w = ctanhl (z);
+  *
+@@ -46,10 +46,10 @@
+ #include <openlibm_complex.h>
+ #include <openlibm_math.h>
+ 
+-long double complex
+-ctanhl(long double complex z)
++LCOMPLEX
++ctanhl(LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 	long double x, y, d;
+ 
+ 	x = creall(z);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_ctanl.c b/1146dccf85-e321e27f2f/src/s_ctanl.c
+index cf33cedd7..ac1f71685 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_ctanl.c
++++ b/1146dccf85-e321e27f2f/src/s_ctanl.c
+@@ -24,8 +24,8 @@
+  *
+  * SYNOPSIS:
+  *
+- * long double complex ctanl();
+- * long double complex z, w;
++ * LCOMPLEX ctanl();
++ * LCOMPLEX z, w;
+  *
+  * w = ctanl( z );
+  *
+@@ -90,7 +90,7 @@ redupil(long double x)
+ }
+ 
+ static long double
+-ctansl(long double complex z)
++ctansl(LCOMPLEX z)
+ {
+ 	long double f, x, x2, y, y2, rn, t;
+ 	long double d;
+@@ -132,10 +132,10 @@ ctansl(long double complex z)
+ 	return(d);
+ }
+ 
+-long double complex
+-ctanl(long double complex z)
++LCOMPLEX
++ctanl(LCOMPLEX z)
+ {
+-	long double complex w;
++	LCOMPLEX w;
+ 	long double d, x, y;
+ 
+ 	x = creall(z);
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_frexpl.c b/1146dccf85-e321e27f2f/src/s_frexpl.c
+index ed2d28bc5..31897120a 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_frexpl.c
++++ b/1146dccf85-e321e27f2f/src/s_frexpl.c
+@@ -33,7 +33,7 @@
+ #include "math_private.h"
+ 
+ #if LDBL_MAX_EXP != 0x4000
+-#error "Unsupported long double format"
++#error "Unsupported long double format: 'LDBL_MAX_EXP'"
+ #endif
+ 
+ OLM_DLLEXPORT long double
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_nextafterl.c b/1146dccf85-e321e27f2f/src/s_nextafterl.c
+index bb73141e6..ee9635c58 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_nextafterl.c
++++ b/1146dccf85-e321e27f2f/src/s_nextafterl.c
+@@ -27,7 +27,7 @@
+ #include "math_private.h"
+ 
+ #if LDBL_MAX_EXP != 0x4000
+-#error "Unsupported long double format"
++#error "Unsupported long double format: 'LDBL_MAX_EXP'"
+ #endif
+ 
+ OLM_DLLEXPORT long double
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_nexttoward.c b/1146dccf85-e321e27f2f/src/s_nexttoward.c
+index 8729c8f94..7d6845bbe 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_nexttoward.c
++++ b/1146dccf85-e321e27f2f/src/s_nexttoward.c
+@@ -26,7 +26,7 @@
+ #include "math_private.h"
+ 
+ #if LDBL_MAX_EXP != 0x4000
+-#error "Unsupported long double format"
++#error "Unsupported long double format: 'LDBL_MAX_EXP'"
+ #endif
+ 
+ OLM_DLLEXPORT double
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_rintl.c b/1146dccf85-e321e27f2f/src/s_rintl.c
+index d20768ee5..a296de395 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_rintl.c
++++ b/1146dccf85-e321e27f2f/src/s_rintl.c
+@@ -39,7 +39,7 @@
+ 
+ #if LDBL_MAX_EXP != 0x4000
+ /* We also require the usual bias, min exp and expsign packing. */
+-#error "Unsupported long double format"
++#error "Unsupported long double format: 'LDBL_MAX_EXP'"
+ #endif
+ 
+ #define	BIAS	(LDBL_MAX_EXP - 1)
+@@ -51,7 +51,7 @@ shift[2] = {
+ #elif LDBL_MANT_DIG == 113
+ 	0x1.0p112, -0x1.0p112
+ #else
+-#error "Unsupported long double format"
++#error "Unsupported long double format: 'LDBL_MANT_DIG'"
+ #endif
+ };
+ static const float zero[2] = { 0.0, -0.0 };
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_scalbnl.c b/1146dccf85-e321e27f2f/src/s_scalbnl.c
+index 7732944f4..2bcddfa25 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_scalbnl.c
++++ b/1146dccf85-e321e27f2f/src/s_scalbnl.c
+@@ -32,7 +32,7 @@
+ #include "math_private.h"
+ 
+ #if LDBL_MAX_EXP != 0x4000
+-#error "Unsupported long double format"
++#error "Unsupported long double format: 'LDBL_MAX_EXP'"
+ #endif
+ 
+ static const long double
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_sincosl.c b/1146dccf85-e321e27f2f/src/s_sincosl.c
+index e2d3a340d..645311bd3 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_sincosl.c
++++ b/1146dccf85-e321e27f2f/src/s_sincosl.c
+@@ -20,7 +20,7 @@
+ #elif LDBL_MANT_DIG == 113
+ #include "../ld128/e_rem_pio2l.h"
+ #else
+-#error "Unsupported long double format"
++#error "Unsupported long double format: 'LDBL_MANT_DIG'"
+ #endif
+ 
+ OLM_DLLEXPORT void
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_sinl.c b/1146dccf85-e321e27f2f/src/s_sinl.c
+index 7304fc746..46eb507c9 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_sinl.c
++++ b/1146dccf85-e321e27f2f/src/s_sinl.c
+@@ -36,7 +36,7 @@
+ #elif LDBL_MANT_DIG == 113
+ #include "../ld128/e_rem_pio2l.h"
+ #else
+-#error "Unsupported long double format"
++#error "Unsupported long double format: 'LDBL_MANT_DIG'"
+ #endif
+ 
+ OLM_DLLEXPORT long double
+diff --git a/1146dccf85-e321e27f2f.clean/src/s_tanl.c b/1146dccf85-e321e27f2f/src/s_tanl.c
+index 0370e6b84..6872bbea9 100644
+--- a/1146dccf85-e321e27f2f.clean/src/s_tanl.c
++++ b/1146dccf85-e321e27f2f/src/s_tanl.c
+@@ -42,7 +42,7 @@
+ #elif LDBL_MANT_DIG == 113
+ #include "../ld128/e_rem_pio2l.h"
+ #else
+-#error "Unsupported long double format"
++#error "Unsupported long double format: 'LDBL_MANT_DIG'"
+ #endif
+ 
+ OLM_DLLEXPORT long double
+diff --git a/1146dccf85-e321e27f2f.clean/src/w_cabs.c b/1146dccf85-e321e27f2f/src/w_cabs.c
+index 6dc9bdee7..8190ddf3d 100644
+--- a/1146dccf85-e321e27f2f.clean/src/w_cabs.c
++++ b/1146dccf85-e321e27f2f/src/w_cabs.c
+@@ -15,7 +15,7 @@
+ #include "math_private.h"
+ 
+ OLM_DLLEXPORT double
+-cabs(double complex z)
++cabs(DCOMPLEX z)
+ {
+ 	return hypot(creal(z), cimag(z));
+ }
+diff --git a/1146dccf85-e321e27f2f.clean/src/w_cabsf.c b/1146dccf85-e321e27f2f/src/w_cabsf.c
+index f14c71aa9..f1ad7565b 100644
+--- a/1146dccf85-e321e27f2f.clean/src/w_cabsf.c
++++ b/1146dccf85-e321e27f2f/src/w_cabsf.c
+@@ -12,7 +12,7 @@
+ 
+ OLM_DLLEXPORT float
+ cabsf(z)
+-	float complex z;
++	FCOMPLEX z;
+ {
+ 
+ 	return hypotf(crealf(z), cimagf(z));
+diff --git a/1146dccf85-e321e27f2f.clean/src/w_cabsl.c b/1146dccf85-e321e27f2f/src/w_cabsl.c
+index c10f1d4f8..1c45ec3e5 100644
+--- a/1146dccf85-e321e27f2f.clean/src/w_cabsl.c
++++ b/1146dccf85-e321e27f2f/src/w_cabsl.c
+@@ -16,7 +16,7 @@
+ #include "math_private.h"
+ 
+ OLM_DLLEXPORT long double
+-cabsl(long double complex z)
++cabsl(LCOMPLEX z)
+ {
+ 	return hypotl(creall(z), cimagl(z));
+ }
