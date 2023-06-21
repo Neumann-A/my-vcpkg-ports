@@ -6,6 +6,7 @@ get_filename_component(BOOST_BUILD_INSTALLED_DIR "${CMAKE_CURRENT_LIST_DIR}" DIR
 get_filename_component(BOOST_BUILD_INSTALLED_DIR "${BOOST_BUILD_INSTALLED_DIR}" DIRECTORY)
 
 set(BOOST_VERSION "${VERSION}")
+
 string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.([0-9]+)" BOOST_VERSION_MATCH "${BOOST_VERSION}")
 if("${CMAKE_MATCH_3}" GREATER 0)
     set(BOOST_VERSION_ABI_TAG "${CMAKE_MATCH_1}_${CMAKE_MATCH_2}_${CMAKE_MATCH_3}")
@@ -41,7 +42,6 @@ function(boost_modular_build)
     else()
         message(FATAL_ERROR "Could not find b2 in ${BOOST_BUILD_PATH}")
     endif()
-
     if(VCPKG_DETECTED_CMAKE_SYSTEM_PROCESSOR STREQUAL "IA64")
       string(APPEND BOOST_ARCHITECTURE_TAG "i")
     elseif(VCPKG_DETECTED_CMAKE_SYSTEM_PROCESSOR MATCHES "^[xX]86"
@@ -70,7 +70,7 @@ function(boost_modular_build)
             set(BOOST_LIB_RELEASE_SUFFIX -${BOOST_ARCHITECTURE_TAG}-${BOOST_VERSION_ABI_TAG}.lib)
             set(BOOST_LIB_DEBUG_SUFFIX -${BOOST_ARCHITECTURE_TAG}-${BOOST_VERSION_ABI_TAG}.lib) # Note: FindBoost.cmake will not look for d suffixed libraries
         endif()
-    elseif(VCPKG_DETECTED_CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    elseif(VCPKG_DETECTED_CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND VCPKG_DETECTED_CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")
         string(REGEX MATCH "[^\\\.]+" clang_major_ver "${VCPKG_DETECTED_CMAKE_CXX_COMPILER_VERSION}")
         set(BOOST_LIB_RELEASE_SUFFIX -clangw${clang_major_ver}-mt-${BOOST_ARCHITECTURE_TAG}-${BOOST_VERSION_ABI_TAG}.lib)
         set(BOOST_LIB_DEBUG_SUFFIX -clangw${clang_major_ver}-mt-gd-${BOOST_ARCHITECTURE_TAG}-${BOOST_VERSION_ABI_TAG}.lib)
