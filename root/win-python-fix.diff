@@ -1,0 +1,61 @@
+diff --git a/bindings/jupyroot/python/JupyROOT/helpers/cppcompleter.py b/bindings/jupyroot/python/JupyROOT/helpers/cppcompleter.py
+index c42bff9a7..cc904bba6 100644
+--- a/bindings/jupyroot/python/JupyROOT/helpers/cppcompleter.py
++++ b/bindings/jupyroot/python/JupyROOT/helpers/cppcompleter.py
+@@ -106,8 +106,12 @@ class CppCompleter(object):
+     def activate(self):
+         self.active = True
+         if self.firstActivation:
+-            utils.declareCppCode('#include "dlfcn.h"')
+-            dlOpenRint = 'dlopen("libRint.so",RTLD_NOW);'
++            if os.name == "nt":
++                utils.declareCppCode('#include "Windows.h"')
++                dlOpenRint = 'LoadLibraryA("libRint.dll");'
++            else:
++                utils.declareCppCode('#include "dlfcn.h"')
++                dlOpenRint = 'dlopen("libRint.so",RTLD_NOW);'
+             utils.processCppCode(dlOpenRint)
+             utils.declareCppCode(_TTabComHookCode)
+             self.hook = ROOT._TTabComHook
+diff --git a/bindings/jupyroot/python/JupyROOT/kernel/utils.py b/bindings/jupyroot/python/JupyROOT/kernel/utils.py
+index abd4d5832..0e29cc13c 100644
+--- a/bindings/jupyroot/python/JupyROOT/kernel/utils.py
++++ b/bindings/jupyroot/python/JupyROOT/kernel/utils.py
+@@ -62,10 +62,16 @@ def GetDisplayer(poller):
+ class MagicLoader(object):
+     '''Class to load JupyROOT Magics'''
+     def __init__(self,kernel):
+-         magics_path = os.path.dirname(__file__)+"/magics/*.py"
++         if os.name == "nt":
++            magics_path = os.path.dirname(__file__)+"\\magics\\*.py"
++         else:
++            magics_path = os.path.dirname(__file__)+"/magics/*.py"
+          for file in glob(magics_path):
+               if file != magics_path.replace("*.py","__init__.py"):
+-                  module_path="JupyROOT.kernel.magics."+file.split("/")[-1].replace(".py","")
++                  if os.name == "nt":
++                      module_path="JupyROOT.kernel.magics."+file.split("\\")[-1].replace(".py","")
++                  else:
++                      module_path="JupyROOT.kernel.magics."+file.split("/")[-1].replace(".py","")
+                   try:
+                       module = importlib.import_module(module_path)
+                       module.register_magics(kernel)
+diff --git a/bindings/pyroot_legacy/JupyROOT/helpers/cppcompleter.py b/bindings/pyroot_legacy/JupyROOT/helpers/cppcompleter.py
+index aa9664423..ce39221f5 100644
+--- a/bindings/pyroot_legacy/JupyROOT/helpers/cppcompleter.py
++++ b/bindings/pyroot_legacy/JupyROOT/helpers/cppcompleter.py
+@@ -117,8 +117,12 @@ class CppCompleter(object):
+     def activate(self):
+         self.active = True
+         if self.firstActivation:
+-            utils.declareCppCode('#include "dlfcn.h"')
+-            dlOpenRint = 'dlopen("libRint.so",RTLD_NOW);'
++            if os.name == "nt":
++                utils.declareCppCode('#include "Windows.h"')
++                dlOpenRint = 'LoadLibraryA("libRint.dll");'
++            else:
++                utils.declareCppCode('#include "dlfcn.h"')
++                dlOpenRint = 'dlopen("libRint.so",RTLD_NOW);'
+             utils.processCppCode(dlOpenRint)
+             utils.declareCppCode(_TTabComHookCode)
+             self.hook = ROOT._TTabComHook

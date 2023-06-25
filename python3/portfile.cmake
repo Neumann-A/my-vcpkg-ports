@@ -22,6 +22,7 @@ set(PATCHES
     0013-configure-no-libcrypt.patch  # https://github.com/python/cpython/pull/28881
     use_correct_macro.patch
     add-vcpkg-search-path.patch
+    fxi-clang-cl-dll.patch
 )
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")

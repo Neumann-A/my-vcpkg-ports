@@ -1,0 +1,4 @@
+xeus provides CMake targets:
+
+    find_package(xeus-zmq CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE $<IF:$<TARGET_EXISTS:xeus-zmq-static>,xeus-zmq-static,xeus-zmq>)

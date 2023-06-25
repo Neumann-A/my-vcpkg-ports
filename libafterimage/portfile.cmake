@@ -13,6 +13,7 @@ vcpkg_from_github(
     PATCHES 
       build.diff
       sisdir.diff
+      cpp-flags.diff
       ${PATCHES}
 )
 
@@ -32,7 +33,7 @@ vcpkg_configure_make(
         --with-tiff
         --with-tiff-includes=${CURRENT_INSTALLED_DIR}/include
         --with-ttf
-        --with-ttf-includes=${CURRENT_INSTALLED_DIR}/include
+        --with-ttf-includes=-I${CURRENT_INSTALLED_DIR}/include
         --with-svg
         --enable-staticlibs
 )

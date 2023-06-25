@@ -1,0 +1,22 @@
+diff --git a/Python/pylifecycle.c b/Python/pylifecycle.c
+index 13bb1fe..e5aa7d4 100644
+--- a/Python/pylifecycle.c
++++ b/Python/pylifecycle.c
+@@ -15,6 +15,7 @@
+ #include "pycore_sysmodule.h"     // _PySys_ClearAuditHooks()
+ #include "pycore_traceback.h"     // _Py_DumpTracebackThreads()
+ 
++#include <stdlib.h>               //realloc
+ #include <locale.h>               // setlocale()
+ 
+ #if defined(__APPLE__)
+@@ -131,7 +132,8 @@ PyStatus Init_vcpkg_DllSearchPath(void) {
+   {
+     buffer_size += buffer_size/2;
+     old_module_dirname = module_dirname;
+-    if(module_dirname = (wchar_t*)realloc(module_dirname,buffer_size*sizeof(wchar_t))==NULL) {
++    module_dirname = (wchar_t*)realloc(module_dirname,buffer_size*sizeof(wchar_t));
++    if(module_dirname==NULL) {
+       // No memory?
+       free(old_module_dirname);
+       return PyStatus_NoMemory();

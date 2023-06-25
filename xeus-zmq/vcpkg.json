@@ -1,0 +1,22 @@
+{
+  "name": "xeus-zmq",
+  "version-semver": "1.1.0",
+  "description": "ZeroMQ-based middleware for xeus ",
+  "homepage": "https://github.com/jupyter-xeus/xeus-zmq",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    "cppzmq",
+    "nlohmann-json",
+    "openssl",
+    "xeus",
+    "zeromq"
+  ]
+}

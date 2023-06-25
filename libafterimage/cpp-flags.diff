@@ -1,0 +1,91 @@
+diff --git a/autoconf/Makefile.common.in b/autoconf/Makefile.common.in
+index 51c3917dc..760708634 100644
+--- a/autoconf/Makefile.common.in
++++ b/autoconf/Makefile.common.in
+@@ -98,18 +98,18 @@ deps:
+ 
+ show_flags_cc: $(OBJS)
+ 		@touch show_flags_cc ; \
+-		echo "Compiled with :$(CC) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES)"; \
++		echo "Compiled with :$(CC) $(CPPFLAGS) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES)"; \
+ 		echo "and Libraries :$(LIBS_ALL)"
+ 
+ .c.o:
+ 		@echo " $*.c"
+-		@$(CC) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -c $*.c
++		@$(CC) $(CPPFLAGS) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -c $*.c
+ 
+ .cxx.o:
+-		$(CXX) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -c $*.cxx
++		$(CXX) $(CPPFLAGS) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -c $*.cxx
+ 
+ .c.s:
+-		$(CC) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -S $*.c
++		$(CC) $(CPPFLAGS) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -S $*.c
+ 
+ .lo:	$*.c
+ 
+diff --git a/autoconf/Makefile.common.lib.in b/autoconf/Makefile.common.lib.in
+index c5c2c61cb..84b066128 100644
+--- a/autoconf/Makefile.common.lib.in
++++ b/autoconf/Makefile.common.lib.in
+@@ -224,10 +224,10 @@ $(LIB_STATIC):	$(LIB_OBJS) $(LIB_INCS) Makefile
+ 
+ %.o : %.c Makefile |show_flags_cc 
+ 		@echo " $*.c"
+-		@$(CC) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -c $*.c
++		@$(CC) $(CPPFLAGS) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -c $*.c
+ 
+ .c.s:
+-		$(CC) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -S $*.c
++		$(CC) $(CPPFLAGS) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -S $*.c
+ 
+ #
+ # include dependency files if they exist
+diff --git a/libAfterBase/Makefile.in b/libAfterBase/Makefile.in
+index e5e91c231..a7307719f 100644
+--- a/libAfterBase/Makefile.in
++++ b/libAfterBase/Makefile.in
+@@ -310,10 +310,10 @@ $(LIB_STATIC):	$(LIB_OBJS) $(LIB_INCS)
+ 
+ %.o : %.c Makefile | show_flags_cc 
+ 		@echo " $*.c"
+-		@$(CC) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -c $*.c
++		@$(CC) $(CPPFLAGS) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -c $*.c
+ 
+ .c.s:
+-		$(CC) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -S $*.c
++		$(CC) $(CPPFLAGS) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -S $*.c
+ 
+ #
+ # include dependency files if they exist
+diff --git a/libAfterImage/Makefile.in b/libAfterImage/Makefile.in
+index 4da657be2..39d573ece 100644
+--- a/libAfterImage/Makefile.in
++++ b/libAfterImage/Makefile.in
+@@ -376,10 +376,10 @@ test_mmx:	test_mmx.o
+ 
+ .c.o:  Makefile
+ 		@echo " $*.c"
+-		@$(CC) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -c $*.c -o $@
++		@$(CC) $(CPPFLAGS) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -c $*.c -o $@
+ 
+ .c.s:
+-		$(CC) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -S $*.c
++		$(CC) $(CPPFLAGS) $(CCFLAGS) $(EXTRA_DEFINES) $(INCLUDES) $(EXTRA_INCLUDES) -S $*.c
+ 
+ #
+ # include dependency files if they exist
+diff --git a/libAfterImage/configure.in b/libAfterImage/configure.in
+index ce0c30523..0c05b9b7e 100644
+--- a/libAfterImage/configure.in
++++ b/libAfterImage/configure.in
+@@ -215,7 +215,7 @@ if test "x$enable_gdb" = "xno"; then
+ fi
+ 
+ 
+-MMX_CFLAGS="-mmmx -Winline --param inline-unit-growth=10000 --param large-function-growth=10000"
++MMX_CFLAGS="-mmmx -Winline"
+ have_mmx_intrinsics=no
+ 
+ dnl# Check for MMX :

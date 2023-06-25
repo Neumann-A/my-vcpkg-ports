@@ -1,0 +1,10 @@
+{
+  "name": "python-metakernel",
+  "version": "0.29.4",
+  "description": "Jupyter/IPython Kernel Tools ",
+  "homepage": "https://github.com/Calysto/metakernel",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "python3"
+  ]
+}

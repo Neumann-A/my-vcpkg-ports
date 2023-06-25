@@ -19,6 +19,8 @@ vcpkg_from_github(
         fix-curl-linkage.patch
         fix-debug.patch
         fix-afterimage.patch
+        clang-cl-fixes.diff
+        win-python-fix.diff
 )
 
 message(WARNING "Cling vendors llvm as such there might be similar exported symbols as llvm. If you use both with the MSBuild integration you are on your own!")
@@ -41,7 +43,7 @@ vcpkg_cmake_configure(
         -Dbuiltin_tbb=OFF
         -Dbuiltin_gtest=OFF
         -Dbuiltin_ftgl=OFF
-        -DCMAKE_CXX_STANDARD=17
+        -DCMAKE_CXX_STANDARD=20
         "-DLLVM_ENABLE_ASSERTIONS=on" # This list of settings are extracted from upstream CI with a few tweaks. 
         "-Dalien=off"
         "-Dall=off"
@@ -100,7 +102,7 @@ vcpkg_cmake_configure(
         "-Dmacos_native=off"
         "-Dmathmore=on"
         "-Dmemory_termination=off"
-        "-Dminimal=off"
+        "-Dminimal=off" # minimal build
         "-Dminuit2=on"
         "-Dminuit2_mpi=off"
         "-Dminuit2_omp=off"
@@ -114,7 +116,7 @@ vcpkg_cmake_configure(
         "-Dpgsql=off"
         "-Dpyroot2=off"
         "-Dpyroot3=off" # requires numpy
-        "-Dpyroot=off"
+        "-Dpyroot=on"
         "-Dpyroot_legacy=off"
         "-Dpythia6=off"
         "-Dpythia6_nolink=off"
@@ -201,3 +203,8 @@ vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/etc/notebook/jupyter_notebook_conf
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/compiledata.h" "-I${SOURCE_PATH}" "")
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/RConfigOptions.h" "${CURRENT_INSTALLED_DIR}/lib" "")
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/RConfigOptions.h" "${CURRENT_INSTALLED_DIR}/include" "")
+
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/bin/JupyROOT/kernel/utils.py" "/magics/" "\\\\magics\\\\")
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/bin/JupyROOT/kernel/utils.py" "split(\"/\")" "split(\"\\\\\")")
+
+

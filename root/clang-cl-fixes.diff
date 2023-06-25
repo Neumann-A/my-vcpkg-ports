@@ -1,0 +1,372 @@
+diff --git a/build/rmkdepend/ifparser.c b/build/rmkdepend/ifparser.c
+index e7a4031a8..ff6dd6000 100644
+--- a/build/rmkdepend/ifparser.c
++++ b/build/rmkdepend/ifparser.c
+@@ -60,11 +60,11 @@
+  *     ParseIfExpression  parse a string for #if
+  */
+ 
+-#include "ifparser.h"
++
+ #include <ctype.h>
+ #include <stdlib.h>
+ #include <string.h>
+-
++#include "ifparser.h"
+ /****************************************************************************
+      Internal Macros and Utilities for Parser
+  ****************************************************************************/
+diff --git a/build/win/bindexplib/bindexplib.cxx b/build/win/bindexplib/bindexplib.cxx
+index 2819d339e..c9963eb38 100644
+--- a/build/win/bindexplib/bindexplib.cxx
++++ b/build/win/bindexplib/bindexplib.cxx
+@@ -470,7 +470,7 @@ void bindexplib::WriteFile(FILE *file)
+ }
+ 
+ 
+-void
++int
+ main(int argc, char **argv)
+ {
+    std::string cmdline;
+@@ -589,4 +589,5 @@ Usage:
+       }
+    }
+    exit(0);
++   return 0;
+ }
+diff --git a/core/clib/src/mmapsup.c b/core/clib/src/mmapsup.c
+index 416beb1b0..7086ed7c3 100644
+--- a/core/clib/src/mmapsup.c
++++ b/core/clib/src/mmapsup.c
+@@ -59,7 +59,9 @@ static size_t pagesize;
+ /*  Get core for the memory region specified by MDP, using SIZE as the
+     amount to either add to or subtract from the existing region.  Works
+     like sbrk(), but using mmap(). */
+-
++#ifdef WIN32
++extern int getpagesize();
++#endif
+ PTR __mmalloc_mmap_morecore(struct mdesc *mdp, int size)
+ {
+   PTR result = NULL;
+diff --git a/core/metacling/src/CMakeLists.txt b/core/metacling/src/CMakeLists.txt
+index c631acbd8..6550edc2b 100644
+--- a/core/metacling/src/CMakeLists.txt
++++ b/core/metacling/src/CMakeLists.txt
+@@ -99,7 +99,7 @@ if (clad)
+     set(CLING_PLUGIN_LINK_LIBS -Wl,-force_load cladPlugin -Wl,-force_load cladDifferentiator)
+   elseif(MSVC)
+     set(CLING_PLUGIN_LINK_LIBS cladPlugin cladDifferentiator)
+-    set(CLAD_LIBS "-WHOLEARCHIVE:cladPlugin.lib -WHOLEARCHIVE:cladDifferentiator.lib")
++    set(CLAD_LIBS "-LIBPATH:${CMAKE_BINARY_DIR}/etc/cling/plugins/lib -WHOLEARCHIVE:cladPlugin.lib -WHOLEARCHIVE:cladDifferentiator.lib")
+   else()
+     set(CLING_PLUGIN_LINK_LIBS -Wl,--whole-archive cladPlugin cladDifferentiator -Wl,--no-whole-archive)
+   endif()
+@@ -186,7 +186,8 @@ if(MSVC)
+     set(cling_link_str "${cling_link_str} /EXPORT:${sym}")
+   endforeach(sym ${cling_exports})
+   set_property(TARGET Cling APPEND_STRING PROPERTY LINK_FLAGS "${cling_link_str} ${CLAD_LIBS}")
+-  add_dependencies(Cling Core RIO)
++
++  add_dependencies(Cling Core RIO cladPlugin cladDifferentiator)
+   target_link_libraries(Cling PUBLIC Core RIO)
+ endif()
+ 
+diff --git a/core/winnt/src/TWinNTSystem.cxx b/core/winnt/src/TWinNTSystem.cxx
+index 23f5c6fd8..6a85f57c7 100644
+--- a/core/winnt/src/TWinNTSystem.cxx
++++ b/core/winnt/src/TWinNTSystem.cxx
+@@ -3098,7 +3098,7 @@ const char *TWinNTSystem::FindFile(const char *search, TString& infile, EAccessM
+        ::access(name, mode) == 0 && stat(name, &finfo) == 0 &&
+        finfo.st_mode & S_IFREG) {
+       if (gEnv->GetValue("Root.ShowPath", 0)) {
+-         Printf("Which: %s = %s", infile, name);
++         Printf("Which: %s = %s", (const char*)infile, name);
+       }
+       infile = name;
+       return infile.Data();
+diff --git a/graf2d/mathtext/src/mathrender.cxx b/graf2d/mathtext/src/mathrender.cxx
+index b200c5f0f..f60dff443 100644
+--- a/graf2d/mathtext/src/mathrender.cxx
++++ b/graf2d/mathtext/src/mathrender.cxx
+@@ -135,11 +135,11 @@ namespace mathtext {
+        // Halfwidth and Fullwidth Forms
+        (c >= L'\uff00' && c <= L'\uffef') ||
+        // CJK Unified Ideographs, Extension B
+-       (c >= L'\U00020000' && c <= L'\U0002a6df') ||
++       (c >= L"\U00020000"[0] && c <= L"\U0002a6df"[0]) ||
+        // CJK Unified Ideographs, Extension C
+-       (c >= L'\U0002a700' && c <= L'\U0002b73f') ||
++       (c >= L"\U0002a700"[0] && c <= L"\U0002b73f"[0]) ||
+        // CJK Compatibility Ideographs
+-       (c >= L'\U0002f800' && c <= L'\U0002fa1f'));
++       (c >= L"\U0002f800"[0] && c <= L"\U0002fa1f"[0]));
+    }
+ 
+ 
+diff --git a/graf2d/mathtext/src/mathtextencode.cxx b/graf2d/mathtext/src/mathtextencode.cxx
+index ed38dd234..0c406098d 100644
+--- a/graf2d/mathtext/src/mathtextencode.cxx
++++ b/graf2d/mathtext/src/mathtextencode.cxx
+@@ -171,18 +171,18 @@ namespace mathtext {
+             case 'Q':   _glyph = L'\u211a'; break;
+             case 'R':   _glyph = L'\u211d'; break;
+             case 'Z':   _glyph = L'\u2124'; break;
+-            default:   _glyph = L'\U0001d538' + (_code[0] - 'A');
++            default:   _glyph = L"\U0001d538"[0] + (_code[0] - 'A');
+          }
+          _type = atom_t::TYPE_ORD;
+       }
+       else if(_code[0] >= 'a' && _code[0] <= 'z') {
+          _family = FAMILY_STIX_REGULAR;
+-         _glyph = L'\U0001d552' + (_code[0] - 'a');
++         _glyph = L"\U0001d552"[0] + (_code[0] - 'a');
+          _type = atom_t::TYPE_ORD;
+       }
+       else if(_code[0] >= '0' && _code[0] <= '9') {
+          _family = FAMILY_STIX_REGULAR;
+-         _glyph = L'\U0001d7d8' + (_code[0] - '0');
++         _glyph = L"\U0001d7d8"[0] + (_code[0] - '0');
+          _type = atom_t::TYPE_ORD;
+       }
+    }
+@@ -205,7 +205,7 @@ namespace mathtext {
+             case 'E':   _glyph = L'\u2130'; break;
+             case 'F':   _glyph = L'\u2131'; break;
+             case 'M':   _glyph = L'\u2133'; break;
+-            default:   _glyph = L'\U0001d49c' + (_code[0] - 'A');
++            default:   _glyph = L"\U0001d49c"[0] + (_code[0] - 'A');
+          }
+          _type = atom_t::TYPE_ORD;
+       }
+@@ -216,7 +216,7 @@ namespace mathtext {
+             case 'l':   _glyph = L'\u2113'; break;
+             case 'e':   _glyph = L'\u212f'; break;
+             case 'o':   _glyph = L'\u2134'; break;
+-            default:   _glyph = L'\U0001d4b6' + (_code[0] - 'a');
++            default:   _glyph = L"\U0001d4b6"[0] + (_code[0] - 'a');
+          }
+          _type = atom_t::TYPE_ORD;
+       }
+@@ -229,12 +229,12 @@ namespace mathtext {
+ 
+       if(_code[0] >= 'A' && _code[0] <= 'Z') {
+          _family = FAMILY_STIX_BOLD_ITALIC;
+-         _glyph = L'\U0001d49c' + (_code[0] - 'A');
++         _glyph = L"\U0001d49c"[0] + (_code[0] - 'A');
+          _type = atom_t::TYPE_ORD;
+       }
+       else if(_code[0] >= 'a' && _code[0] <= 'z') {
+          _family = FAMILY_STIX_BOLD_ITALIC;
+-         _glyph = L'\U0001d4b6' + (_code[0] - 'a');
++         _glyph = L"\U0001d4b6"[0] + (_code[0] - 'a');
+          _type = atom_t::TYPE_ORD;
+       }
+    }
+@@ -252,13 +252,13 @@ namespace mathtext {
+             case 'R':   _glyph = L'\u211c'; break;
+             case 'Z':   _glyph = L'\u2128'; break;
+             case 'C':   _glyph = L'\u212d'; break;
+-            default:   _glyph = L'\U0001d504' + (_code[0] - 'A');
++            default:   _glyph = L"\U0001d504"[0] + (_code[0] - 'A');
+          }
+          _type = atom_t::TYPE_ORD;
+       }
+       else if(_code[0] >= 'a' && _code[0] <= 'z') {
+          _family = FAMILY_STIX_REGULAR;
+-         _glyph = L'\U0001d51e' + (_code[0] - 'a');
++         _glyph = L"\U0001d51e"[0] + (_code[0] - 'a');
+          _type = atom_t::TYPE_ORD;
+       }
+    }
+@@ -270,12 +270,12 @@ namespace mathtext {
+ 
+       if(_code[0] >= 'A' && _code[0] <= 'Z') {
+          _family = FAMILY_STIX_BOLD;
+-         _glyph = L'\U0001d56c' + (_code[0] - 'A');
++         _glyph = L"\U0001d56c"[0] + (_code[0] - 'A');
+          _type = atom_t::TYPE_ORD;
+       }
+       else if(_code[0] >= 'a' && _code[0] <= 'z') {
+          _family = FAMILY_STIX_BOLD;
+-         _glyph = L'\U0001d586' + (_code[0] - 'a');
++         _glyph = L"\U0001d586"[0] + (_code[0] - 'a');
+          _type = atom_t::TYPE_ORD;
+       }
+    }
+@@ -288,17 +288,17 @@ namespace mathtext {
+ 
+       if(_code[0] >= 'A' && _code[0] <= 'Z') {
+          _family = FAMILY_STIX_REGULAR;
+-         _glyph = L'\U0001d5a0' + (_code[0] - 'A');
++         _glyph = L"\U0001d5a0"[0] + (_code[0] - 'A');
+          _type = atom_t::TYPE_ORD;
+       }
+       else if(_code[0] >= 'a' && _code[0] <= 'z') {
+          _family = FAMILY_STIX_REGULAR;
+-         _glyph = L'\U0001d5ba' + (_code[0] - 'a');
++         _glyph = L"\U0001d5ba"[0] + (_code[0] - 'a');
+          _type = atom_t::TYPE_ORD;
+       }
+       else if(_code[0] >= '0' && _code[0] <= '9') {
+          _family = FAMILY_STIX_REGULAR;
+-         _glyph = L'\U0001d7e2' + (_code[0] - '0');
++         _glyph = L"\U0001d7e2"[0] + (_code[0] - '0');
+          _type = atom_t::TYPE_ORD;
+       }
+    }
+@@ -311,12 +311,12 @@ namespace mathtext {
+ 
+       if(_code[0] >= 'A' && _code[0] <= 'Z') {
+          _family = FAMILY_STIX_ITALIC;
+-         _glyph = L'\U0001d608' + (_code[0] - 'A');
++         _glyph = L"\U0001d608"[0] + (_code[0] - 'A');
+          _type = atom_t::TYPE_ORD;
+       }
+       else if(_code[0] >= 'a' && _code[0] <= 'z') {
+          _family = FAMILY_STIX_ITALIC;
+-         _glyph = L'\U0001d622' + (_code[0] - 'a');
++         _glyph = L"\U0001d622"[0] + (_code[0] - 'a');
+          _type = atom_t::TYPE_ORD;
+       }
+    }
+@@ -329,17 +329,17 @@ namespace mathtext {
+ 
+       if(_code[0] >= 'A' && _code[0] <= 'Z') {
+          _family = FAMILY_STIX_BOLD;
+-         _glyph = L'\U0001d5d4' + (_code[0] - 'A');
++         _glyph = L"\U0001d5d4"[0] + (_code[0] - 'A');
+          _type = atom_t::TYPE_ORD;
+       }
+       else if(_code[0] >= 'a' && _code[0] <= 'z') {
+          _family = FAMILY_STIX_BOLD;
+-         _glyph = L'\U0001d5ee' + (_code[0] - 'a');
++         _glyph = L"\U0001d5ee"[0] + (_code[0] - 'a');
+          _type = atom_t::TYPE_ORD;
+       }
+       else if(_code[0] >= '0' && _code[0] <= '9') {
+          _family = FAMILY_STIX_BOLD;
+-         _glyph = L'\U0001d7ec' + (_code[0] - '0');
++         _glyph = L"\U0001d7ec"[0] + (_code[0] - '0');
+          _type = atom_t::TYPE_ORD;
+       }
+    }
+@@ -352,12 +352,12 @@ namespace mathtext {
+ 
+       if(_code[0] >= 'A' && _code[0] <= 'Z') {
+          _family = FAMILY_STIX_BOLD_ITALIC;
+-         _glyph = L'\U0001d63c' + (_code[0] - 'A');
++         _glyph = L"\U0001d63c"[0] + (_code[0] - 'A');
+          _type = atom_t::TYPE_ORD;
+       }
+       else if(_code[0] >= 'a' && _code[0] <= 'z') {
+          _family = FAMILY_STIX_BOLD_ITALIC;
+-         _glyph = L'\U0001d656' + (_code[0] - 'a');
++         _glyph = L"\U0001d656"[0] + (_code[0] - 'a');
+          _type = atom_t::TYPE_ORD;
+       }
+    }
+diff --git a/graf2d/win32gdk/inc/TGWin32ProxyDefs.h b/graf2d/win32gdk/inc/TGWin32ProxyDefs.h
+index 940821a31..1165eb9b5 100644
+--- a/graf2d/win32gdk/inc/TGWin32ProxyDefs.h
++++ b/graf2d/win32gdk/inc/TGWin32ProxyDefs.h
+@@ -15,8 +15,11 @@
+ 
+ #include "Rtypes.h"  // CINT headers
+ 
++#define PPCAT_NX(A, B) A ## B
++#define PPCAT(A, B) PPCAT_NX(A, B)
+ 
+-#define _NAME4_(name1,name2,name3,name4) _NAME3_(name1,name2,name3)name4
++//#define _NAME2_()
++#define _NAME4_(name1,name2,name3,name4) PPCAT(_NAME3_(name1,name2,name3),name4)
+ 
+ 
+ 
+diff --git a/graf2d/win32gdk/inc/TGWin32VirtualXProxy.h b/graf2d/win32gdk/inc/TGWin32VirtualXProxy.h
+index 3e17faae0..bc563fcf7 100644
+--- a/graf2d/win32gdk/inc/TGWin32VirtualXProxy.h
++++ b/graf2d/win32gdk/inc/TGWin32VirtualXProxy.h
+@@ -66,7 +66,7 @@ public:
+    Float_t   GetTextMagnitude();
+    Window_t  GetWindowID(Int_t wid);
+    Bool_t    HasTTFonts() const;
+-   Int_t     InitWindow(ULong_t window);
++   Int_t     InitWindow(ULongptr_t window);
+    void      MoveWindow(Int_t wid, Int_t x, Int_t y);
+    Int_t     OpenPixmap(UInt_t w, UInt_t h);
+    void      QueryPointer(Int_t &ix, Int_t &iy);
+@@ -259,8 +259,8 @@ public:
+    void         DeleteImage(Drawable_t img);
+    unsigned char *GetColorBits(Drawable_t wid, Int_t x, Int_t y, UInt_t width, UInt_t height);
+    Pixmap_t     CreatePixmapFromData(unsigned char *bits, UInt_t width, UInt_t height);
+-   Int_t        AddWindow(ULong_t qwid, UInt_t w, UInt_t h);
+-   void         RemoveWindow(ULong_t qwid);
++   Int_t        AddWindow(ULongptr_t qwid, UInt_t w, UInt_t h);
++   void         RemoveWindow(ULongptr_t qwid);
+    void         ShapeCombineMask(Window_t id, Int_t x, Int_t y, Pixmap_t mask);
+ 
+    void         DeleteProperty(Window_t, Atom_t&);
+diff --git a/graf2d/win32gdk/src/TGWin32VirtualXProxy.cxx b/graf2d/win32gdk/src/TGWin32VirtualXProxy.cxx
+index d2bbbb24e..d7ca1e3b7 100644
+--- a/graf2d/win32gdk/src/TGWin32VirtualXProxy.cxx
++++ b/graf2d/win32gdk/src/TGWin32VirtualXProxy.cxx
+@@ -24,6 +24,9 @@
+ #include "TGWin32.h"
+ #include "TList.h"
+ 
++#undef option
++#undef toption
++
+ TVirtualX *TGWin32VirtualXProxy::fgRealObject = 0;
+ 
+ ////////////////////////////////////////////////////////////////////////////////
+@@ -203,7 +206,7 @@ RETURN_METHOD_ARG1(VirtualX,const char*,DisplayName,const char*,dpyName)
+ RETURN_METHOD_ARG1(VirtualX,Bool_t,Init,void*,display)
+ RETURN_METHOD_ARG1(VirtualX,Int_t,GetDoubleBuffer,Int_t,wid)
+ RETURN_METHOD_ARG1(VirtualX,Window_t,GetWindowID,Int_t,wid)
+-RETURN_METHOD_ARG1(VirtualX,Int_t,InitWindow,ULong_t,window)
++RETURN_METHOD_ARG1(VirtualX,Int_t,InitWindow,ULongptr_t,window)
+ RETURN_METHOD_ARG1(VirtualX,Int_t,WriteGIF,char*,name)
+ RETURN_METHOD_ARG1(VirtualX,FontStruct_t,LoadQueryFont,const char*,font_name)
+ RETURN_METHOD_ARG1(VirtualX,FontH_t,GetFontHandle,FontStruct_t,fs)
+@@ -237,8 +240,8 @@ RETURN_METHOD_ARG3(VirtualX,Pixmap_t,CreatePixmap,Drawable_t,wid,UInt_t,w,UInt_t
+ RETURN_METHOD_ARG1(VirtualX,ULong_t,GetPixel,Color_t,cindex)
+ RETURN_METHOD_ARG5(VirtualX,unsigned char*,GetColorBits,Drawable_t,wid,Int_t,x,Int_t,y,UInt_t,width,UInt_t,height)
+ RETURN_METHOD_ARG3(VirtualX,Pixmap_t,CreatePixmapFromData,unsigned char*,bits,UInt_t,width,UInt_t,height)
+-RETURN_METHOD_ARG3(VirtualX,Int_t,AddWindow,ULong_t,qwid,UInt_t,w,UInt_t,h)
+-VOID_METHOD_ARG1(VirtualX,RemoveWindow,ULong_t,qwid,1)
++RETURN_METHOD_ARG3(VirtualX,Int_t,AddWindow,ULongptr_t,qwid,UInt_t,w,UInt_t,h)
++VOID_METHOD_ARG1(VirtualX,RemoveWindow,ULongptr_t,qwid,1)
+ VOID_METHOD_ARG4(VirtualX,ShapeCombineMask,Window_t,id,Int_t,x,Int_t,y,Pixmap_t,mask,1)
+ 
+ VOID_METHOD_ARG2(VirtualX,DeleteProperty,Window_t,win,Atom_t&,prop,1)
+@@ -254,9 +257,9 @@ RETURN_METHOD_ARG2(VirtualX,Bool_t,IsDNDAware,Window_t,win,Atom_t*,typelist);
+ 
+ //VOID_METHOD_ARG1(VirtualX,CreateOpenGLContext,Int_t,wid,1)
+ //VOID_METHOD_ARG1(VirtualX,DeleteOpenGLContext,Int_t,wid,1)
+-//VOID_METHOD_ARG1(VirtualX,RemoveWindow,ULong_t,qwid,1)
++//VOID_METHOD_ARG1(VirtualX,RemoveWindow,ULongptr_t,qwid,1)
+ //RETURN_METHOD_ARG1(VirtualX,ExecCommand,UInt_t,TGWin32Command*,code)
+-//RETURN_METHOD_ARG3(VirtualX,Int_t,AddWindow,ULong_t,qwid,UInt_t,w,UInt_t,h)
++//RETURN_METHOD_ARG3(VirtualX,Int_t,AddWindow,ULongptr_t,qwid,UInt_t,w,UInt_t,h)
+ 
+ //////////////////////// some non-standard methods /////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////////
+diff --git a/interpreter/cling/lib/Interpreter/Interpreter.cpp b/interpreter/cling/lib/Interpreter/Interpreter.cpp
+index e1d7790a3..715890a38 100644
+--- a/interpreter/cling/lib/Interpreter/Interpreter.cpp
++++ b/interpreter/cling/lib/Interpreter/Interpreter.cpp
+@@ -65,6 +65,11 @@
+ #include <string>
+ #include <vector>
+ 
++#if defined(_MSC_VER) && defined(__clang__)
++extern "C" struct _ThrowInfo;
++extern "C" void __stdcall _CxxThrowException(void* pExceptionObject,_ThrowInfo* pThrowInfo);
++#endif
++
+ using namespace clang;
+ 
+ namespace {

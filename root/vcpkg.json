@@ -36,6 +36,7 @@
         "name": "python3",
         "host": true
     },
+    "numpy",
     {
         "name": "pkgconf",
         "host": true
