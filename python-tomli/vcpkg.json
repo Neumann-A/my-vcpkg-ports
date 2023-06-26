@@ -1,0 +1,10 @@
+{
+  "name": "python-tomli",
+  "version": "2.0.1",
+  "description": "A simple, correct Python build frontend ",
+  "homepage": "pypa-build.readthedocs.io/en/stable/",
+  "license": "MIT",
+  "dependencies": [
+    "python3"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "pypa-build",
+  "version": "0.10.0",
+  "description": "A simple, correct Python build frontend ",
+  "homepage": "pypa-build.readthedocs.io/en/stable/",
+  "license": "MIT",
+  "dependencies": [
+    "python3",
+    "pypa-pyproject-hooks",
+    "python-tomli",
+    "pypa-packaging"
+  ]
+}

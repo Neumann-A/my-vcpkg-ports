@@ -1,0 +1,13 @@
+{
+  "name": "pypa-setuptools",
+  "version": "68.0.0",
+  "description": "Official project repository for the Setuptools build system ",
+  "homepage": " pypi.org/project/setuptools/",
+  "license": "MIT",
+  "dependencies": [
+    "python3",
+    "pypa-build",
+    "pypa-installer",
+    "pypa-wheel"
+  ]
+}

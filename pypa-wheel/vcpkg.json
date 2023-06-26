@@ -1,0 +1,14 @@
+{
+  "name": "pypa-wheel",
+  "version": "0.40.0",
+  "description": "The official binary distribution format for Python",
+  "homepage": "https://github.com/pypa/wheel",
+  "license": "MIT",
+  "dependencies": [
+    "python3",
+    "pypa-build",
+    "pypa-installer",
+    { "name": "python-pypa-scripts",
+"host": true    }
+  ]
+}

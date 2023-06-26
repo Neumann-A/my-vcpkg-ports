@@ -1,0 +1,14 @@
+{
+  "name": "python-pypa-scripts",
+  "version-date": "2023-06-26",
+  "documentation": "https://vcpkg.io/en/docs/README.html",
+  "license": "MIT",
+  "supports": "native",
+  "dependencies": [
+  "python3",
+  "pypa-build",
+  "pypa-installer",
+  "pypa-flit-core"
+  ]
+  
+}

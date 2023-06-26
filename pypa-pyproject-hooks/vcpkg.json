@@ -1,0 +1,10 @@
+{
+  "name": "pypa-pyproject-hooks",
+  "version": "1.0.0",
+  "description": "A low-level library for calling build-backends in `pyproject.toml`-based project",
+  "homepage": "pyproject-hooks.readthedocs.io/",
+  "license": "MIT",
+  "dependencies": [
+    "python3"
+  ]
+}
