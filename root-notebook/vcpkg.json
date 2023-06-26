@@ -6,6 +6,7 @@
   "license": null,
   "dependencies": [
     "python3",
-    "vcpkg-get-python-packages"
+    "vcpkg-get-python-packages",
+    "root"
   ]
 }

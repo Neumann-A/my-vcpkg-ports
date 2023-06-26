@@ -207,4 +207,7 @@ vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/RConfigOptions.h" "${CURRE
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/bin/JupyROOT/kernel/utils.py" "/magics/" "\\\\magics\\\\")
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/bin/JupyROOT/kernel/utils.py" "split(\"/\")" "split(\"\\\\\")")
 
+file(GLOB PCM_FILES "${CURRENT_PACKAGES_DIR}/bin/*.pcm")
+file(COPY ${PCM_FILES} DESTINATION "${CURRENT_PACKAGES_DIR}/tools/root")
+
 

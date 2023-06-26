@@ -2,6 +2,14 @@ diff --git a/bindings/jupyroot/python/JupyROOT/helpers/cppcompleter.py b/binding
 index c42bff9a7..cc904bba6 100644
 --- a/bindings/jupyroot/python/JupyROOT/helpers/cppcompleter.py
 +++ b/bindings/jupyroot/python/JupyROOT/helpers/cppcompleter.py
+@@ -15,6 +15,7 @@
+ 
+ from JupyROOT.helpers import utils
+ import ROOT
++import os
+ 
+ # Jit a wrapper for the ttabcom
+ _TTabComHookCode = """
 @@ -106,8 +106,12 @@ class CppCompleter(object):
      def activate(self):
          self.active = True
