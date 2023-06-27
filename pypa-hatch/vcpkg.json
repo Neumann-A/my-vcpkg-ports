@@ -1,0 +1,14 @@
+{
+  "name": "pypa-hatch",
+  "version": "1.7.0",
+  "description": "Modern, extensible Python project management",
+  "homepage": "hatch.pypa.io/latest/",
+  "license": "MIT",
+  "dependencies": [
+    "python3",
+    { "name": "python-pypa-scripts",
+"host": true    },
+    "pypa-wheel",
+    "pypa-hatchling"
+  ]
+}

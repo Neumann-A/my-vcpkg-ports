@@ -1,0 +1,13 @@
+{
+  "name": "python-editables",
+  "version": "0.3",
+  "description": "A Python library for creating editable wheels",
+  "homepage": "https://github.com/pfmoore/editables",
+  "license": "MIT",
+  "dependencies": [
+    "python3",
+    { "name": "python-pypa-scripts",
+"host": true    },
+    "pypa-setuptools"
+  ]
+}

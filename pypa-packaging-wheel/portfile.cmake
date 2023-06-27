@@ -6,4 +6,4 @@ vcpkg_from_github(
     HEAD_REF main
 )
 
-file(COPY "${SOURCE_PATH}/src/packaging" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/")
+pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")

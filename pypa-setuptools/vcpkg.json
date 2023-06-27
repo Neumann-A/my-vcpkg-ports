@@ -6,8 +6,8 @@
   "license": "MIT",
   "dependencies": [
     "python3",
-    "pypa-build",
-    "pypa-installer",
+    { "name": "python-pypa-scripts",
+    "host": true    },
     "pypa-wheel"
   ]
 }

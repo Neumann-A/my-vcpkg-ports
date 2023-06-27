@@ -1,0 +1,14 @@
+{
+  "name": "calysto-metakernel",
+  "version": "0.29.4",
+  "description": "Jupyter/IPython Kernel Tools ",
+  "homepage": "https://github.com/Calysto/metakernel",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "python3",
+    { "name": "python-pypa-scripts",
+"host": true    },
+"pypa-hatch",
+"pypa-setuptools"
+  ]
+}

@@ -3,5 +3,8 @@
   "version": "3.9.0",
   "description": "Simplified packaging of Python modules",
   "homepage": "flit.pypa.io/",
-  "license": "BSD-3-Clause"
+  "license": "BSD-3-Clause",
+  "dependencies": [
+  "python3"
+]
 }

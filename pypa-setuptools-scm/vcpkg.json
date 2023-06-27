@@ -1,0 +1,21 @@
+{
+  "name": "pypa-setuptools-scm",
+  "version": "7.1.0",
+  "description": "the blessed package to manage your versions by scm tags",
+  "homepage": "https://github.com/pypa/setuptools_scm",
+  "license": "MIT",
+  "dependencies": [
+    "python3",
+    { "name": "python-pypa-scripts",
+"host": true    },
+    "pypa-setuptools",
+    "python-importlib-metadata",
+    "python-typing-extensions",
+    "pypa-packaging",
+    "python-pygments",
+    "vcpkg-tool-mecurial",
+    "pypa-packaging-wheel",
+    "python-tomli-wheel",
+    "vcpkg-get-python-packages"
+  ]
+}

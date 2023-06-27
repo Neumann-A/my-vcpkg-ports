@@ -1,0 +1,15 @@
+{
+  "name": "python-pygments",
+  "version": "2.15.1",
+  "description": "Pygments is a generic syntax highlighter written in Python",
+  "homepage": "pygments.org/",
+  "license": "BSD-2-Clause",
+  "dependencies": [
+    "python3",
+    { "name": "python-pypa-scripts",
+"host": true    },
+    "pypa-setuptools",
+    "pypa-packaging",
+    "python-typing-extensions"
+  ]
+}

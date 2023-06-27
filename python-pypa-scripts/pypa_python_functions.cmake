@@ -4,10 +4,10 @@ function(pypa_build_wheel)
         "arg"
         "ISOLATE"
         "SOURCE_PATH;OUTPUT_WHEEL"
-        ""
+        "OPTIONS"
     )
 
-  set(build_ops "")
+  set(build_ops "${arg_OPTIONS}")
 
   if(NOT arg_ISOLATE)
     list(APPEND build_ops "-n")
@@ -54,9 +54,15 @@ function(pypa_install_wheel)
   cmake_path(GET CURRENT_INSTALLED_DIR STEM fullStem)
   string(REPLACE "${rootName}/" "/" without_drive_letter_installed ${CURRENT_INSTALLED_DIR})
 
-  file(RENAME "${CURRENT_PACKAGES_DIR}${without_drive_letter_installed}/tools" "${CURRENT_PACKAGES_DIR}/tools")
-  message(STATUS "*******fullStem:${fullStem}")
-  #file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}${rootDir}")
+  string(REPLACE "/" ";" path_list "${without_drive_letter_installed}")
+  list(GET path_list 1 path_to_delete)
+
+  if(NOT EXISTS "${CURRENT_PACKAGES_DIR}/tools")
+    file(RENAME "${CURRENT_PACKAGES_DIR}${without_drive_letter_installed}/tools" "${CURRENT_PACKAGES_DIR}/tools")
+  else()
+    file(COPY "${CURRENT_PACKAGES_DIR}${without_drive_letter_installed}/tools/" DESTINATION "${CURRENT_PACKAGES_DIR}/tools")
+  endif()
+  file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/${path_to_delete}")
 endfunction()
 
 function(pypa_build_and_install_wheel)
@@ -65,7 +71,7 @@ function(pypa_build_and_install_wheel)
         "arg"
         "ISOLATE"
         "SOURCE_PATH"
-        ""
+        "OPTIONS"
     )
 
   set(opts "")
@@ -73,7 +79,6 @@ function(pypa_build_and_install_wheel)
     set(opts ISOLATE)
   endif()
 
-  #vcpkg_add_to_path("${PYTHON3_BASEDIR}/Scripts")
-  pypa_build_wheel(${opts} SOURCE_PATH "${arg_SOURCE_PATH}" OUTPUT_WHEEL WHEEL)
+  pypa_build_wheel(${opts} SOURCE_PATH "${arg_SOURCE_PATH}" OUTPUT_WHEEL WHEEL OPTIONS ${arg_OPTIONS})
   pypa_install_wheel(WHEEL "${WHEEL}")
 endfunction()

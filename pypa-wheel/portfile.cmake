@@ -6,4 +6,4 @@ vcpkg_from_github(
     HEAD_REF main
 )
 
-pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}") 
+pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")

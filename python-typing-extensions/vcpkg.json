@@ -1,0 +1,13 @@
+{
+  "name": "python-typing-extensions",
+  "version": "4.6.3",
+  "description": "Backported and experimental type hints for Python",
+  "homepage": "https://github.com/python/typing_extensions",
+  "license": null,
+  "dependencies": [
+    "python3",
+    { "name": "python-pypa-scripts",
+"host": true    },
+    "pypa-setuptools"
+  ]
+}

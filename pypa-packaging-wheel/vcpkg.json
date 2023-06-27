@@ -1,0 +1,13 @@
+{
+  "name": "pypa-packaging-wheel",
+  "version": "23.1",
+  "description": "Core utilities for Python packages",
+  "homepage": "packaging.pypa.io/",
+  "license": "MIT",
+  "dependencies": [
+    "python3",
+    { "name": "python-pypa-scripts",
+    "host": true    },
+    "pypa-wheel"
+  ]
+}
