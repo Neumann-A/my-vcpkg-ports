@@ -49,6 +49,9 @@ vcpkg_from_gitlab(
     PATCHES 
         ${VisItPatches}
         clang-cl.patch
+        cxx.diff
+        auto_ptr.diff
+        using_std.diff
 )
 #VTK_MODULE_USE_EXTERNAL_ParaView_protobuf
 #NVPipe?

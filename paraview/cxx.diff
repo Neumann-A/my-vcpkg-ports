@@ -1,0 +1,14 @@
+diff --git a/Library/VisItLib/common/CMakeLists.txt b/Library/VisItLib/common/CMakeLists.txt
+index 16e4dca..dd60f5d 100644
+--- a/Library/VisItLib/common/CMakeLists.txt	
++++ b/Library/VisItLib/common/CMakeLists.txt
+@@ -432,8 +432,9 @@ utility/void_ref_ptr.C
+ )
+ IF(WIN32)
+     SET(UTILITY_WIN32_SOURCES utility/win32-regex.c)
+     SET_SOURCE_FILES_PROPERTIES(utility/win32-regex.c 
+         PROPERTIES LANGUAGE CXX)
++    add_compile_options(-Wno-register)
+ ENDIF(WIN32)
+ 
+ if (FALSE)

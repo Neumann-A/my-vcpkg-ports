@@ -1,0 +1,108 @@
+diff --git a/databases/readers/paraDIS/RC_cpp_lib/Point.h b/databases/readers/paraDIS/RC_cpp_lib/Point.h
+index 85a77bb..c3fb182 100644
+--- a/databases/readers/paraDIS/RC_cpp_lib/Point.h	
++++ b/databases/readers/paraDIS/RC_cpp_lib/Point.h
+@@ -18,7 +18,13 @@
+ #include "stringutil.h"
+ 
+ namespace rclib {
+-  using namespace std;
++  using std::cerr;
++  using std::vector;
++  using std::string;
++  using std::map;
++  using std::max;
++  using std::min;
++
+   template <class T>
+     struct Point {
+       /*!
+diff --git a/databases/readers/paraDIS/RC_cpp_lib/RangeList.h b/databases/readers/paraDIS/RC_cpp_lib/RangeList.h
+index c0931df..bc64052 100644
+--- a/databases/readers/paraDIS/RC_cpp_lib/RangeList.h	
++++ b/databases/readers/paraDIS/RC_cpp_lib/RangeList.h
+@@ -7,7 +7,11 @@
+ #include <string>
+ #include <iostream> 
+ #include <algorithm>
+-using namespace std; 
++using std::vector;
++using std::cout;
++using std::endl;
++using std::binary_search;
++using std::ifstream;
+ 
+ void PrintVersion(void); 
+ 
+diff --git a/databases/readers/paraDIS/RC_cpp_lib/stringutil.h b/databases/readers/paraDIS/RC_cpp_lib/stringutil.h
+index 7b9ae05..69f1164 100644
+--- a/databases/readers/paraDIS/RC_cpp_lib/stringutil.h	
++++ b/databases/readers/paraDIS/RC_cpp_lib/stringutil.h
+@@ -10,7 +10,10 @@
+ //#include <inttypes.h>
+ //#include "RCDebugStream.h"
+ 
+-using namespace std; 
++using std::string; 
++using std::cerr;
++using std::vector;
++using std::endl;
+ 
+ #define errout if (0) cerr
+ #define debugout if (0) cerr
+diff --git a/databases/readers/paraDIS/RC_cpp_lib/timer.h b/databases/readers/paraDIS/RC_cpp_lib/timer.h
+index 2dd62a5..99e2869 100644
+--- a/databases/readers/paraDIS/RC_cpp_lib/timer.h	
++++ b/databases/readers/paraDIS/RC_cpp_lib/timer.h
+@@ -25,7 +25,7 @@
+ #include "stringutil.h"
+ #define INVALID_TIME_STRING "INVALID_TIME_STRING"
+ 
+-using namespace std; 
++using std::string;
+ #if 0
+ string GetStandardTimeStringFromString(string s);
+ bool GetTimeFromString(string s, struct tm &tms); 
+diff --git a/databases/readers/paraDIS/paraDIS_lib/paradis.C b/databases/readers/paraDIS/paraDIS_lib/paradis.C
+index 4846136..4c811d8 100644
+--- a/databases/readers/paraDIS/paraDIS_lib/paradis.C	
++++ b/databases/readers/paraDIS/paraDIS_lib/paradis.C
+@@ -39,7 +39,15 @@
+ 
+ using namespace rclib; 
+ using namespace RC_Math; 
+-using namespace std; 
++using std::vector;
++using std::string;
++using std::set;
++using std::cout;
++using std::cerr;
++using std::map;
++using std::getenv;
++using std::ofstream;
++using std::ifstream;
+   
+ #ifdef RC_CPP_VISIT_BUILD
+ void dbstream_printf(int level, const char *fmt, ...) {
+diff --git a/databases/readers/paraDIS/paraDIS_lib/paradis.h b/databases/readers/paraDIS/paraDIS_lib/paradis.h
+index 34d4235..f1b059a 100644
+--- a/databases/readers/paraDIS/paraDIS_lib/paradis.h	
++++ b/databases/readers/paraDIS/paraDIS_lib/paradis.h
+@@ -48,6 +48,17 @@ using boost::uint32_t;
+ #include <ostream> 
+ #include <math.h>
+ 
++using std::map;
++using std::set;
++using std::vector;
++using std::string;
++using std::cout;
++using std::cerr;
++using std::ifstream;
++using std::ofstream;
++using std::max;
++using std::min;
++
+ #include "RC_cpp_lib/Point.h"
+ #include "RC_cpp_lib/pathutil.h"
+ #include "RC_cpp_lib/stringutil.h" /* from RC_c_lib, is this a good idea? */ 
