@@ -1,0 +1,54 @@
+diff --git a/src/mesa/state_tracker/st_texture.h b/src/mesa/state_tracker/st_texture.h
+index 064200d07d..b276e1591d 100644
+--- a/src/mesa/state_tracker/st_texture.h	
++++ b/src/mesa/state_tracker/st_texture.h
+@@ -32,6 +32,7 @@
+ #include "pipe/p_context.h"
+ #include "util/u_sampler.h"
+ #include "util/simple_mtx.h"
++#include "compiler/shader_enums.h"
+ 
+ #include "main/mtypes.h"
+ 
+@@ -233,13 +234,13 @@ st_compressed_format_fallback(struct st_context *st, mesa_format format);
+ 
+ void
+ st_convert_image(const struct st_context *st, const struct gl_image_unit *u,
+-                 struct pipe_image_view *img, unsigned shader_access);
++                 struct pipe_image_view *img, enum gl_access_qualifier shader_access);
+ 
+ void
+ st_convert_image_from_unit(const struct st_context *st,
+                            struct pipe_image_view *img,
+                            GLuint imgUnit,
+-                           unsigned shader_access);
++                           enum gl_access_qualifier shader_access);
+ 
+ void
+ st_convert_sampler(const struct st_context *st,
+diff --git a/src/gallium/drivers/llvmpipe/lp_bld_interp.h b/src/gallium/drivers/llvmpipe/lp_bld_interp.h
+index 445c8655d4..34e44ac093 100644
+--- a/src/gallium/drivers/llvmpipe/lp_bld_interp.h	
++++ b/src/gallium/drivers/llvmpipe/lp_bld_interp.h
+@@ -157,7 +157,7 @@ lp_build_interp_soa(struct lp_build_interp_soa_context *bld,
+                     LLVMTypeRef mask_type,
+                     LLVMValueRef mask_store,
+                     unsigned attrib, unsigned chan,
+-                    unsigned loc,
++                    enum tgsi_interpolate_loc loc,
+                     LLVMValueRef indir_index,
+                     LLVMValueRef offsets[2]);
+ 
+diff --git a/src/gallium/auxiliary/tgsi/tgsi_ureg.c b/src/gallium/auxiliary/tgsi/tgsi_ureg.c
+index b4cfae0e6e..564e2c0360 100644
+--- a/src/gallium/auxiliary/tgsi/tgsi_ureg.c	
++++ b/src/gallium/auxiliary/tgsi/tgsi_ureg.c
+@@ -481,7 +481,7 @@ out:
+ 
+ struct ureg_dst
+ ureg_DECL_output_masked(struct ureg_program *ureg,
+-                        unsigned name,
++                        enum tgsi_semantic name,
+                         unsigned index,
+                         unsigned usage_mask,
+                         unsigned array_id,
