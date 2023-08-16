@@ -18,6 +18,7 @@ set(PATCHES
     0010-dont-skip-rpath.patch
     0012-force-disable-curses.patch
     0014-fix-get-python-inc-output.patch
+    0015-dont-use-WINDOWS-def.patch
     0016-undup-ffi-symbols.patch # Required for lld-link.
     add-vcpkg-search-path.patch # Required so that the build python3 executable can find dependent dll's within the vcpkg installed tree without having to copy them which would otherwise result in shared ownership of files problem. (e.g. using numpy build via vcpkg which requires lapack/blas)
 )
@@ -252,9 +253,6 @@ else()
     if(VCPKG_CROSSCOMPILING)
         set(_python_for_build "${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
         list(APPEND OPTIONS "--with-build-python=${_python_for_build}")
-    else()
-        vcpkg_find_acquire_program(PYTHON3)
-        list(APPEND OPTIONS "ac_cv_prog_PYTHON_FOR_REGEN=${PYTHON3}")
     endif()
 
     vcpkg_configure_make(
