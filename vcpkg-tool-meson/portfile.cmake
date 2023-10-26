@@ -8,8 +8,8 @@ configure_file("${CMAKE_CURRENT_LIST_DIR}/vcpkg-port-config.cmake" "${CURRENT_PA
 file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/vcpkg_configure_meson.cmake"
              "${CMAKE_CURRENT_LIST_DIR}/vcpkg_install_meson.cmake"
              "${CMAKE_CURRENT_LIST_DIR}/meson-intl.patch"
-             "${CMAKE_CURRENT_LIST_DIR}/python-lib-dep.patch"
-             "${CMAKE_CURRENT_LIST_DIR}/11259.diff"
+             "${CMAKE_CURRENT_LIST_DIR}/adjust-python-dep.patch"
+             "${CMAKE_CURRENT_LIST_DIR}/meson.template.in"
              DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
 
 file(WRITE "${CURRENT_PACKAGES_DIR}/share/meson/version.txt" "${VERSION}") # For vcpkg_find_acquire_program

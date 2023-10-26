@@ -1,7 +1,7 @@
 # Overwrite builtin scripts
 include("${CMAKE_CURRENT_LIST_DIR}/vcpkg_configure_meson.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/vcpkg_install_meson.cmake")
-
+include("${CMAKE_CURRENT_LIST_DIR}/../vcpkg-get-python-packages/vcpkg-port-config.cmake")
 # Check required python version
 vcpkg_find_acquire_program(PYTHON3)
 vcpkg_execute_required_process(COMMAND "${PYTHON3}" --version
@@ -20,14 +20,14 @@ endif()
 
 # Setup meson:
 set(program MESON)
-set(program_version 1.0.0)
+set(program_version 1.2.3)
 set(program_name meson)
 set(search_names meson meson.py)
-set(ref 05f85c79454e206e00c6ced5b6fc25ffcafed39c)
+set(ref 84e437179da05db10aa2457322c54f4ec8be61f1)
 set(path_to_search "${DOWNLOADS}/tools/meson-${program_version}")
 set(download_urls "https://github.com/mesonbuild/meson/archive/${ref}.tar.gz")
 set(download_filename "meson-${ref}.tar.gz")
-set(download_sha512 b4744b9cc28d85d6c7df9199e74fb695930b3af5d065035c6728b5883b5df4faae9ce1dcc0461c3fc28c68d854c6daf4edef5e7e448ba2eabff9fe8e9e4650d9)
+set(download_sha512 5f75af79bd6e05461a7e426487c77b5600bc94eed3184a26d4deed1ef960e28b889208e1b039e67606b8290321e0b5184227a476a25dd72a4f99c41ecfb37b8c)
 
 find_program(SCRIPT_MESON NAMES ${search_names} PATHS "${path_to_search}" NO_DEFAULT_PATH) # NO_DEFAULT_PATH due top patching
 
@@ -48,11 +48,11 @@ if(NOT SCRIPT_MESON)
     z_vcpkg_apply_patches(
         SOURCE_PATH "${path_to_search}"
         PATCHES
-            "${CMAKE_CURRENT_LIST_DIR}/meson-intl.patch"
-            "${CMAKE_CURRENT_LIST_DIR}/python-lib-dep.patch"
-            "${CMAKE_CURRENT_LIST_DIR}/11259.diff"
+            #"${CMAKE_CURRENT_LIST_DIR}/meson-intl.patch"
+            "${CMAKE_CURRENT_LIST_DIR}/adjust-python-dep.patch"
     )
-    set(SCRIPT_MESON "${DOWNLOADS}/tools/meson-${program_version}/meson.py")
+    vcpkg_replace_string("${DOWNLOADS}/tools/meson-${program_version}/mesonbuild/cmake/toolchain.py" "arg.startswith('/')" "arg.startswith(('/','-'))")
+    set(SCRIPT_MESON "-E" "${DOWNLOADS}/tools/meson-${program_version}/meson.py")
 endif()
 
 message(STATUS "Using meson: ${SCRIPT_MESON}")
