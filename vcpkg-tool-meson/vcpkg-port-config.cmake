@@ -49,7 +49,8 @@ if(NOT SCRIPT_MESON)
         SOURCE_PATH "${path_to_search}"
         PATCHES
             #"${CMAKE_CURRENT_LIST_DIR}/meson-intl.patch"
-            "${CMAKE_CURRENT_LIST_DIR}/adjust-python-dep.patch"
+            #"${CMAKE_CURRENT_LIST_DIR}/adjust-python-dep.patch"
+            "${CMAKE_CURRENT_LIST_DIR}/fix-python.patch"
     )
     vcpkg_replace_string("${DOWNLOADS}/tools/meson-${program_version}/mesonbuild/cmake/toolchain.py" "arg.startswith('/')" "arg.startswith(('/','-'))")
     set(SCRIPT_MESON "-E" "${DOWNLOADS}/tools/meson-${program_version}/meson.py")

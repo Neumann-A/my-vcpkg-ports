@@ -26,7 +26,7 @@ vcpkg_from_github(
 )
 
 cmake_path(GET SCRIPT_MESON PARENT_PATH MESON_DIR)
-file(COPY "${SOURCE_PATH_MESON_NUMPY}/mesonbuild/modules/features" DESTINATION "${MESON_DIR}/mesonbuild/modules/")
+file(COPY "${SOURCE_PATH_MESON_NUMPY}/mesonbuild/modules/features" DESTINATION "${MESON_DIR}/mesonbuild/modules")
 
 file(COPY "${SOURCE_PATH_SIMD}/" DESTINATION "${SOURCE_PATH}/numpy/core/src/npysort/x86-simd-sort")
 
@@ -55,8 +55,8 @@ vcpkg_configure_meson(
         -Duse-ilp64=true
     ADDITIONAL_BINARIES
       cython=['${CYTHON}']
-      #python3=['${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX} -E']
-      #python=['${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX} -E']
+      python3=['${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}']
+      python=['${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}']
     )
 vcpkg_install_meson()
 vcpkg_fixup_pkgconfig()
