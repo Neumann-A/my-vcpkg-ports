@@ -9,7 +9,9 @@ vcpkg_from_github(
 )
 
 vcpkg_cmake_configure(
-    SOURCE_PATH "${SOURCE_PATH}/amd/comgr"
+    SOURCE_PATH "${SOURCE_PATH}/amd/device-libs"
     OPTIONS
+
 )
 vcpkg_cmake_install()
+vcpkg_cmake_config_fixup()

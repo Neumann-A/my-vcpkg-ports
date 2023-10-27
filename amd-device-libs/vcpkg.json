@@ -1,8 +1,8 @@
 {
-  "name": "amd-comgr",
+  "name": "amd-device-libs",
   "version-date": "2023-10-26",
-  "description": "The Comgr library provides APIs for compiling and inspecting AMDGPU code objects.",
-  "homepage": "rocmdocs.amd.com/projects/HIP/",
+  "description": "ROCm Device libraries.",
+  "homepage": "https://github.com/RadeonOpenCompute/llvm-project/tree/amd-stg-open/amd/device-libs",
   "license": "MIT",
   "dependencies": [
     {
@@ -18,8 +18,7 @@
       "features": [ "target-amdgpu" ,"clang", "lldb",  "target-x86"],
       "default-features": false
     },
-    "opencl",
-    "amd-device-libs"
+    "opencl"
 
   ]
 }
