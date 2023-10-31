@@ -20,3 +20,5 @@ execute_process(COMMAND "${PYTHON3}" "${SOURCE_PATH}/flit_core/bootstrap_install
   COMMAND_ERROR_IS_FATAL ANY
   #WORKING_DIRECTORY  "${wheeldir}"
 )
+
+set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)

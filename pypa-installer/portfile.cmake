@@ -7,3 +7,5 @@ vcpkg_from_github(
 )
 
 file(COPY "${SOURCE_PATH}/src/installer" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib")
+
+set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)

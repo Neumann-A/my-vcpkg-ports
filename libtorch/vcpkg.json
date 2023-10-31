@@ -1,0 +1,161 @@
+{
+  "name": "libtorch",
+  "version": "2.1.0",
+  "description": "Tensors and Dynamic neural networks in Python with strong GPU acceleration",
+  "homepage": "https://pytorch.org/",
+  "license": null,
+  "supports": "(windows & !static) | osx | linux",
+  "dependencies": [
+    "cpuinfo",
+    "eigen3",
+    "flatbuffers",
+    {
+      "name": "flatbuffers",
+      "host": true
+    },
+    "fmt",
+    "foxi",
+    "gemmlowp",
+    "gflags",
+    "glog",
+    "lmdb",
+    "numpy",
+    "python3",
+    "mimalloc",
+    "fp16",
+    "python-pyyaml",
+    "pybind11",
+    "foxi",
+    "lapack",
+    "blas",
+    "onnx",
+    "onnx-optimizer",
+    "protobuf",
+    "opencl",
+    "pthreadpool",
+    "pocketfft",
+    {
+      "name": "protobuf",
+      "host": true
+    },
+    "sleef",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    {
+      "name": "vcpkg-get-python-packages",
+      "host": true
+    }
+  ],
+  "default-features": [
+    "xnnpack",
+    "fftw3",
+    "tbb",
+    "zstd",
+    "opencv",
+    "python"
+  ],
+  "features": {
+    "dist": {
+      "description": "Use distributed with MPI, Gloo, libuv, TensorPipe",
+      "dependencies": [
+        {
+          "name": "gloo",
+          "platform": "linux"
+        },
+        {
+          "name": "libuv",
+          "platform": "windows | osx"
+        },
+        {
+          "name": "mpi",
+          "platform": "linux | osx"
+        },
+        {
+          "name": "tensorpipe",
+          "platform": "linux | osx"
+        }
+      ]
+    },
+    "leveldb": {
+      "description": "Build with LevelDB",
+      "dependencies": [
+        "leveldb",
+        "snappy"
+      ]
+    },
+    "nnpack": {
+      "description": "Build with NNPack",
+      "supports": "linux | osx",
+      "dependencies": [
+        "nnpack"
+      ]
+    },
+    "opencv": {
+      "description": "Build with OpenCV 3.x",
+      "dependencies": [
+        "opencv"
+      ]
+    },
+    "tbb": {
+      "description": "Build with Intel TBB",
+      "dependencies": [
+        "tbb"
+      ]
+    },
+    "fftw3": {
+      "description": "Build with fftw3",
+      "dependencies": [
+        "fftw3"
+      ]
+    },
+    "vulkan": {
+      "description": "Build with Vulkan GPU backend",
+      "dependencies": [
+        "vulkan"
+      ]
+    },
+    "cuda": {
+      "description": "Build with CUDA GPU backend",
+      "dependencies": [
+        "cuda",
+        "cudnn"
+      ]
+    },
+    "rocm": {
+      "description": "Build with ROCm GPU backend",
+      "dependencies": [
+        "rocm"
+      ]
+    },
+    "python": {
+      "description": "Build with python",
+      "dependencies": [
+        "python3"
+      ]
+    },
+    "llvm": {
+      "description": "Build with LLVM",
+      "dependencies": [
+        "llvm"
+      ]
+    },
+    "xnnpack": {
+      "description": "Build with XNNPack",
+      "dependencies": [
+        "xnnpack"
+      ]
+    },
+    "zstd": {
+      "description": "Build with ZSTD",
+      "dependencies": [
+        "zstd"
+      ]
+    }
+  }
+}

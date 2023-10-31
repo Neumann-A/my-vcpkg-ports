@@ -8,3 +8,4 @@ vcpkg_from_github(
 
 pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
+set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)

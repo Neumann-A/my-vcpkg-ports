@@ -7,3 +7,5 @@ vcpkg_from_github(
 )
 
 file(COPY "${SOURCE_PATH}/importlib_metadata" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages")
+
+set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
