@@ -1,0 +1,20 @@
+{
+  "name": "magma",
+  "version": "2.7.1",
+  "description": "Matrix Algebra on GPU and Multi-core Architectures (MAGMA) is a collection of next-generation linear algebra libraries for heterogeneous computing",
+  "homepage": "https://icl.utk.edu/magma/",
+  "license": null,
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    "cuda",
+    "blas",
+    "lapack"
+  ]
+}

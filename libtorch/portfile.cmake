@@ -26,8 +26,17 @@ vcpkg_from_github(
     SHA512 ae63d48dc5b8ac30c38c2ace60f16834c7e9275fa342dc9f109d4fbc87b7bd674664f6413c36d0c1ab5a7da786030a4108d83daa4502b2f30239283ea3acdb16
     HEAD_REF main
 )
-
 file(COPY "${src_kineto}/" DESTINATION "${SOURCE_PATH}/third_party/kineto")
+
+vcpkg_from_github(
+    OUT_SOURCE_PATH src_cudnn
+    REPO NVIDIA/cudnn-frontend # new port ?
+    REF 12f35fa2be5994c1106367cac2fba21457b064f4
+    SHA512 a7e4bf58f82ca0b767df35da1b3588e2639ea2ef22ed0c47e989fb4cde5a28b0605b228b42fcaefbdf721bfbb91f2a9e7d41352ff522bd80b63db6d27e44ec20
+    HEAD_REF main
+)
+file(COPY "${src_cudnn}/" DESTINATION "${SOURCE_PATH}/third_party/cudnn_frontend")
+
 
 file(REMOVE 
   "${SOURCE_PATH}/cmake/Modules/FindBLAS.cmake"
@@ -65,10 +74,11 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     fftw3   AT_FFTW_ENABLED
     fbgemm  USE_FBGEMM
     opencv  USE_OPENCV
-    tbb     USE_TBB
-    tbb     AT_PARALLEL_NATIVE_TBB
-    openmp  USE_OPENMP
-    openmp  AT_PARALLEL_OPENMP
+    # These are alternatives !
+    # tbb     USE_TBB
+    # tbb     AT_PARALLEL_NATIVE_TBB # AT_PARALLEL_ are alternatives
+    # openmp  USE_OPENMP
+    # openmp  AT_PARALLEL_OPENMP # AT_PARALLEL_ are alternatives
     leveldb USE_LEVELDB
     opencl  USE_OPENCL
     cuda    USE_CUDA
@@ -82,7 +92,7 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     vulkan  USE_VULKAN_WRAPPER
     vulkan  USE_VULKAN_SHADERC_RUNTIME
     vulkan  USE_VULKAN_RELAXED_PRECISION
-    rocm    USE_ROCM
+    rocm    USE_ROCM  # This is an alternative not a feature! (Not in vcpkg.json!)
     llvm    USE_LLVM
     nnpack  USE_NNPACK  # todo: check use of `DISABLE_NNPACK_AND_FAMILY`
     nnpack  AT_NNPACK_ENABLED
@@ -92,9 +102,10 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     python  BUILD_PYTHON
 )
 
-if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
-    list(APPEND FEATURE_OPTIONS -DUSE_NATIVE_ARCH=ON)
-endif()
+#if(CMAKE_CXX_COMPILER_ID MATCHES GNU) # this does nothing
+#    list(APPEND FEATURE_OPTIONS -DUSE_NATIVE_ARCH=ON)
+#endif()
+
 if("dist" IN_LIST FEATURES)
     if(VCPKG_TARGET_IS_LINUX OR VCPKG_TARGET_IS_OSX)
         list(APPEND FEATURE_OPTIONS -DUSE_TENSORPIPE=ON)

@@ -34,6 +34,7 @@
     "opencl",
     "pthreadpool",
     "pocketfft",
+    "magma",
     {
       "name": "protobuf",
       "host": true
@@ -55,7 +56,6 @@
   "default-features": [
     "xnnpack",
     "fftw3",
-    "tbb",
     "zstd",
     "opencv",
     "python"
@@ -102,12 +102,6 @@
         "opencv"
       ]
     },
-    "tbb": {
-      "description": "Build with Intel TBB",
-      "dependencies": [
-        "tbb"
-      ]
-    },
     "fftw3": {
       "description": "Build with fftw3",
       "dependencies": [
@@ -125,12 +119,6 @@
       "dependencies": [
         "cuda",
         "cudnn"
-      ]
-    },
-    "rocm": {
-      "description": "Build with ROCm GPU backend",
-      "dependencies": [
-        "rocm"
       ]
     },
     "python": {
