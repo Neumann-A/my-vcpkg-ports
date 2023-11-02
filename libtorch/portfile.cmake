@@ -18,6 +18,8 @@ vcpkg_from_github(
     REF 49e854d805d916b2031e337763928d2f8d2e1fbf
     SHA512 ae63d48dc5b8ac30c38c2ace60f16834c7e9275fa342dc9f109d4fbc87b7bd674664f6413c36d0c1ab5a7da786030a4108d83daa4502b2f30239283ea3acdb16
     HEAD_REF main
+    PATCHES 
+      kineto.patch
 )
 file(COPY "${src_kineto}/" DESTINATION "${SOURCE_PATH}/third_party/kineto")
 
