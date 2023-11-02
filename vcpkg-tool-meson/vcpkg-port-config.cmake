@@ -1,7 +1,7 @@
 # Overwrite builtin scripts
 include("${CMAKE_CURRENT_LIST_DIR}/vcpkg_configure_meson.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/vcpkg_install_meson.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/../vcpkg-get-python-packages/vcpkg-port-config.cmake")
+
 # Check required python version
 vcpkg_find_acquire_program(PYTHON3)
 vcpkg_execute_required_process(COMMAND "${PYTHON3}" --version
