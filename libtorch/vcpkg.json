@@ -111,7 +111,8 @@
     "vulkan": {
       "description": "Build with Vulkan GPU backend",
       "dependencies": [
-        "vulkan"
+        "vulkan",
+        "vulkan-memory-allocator"
       ]
     },
     "cuda": {

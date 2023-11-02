@@ -3,21 +3,14 @@ vcpkg_check_linkage(ONLY_DYNAMIC_LIBRARY)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO pytorch/pytorch
-    REF "v${VERSION}" # 7bcf7da3a268b435777fe87c7794c382f444e86d
+    REF "v${VERSION}"
     SHA512 e2fec0fa5e7c6f7445ba16f795578629646ca78c94c74ef89bf1748e98db21fba23aa98f7cce23bcda5420eae89400e02fc3dd047129916cecbc36e579a03908
     HEAD_REF master
     PATCHES
-        #pytorch-pr-85958.patch # https://github.com/pytorch/pytorch/pull/85958
-        #fix-cmake.patch
-        #fix-fbgemm-include.patch
-        #fix-c10-glog.patch
-        #use-flatbuffers2.patch # check with codegen-flatc-mobile_bytecode
-        #fix-windows.patch # https://github.com/pytorch/pytorch/issues/87957
-        #fix_werror.patch
         cmake-fixes.patch
+        more-fixes.patch
 )
 file(REMOVE_RECURSE "${SOURCE_PATH}/caffe2/core/macros.h") # We must use generated header files
-
 
 vcpkg_from_github(
     OUT_SOURCE_PATH src_kineto
@@ -38,11 +31,21 @@ vcpkg_from_github(
 file(COPY "${src_cudnn}/" DESTINATION "${SOURCE_PATH}/third_party/cudnn_frontend")
 
 
+vcpkg_from_github(
+    OUT_SOURCE_PATH src_cutlass
+    REPO NVIDIA/cutlass # new port ?
+    REF 6f47420213f757831fae65c686aa471749fa8d60
+    SHA512 f3b3c43fbd7942f96407669405385c9a99274290e99f86cab5bb8657664bf1951e4da27f3069500a4825c427adeec883e05e81302b58390df3a3adb8c08e31ed
+    HEAD_REF main
+)
+file(COPY "${src_cutlass}/" DESTINATION "${SOURCE_PATH}/third_party/cutlass")
+
 file(REMOVE 
   "${SOURCE_PATH}/cmake/Modules/FindBLAS.cmake"
   "${SOURCE_PATH}/cmake/Modules/FindLAPACK.cmake"
   "${SOURCE_PATH}/cmake/Modules/FindCUDA.cmake"
   "${SOURCE_PATH}/cmake/Modules/FindCUDAToolkit.cmake"
+  "${SOURCE_PATH}/cmake/Modules/Findpybind11.cmake"
 )
 
 find_program(FLATC NAMES flatc PATHS "${CURRENT_HOST_INSTALLED_DIR}/tools/flatbuffers" REQUIRED NO_DEFAULT_PATH NO_CMAKE_PATH)
@@ -69,7 +72,6 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
   FEATURES
     dist    USE_DISTRIBUTED # MPI, Gloo, TensorPipe
     zstd    USE_ZSTD
-    zstd    USE_SYSTEM_ZSTD
     fftw3   USE_FFTW
     fftw3   AT_FFTW_ENABLED
     fbgemm  USE_FBGEMM
@@ -89,17 +91,16 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     cuda    AT_CUDA_ENABLED
     cuda    AT_CUDNN_ENABLED
     vulkan  USE_VULKAN
-    vulkan  USE_VULKAN_WRAPPER
-    vulkan  USE_VULKAN_SHADERC_RUNTIME
+    #vulkan  USE_VULKAN_SHADERC_RUNTIME
     vulkan  USE_VULKAN_RELAXED_PRECISION
     rocm    USE_ROCM  # This is an alternative not a feature! (Not in vcpkg.json!)
     llvm    USE_LLVM
     nnpack  USE_NNPACK  # todo: check use of `DISABLE_NNPACK_AND_FAMILY`
     nnpack  AT_NNPACK_ENABLED
     xnnpack USE_XNNPACK
-    xnnpack USE_SYSTEM_XNNPACK
     qnnpack USE_QNNPACK # todo: check use of `USE_PYTORCH_QNNPACK`
     python  BUILD_PYTHON
+    python  USE_NUMPY
 )
 
 #if(CMAKE_CXX_COMPILER_ID MATCHES GNU) # this does nothing
@@ -116,20 +117,6 @@ if("dist" IN_LIST FEATURES)
     list(APPEND FEATURE_OPTIONS -DUSE_GLOO=${VCPKG_TARGET_IS_LINUX})
 endif()
 
-# BLAS: MKL, OpenBLAS, or Accelerate
-#   The feature will be disabled if "generic" BLAS is not found
-#if(VCPKG_TARGET_IS_OSX OR VCPKG_TARGET_IS_IOS)
-#    list(APPEND BLAS_OPTIONS -DBLAS=Accelerate -DUSE_BLAS=ON)
-#elseif(VCPKG_TARGET_IS_WINDOWS)
-#    list(APPEND BLAS_OPTIONS -DBLAS=OpenBLAS -DUSE_BLAS=ON)
-#elseif(VCPKG_TARGET_IS_LINUX)
-#    list(APPEND BLAS_OPTIONS -DBLAS=generic -DUSE_BLAS=ON)
-#endif()
-
-if("tbb" IN_LIST FEATURES)
-    list(APPEND FEATURE_OPTIONS -DMKLDNN_CPU_RUNTIME=TBB)
-endif()
-
 if(VCPKG_TARGET_IS_ANDROID OR VCPKG_TARGET_IS_IOS)
     list(APPEND FEATURE_OPTIONS -DINTERN_BUILD_MOBILE=ON)
 else()
@@ -142,19 +129,18 @@ vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     DISABLE_PARALLEL_CONFIGURE
     OPTIONS
+        #--trace-expand
         ${FEATURE_OPTIONS}
         -DProtobuf_PROTOC_EXECUTABLE:FILEPATH=${PROTOC}
         -DCAFFE2_CUSTOM_PROTOC_EXECUTABLE:FILEPATH=${PROTOC}
         -DPYTHON_EXECUTABLE:FILEPATH=${PYTHON3}
-        -DPython3_EXECUTABLE:FILEPATH=${PYTHON3}
+        #-DPython3_EXECUTABLE:FILEPATH=${PYTHON3}
         -DCAFFE2_USE_MSVC_STATIC_RUNTIME=${USE_STATIC_RUNTIME}
         -DBUILD_CUSTOM_PROTOBUF=OFF
         -DUSE_LITE_PROTO=OFF
         -DBUILD_TEST=OFF
         -DATEN_NO_TEST=ON
         -DUSE_SYSTEM_LIBS=ON
-        -DBUILD_PYTHON=OFF
-        -DUSE_NUMPY=OFF
         -DUSE_METAL=OFF
         -DUSE_PYTORCH_METAL=OFF
         -DUSE_PYTORCH_METAL_EXPORT=OFF
@@ -162,19 +148,24 @@ vcpkg_cmake_configure(
         -DUSE_GLOG=ON
         -DUSE_LMDB=ON
         -DUSE_ITT=OFF
-        -DUSE_ROCKSDB=OFF
-        -DUSE_OBSERVERS=OFF 
+        -DUSE_ROCKSDB=ON
+        -DUSE_OBSERVERS=OFF
         -DUSE_PYTORCH_QNNPACK=OFF
         -DUSE_KINETO=OFF
         -DUSE_ROCM=OFF
-        -DUSE_DEPLOY=OFF
         -DUSE_NUMA=OFF
         -DUSE_SYSTEM_ONNX=ON
         -DUSE_SYSTEM_FP16=ON
         -DUSE_SYSTEM_EIGEN_INSTALL=ON
         -DUSE_SYSTEM_CPUINFO=ON
         -DUSE_SYSTEM_PTHREADPOOL=ON
-        -DUSE_MPI=${VCPKG_TARGET_IS_LINUX}
+        -DUSE_SYSTEM_PYBIND11=ON
+        -DUSE_SYSTEM_ZSTD=ON
+        -DUSE_SYSTEM_XNNPACK=ON
+        -DUSE_SYSTEM_GLOO=ON
+        -DUSE_SYSTEM_NCCL=ON
+        -DUSE_SYSTEM_LIBS=ON
+        #-DUSE_MPI=${VCPKG_TARGET_IS_LINUX}
         -DBUILD_JNI=${VCPKG_TARGET_IS_ANDROID}
         -DUSE_NNAPI=${VCPKG_TARGET_IS_ANDROID}
         ${BLAS_OPTIONS}
@@ -182,13 +173,12 @@ vcpkg_cmake_configure(
         # BLAS=MKL not supported in this port
         -DUSE_MKLDNN=OFF
         -DUSE_MKLDNN_CBLAS=OFF
-        -DCAFFE2_USE_MKL=OFF
-        -DCAFFE2_USE_MKLDNN=OFF
-        -DAT_MKL_ENABLED=OFF
+        -DCAFFE2_USE_MKL=ON
+        -DAT_MKL_ENABLED=ON
         -DAT_MKLDNN_ENABLED=OFF
         -DUSE_OPENCL=ON
         -DUSE_NUMPY=ON
-        -DUSE_MAGMA=OFF
+        -DUSE_MAGMA=ON
         -DUSE_KINETO=OFF #
     OPTIONS_RELEASE
       -DPYTHON_LIBRARY=${CURRENT_INSTALLED_DIR}/lib/python3.lib
@@ -197,7 +187,6 @@ vcpkg_cmake_configure(
     MAYBE_UNUSED_VARIABLES
         USE_NUMA
         USE_SYSTEM_BIND11
-        USE_VULKAN_WRAPPER
         MKLDNN_CPU_RUNTIME
 )
 vcpkg_cmake_build(TARGET __aten_op_header_gen LOGFILE_BASE build-header_gen) # explicit codegen is required
