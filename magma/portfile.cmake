@@ -1,3 +1,5 @@
+vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
+
 vcpkg_download_distfile(
     dist_file
     URLS https://icl.utk.edu/projectsfiles/magma/downloads/magma-2.7.2.tar.gz
@@ -68,4 +70,4 @@ file(REMOVE_RECURSE
   "${CURRENT_INSTALLED_DIR}/debug/share"
 )
 
-vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/docs/license.rst")
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYRIGHT")
