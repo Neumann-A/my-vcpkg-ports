@@ -5,12 +5,12 @@
   "homepage": "www.afterstep.org",
   "license": null,
   "dependencies": [
+    "dirent",
+    "freetype",
+    "giflib",
     "libjpeg-turbo",
     "libpng",
     "tiff",
-    "giflib",
-    "zlib",
-    "dirent",
-    "freetype"
+    "zlib"
   ]
 }

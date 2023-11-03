@@ -5,29 +5,29 @@
   "homepage": "https://www.salome-platform.org",
   "license": "GPL-2.0-or-later",
   "dependencies": [
+    "boost-atomic",
+    "boost-chrono",
+    "boost-date-time",
+    "boost-filesystem",
+    "boost-regex",
+    "boost-serialization",
+    "boost-system",
+    "boost-thread",
     {
       "name": "hdf5",
       "default-features": false
     },
-    "python3",
     "libxml2",
     "numpy",
-    "salome-configuration",
-    "pthreads",
-    "boost-atomic",
-    "boost-filesystem",
-    "boost-regex",
-    "boost-system",
-    "boost-thread",
-    "boost-date-time",
-    "boost-chrono",
-    "boost-serialization",
     "omniorb",
     "omniorbpy",
+    "pthreads",
+    "python3",
     {
       "name": "python3",
       "host": true
     },
+    "salome-configuration",
     {
       "name": "vcpkg-cmake",
       "host": true

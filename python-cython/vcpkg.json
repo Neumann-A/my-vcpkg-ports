@@ -5,8 +5,8 @@
   "homepage": "https://cython.org/",
   "license": "Apache-2.0",
   "dependencies": [
-    "python3",
+    "pypa-setuptools",
     "python-pypa-scripts",
-    "pypa-setuptools"
+    "python3"
   ]
 }

@@ -5,11 +5,13 @@
   "homepage": "pluggy.readthedocs.io/en/latest/",
   "license": "MIT",
   "dependencies": [
-    "python3",
-    { "name": "python-pypa-scripts",
-"host": true    },
     "pypa-setuptools",
     "pypa-setuptools-scm",
-    "python-tomli-wheel"
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python-tomli-wheel",
+    "python3"
   ]
 }

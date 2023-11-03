@@ -5,10 +5,12 @@
   "homepage": "hatch.pypa.io/latest/",
   "license": "MIT",
   "dependencies": [
-    "python3",
-    { "name": "python-pypa-scripts",
-"host": true    },
+    "pypa-hatchling",
     "pypa-wheel",
-    "pypa-hatchling"
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
   ]
 }

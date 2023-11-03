@@ -6,13 +6,18 @@
   "license": null,
   "dependencies": [
     {
-        "name": "libtorch",
-        "default-features": false
+      "name": "ffmpeg",
+      "default-features": false,
+      "features": [
+        "avcodec",
+        "avdevice",
+        "avfilter",
+        "avformat"
+      ]
     },
     {
-        "name": "ffmpeg",
-        "features": [  "avcodec", "avformat", "avdevice", "avfilter"],
-        "default-features": false
+      "name": "libtorch",
+      "default-features": false
     },
     {
       "name": "vcpkg-cmake",
@@ -23,22 +28,24 @@
       "host": true
     }
   ],
-    "default-features": [
-    "cuda"],
+  "default-features": [
+    "cuda"
+  ],
   "features": {
     "cuda": {
       "description": "Build with CUDA GPU backend",
       "dependencies": [
         "cuda",
         {
-        "name": "libtorch",
-        "features": ["cuda"],
-        "default-features": false
+          "name": "libtorch",
+          "default-features": false,
+          "features": [
+            "cuda"
+          ]
         }
-        ]
+      ]
     },
-  
-        "python": {
+    "python": {
       "description": "Build python extension",
       "dependencies": [
         "python3"

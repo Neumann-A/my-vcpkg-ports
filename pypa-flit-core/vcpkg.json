@@ -5,6 +5,6 @@
   "homepage": "flit.pypa.io/",
   "license": "BSD-3-Clause",
   "dependencies": [
-  "python3"
-]
+    "python3"
+  ]
 }

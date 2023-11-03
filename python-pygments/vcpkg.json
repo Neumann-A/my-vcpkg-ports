@@ -5,11 +5,13 @@
   "homepage": "pygments.org/",
   "license": "BSD-2-Clause",
   "dependencies": [
-    "python3",
-    { "name": "python-pypa-scripts",
-"host": true    },
-    "pypa-setuptools",
     "pypa-packaging",
-    "python-typing-extensions"
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python-typing-extensions",
+    "python3"
   ]
 }

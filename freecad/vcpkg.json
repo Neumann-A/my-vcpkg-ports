@@ -5,26 +5,23 @@
   "homepage": "www.freecad.org",
   "license": "GPL-2.0-or-later",
   "dependencies": [
+    "boost-assign",
+    "boost-convert",
     "boost-date-time",
     "boost-filesystem",
+    "boost-geometry",
     "boost-program-options",
+    "boost-python",
     "boost-regex",
+    "boost-statechart",
     "boost-system",
     "boost-thread",
-    "boost-python",
-    "boost-convert",
-    "boost-assign",
-    "boost-geometry",
-    "boost-statechart",
     "coin",
     "eigen3",
     "freetype",
     "matplotlib-cpp",
     "med-fichier",
     "netgen",
-    "salome-smesh",
-    "salome-netgenplugin",
-    "pivy",
     {
       "name": "opencascade",
       "default-features": false
@@ -39,13 +36,14 @@
       "name": "pcl",
       "default-features": false,
       "features": [
+        "opengl",
         "qt",
-        "visualization",
-        "vtk",
         "simulation",
-        "opengl"
+        "visualization",
+        "vtk"
       ]
     },
+    "pivy",
     "pyside",
     "python3",
     "qtsvg",
@@ -53,6 +51,8 @@
       "name": "qtwebengine",
       "default-features": false
     },
+    "salome-netgenplugin",
+    "salome-smesh",
     {
       "name": "vcpkg-cmake",
       "host": true

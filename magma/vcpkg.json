@@ -5,16 +5,16 @@
   "homepage": "https://icl.utk.edu/magma/",
   "license": null,
   "dependencies": [
-    {
-      "name": "vcpkg-cmake-config",
-      "host": true
-    },
+    "blas",
+    "cuda",
+    "lapack",
     {
       "name": "vcpkg-cmake",
       "host": true
     },
-    "cuda",
-    "blas",
-    "lapack"
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
   ]
 }

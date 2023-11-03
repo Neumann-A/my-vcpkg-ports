@@ -5,6 +5,9 @@
   "homepage": "https://github.com/jupyter-xeus/xeus-zmq",
   "license": "BSD-3-Clause",
   "dependencies": [
+    "cppzmq",
+    "nlohmann-json",
+    "openssl",
     {
       "name": "vcpkg-cmake",
       "host": true
@@ -13,9 +16,6 @@
       "name": "vcpkg-cmake-config",
       "host": true
     },
-    "cppzmq",
-    "nlohmann-json",
-    "openssl",
     "xeus",
     "zeromq"
   ]

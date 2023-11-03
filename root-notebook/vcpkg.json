@@ -2,11 +2,10 @@
   "name": "root-notebook",
   "version": "1",
   "description": "",
-  "homepage": "",
   "license": null,
   "dependencies": [
     "python3",
-    "vcpkg-get-python-packages",
-    "root"
+    "root",
+    "vcpkg-get-python-packages"
   ]
 }

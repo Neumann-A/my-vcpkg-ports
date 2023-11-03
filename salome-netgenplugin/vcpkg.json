@@ -5,15 +5,15 @@
   "homepage": "https://www.salome-platform.org",
   "license": "GPL-2.0-or-later",
   "dependencies": [
-    "salome-configuration",
-    "salome-kernel",
-    "salome-geom",
-    "salome-smesh",
     "boost-polygon",
     {
       "name": "python3",
       "host": true
     },
+    "salome-configuration",
+    "salome-geom",
+    "salome-kernel",
+    "salome-smesh",
     {
       "name": "vcpkg-cmake",
       "host": true

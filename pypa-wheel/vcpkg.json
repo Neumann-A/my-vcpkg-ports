@@ -5,10 +5,12 @@
   "homepage": "https://github.com/pypa/wheel",
   "license": "MIT",
   "dependencies": [
-    "python3",
     "pypa-build",
     "pypa-installer",
-    { "name": "python-pypa-scripts",
-"host": true    }
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
   ]
 }

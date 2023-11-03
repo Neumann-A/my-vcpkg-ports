@@ -5,8 +5,8 @@
   "homepage": "https://github.com/JuliaLinearAlgebra/libblastrampoline",
   "license": "MIT",
   "dependencies": [
-    "lapack",
     "blas",
+    "lapack",
     {
       "name": "vcpkg-cmake",
       "host": true

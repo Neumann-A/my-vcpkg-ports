@@ -5,38 +5,38 @@
   "homepage": "julialang.org",
   "license": "MIT",
   "dependencies": [
-    "lapack",
     "blas",
-    "gmp",
-    "mpfr",
-    "pcre2",
-    "libgit2",
-    "mbedtls",
-    "libssh2",
     "curl",
-    "libuv",
-    "zlib",
-    "utf8proc",
-    "suitesparse",
-    "nghttp2",
     "dsfmt",
-    "julia-libblastrampoline",
-    "libwhich",
     "getopt",
+    "gmp",
+    "julia-libblastrampoline",
+    "lapack",
+    "libgit2",
+    "libssh2",
+    "libuv",
+    "libwhich",
     {
-        "name": "llvm",
-        "default-features": false,
-        "features" : [
-            "lld"
-        ]
+      "name": "llvm",
+      "default-features": false,
+      "features": [
+        "lld"
+      ]
+    },
+    "mbedtls",
+    "mpfr",
+    "nghttp2",
+    "pcre2",
+    "suitesparse",
+    "utf8proc",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
     },
     {
       "name": "vcpkg-cmake-get-vars",
       "host": true
     },
-    {
-      "name": "vcpkg-cmake",
-      "host": true
-    }
+    "zlib"
   ]
 }

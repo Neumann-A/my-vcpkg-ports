@@ -18,6 +18,15 @@
     }
   ],
   "features": {
+    "draco": {
+      "description": "Enable optional usage of draco",
+      "dependencies": [
+        {
+          "name": "draco",
+          "default-features": false
+        }
+      ]
+    },
     "freeimage": {
       "description": "Enable optional usage of freeimage",
       "dependencies": [
@@ -41,15 +50,6 @@
       "dependencies": [
         {
           "name": "vtk",
-          "default-features": false
-        }
-      ]
-    },
-    "draco": {
-      "description": "Enable optional usage of draco",
-      "dependencies": [
-        {
-          "name": "draco",
           "default-features": false
         }
       ]

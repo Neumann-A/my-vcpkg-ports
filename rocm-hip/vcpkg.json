@@ -5,6 +5,15 @@
   "homepage": "rocmdocs.amd.com/projects/HIP/",
   "license": "MIT",
   "dependencies": [
+    "amd-comgr",
+    {
+      "name": "llvm",
+      "features": [
+        "target-amdgpu"
+      ]
+    },
+    "opencl",
+    "opengl",
     {
       "name": "vcpkg-cmake",
       "host": true
@@ -12,14 +21,6 @@
     {
       "name": "vcpkg-cmake-config",
       "host": true
-    },
-    "amd-comgr",
-    {
-      "name": "llvm",
-      "features": [ "target-amdgpu"]
-    },
-    "opencl",
-    "opengl"
-
+    }
   ]
 }

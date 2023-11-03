@@ -5,6 +5,18 @@
   "homepage": "rocmdocs.amd.com/projects/HIP/",
   "license": "MIT",
   "dependencies": [
+    "amd-device-libs",
+    {
+      "name": "llvm",
+      "default-features": false,
+      "features": [
+        "clang",
+        "lldb",
+        "target-amdgpu",
+        "target-x86"
+      ]
+    },
+    "opencl",
     {
       "name": "vcpkg-cmake",
       "host": true
@@ -12,14 +24,6 @@
     {
       "name": "vcpkg-cmake-config",
       "host": true
-    },
-    {
-      "name": "llvm",
-      "features": [ "target-amdgpu" ,"clang", "lldb",  "target-x86"],
-      "default-features": false
-    },
-    "opencl",
-    "amd-device-libs"
-
+    }
   ]
 }

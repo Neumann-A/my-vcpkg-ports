@@ -5,9 +5,9 @@
   "license": "LGPL-2.1-or-later",
   "supports": "!uwp",
   "dependencies": [
+    "omniorb",
     "openssl",
     "python3",
-    "omniorb",
     {
       "name": "python3",
       "host": true

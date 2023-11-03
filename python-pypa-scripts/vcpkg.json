@@ -5,10 +5,9 @@
   "license": "MIT",
   "supports": "native",
   "dependencies": [
-  "python3",
-  "pypa-build",
-  "pypa-installer",
-  "pypa-flit-core"
+    "pypa-build",
+    "pypa-flit-core",
+    "pypa-installer",
+    "python3"
   ]
-  
 }

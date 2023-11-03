@@ -6,11 +6,11 @@
   "license": null,
   "dependencies": [
     {
-      "name": "vcpkg-cmake-get-vars",
+      "name": "vcpkg-cmake",
       "host": true
     },
     {
-      "name": "vcpkg-cmake",
+      "name": "vcpkg-cmake-get-vars",
       "host": true
     }
   ]

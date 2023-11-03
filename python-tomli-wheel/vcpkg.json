@@ -5,9 +5,11 @@
   "homepage": "pypa-build.readthedocs.io/en/stable/",
   "license": "MIT",
   "dependencies": [
-    "python3",
-    { "name": "python-pypa-scripts",
-    "host": true    },
-    "pypa-wheel"
+    "pypa-wheel",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
   ]
 }

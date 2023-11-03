@@ -5,6 +5,9 @@
   "homepage": "https://www.numpy.org/",
   "license": "BSD-3-Clause",
   "dependencies": [
+    "blas",
+    "lapack",
+    "python3",
     {
       "name": "vcpkg-get-python-packages",
       "host": true
@@ -12,9 +15,6 @@
     {
       "name": "vcpkg-tool-meson",
       "host": true
-    },
-    "python3",
-    "blas",
-    "lapack"
+    }
   ]
 }

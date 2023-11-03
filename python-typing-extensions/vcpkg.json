@@ -5,9 +5,11 @@
   "homepage": "https://github.com/python/typing_extensions",
   "license": null,
   "dependencies": [
-    "python3",
-    { "name": "python-pypa-scripts",
-"host": true    },
-    "pypa-setuptools"
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
   ]
 }

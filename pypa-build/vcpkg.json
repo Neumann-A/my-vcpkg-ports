@@ -5,9 +5,9 @@
   "homepage": "pypa-build.readthedocs.io/en/stable/",
   "license": "MIT",
   "dependencies": [
-    "python3",
+    "pypa-packaging",
     "pypa-pyproject-hooks",
     "python-tomli",
-    "pypa-packaging"
+    "python3"
   ]
 }

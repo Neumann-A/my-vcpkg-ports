@@ -5,19 +5,35 @@
   "homepage": "https://wiki.qt.io/Qt_for_Python",
   "license": null,
   "dependencies": [
-    "python3",
+    "libxslt",
+    {
+      "name": "llvm",
+      "default-features": false,
+      "features": [
+        "clang"
+      ]
+    },
     "numpy",
+    "python3",
     {
       "name": "python3",
       "host": true
     },
     {
-      "name":"qtbase",
-      "features": [ "gui", "concurrent", "widgets", "network", "opengl"]
+      "name": "qtbase",
+      "features": [
+        "concurrent",
+        "gui",
+        "network",
+        "opengl",
+        "widgets"
+      ]
     },
     {
-      "name":"qtwebengine",
-      "features": [ "webchannel"]
+      "name": "qtwebengine",
+      "features": [
+        "webchannel"
+      ]
     },
     {
       "name": "vcpkg-cmake",
@@ -26,12 +42,6 @@
     {
       "name": "vcpkg-cmake-config",
       "host": true
-    },
-    {
-      "name": "llvm",
-      "features": ["clang"],
-      "default-features": false
-    },
-    "libxslt"
+    }
   ]
 }

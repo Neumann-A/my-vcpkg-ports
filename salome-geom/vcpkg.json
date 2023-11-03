@@ -5,21 +5,16 @@
   "homepage": "https://www.salome-platform.org",
   "license": "GPL-2.0-or-later",
   "dependencies": [
-    "salome-configuration",
-    "salome-kernel",
     {
       "name": "opencascade",
       "default-features": false
     },
     {
-      "name": "vtk",
-      "default-features": false,
-      "features" : ["paraview","python"]
-    },
-    {
       "name": "python3",
       "host": true
     },
+    "salome-configuration",
+    "salome-kernel",
     {
       "name": "vcpkg-cmake",
       "host": true
@@ -27,6 +22,14 @@
     {
       "name": "vcpkg-cmake-config",
       "host": true
+    },
+    {
+      "name": "vtk",
+      "default-features": false,
+      "features": [
+        "paraview",
+        "python"
+      ]
     }
   ]
 }
