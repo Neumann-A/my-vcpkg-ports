@@ -1,0 +1,47 @@
+{
+  "name": "torchvision",
+  "version": "0.16.0",
+  "description": "The torchvision package consists of popular datasets, model architectures, and common image transformations for computer vision.",
+  "homepage": "https://pytorch.org/vision",
+  "license": null,
+  "dependencies": [
+    "libjpeg-turbo",
+    "libpng",
+    {
+      "name": "libtorch",
+      "default-features": false
+    },
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ],
+  "default-features": [
+    "cuda"
+  ],
+  "features": {
+    "cuda": {
+      "description": "Build with CUDA GPU backend",
+      "dependencies": [
+        "cuda",
+        {
+          "name": "libtorch",
+          "default-features": false,
+          "features": [
+            "cuda"
+          ]
+        }
+      ]
+    },
+    "python": {
+      "description": "Build python extension",
+      "dependencies": [
+        "python3"
+      ]
+    }
+  }
+}
