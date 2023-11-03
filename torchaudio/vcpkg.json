@@ -1,0 +1,48 @@
+{
+  "name": "torchaudio",
+  "version": "2.1.0",
+  "description": "Data manipulation and transformation for audio signal processing, powered by PyTorch",
+  "homepage": "https://pytorch.org/audio",
+  "license": null,
+  "dependencies": [
+    {
+        "name": "libtorch",
+        "default-features": false
+    },
+    {
+        "name": "ffmpeg",
+        "features": [  "avcodec", "avformat", "avdevice", "avfilter"],
+        "default-features": false
+    },
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ],
+    "default-features": [
+    "cuda"],
+  "features": {
+    "cuda": {
+      "description": "Build with CUDA GPU backend",
+      "dependencies": [
+        "cuda",
+        {
+        "name": "libtorch",
+        "features": ["cuda"],
+        "default-features": false
+        }
+        ]
+    },
+  
+        "python": {
+      "description": "Build python extension",
+      "dependencies": [
+        "python3"
+      ]
+    }
+  }
+}
