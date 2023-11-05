@@ -16,7 +16,7 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     openmp      USE_OPENMP
     cuda        USE_CUDA
     cuda        BUILD_CUDA_CTC_DECODER
-    python      BUILD_TORCHAUDIO_PYTHON_EXTENSION
+    extension   BUILD_TORCHAUDIO_PYTHON_EXTENSION
 )
 
 if(VCPKG_TARGET_IS_WINDOWS)
@@ -38,7 +38,7 @@ file(REMOVE_RECURSE
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
-if("python" IN_LIST FEATURES)
-  file(COPY "${SOURCE_PATH}/torchaudio" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/")
-  #pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")# OPTIONS -x)
-endif()
+file(COPY "${SOURCE_PATH}/torchaudio" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/")
+file(REMOVE "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/torchaudio/lib")
+file(RENAME "${CURRENT_PACKAGES_DIR}/lib/" "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/torchaudio/lib")
+
