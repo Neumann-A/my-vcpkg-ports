@@ -1,0 +1,16 @@
+diff --git a/torchaudio/csrc/rnnt/macros.h b/torchaudio/csrc/rnnt/macros.h
+index abcbc39966..efbbc4f2b2 100644
+--- a/torchaudio/csrc/rnnt/macros.h
++++ b/torchaudio/csrc/rnnt/macros.h
+@@ -16,6 +16,11 @@
+ #include <cstring>
+ #include <iostream>
+ 
++#undef INFO
++#undef WARNING
++#undef ERROR
++#undef FATAL
++
+ typedef enum { INFO = 0, WARNING = 1, ERROR = 2, FATAL = 3 } level_t;
+ 
+ const char* ToString(level_t level);

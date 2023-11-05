@@ -6,7 +6,9 @@ vcpkg_from_github(
     REF "v${VERSION}"
     SHA512 6860e91b87d1ce5b08149dc0192ad5c895520f75c7220bed52b3de64b3e87e9ec39c6fd6596cdf7f5d989e7821e9c04f253112f980a07107eb7f7eaf608d325f
     HEAD_REF main
-    PATCHES fix-build.patch
+    PATCHES 
+      fix-build.patch
+      fix_cuda.patch
 )
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
