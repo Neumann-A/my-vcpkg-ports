@@ -1,0 +1,28 @@
+{
+  "name": "sox",
+  "version": "14.4.2",
+  "description": "SoX is the Swiss Army Knife of sound processing utilities. It can convert audio files to other popular audio file types and also apply sound effects and filters during the conversion.",
+  "homepage": "https://sourceforge.net/projects/soxr/",
+  "license": null,
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    "mp3lame",
+    "libpng",
+    "libflac",
+    "zlib",
+    "libogg",
+    "libvorbis",
+    "libmad",
+    "libsndfile",
+    "wavpack",
+    "libsndfile",
+    "opusfile",
+    {
+      "name": "alsa",
+      "platform": "linux"
+    }
+  ]
+}

@@ -22,15 +22,23 @@ endif()
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
+        #--trace-expand
         ${FEATURE_OPTIONS}
         -DWITH_PNG=ON
         -DWITH_JPEG=ON
 )
 vcpkg_cmake_install()
+vcpkg_cmake_config_fixup(CONFIG_PATH share/cmake/TorchVision )
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/torchvision/TorchVisionConfig.cmake" "/../../../" "/../../")
 
 file(REMOVE_RECURSE
     "${CURRENT_PACKAGES_DIR}/debug/include"
     "${CURRENT_PACKAGES_DIR}/debug/share"
 )
+
+if("python" IN_LIST FEATURES)
+  file(COPY "${SOURCE_PATH}/torchvision" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/")
+  #pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")# OPTIONS -x)
+endif()
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")

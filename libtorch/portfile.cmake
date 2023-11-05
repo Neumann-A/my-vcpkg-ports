@@ -9,6 +9,7 @@ vcpkg_from_github(
     PATCHES
         cmake-fixes.patch
         more-fixes.patch
+        fix-build.patch
 )
 file(REMOVE_RECURSE "${SOURCE_PATH}/caffe2/core/macros.h") # We must use generated header files
 
@@ -167,11 +168,11 @@ vcpkg_cmake_configure(
         -DUSE_SYSTEM_GLOO=ON
         -DUSE_SYSTEM_NCCL=ON
         -DUSE_SYSTEM_LIBS=ON
+        DUSE_SYSTEM_PYBIND11=ON
         #-DUSE_MPI=${VCPKG_TARGET_IS_LINUX}
         -DBUILD_JNI=${VCPKG_TARGET_IS_ANDROID}
         -DUSE_NNAPI=${VCPKG_TARGET_IS_ANDROID}
         ${BLAS_OPTIONS}
-        -DUSE_SYSTEM_PYBIND11=ON
         # BLAS=MKL not supported in this port
         -DUSE_MKLDNN=OFF
         -DUSE_MKLDNN_CBLAS=OFF
@@ -183,18 +184,28 @@ vcpkg_cmake_configure(
         -DUSE_MAGMA=ON
         -DUSE_KINETO=OFF #
     OPTIONS_RELEASE
-      -DPYTHON_LIBRARY=${CURRENT_INSTALLED_DIR}/lib/python3.lib
+      -DPYTHON_LIBRARY=${CURRENT_INSTALLED_DIR}/lib/python311.lib
     OPTIONS_DEBUG
-      -DPYTHON_LIBRARY=${CURRENT_INSTALLED_DIR}/debug/lib/python3_d.lib
+      -DPYTHON_LIBRARY=${CURRENT_INSTALLED_DIR}/debug/lib/python311_d.lib
     MAYBE_UNUSED_VARIABLES
         USE_NUMA
         USE_SYSTEM_BIND11
         MKLDNN_CPU_RUNTIME
 )
-vcpkg_cmake_build(TARGET __aten_op_header_gen LOGFILE_BASE build-header_gen) # explicit codegen is required
-vcpkg_cmake_build(TARGET torch_cpu  LOGFILE_BASE build-torch_cpu)
+#vcpkg_cmake_build(TARGET __aten_op_header_gen LOGFILE_BASE build-header_gen) # explicit codegen is required
+#vcpkg_cmake_build(TARGET torch_cpu  LOGFILE_BASE build-torch_cpu)
 vcpkg_cmake_install()
 vcpkg_copy_pdbs()
+
+vcpkg_cmake_config_fixup(PACKAGE_NAME caffe2 CONFIG_PATH "share/cmake/Caffe2" DO_NOT_DELETE_PARENT_CONFIG_PATH)
+vcpkg_cmake_config_fixup(PACKAGE_NAME torch CONFIG_PATH "share/cmake/Torch")
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/torch/TorchConfig.cmake" "/../../../" "/../../")
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/caffe2/Caffe2Config.cmake" "/../../../" "/../../")
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/caffe2/Caffe2Config.cmake" 
+  "set(Caffe2_MAIN_LIBS torch_library)" 
+  "set(Caffe2_MAIN_LIBS torch_library)\nfind_dependency(Eigen3)")
+
+
 
 # Traverse the folder and remove "some" empty folders
 function(cleanup_once folder)
@@ -222,16 +233,38 @@ function(cleanup_repeat folder repeat)
         return()
     endif()
     while(repeat GREATER_EQUAL 1)
-        math(EXPR repeat "${repeat} - 1" OUTPUT_FORMAT DECIMAL)   
+        math(EXPR repeat "${repeat} - 1" OUTPUT_FORMAT DECIMAL)
         cleanup_once("${folder}")
     endwhile()
 endfunction()
 
+cleanup_repeat("${CURRENT_PACKAGES_DIR}/include" 5)
+cleanup_repeat("${CURRENT_PACKAGES_DIR}/lib/site-packages" 13)
+
+#file(COPY "${CURRENT_PACKAGES_DIR}/lib/site-packages/" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/" FILES_MATCHING PATTERN "*.py*")
+#file(COPY "${SOURCE_PATH}/torch/" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/torch" FILES_MATCHING PATTERN "*.py*")
+#file(COPY "${SOURCE_PATH}/torchgen/" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/torchgen" FILES_MATCHING PATTERN "*.py*")
+#file(COPY "${SOURCE_PATH}/functorch/" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/torch" FILES_MATCHING PATTERN "*.py*")
+
 file(REMOVE_RECURSE
+   #"${CURRENT_PACKAGES_DIR}/lib/site-packages"
+   #"${CURRENT_PACKAGES_DIR}/debug/lib/site-packages"
     "${CURRENT_PACKAGES_DIR}/debug/include"
     "${CURRENT_PACKAGES_DIR}/debug/share"
-    "${CURRENT_PACKAGES_DIR}/share/cmake/ATen"
+    #"${CURRENT_PACKAGES_DIR}/share/cmake/ATen"
 )
-cleanup_repeat("${CURRENT_PACKAGES_DIR}/include" 5)
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
+
+#file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/torch/_C"
+#file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/torch/_C_flatbuffer"
+
+if("python" IN_LIST FEATURES)
+  set(ENV{USE_SYSTEM_LIBS} 1)
+  vcpkg_replace_string("${SOURCE_PATH}/setup.py" "@TARGET_TRIPLET@" "${TARGET_TRIPLET}-rel")
+  vcpkg_replace_string("${SOURCE_PATH}/tools/setup_helpers/env.py" "@TARGET_TRIPLET@" "${TARGET_TRIPLET}-rel")
+  vcpkg_replace_string("${SOURCE_PATH}/torch/utils/cpp_extension.py" "@TARGET_TRIPLET@" "${TARGET_TRIPLET}-rel")
+  pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
+endif()
+
+set(VCPKG_POLICY_DLLS_WITHOUT_EXPORTS enabled) # torch_global_deps.dll is empty.c and just for linking deps

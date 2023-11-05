@@ -124,7 +124,14 @@
     "python": {
       "description": "Build with python",
       "dependencies": [
-        "python3"
+        "python3",
+        "pypa-setuptools",
+        "python-pypa-scripts",
+        "numpy",
+        "python-typing-extensions",
+        "python-astunparse",
+        "python-six",
+        "python-sympy"
       ]
     },
     "vulkan": {

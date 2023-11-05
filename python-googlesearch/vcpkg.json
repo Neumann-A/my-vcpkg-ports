@@ -1,0 +1,15 @@
+{
+  "name": "python-googlesearch",
+  "version": "3.0.0",
+  "description": "Google search from Python.",
+  "homepage": "https://github.com/MarioVilas/googlesearch",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

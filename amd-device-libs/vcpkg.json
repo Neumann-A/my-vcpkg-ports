@@ -5,16 +5,6 @@
   "homepage": "https://github.com/RadeonOpenCompute/llvm-project/tree/amd-stg-open/amd/device-libs",
   "license": "MIT",
   "dependencies": [
-    {
-      "name": "llvm",
-      "default-features": false,
-      "features": [
-        "clang",
-        "lldb",
-        "target-amdgpu",
-        "target-x86"
-      ]
-    },
     "opencl",
     {
       "name": "vcpkg-cmake",
@@ -23,6 +13,11 @@
     {
       "name": "vcpkg-cmake-config",
       "host": true
+    },
+    {
+      "name": "rocm-llvm",
+      "features": [ "target-amdgpu" ,"clang", "lldb",  "target-x86"],
+      "default-features": false
     }
   ]
 }

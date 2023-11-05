@@ -1,0 +1,240 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9357cefe8c..6e79dc4537 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,8 +1,9 @@
+-cmake_minimum_required(VERSION 2.4)
++cmake_minimum_required(VERSION 3.11)
+ include(CheckIncludeFiles)
+ include(CheckFunctionExists)
+ include(CheckLibraryExists)
+ 
++
+ macro(optional variable header library function source)
+   check_include_files(${header} ${variable}1)
+   if (${variable}1)
+@@ -67,6 +68,16 @@ endmacro(optional4)
+ 
+ project(sox C)
+ 
++set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
++
++include_directories("${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
++link_directories("${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/$<$<CONFIG:DEBUG>:debug/>lib")
++
++set(CMAKE_REQUIRED_INCLUDES "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
++set(CMAKE_REQUIRED_LINK_OPTIONS "${CMAKE_LIBRARY_PATH_FLAG}${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/$<$<CONFIG:DEBUG>:debug/>lib")
++
++find_package(PkgConfig REQUIRED)
++
+ if(CMAKE_COMPILER_IS_GNUCC)
+ 	add_definitions(-fstack-protector -Wall -W -Wmissing-prototypes -Wstrict-prototypes -pedantic -Wno-format -Wno-long-long)
+ endif(CMAKE_COMPILER_IS_GNUCC)
+@@ -122,33 +133,46 @@ endif(CMAKE_COMPILER_IS_GNUCC)
+ optional(HAVE_ID3TAG id3tag.h id3tag id3_file_open "")
+ optional(HAVE_SNDIO sndio.h sndio sio_open sndio)
+ optional(HAVE_AO ao/ao.h ao ao_play ao)
+-optional(HAVE_FLAC FLAC/all.h FLAC FLAC__stream_encoder_new flac)
+-optional(HAVE_MAD_H mad.h mad mad_stream_buffer mp3)
+-optional(HAVE_LAME_LAME_H lame/lame.h mp3lame lame_get_lametag_frame mp3)
+-if (NOT HAVE_LAME_LAME_H)
+-  optional(HAVE_LAME_LAME_H lame.h mp3lame lame_get_lametag_frame mp3)
+-endif (NOT HAVE_LAME_LAME_H)
++
++pkg_check_modules(FLAC REQUIRED IMPORTED_TARGET FLAC)
++set(HAVE_FLAC 1)
++list(APPEND optional_srcs flac)
++list(APPEND optional_libs PkgConfig::FLAC)
++
++pkg_check_modules(MAD REQUIRED IMPORTED_TARGET mad)
++set(HAVE_MAD_H 1)
++list(APPEND optional_srcs mp3)
++list(APPEND optional_libs PkgConfig::MAD)
++
++find_package(mp3lame REQUIRED)
++set(HAVE_LAME_LAME_H 1)
++#list(APPEND optional_srcs mp3)
++list(APPEND optional_libs mp3lame::mp3lame)
++
+ optional(HAVE_TWOLAME_H twolame.h twolame twolame_init mp3)
+ optional(HAVE_MAGIC magic.h magic magic_open "")
+-optional2(HAVE_PNG png.h png png_set_rows z uncompress spectrogram)
+-if (HAVE_PNG)
+-  check_library_exists(z uncompress "" spectrogram1)
+-  if (${spectrogram1})
+-    set(optional_libs ${optional_libs} z)
+-  endif (${spectrogram1})
+-endif (HAVE_PNG)
++
++find_package(PNG REQUIRED)
++set(HAVE_PNG 1)
++list(APPEND optional_srcs spectrogram)
++list(APPEND optional_libs PNG::PNG)
++find_package(ZLIB REQUIRED)
++set(HAVE_ZLIB 1)
++#list(APPEND optional_srcs spectrogram)
++list(APPEND optional_libs ZLIB::ZLIB)
++
+ optional2(HAVE_PULSEAUDIO pulse/simple.h pulse-simple pa_simple_new pulse pa_strerror pulseaudio)
+-optional(HAVE_SNDFILE sndfile.h sndfile sf_open_virtual sndfile)
+-optional(HAVE_SNDFILE sndfile.h sndfile sf_open_virtual caf)
+-optional(HAVE_SNDFILE sndfile.h sndfile sf_open_virtual fap)
+-optional(HAVE_SNDFILE sndfile.h sndfile sf_open_virtual mat4)
+-optional(HAVE_SNDFILE sndfile.h sndfile sf_open_virtual mat5)
+-optional(HAVE_SNDFILE sndfile.h sndfile sf_open_virtual paf)
+-optional(HAVE_SNDFILE sndfile.h sndfile sf_open_virtual pvf)
+-optional(HAVE_SNDFILE sndfile.h sndfile sf_open_virtual sd2)
+-optional(HAVE_SNDFILE sndfile.h sndfile sf_open_virtual w64)
+-optional(HAVE_SNDFILE sndfile.h sndfile sf_open_virtual xi)
+-optional(HAVE_SPEEXDSP speex/speex_preprocess.h speexdsp speex_preprocess_run speexdsp)
++
++pkg_check_modules(SNDFILE REQUIRED IMPORTED_TARGET sndfile)
++set(HAVE_SNDFILE 1)
++list(APPEND optional_srcs sndfile caf fap mat4 mat5 paf pvf sd2 w64 xi)
++list(APPEND optional_libs PkgConfig::SNDFILE)
++
++#pkg_check_modules(SPEEXDSP REQUIRED IMPORTED_TARGET speexdsp)
++#set(HAVE_SPEEXDSP 1)
++#list(APPEND optional_srcs speexdsp)
++#list(APPEND optional_libs PkgConfig::SPEEXDSP)
++
+ optional(HAVE_SUN_AUDIOIO_H sun/audioio.h c ioctl sunaudio)
+ if (NOT HAVE_SUN_AUDIOIO_H)
+   optional(HAVE_SYS_AUDIOIO_H sys/audioio.h c ioctl sunaudio)
+@@ -158,16 +182,30 @@ if (NOT HAVE_SYS_SOUNDCARD_H)
+   optional(HAVE_MACHINE_SOUNDCARD_H machine/soundcard.h ossaudio _oss_ioctl oss)
+ endif (NOT HAVE_SYS_SOUNDCARD_H)
+ optional(HAVE_WAVEAUDIO mmsystem.h winmm waveInGetDevCapsA waveaudio)
+-optional4(HAVE_OGG_VORBIS vorbis/codec.h ogg ogg_stream_flush vorbis vorbis_analysis_headerout vorbisfile ov_clear vorbisenc vorbis_encode_init_vbr vorbis)
+-optional3(HAVE_OPUS opusfile.h ogg ogg_stream_flush opus opus_encoder_create opusfile op_open_callbacks opus)
+-optional(HAVE_WAVPACK wavpack/wavpack.h wavpack WavpackGetSampleRate wavpack)
++
++pkg_check_modules(OGG_VORBIS REQUIRED IMPORTED_TARGET ogg vorbis vorbisfile)
++set(HAVE_OGG_VORBIS 1)
++list(APPEND optional_srcs vorbis)
++list(APPEND optional_libs PkgConfig::OGG_VORBIS)
++
++pkg_check_modules(OPUSFILE REQUIRED IMPORTED_TARGET opusfile)
++set(HAVE_OPUS 1)
++list(APPEND optional_srcs opus)
++list(APPEND optional_libs PkgConfig::OPUSFILE)
++
++pkg_check_modules(WAVPACK REQUIRED IMPORTED_TARGET wavpack)
++set(HAVE_WAVPACK 1)
++list(APPEND optional_srcs wavpack)
++list(APPEND optional_libs PkgConfig::WAVPACK)
+ 
+ if (HAVE_LAME_LAME_H OR HAVE_MAD_H)
+   set(HAVE_MP3 1)
+ endif (HAVE_LAME_LAME_H OR HAVE_MAD_H)
+ 
+ set(CMAKE_REQUIRED_LIBRARIES mp3lame m)
+-check_function_exists("lame_set_VBR_quality" HAVE_LAME_SET_VBR_QUALITY)
++#check_function_exists("lame_set_VBR_quality" HAVE_LAME_SET_VBR_QUALITY)
++
++set(HAVE_LAME_SET_VBR_QUALITY 1)
+ 
+ if (HAVE_SUN_AUDIOIO_H OR HAVE_SYS_AUDIOIO_H)
+   set(HAVE_SUN_AUDIO 1)
+diff --git a/libgsm/CMakeLists.txt b/libgsm/CMakeLists.txt
+index 3422285577..1935d3a704 100644
+--- a/libgsm/CMakeLists.txt
++++ b/libgsm/CMakeLists.txt
+@@ -1 +1,2 @@
+ add_library(gsm add code decode gsm_create gsm_decode gsm_destroy gsm_encode gsm_option long_term lpc preprocess rpe short_term table)
++install(TARGETS gsm)
+diff --git a/lpc10/CMakeLists.txt b/lpc10/CMakeLists.txt
+index cb8b459ebc..9429bbf170 100644
+--- a/lpc10/CMakeLists.txt
++++ b/lpc10/CMakeLists.txt
+@@ -2,3 +2,4 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
+ 
+ add_library(lpc10 analys bsynz chanwr dcbias decode deemp difmag dyptrk encode energy f2clib ham84 hp100 invert irc2pc ivfilt lpcdec lpcenc lpcini lpfilt median mload onset pitsyn placea placev preemp prepro random rcchk synths tbdm voicin vparms)
+ include_directories(${CMAKE_CURRENT_BINARY_DIR}/../src)
++install(TARGETS lpc10)
+diff --git a/sox.pc.in b/sox.pc.in
+index ea57b2b649..fd0a7f53de 100644
+--- a/sox.pc.in
++++ b/sox.pc.in
+@@ -1,12 +1,13 @@
+ prefix=@prefix@
+ exec_prefix=@exec_prefix@
+-libdir=@libdir@
++libdir=${prefix}/lib
+-includedir=@includedir@
++includedir=${prefix}/include
+ 
+ Name: SoX
+ Description: Audio file format and effects library
+ Version: @VERSION@
+ URL: http://sox.sourceforge.net
++Requires: zlib libpng wavpack mad ogg vorbis speexdsp FLAC opusfile sndfile
+ Libs: -L${libdir} -lsox
+ Libs.private: @LIBS@
+ Cflags: -I${includedir}
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index bde10d6a96..9fbcc77ddb 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -139,16 +139,22 @@ set(formats_srcs
+ # Uncomment for bit-rot detection on linux
+ #set(formats_srcs ${formats_srcs} coreaudio sndio sunaudio waveaudio)
+ #add_definitions(-Ibit-rot)
++list(TRANSFORM formats_srcs APPEND ".c")
++list(TRANSFORM optional_srcs APPEND ".c")
++list(TRANSFORM effects_srcs APPEND ".c")
+ 
+-add_library(lib${PROJECT_NAME}
+-  effects                 formats_i               libsox_i
+-  effects_i               ${formats_srcs}         ${optional_srcs}
+-  effects_i_dsp           getopt
+-  ${effects_srcs}         util
+-  formats                 libsox                  xmalloc
++add_library(lib${PROJECT_NAME}  effects.c formats_i.c libsox_i.c
++  effects_i.c               ${formats_srcs}         ${optional_srcs}
++  effects_i_dsp.c           getopt.c
++  ${effects_srcs}           util.c
++  formats.c                 libsox.c                  xmalloc.c
+ )
+-add_executable(${PROJECT_NAME} ${PROJECT_NAME}.c)
++add_executable(${PROJECT_NAME} ${PROJECT_NAME}.c)
+ target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME} lpc10 ${optional_libs})
++
++install(TARGETS lib${PROJECT_NAME})
++install(FILES sox.h DESTINATION include)
++if(0)
+ add_executable(sox_sample_test sox_sample_test.c)
+ add_executable(example0 example0.c)
+ target_link_libraries(example0 lib${PROJECT_NAME} lpc10 ${optional_libs})
+@@ -172,3 +178,4 @@ if (LN)
+ endif (LN)
+ find_program(CTAGS NAMES exuberant-ctags ctags)
+ add_custom_target(tags ${CTAGS} --recurse --extra=fq ${CMAKE_CURRENT_SOURCE_DIR})
++endif()
+\ No newline at end of file
+diff --git a/src/formats.c b/src/formats.c
+index 724a4cdac8..7bd82c6d6e 100644
+--- a/src/formats.c
++++ b/src/formats.c
+@@ -417,7 +417,7 @@ static void UNUSED rewind_pipe(FILE * fp)
+   fp->_IO_read_ptr = fp->_IO_read_base;
+ #elif defined _MSC_VER || defined _WIN32 || defined _WIN64 || \
+       defined _ISO_STDIO_ISO_H || defined __sgi
+-  fp->_ptr = fp->_base;
++  rewind(fp);
+ #else
+   /* To fix this #error, either simply remove the #error line and live without
+    * file-type detection with pipes, or add support for your compiler in the
+diff --git a/src/opus.c b/src/opus.c
+index 49fa74be95..80587a70e9 100644
+--- a/src/opus.c
++++ b/src/opus.c
+@@ -26,7 +26,7 @@
+ #include <string.h>
+ #include <errno.h>
+ 
+-#include <opusfile.h>
++#include <opus/opusfile.h>
+ 
+ #define DEF_BUF_LEN 4096
+ 

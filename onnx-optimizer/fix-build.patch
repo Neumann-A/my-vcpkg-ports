@@ -1,0 +1,24 @@
+diff --git a/v0.3.18-b1ec676e31.clean/onnxoptimizer/optimize.h b/v0.3.18-b1ec676e31/onnxoptimizer/optimize.h
+index f25e6c3f6b..fdb6d70216 100644
+--- a/v0.3.18-b1ec676e31.clean/onnxoptimizer/optimize.h
++++ b/v0.3.18-b1ec676e31/onnxoptimizer/optimize.h
+@@ -9,7 +9,6 @@
+ 
+ #include "onnx/common/ir.h"
+ #include "onnx/common/ir_pb_converter.h"
+-#include "onnx/common/stl_backports.h"
+ #include "onnx/proto_utils.h"
+ 
+ #include "onnxoptimizer/pass_manager.h"
+diff --git a/v0.3.18-b1ec676e31.clean/onnxoptimizer/pass_registry.h b/v0.3.18-b1ec676e31/onnxoptimizer/pass_registry.h
+index 51a2c16112..c1858fbfc2 100644
+--- a/v0.3.18-b1ec676e31.clean/onnxoptimizer/pass_registry.h
++++ b/v0.3.18-b1ec676e31/onnxoptimizer/pass_registry.h
+@@ -12,7 +12,6 @@
+ 
+ #include "onnx/common/ir.h"
+ #include "onnx/common/ir_pb_converter.h"
+-#include "onnx/common/stl_backports.h"
+ #include "onnx/proto_utils.h"
+ #include "onnxoptimizer/passes/adjust_add.h"
+ #include "onnxoptimizer/passes/adjust_slice_and_matmul.h"

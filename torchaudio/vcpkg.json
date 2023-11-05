@@ -5,6 +5,12 @@
   "homepage": "https://pytorch.org/audio",
   "license": null,
   "dependencies": [
+    "sox",
+    { 
+      "name": "pkgconf",
+      "platform": "windows",
+      "host": true
+    },
     {
       "name": "ffmpeg",
       "default-features": false,

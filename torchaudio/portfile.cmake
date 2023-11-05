@@ -6,7 +6,7 @@ vcpkg_from_github(
     REF "v${VERSION}"
     SHA512 6860e91b87d1ce5b08149dc0192ad5c895520f75c7220bed52b3de64b3e87e9ec39c6fd6596cdf7f5d989e7821e9c04f253112f980a07107eb7f7eaf608d325f
     HEAD_REF main
-    PATCHES
+    PATCHES fix-build.patch
 )
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
@@ -17,12 +17,15 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     python      BUILD_TORCHAUDIO_PYTHON_EXTENSION
 )
 
+if(VCPKG_TARGET_IS_WINDOWS)
+  list(APPEND FEATURE_OPTIONS -DBUILD_SOX=OFF)
+endif()
+
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
         ${FEATURE_OPTIONS}
         -DUSE_FFMPEG=ON
-        -DBUILD_CPP_TEST=OFF
 )
 vcpkg_cmake_install()
 
@@ -32,3 +35,8 @@ file(REMOVE_RECURSE
 )
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
+
+if("python" IN_LIST FEATURES)
+  file(COPY "${SOURCE_PATH}/torchaudio" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/")
+  #pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")# OPTIONS -x)
+endif()

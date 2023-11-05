@@ -40,7 +40,10 @@
     "python": {
       "description": "Build python extension",
       "dependencies": [
-        "python3"
+        "python3",
+        "pypa-setuptools",
+        "python-pypa-scripts",
+        "python-pillow"
       ]
     }
   }

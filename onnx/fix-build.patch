@@ -1,0 +1,121 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 643b0c573c..0e1d45c90e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -162,6 +162,7 @@ if((ONNX_USE_LITE_PROTO AND TARGET protobuf::libprotobuf-lite) OR ((NOT ONNX_USE
+     set(ONNX_PROTOC_EXECUTABLE $<TARGET_FILE:protobuf::protoc>)
+   endif()
+ else()
++  message(FATAL_ERROR)
+   # Customized version of find Protobuf. We need to avoid situations mentioned
+   # in https://github.com/caffe2/caffe2/blob/b7d983f255ef5496474f1ea188edb5e0ac4
+   # 42761/cmake/ProtoBuf.cmake#L82-L92 The following section is stolen from
+@@ -250,7 +251,7 @@ else()
+   else()  # Protobuf_PROTOC_EXECUTABLE not found.
+     set(Build_Protobuf ON)
+   endif()
+-  if (Build_Protobuf)
++  if (0)
+     # FetchContent module requires 3.11.
+     cmake_minimum_required(VERSION 3.11)
+     include(FetchContent)
+@@ -293,6 +294,8 @@ else()
+   message(STATUS "Protobuf_VERSION: ${Protobuf_VERSION}")
+ endif()
+ 
++set(ONNX_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
++
+ # abseil build would fail if ONNX_WERROR is on.
+ if(ONNX_WERROR)
+   if(MSVC)
+@@ -318,7 +321,7 @@ function(RELATIVE_PROTOBUF_GENERATE_CPP NAME SRCS HDRS ROOT_DIR DEPEND)
+   endif()
+ 
+   # Add ONNX_API prefix to protobuf classes and methods in all cases
+-  set(ONNX_DLLEXPORT_STR "dllexport_decl=ONNX_API:")
++  set(ONNX_DLLEXPORT_STR "dllexport_decl=ONNX_PROTO_API:")
+ 
+   set(${SRCS})
+   set(${HDRS})
+@@ -512,17 +515,20 @@ if (MSVC)
+     set(EXTRA_FLAGS "")
+   endif()
+   if (BUILD_SHARED_LIBS OR ONNX_BUILD_MAIN_LIB)
+-    set(ONNX_API_DEFINE "-DONNX_API=__declspec(dllexport)")
++    set(ONNX_API_DEFINE "-DONNX_PROTO_API=__declspec(dllexport)")
+   else()
+-    set(ONNX_API_DEFINE "-DONNX_API=")
++    set(ONNX_API_DEFINE "-DONNX_API=__declspec(dllimport)")
+   endif()
+ else()
+   # On non-Windows, hide all symbols we don't need
+-  set(ONNX_API_DEFINE "-DONNX_API=__attribute__\(\(__visibility__\(\"default\"\)\)\)")
++  set(ONNX_API_DEFINE "-DONNX_PROTO_API=__attribute__\(\(__visibility__\(\"default\"\)\)\)")
+   set_target_properties(onnx_proto PROPERTIES CXX_VISIBILITY_PRESET hidden)
+   set_target_properties(onnx_proto PROPERTIES VISIBILITY_INLINES_HIDDEN 1)
+ endif()
+-target_compile_definitions(onnx_proto PRIVATE ${ONNX_API_DEFINE})
++if(BUILD_SHARED_LIBS)
++  target_compile_definitions(onnx_proto PRIVATE "ONNX_BUILD_SHARED_LIBS")
++  target_compile_definitions(onnx_proto PRIVATE "ONNX_PROTO_API=__declspec(dllexport)" )
++endif()
+ 
+ if(ONNX_USE_LITE_PROTO)
+   if(TARGET protobuf::libprotobuf-lite)
+@@ -544,7 +550,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "AIX")
+   # So, create a object library
+   add_library(onnx OBJECT ${ONNX_SRCS})
+ else()
+-  add_library(onnx ${ONNX_SRCS})
++  add_library(onnx STATIC ${ONNX_SRCS} )
+ endif()
+ 
+ target_include_directories(onnx PUBLIC
+@@ -554,6 +560,12 @@ target_include_directories(onnx PUBLIC
+ target_link_libraries(onnx PUBLIC onnx_proto)
+ add_onnx_global_defines(onnx)
+ 
++
++
++if(BUILD_SHARED_LIBS)
++  target_compile_definitions(onnx PRIVATE ONNX_BUILD_SHARED_LIBS "ONNX_PROTO_API=__declspec(dllimport)")
++endif()
++
+ if(BUILD_ONNX_PYTHON)
+   find_package(Python3 ${PY_VERSION} COMPONENTS Development REQUIRED)
+   if("${PY_EXT_SUFFIX}" STREQUAL "")
+@@ -748,7 +760,11 @@ install(FILES
+ install(EXPORT ONNXTargets DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/ONNX")
+ install(TARGETS
+   onnx onnx_proto
+-  EXPORT ONNXTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
++  EXPORT ONNXTargets 
++  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++  )
+ 
+ if(ONNX_BUILD_TESTS)
+   include(${ONNX_ROOT}/cmake/unittest.cmake)
+diff --git a/onnx/onnx_pb.h b/onnx/onnx_pb.h
+index 0aab3e261e..0a1f8e2732 100644
+--- a/onnx/onnx_pb.h
++++ b/onnx/onnx_pb.h
+@@ -41,12 +41,16 @@
+ //
+ // This solution is similar to
+ // https://github.com/pytorch/pytorch/blob/master/caffe2/core/common.h
+-#if defined(ONNX_BUILD_SHARED_LIBS) || defined(ONNX_BUILD_MAIN_LIB)
++#if defined(ONNX_BUILD_SHARED_LIBS) || defined(ONNX_BUILD_MAIN_LIB) || defined(onnx_EXPORTS)
+ #define ONNX_API ONNX_EXPORT
+ #else
+ #define ONNX_API ONNX_IMPORT
+ #endif
+ 
++#ifndef ONNX_PROTO_API
++#define ONNX_PROTO_API ONNX_IMPORT
++#endif
++
+ #ifdef ONNX_ML
+ #include "onnx/onnx-ml.pb.h"
+ #else

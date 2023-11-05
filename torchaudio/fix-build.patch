@@ -1,0 +1,104 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f0195c87b4..e356598074 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -171,7 +171,7 @@ if (BUILD_SOX)
+   add_subdirectory(torchaudio/csrc/sox)
+ endif()
+ if (USE_FFMPEG)
+-  if (DEFINED ENV{FFMPEG_ROOT})
++  if (1)
+     add_subdirectory(third_party/ffmpeg/single)
+   else()
+     message(STATUS "Building FFmpeg integration with multi version support")
+diff --git a/third_party/ffmpeg/single/CMakeLists.txt b/third_party/ffmpeg/single/CMakeLists.txt
+index b3246c0828..3c3bbbbfbb 100644
+--- a/third_party/ffmpeg/single/CMakeLists.txt
++++ b/third_party/ffmpeg/single/CMakeLists.txt
+@@ -3,7 +3,7 @@
+ message(STATUS "Searching existing FFmpeg installation")
+ message(STATUS FFMPEG_ROOT=$ENV{FFMPEG_ROOT})
+ if (NOT DEFINED ENV{FFMPEG_ROOT})
+-  message(FATAL_ERROR "Environment variable FFMPEG_ROOT is not set.")
++  #message(FATAL_ERROR "Environment variable FFMPEG_ROOT is not set.")
+ endif()
+ 
+ set(_root $ENV{FFMPEG_ROOT})
+@@ -17,15 +17,17 @@ function (_find_ffmpeg_lib component)
+   find_path("${component}_header"
+     NAMES "lib${component}/${component}.h"
+     PATHS "${include_dir}"
++    PATH_SUFFIX include
+     DOC "The include directory for ${component}"
+     REQUIRED
+-    NO_DEFAULT_PATH)
++    )
+   find_library("lib${component}"
+     NAMES "${component}"
+     PATHS ${lib_dirs}
++    PATH_SUFFIX lib
+     DOC "${component} library"
+     REQUIRED
+-    NO_DEFAULT_PATH)
++    )
+   message(STATUS "Found ${component}: ${lib${component}}")
+   target_link_libraries(
+     ffmpeg
+diff --git a/third_party/sox/CMakeLists.txt b/third_party/sox/CMakeLists.txt
+index db96f05faf..a6867e58e1 100644
+--- a/third_party/sox/CMakeLists.txt
++++ b/third_party/sox/CMakeLists.txt
+@@ -1,21 +1,11 @@
+-include(FetchContent)
++find_package(PkgConfig REQUIRED)
++pkg_check_modules(SOX REQUIRED IMPORTED_TARGET GLOBAL sox)
++add_library(sox INTERFACE  IMPORTED GLOBAL)
++target_link_libraries(sox INTERFACE PkgConfig::SOX)
++#find_library(SOX_LIBRARY NAMES sox libsox PATH_SUFFIXES lib)
++message(STATUS "SOX_LIBRARIES:${SOX_LIBRARIES}")
++foreach(lib IN LISTS SOX_LIBRARIES)
++  find_library(${lib}_LIBRARY NAMES ${lib} PATH_SUFFIXES lib REQUIRED)
++  target_link_libraries(sox INTERFACE ${${lib}_LIBRARY})
++endforeach()
+ 
+-FetchContent_Declare(
+-  sox_src
+-  URL https://downloads.sourceforge.net/project/sox/sox/14.4.2/sox-14.4.2.tar.bz2
+-  URL_HASH SHA256=81a6956d4330e75b5827316e44ae381e6f1e8928003c6aa45896da9041ea149c
+-  PATCH_COMMAND ""
+-  CONFIGURE_COMMAND ""
+-  BUILD_COMMAND ""
+-  )
+-# FetchContent_MakeAvailable will parse the downloaded content and setup the targets.
+-# We want to only download and not build, so we run Populate manually.
+-if(NOT sox_src_POPULATED)
+-  FetchContent_Populate(sox_src)
+-endif()
+-
+-add_library(sox SHARED stub.c)
+-if(APPLE)
+-  set_target_properties(sox PROPERTIES SUFFIX .dylib)
+-endif(APPLE)
+-target_include_directories(sox PUBLIC ${sox_src_SOURCE_DIR}/src)
+diff --git a/torchaudio/csrc/sox/CMakeLists.txt b/torchaudio/csrc/sox/CMakeLists.txt
+index 8677e66e70..50c2a500d9 100644
+--- a/torchaudio/csrc/sox/CMakeLists.txt
++++ b/torchaudio/csrc/sox/CMakeLists.txt
+@@ -10,7 +10,7 @@ torchaudio_library(
+   libtorchaudio_sox
+   "${sources}"
+   ""
+-  "torch;PkgConfig::SOX"
++  "torch;sox"
+   ""
+   )
+ 
+@@ -19,7 +19,7 @@ if (BUILD_TORCHAUDIO_PYTHON_EXTENSION)
+     _torchaudio_sox
+     "pybind/pybind.cpp;"
+     ""
+-    "libtorchaudio_sox"
++    "libtorchaudio_sox;sox"
+     ""
+     )
+ endif()
