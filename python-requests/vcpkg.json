@@ -1,0 +1,15 @@
+{
+  "name": "python-requests",
+  "version": "2.31.0",
+  "description": "A simple, yet elegant, HTTP library.",
+  "homepage": "https://requests.readthedocs.io/en/latest/",
+  "license": "APACHE-2.0",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

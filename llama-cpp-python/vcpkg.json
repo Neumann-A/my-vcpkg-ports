@@ -1,0 +1,11 @@
+{
+  "name": "llama-cpp-python",
+  "version": "0.2.14",
+  "description": "Python bindings for llama.cpp",
+  "homepage": "llama-cpp-python.readthedocs.io",
+  "license": "MIT",
+  "dependencies": [
+    "python3",
+    "llama-cpp"
+  ]
+}
