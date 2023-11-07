@@ -1,0 +1,24 @@
+{
+  "name": "python-huggingface-hub",
+  "version": "0.18.0",
+  "description": "All the open source things related to the Hugging Face Hub",
+  "homepage": "https://huggingface.co/docs/huggingface_hub",
+  "license": "Apache-2.0",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "pypa-packaing",
+    "python-requests",
+    "python-typing-extensions",
+    "python-pyyaml",
+    {
+      "name": "libtorch",
+      "default-features": false,
+      "features": [ "python"]
+    }
+    "python3"
+  ]
+}
