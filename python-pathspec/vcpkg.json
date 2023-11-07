@@ -1,0 +1,15 @@
+{
+  "name": "python-pathspec",
+  "version": "0.11.2",
+  "description": "Utility library for gitignore style pattern matching of file paths.",
+  "homepage": "https://github.com/cpburnz/python-pathspec",
+  "license": "MPL-2.0",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

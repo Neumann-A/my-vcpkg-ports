@@ -12,6 +12,8 @@
       "name": "python-pypa-scripts",
       "host": true
     },
-    "python3"
+    "python3",
+    "python-pathspec",
+    "pypa-trove-classifiers"
   ]
 }

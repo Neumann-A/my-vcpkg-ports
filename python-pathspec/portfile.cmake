@@ -1,8 +1,8 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO psf/requests
+    REPO cpburnz/python-pathspec
     REF v${VERSION}
-    SHA512 43f536bdb2360fcceb24ef98e995ffa66cdefc2c502629f17a5722445bfa9ad8489201958c846c2aaef37e427f95a4d56e321a91095c69754680abfd83b39150
+    SHA512 66e320c8e3c5705b084d3a8554e34baefe1d2d53a27d375393c9d06d7d83ae0d2f101da6ac8765ae3ec96d8fb37382fbf02af2ef9dbbc961885c2ecfb44847f8
     HEAD_REF master
 )
 

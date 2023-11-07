@@ -1,8 +1,10 @@
+
+string(REPLACE "-" "." new_version "${VERSION}")
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO psf/requests
-    REF v${VERSION}
-    SHA512 43f536bdb2360fcceb24ef98e995ffa66cdefc2c502629f17a5722445bfa9ad8489201958c846c2aaef37e427f95a4d56e321a91095c69754680abfd83b39150
+    REPO di/calver
+    REF ${new_version}
+    SHA512 4d436cead8930cae1a71eddef9f0ecd2881f8cb632c3814dc75390b061a909e7ca969a604a5fded1c66647947856d540e2180bd3ce4bed5087b4dbc9d5edb393
     HEAD_REF master
 )
 
