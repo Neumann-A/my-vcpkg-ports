@@ -1,0 +1,13 @@
+diff --git a/setup.py b/setup.py
+index dfa2eebffa..5c18a7b87b 100644
+--- a/setup.py
++++ b/setup.py
+@@ -124,7 +124,7 @@ class my_build_py(build_py):
+ 
+         s = Path("src/installer.py").read_text()
+         s = ver(s.replace("@VERSIONEER-INSTALLER@", v_b64))
+-        with tempfile.TemporaryDirectory() as tempdir:
++        with tempfile.TemporaryDirectory(dir=".") as tempdir:
+             installer = Path(tempdir) / "versioneer.py"
+             installer.write_text(s)
+ 

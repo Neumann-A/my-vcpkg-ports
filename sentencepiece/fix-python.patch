@@ -1,0 +1,86 @@
+diff --git a/python/setup.py b/python/setup.py
+index 54112313b5..8f0fff6095 100644
+--- a/python/setup.py
++++ b/python/setup.py
+@@ -37,7 +37,7 @@ exec(open('src/sentencepiece/_version.py').read())
+ 
+ def run_pkg_config(section, pkg_config_path=None):
+   try:
+-    cmd = 'pkg-config sentencepiece --{}'.format(section)
++    cmd = 'pkgconf sentencepiece --msvc-syntax --{}'.format(section)
+     if pkg_config_path:
+       cmd = 'env PKG_CONFIG_PATH={} {}'.format(pkg_config_path, cmd)
+     output = subprocess.check_output(cmd, shell=True)
+@@ -51,9 +51,11 @@ def run_pkg_config(section, pkg_config_path=None):
+ 
+ def is_sentencepiece_installed():
+   try:
+-    subprocess.check_call('pkg-config sentencepiece --libs', shell=True)
++    subprocess.check_call('pkgconf sentencepiece --libs', shell=True)
++    print("sentencepiece installed")
+     return True
+   except subprocess.CalledProcessError:
++    print("sentencepiece not installed")
+     return False
+ 
+ 
+@@ -77,23 +79,16 @@ class build_ext(_build_ext):
+   """Override build_extension to run cmake."""
+ 
+   def build_extension(self, ext):
+-    cflags, libs = get_cflags_and_libs('../build/root')
++    #cflags, libs = get_cflags_and_libs('../build/root')
+ 
+-    if len(libs) == 0:
+-      if is_sentencepiece_installed():
+-        cflags = cflags + run_pkg_config('cflags')
+-        libs = run_pkg_config('libs')
+-      else:
+-        subprocess.check_call(['./build_bundled.sh', __version__])
+-        cflags, libs = get_cflags_and_libs('./build/root')
++    cflags = ['/std:c++17',  '/I..\\'] + run_pkg_config('cflags')
++    libs = run_pkg_config('libs')
+ 
+     # Fix compile on some versions of Mac OSX
+     # See: https://github.com/neulab/xnmt/issues/199
+     if sys.platform == 'darwin':
+       cflags.append('-mmacosx-version-min=10.9')
+-    else:
+-      cflags.append('-Wl,-strip-all')
+-      libs.append('-Wl,-strip-all')
++
+     print('## cflags={}'.format(' '.join(cflags)))
+     print('## libs={}'.format(' '.join(libs)))
+     ext.extra_compile_args = cflags
+@@ -101,7 +96,7 @@ class build_ext(_build_ext):
+     _build_ext.build_extension(self, ext)
+ 
+ 
+-if os.name == 'nt':
++if False:
+   # Must pre-install sentencepice into build directory.
+   arch = 'win32'
+   if sys.maxsize > 2**32:
+@@ -162,6 +157,8 @@ else:
+       'sentencepiece._sentencepiece',
+       sources=['src/sentencepiece/sentencepiece_wrap.cxx'],
+   )
++  cflags = run_pkg_config('cflags')
++  libs = run_pkg_config('libs')
+   cmdclass = {'build_ext': build_ext}
+ 
+ setup(
+diff --git a/sentencepiece.pc.in b/sentencepiece.pc.in
+index 6a5ba56d5f..5009c97953 100644
+--- a/sentencepiece.pc.in
++++ b/sentencepiece.pc.in
+@@ -1,7 +1,7 @@
+ prefix=@prefix@
+ exec_prefix=@exec_prefix@
+-libdir=@libdir_for_pc_file@
+-includedir=@includedir_for_pc_file@
++libdir=${prefix}/lib
++includedir=${prefix}/include
+ 
+ Name: @PROJECT_NAME@
+ Description: Unsupervised text tokenizer and detokenizer for Neural Network-based text generation.

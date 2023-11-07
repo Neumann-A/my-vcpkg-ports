@@ -1,0 +1,74 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1b3af04934..dfd64d8f0a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -134,7 +134,7 @@ join_paths(includedir_for_pc_file "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
+ configure_file("${PROJECT_SOURCE_DIR}/config.h.in" "config.h")
+ configure_file("${PROJECT_SOURCE_DIR}/sentencepiece.pc.in" "sentencepiece.pc" @ONLY)
+ 
+-if (NOT MSVC)
++if (1)
+   # suppress warning for C++11 features.
+ #  add_definitions("-Wno-deprecated-declarations -Wno-deprecated-enum-enum-conversion")
+   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/sentencepiece.pc" DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+diff --git a/python/src/sentencepiece/sentencepiece_wrap.cxx b/python/src/sentencepiece/sentencepiece_wrap.cxx
+index 1eac211602..efbf8744c3 100644
+--- a/python/src/sentencepiece/sentencepiece_wrap.cxx
++++ b/python/src/sentencepiece/sentencepiece_wrap.cxx
+@@ -3445,7 +3445,7 @@ SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
+ namespace std { }
+ extern "C++" template<typename T>
+ inline int SWIG_isfinite_func(T x) {
+-  using namespace std;
++  using std::isfinite;
+   return isfinite(x);
+ }
+ #  define SWIG_isfinite(X) (SWIG_isfinite_func(X))
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 1c7726e3a5..85203db86e 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -85,9 +113,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
+ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../third_party)
+ 
+ if (MSVC)
+-  add_definitions("/D_USE_INTERNAL_STRING_VIEW")
++  #add_definitions("/D_USE_INTERNAL_STRING_VIEW")
+ else()
+-  add_definitions("-D_USE_INTERNAL_STRING_VIEW")
++  #add_definitions("-D_USE_INTERNAL_STRING_VIEW")
+ endif()
+ 
+ set(SPM_SRCS
+@@ -220,24 +248,25 @@ endif()
+ if (SPM_ENABLE_SHARED)
+   add_library(sentencepiece SHARED ${SPM_SRCS})
+   add_library(sentencepiece_train SHARED ${SPM_TRAIN_SRCS})
+-endif()
+-
++else()
+ add_library(sentencepiece-static STATIC ${SPM_SRCS})
+ add_library(sentencepiece_train-static STATIC ${SPM_TRAIN_SRCS})
+ 
+ target_link_libraries(sentencepiece-static INTERFACE ${SPM_LIBS})
+ target_link_libraries(sentencepiece_train-static INTERFACE sentencepiece-static ${SPM_LIBS})
+ 
++endif()
++
+ if (SPM_ENABLE_SHARED)
+   target_link_libraries(sentencepiece ${SPM_LIBS})
+   target_link_libraries(sentencepiece_train ${SPM_LIBS} sentencepiece)
+-  set(SPM_INSTALLTARGETS sentencepiece sentencepiece_train sentencepiece-static sentencepiece_train-static)
++  set(SPM_INSTALLTARGETS sentencepiece sentencepiece_train)
+   set_target_properties(sentencepiece sentencepiece_train PROPERTIES SOVERSION 0 VERSION 0.0.0)
+   set_target_properties(sentencepiece PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS YES)
+   set_target_properties(sentencepiece_train PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS YES)
+   if (MSVC)
+-    set_target_properties(sentencepiece PROPERTIES IMPORT_SUFFIX "_import.lib")
+-    set_target_properties(sentencepiece_train PROPERTIES IMPORT_SUFFIX "_import.lib")
++    #set_target_properties(sentencepiece PROPERTIES IMPORT_SUFFIX "_import.lib")
++    #set_target_properties(sentencepiece_train PROPERTIES IMPORT_SUFFIX "_import.lib")
+   elseif (MINGW)
+     set_target_properties(sentencepiece PROPERTIES IMPORT_SUFFIX ".dll.a")
+     set_target_properties(sentencepiece_train PROPERTIES IMPORT_SUFFIX ".dll.a")
+
