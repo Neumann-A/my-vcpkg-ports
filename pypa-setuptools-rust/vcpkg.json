@@ -1,0 +1,17 @@
+{
+  "name": "pypa-setuptools-rust",
+  "version": "1.8.1",
+  "description": "Setuptools plugin for Rust support",
+  "homepage": "https://setuptools-rust.readthedocs.io/",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    "pypa-setuptools-scm",
+    "pypa-wheel",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

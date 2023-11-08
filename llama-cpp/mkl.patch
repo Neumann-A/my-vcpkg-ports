@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7b4eb18403..c5822d194a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -231,7 +231,7 @@ if (LLAMA_BLAS)
+         message(STATUS "BLAS found, Includes: ${BLAS_INCLUDE_DIRS}")
+         add_compile_options(${BLAS_LINKER_FLAGS})
+         add_compile_definitions(GGML_USE_OPENBLAS)
+-        if (${BLAS_INCLUDE_DIRS} MATCHES "mkl" AND (${LLAMA_BLAS_VENDOR} MATCHES "Generic" OR ${LLAMA_BLAS_VENDOR} MATCHES "Intel"))
++        if (1)
+             add_compile_definitions(GGML_BLAS_USE_MKL)
+         endif()
+         set(LLAMA_EXTRA_LIBS ${LLAMA_EXTRA_LIBS} ${BLAS_LIBRARIES})

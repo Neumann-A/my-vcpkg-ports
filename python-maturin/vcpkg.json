@@ -1,0 +1,17 @@
+{
+  "name": "python-maturin",
+  "version": "1.3.1",
+  "description": "Build and publish crates with pyo3, rust-cpython and cffi bindings as well as rust binaries as python packages",
+  "homepage": "https://maturin.rs/",
+  "license": null,
+  "dependencies": [
+    "pypa-setuptools",
+    "pypa-setuptools-rust",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    "python-semantic-version"
+  ]
+}
