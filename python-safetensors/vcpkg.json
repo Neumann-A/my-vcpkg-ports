@@ -21,6 +21,10 @@
     },
     "python3",
     "numpy",
-    "python-maturin"
+    "python-maturin",
+    {
+      "name": "vcpkg-rust",
+      "host": true
+    }
   ]
 }

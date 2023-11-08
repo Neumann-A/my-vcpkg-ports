@@ -12,6 +12,10 @@
       "host": true
     },
     "python3",
-    "python-semantic-version"
+    "python-semantic-version",
+    {
+      "name": "vcpkg-rust",
+      "host": true
+    }
   ]
 }

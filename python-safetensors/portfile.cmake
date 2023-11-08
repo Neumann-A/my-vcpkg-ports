@@ -1,3 +1,7 @@
+vcpkg_rust_install()
+
+vcpkg_add_to_path("${CURRENT_HOST_INSTALLED_DIR}/tools/python3/Scripts")
+
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO huggingface/safetensors

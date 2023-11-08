@@ -1,3 +1,5 @@
+vcpkg_rust_install()
+
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO PyO3/maturin
@@ -8,6 +10,6 @@ vcpkg_from_github(
 
 pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
-vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE.md")
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/license-apache" "${SOURCE_PATH}/license-mit")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
