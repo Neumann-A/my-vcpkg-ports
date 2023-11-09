@@ -1,0 +1,15 @@
+{
+  "name": "python-certifi",
+  "version-date": "2023-07-22",
+  "description": "A carefully curated collection of Root Certificates for validating the trustworthiness of SSL certificates while verifying the identity of TLS hosts.",
+  "homepage": "https://github.com/certifi/python-certifi",
+  "license": null,
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

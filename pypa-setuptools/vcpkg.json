@@ -1,6 +1,6 @@
 {
   "name": "pypa-setuptools",
-  "version": "68.0.0",
+  "version": "68.2.2",
   "description": "Official project repository for the Setuptools build system ",
   "homepage": " pypi.org/project/setuptools/",
   "license": "MIT",

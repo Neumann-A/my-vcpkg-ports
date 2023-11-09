@@ -10,6 +10,8 @@ vcpkg_from_github(
     HEAD_REF master
 )
 
+set(ENV{LINK} "$ENV{LINK} /LIBPATH:${CURRENT_INSTALLED_DIR}/lib")
+
 pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/bindings/python")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")

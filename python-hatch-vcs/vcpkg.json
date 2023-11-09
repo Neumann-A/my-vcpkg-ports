@@ -1,0 +1,17 @@
+{
+  "name": "python-hatch-vcs",
+  "version": "0.4.0",
+  "description": "Hatch plugin for versioning with your preferred VCS",
+  "homepage": "https://github.com/ofek/hatch-vcs",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    "pypa-hatchling",
+    "pypa-setuptools-scm",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

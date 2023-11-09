@@ -1,8 +1,8 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO pypa/setuptools
-    REF 49fec9fafb0e23e0dde52d3c4c410d23a2de9b0d
-    SHA512 2c80bbb701ef2a4d6b72db4fbbbd32e62c8d27862efeee8da7ee8f148df9b2d837d8ebc84cede92a6ccdda7911f37417392bf6f43823110012711f7c067f7291
+    REF v${VERSION}
+    SHA512 93cea3b30093ff0094acdcc688e689dcf7173e43cfd33bf3bc2e268f7f5065e38627f942f6778d29fd10d2e467af28b0d772bf2fc94318e3e74670d1d5f3e4ea
     HEAD_REF main
     PATCHES 
       fix-prefix.patch

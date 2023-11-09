@@ -1,0 +1,25 @@
+{
+  "name": "python-peft",
+  "version": "0.6.0",
+  "description": "PEFT: State-of-the-art Parameter-Efficient Fine-Tuning",
+  "homepage": "https://huggingface.co/docs/peft",
+  "license": "Apache-2.0",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    "numpy",
+    "python-accelerate",
+    "python-transformers",
+    "python-huggingface-hub",
+    {
+      "name": "libtorch",
+      "default-features": false,
+      "features": [ "python"]
+    }
+    
+  ]
+}

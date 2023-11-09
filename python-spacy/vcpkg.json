@@ -1,0 +1,21 @@
+{
+  "name": "python-spacy",
+  "version": "3.7.2",
+  "description": "Industrial-strength Natural Language Processing (NLP) in Python",
+  "homepage": "https://spacy.io/",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    "numpy",
+    "pypa-packaging",
+    "python-cython",
+    "python-pip",
+    "python-preshed",
+    "python-thinc"
+  ]
+}

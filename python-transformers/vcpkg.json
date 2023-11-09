@@ -1,0 +1,30 @@
+{
+  "name": "python-transformers",
+  "version": "4.35.0",
+  "description": "Transformers: State-of-the-art Machine Learning for Pytorch, TensorFlow, and JAX.",
+  "homepage": "https://huggingface.co/transformers",
+  "license": "Apache-2.0",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    "numpy",
+    "python-huggingface-hub",
+    {
+      "name": "libtorch",
+      "default-features": false,
+      "features": [ "python"]
+    },
+    "python-urllib3",
+    "python-charset-normalizer",
+    "python-idna",
+    "python-certifi",
+    "python-tqdm",
+    "python-regex",
+    "python-safetensors",
+    "python-spacey"
+  ]
+}

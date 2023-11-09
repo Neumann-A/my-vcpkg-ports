@@ -1,6 +1,6 @@
 {
   "name": "pypa-hatchling",
-  "version": "1.17.1",
+  "version": "1.18.0",
   "description": "Modern, extensible Python project management",
   "homepage": "hatch.pypa.io/latest/",
   "license": "MIT",

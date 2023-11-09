@@ -6,7 +6,6 @@ vcpkg_from_github(
     HEAD_REF main
     PATCHES 
     meson-build.patch
-    #fix-build.patch
 )
 
 vcpkg_from_github(
@@ -86,5 +85,13 @@ file(REMOVE_RECURSE
 )
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE.txt")
+
+file(WRITE "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/numpy-${version}.dist-info/METADATA"
+[[
+Metadata-Version: 2.1
+Name: numpy
+Version: 1.26.1
+]]
+)
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)

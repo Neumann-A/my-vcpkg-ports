@@ -1,0 +1,15 @@
+{
+  "name": "python-charset-normalizer",
+  "version": "3.3.2",
+  "description": "Truly universal encoding detector in pure Python",
+  "homepage": "https://charset-normalizer.readthedocs.io/en/latest/",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

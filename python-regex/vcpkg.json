@@ -1,0 +1,15 @@
+{
+  "name": "python-regex",
+  "version-date": "2023-10-03",
+  "description": "This regex implementation is backwards-compatible with the standard 're' module, but offers additional functionality.",
+  "homepage": "https://github.com/mrabarnett/mrab-regex",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

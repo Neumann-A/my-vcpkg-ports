@@ -1,0 +1,15 @@
+{
+  "name": "python-cymem",
+  "version": "2.0.8",
+  "description": "Cython memory pool for RAII-style memory management",
+  "homepage": "https://github.com/explosion/cymem",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}
