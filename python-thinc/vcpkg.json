@@ -11,6 +11,7 @@
       "host": true
     },
     "python3",
-    "python-cblis"
+    "python-cblis",
+    "python-catalogue"
   ]
 }

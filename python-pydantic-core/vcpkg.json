@@ -1,0 +1,20 @@
+{
+  "name": "python-pydantic-core",
+  "version": "2.14.1",
+  "description": "Core validation logic for pydantic written in rust",
+  "homepage": "https://github.com/pydantic/pydantic-core",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    {
+      "name": "vcpkg-rust",
+      "host": true
+    },
+    "python-maturin"
+  ]
+}

@@ -1,0 +1,27 @@
+diff --git a/srsly/msgpack/_unpacker.pyx b/srsly/msgpack/_unpacker.pyx
+index b6c5f049c7..17a0059958 100644
+--- a/srsly/msgpack/_unpacker.pyx
++++ b/srsly/msgpack/_unpacker.pyx
+@@ -10,7 +10,6 @@ cdef extern from "Python.h":
+ from libc.stdlib cimport *
+ from libc.string cimport *
+ from libc.limits cimport *
+-ctypedef unsigned long long uint64_t
+ 
+ from .exceptions import (
+     BufferFull,
+diff --git a/srsly/msgpack/pack.h b/srsly/msgpack/pack.h
+index 4f3ce1d99e..57034f7c8b 100644
+--- a/srsly/msgpack/pack.h
++++ b/srsly/msgpack/pack.h
+@@ -26,10 +26,6 @@
+ extern "C" {
+ #endif
+ 
+-#ifdef _MSC_VER
+-#define inline __inline
+-#endif
+-
+ typedef struct msgpack_packer {
+     char *buf;
+     size_t length;

@@ -16,6 +16,9 @@
     "python-cython",
     "python-pip",
     "python-preshed",
-    "python-thinc"
+    "python-thinc",
+    "python-confection",
+    "python-catalogue",
+    "python-srsly"
   ]
 }

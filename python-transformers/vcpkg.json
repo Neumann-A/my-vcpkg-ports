@@ -25,6 +25,8 @@
     "python-tqdm",
     "python-regex",
     "python-safetensors",
-    "python-spacey"
+    "python-spacy",
+    "python-filelock"
+    
   ]
 }
