@@ -1,0 +1,15 @@
+{
+  "name": "python-weasel",
+  "version": "0.3.4",
+  "description": "weasel: A small and easy workflow system",
+  "homepage": "https://github.com/explosion/weasel/",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

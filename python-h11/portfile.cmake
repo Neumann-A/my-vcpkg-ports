@@ -1,9 +1,9 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO pypa/wheel
-    REF 0.41.3
-    SHA512 8bb1af302d3a80b4497a9f9399bfedfc5b72c405fb4512dc8ceba81233dc9e9ed7e38c09c1135e1522a0618c41562221ba2d12d9de341d5a5d7174b1b82a7325
-    HEAD_REF main
+    REPO python-hyper/h11
+    REF v${VERSION}
+    SHA512 f49d35876cd5e8ca190a6b5187f8580780f0517cb7de78bf32dd1de8a814c9fd000e6ee4db2d72108c8f1b6628157eed8c11ad7940adffde28e410a01c0a318e
+    HEAD_REF master
 )
 
 pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")

@@ -1,0 +1,15 @@
+{
+  "name": "python-pyproject-metadata",
+  "version": "0.7.1",
+  "description": "PEP 621 metadata parsing",
+  "homepage": "https://pep621.readthedocs.io/",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

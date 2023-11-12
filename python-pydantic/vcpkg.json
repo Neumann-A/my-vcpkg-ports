@@ -12,6 +12,8 @@
     },
     "python3",
     "python-hatch-fancy-pypi-readme",
-    "python-pydantic-core"
+    "python-pydantic-core",
+    "python-annotated-types",
+    "python-wasabi"
   ]
 }

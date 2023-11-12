@@ -1,0 +1,27 @@
+{
+  "name": "python-httpx",
+  "version": "0.25.1",
+  "description": "A next generation HTTP client for Python.",
+  "homepage": "https://www.python-httpx.org/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "pypa-hatchling",
+    "pypa-hatch",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python-hatch-requirements-txt",
+    "python-hatch-fancy-pypi-readme",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    "python-sniffio",
+    "python-httpcore",
+    "python-certifi",
+    "python-idna",
+    "python-anyio"
+  ]
+}

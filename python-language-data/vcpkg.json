@@ -1,0 +1,15 @@
+{
+  "name": "python-language-data",
+  "version": "1.0.1",
+  "description": "An optional supplement to `langcodes` that stores names and statistics of languages.",
+  "homepage": "https://github.com/rspeer/language_data",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

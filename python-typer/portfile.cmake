@@ -1,11 +1,9 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO explosion/thinc
-    REF v${VERSION}
-    SHA512 4f80c19833e7b6d118bd3e2c7c1dc740cd7ce41059a7a41d4af99300f98c205f1af8e0e7e1422d7eb6fc5c4fc154b1640632816b1fd5a48df7b1e3387bee0a36
+    REPO tiangolo/typer
+    REF ${VERSION}
+    SHA512 76a455b17278c1fcf97a1fef7b3186cb0edda1501f537b1c689fa8fc1cdae233fbf2b0bbbcf8b886e7d35d2f480343427ad3410274218dee8689890321f93b58
     HEAD_REF master
-    PATCHES
-      cython3.patch
 )
 
 pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)

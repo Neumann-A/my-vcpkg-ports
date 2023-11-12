@@ -26,7 +26,11 @@
     "python-regex",
     "python-safetensors",
     "python-spacy",
-    "python-filelock"
-    
-  ]
+    "python-filelock",
+    {
+      "name": "onnx",
+      "default-features": false,
+      "features": [ "python"]
+    }
+    ]
 }

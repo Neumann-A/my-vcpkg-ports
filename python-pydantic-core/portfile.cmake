@@ -7,6 +7,7 @@ vcpkg_from_github(
 )
 vcpkg_rust_install()
 vcpkg_add_to_path("${CURRENT_HOST_INSTALLED_DIR}/tools/python3/Scripts") # for maturin
+set(ENV{LINK} "$ENV{LINK} /LIBPATH:${CURRENT_INSTALLED_DIR}/lib")
 pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")

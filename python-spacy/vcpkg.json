@@ -19,6 +19,11 @@
     "python-thinc",
     "python-confection",
     "python-catalogue",
-    "python-srsly"
+    "python-srsly",
+    "python-langcodes",
+    "python-typer",
+    "python-click",
+    "python-weasel",
+    "python-jinja"
   ]
 }

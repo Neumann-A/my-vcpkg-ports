@@ -1,0 +1,16 @@
+{
+  "name": "python-fsspec",
+  "version": "2023.10.0",
+  "description": "A specification that python filesystems should adhere to",
+  "homepage": "https://github.com/fsspec/filesystem_spec",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+    
+  ]
+}

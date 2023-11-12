@@ -7,6 +7,7 @@ vcpkg_from_github(
         fix-cmakelists.patch
         fix-dependency-protobuf.patch
         fix-build.patch
+        fix-python.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_CRT_LINKAGE}" "static" USE_STATIC_RUNTIME)

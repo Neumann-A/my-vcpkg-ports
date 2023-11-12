@@ -1,0 +1,15 @@
+{
+  "name": "python-flit-core",
+  "version": "3.9.0",
+  "description": "Poetry PEP 517 Build Backend & Core Utilities ",
+  "homepage": "https://github.com/pypa/flit",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

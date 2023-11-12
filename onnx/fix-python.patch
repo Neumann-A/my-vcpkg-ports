@@ -1,0 +1,12 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0e1d45c90e..8d260e170b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -577,6 +577,7 @@ if(BUILD_ONNX_PYTHON)
+   endif()
+ 
+   add_library(onnx_cpp2py_export MODULE "${ONNX_ROOT}/onnx/cpp2py_export.cc")
++  target_compile_definitions(onnx_cpp2py_export PRIVATE ONNX_BUILD_SHARED_LIBS "ONNX_PROTO_API=__declspec(dllimport)")
+   set_target_properties(onnx_cpp2py_export PROPERTIES PREFIX "")
+   set_target_properties(onnx_cpp2py_export
+                         PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")

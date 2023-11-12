@@ -1,0 +1,17 @@
+{
+  "name": "python-langcodes",
+  "version": "3.3.0",
+  "description": "A Python library for working with and comparing language codes.",
+  "homepage": "https://github.com/rspeer/langcodes",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    "python-language-data",
+    "python-poetry"
+  ]
+}
