@@ -1,9 +1,9 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO python/typing_extensions
+    REPO pyparsing/pyparsing
     REF ${VERSION}
-    SHA512 1e82f49d837c3fbead7d0867db667f97be2836f1f98bcde7315eb8c5455e605659fe7759ccf86fcbb2373789d9dab500a3b2a75bbcaf9216521c6b8c2796090a
-    HEAD_REF main
+    SHA512 51e463c959d81737ac82ca1c9fb68dbf869d8e0140870e45fc77bdfcf258515dc4ea0a5f4dd1a31ce852bf4947cb1654e096036dd494ebab495214a7e1c97d6e
+    HEAD_REF master
 )
 
 pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")

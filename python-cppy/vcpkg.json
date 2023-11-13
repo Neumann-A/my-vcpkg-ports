@@ -1,0 +1,15 @@
+{
+  "name": "python-cppy",
+  "version": "1.2.1",
+  "description": "A collection of C++ headers which make it easier to write Python C extension modules",
+  "homepage": "https://cppy.readthedocs.io/en/latest/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

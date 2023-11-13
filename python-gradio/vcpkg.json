@@ -17,6 +17,8 @@
     },
     "python-hatch-requirements-txt",
     "python-hatch-fancy-pypi-readme",
-    "python-pillow"
+    "python-pillow",
+    "python-aiofiles",
+    "python-fastapi"
   ]
 }

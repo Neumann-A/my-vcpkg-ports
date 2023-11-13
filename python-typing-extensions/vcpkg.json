@@ -1,6 +1,6 @@
 {
   "name": "python-typing-extensions",
-  "version": "4.6.3",
+  "version": "4.8.0",
   "description": "Backported and experimental type hints for Python",
   "homepage": "https://github.com/python/typing_extensions",
   "license": null,
