@@ -1,0 +1,16 @@
+{
+  "name": "python-multiprocess",
+  "version": "0.70.15",
+  "description": "better multiprocessing and multithreading in Python",
+  "homepage": "http://multiprocess.rtfd.io/",
+  "license": null,
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    "python-dill"
+  ]
+}

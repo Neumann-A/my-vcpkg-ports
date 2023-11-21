@@ -1,9 +1,9 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO huggingface/peft
+    REPO jiaaro/pydub
     REF v${VERSION}
-    SHA512 b5b591ddab09220db31a79b828119feece0fe563e083423420b36c4df66e1cd97e25af07dfd3a16b7f0ec7a2c0e550b4c3e4f0a74ae6bbb92e88f98a9fa1e98e
-    HEAD_REF main
+    SHA512 8c3fb3714c4b0aed37ba7ab6727776bf4cd7568c1f5060cf43c30ede8da2ce4b498fb83326daa19ef44635250d552295407289c3945681e028eedde1b2b418e0
+    HEAD_REF master
 )
 
 pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")

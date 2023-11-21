@@ -1,0 +1,15 @@
+{
+  "name": "python-dill",
+  "version": "0.3.7",
+  "description": "serialize all of Python",
+  "homepage": "http://dill.rtfd.io/",
+  "license": null,
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

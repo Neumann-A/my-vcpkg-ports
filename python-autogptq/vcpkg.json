@@ -1,0 +1,20 @@
+{
+  "name": "python-autogptq",
+  "version": "0.5.1",
+  "description": "An easy-to-use LLMs quantization package with user-friendly apis, based on GPTQ algorithm",
+  "homepage": "https://github.com/PanQiWei/AutoGPTQ",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    "python-accelerate",
+    "python-datasets",
+    "python-transformers",
+    "python-peft",
+    "numpy"
+  ]
+}

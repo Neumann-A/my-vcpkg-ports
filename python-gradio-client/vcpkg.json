@@ -19,6 +19,7 @@
     "python-hatch-fancy-pypi-readme",
     "python-websockets",
     "python-fsspec",
-    "python-httpx"
+    "python-httpx",
+    "python-rich"
   ]
 }

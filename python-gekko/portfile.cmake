@@ -1,9 +1,9 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO huggingface/peft
+    REPO BYU-PRISM/GEKKO
     REF v${VERSION}
-    SHA512 b5b591ddab09220db31a79b828119feece0fe563e083423420b36c4df66e1cd97e25af07dfd3a16b7f0ec7a2c0e550b4c3e4f0a74ae6bbb92e88f98a9fa1e98e
-    HEAD_REF main
+    SHA512 fd92789551fb7fd096057a47663d4833e1441c83cd08faf5bb0d005562616420bd7e3661dbb03491305bacab699d3a07c176c068babffad242dd16c88d03c4b8
+    HEAD_REF master
 )
 
 pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")

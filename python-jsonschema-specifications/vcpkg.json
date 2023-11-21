@@ -1,0 +1,16 @@
+{
+  "name": "python-jsonschema-specifications",
+  "version": "2023.11.1",
+  "description": "Support files exposing JSON from the JSON Schema specifications to Python",
+  "homepage": "https://jsonschema-specifications.readthedocs.io/",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    "pypa-hatchling",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

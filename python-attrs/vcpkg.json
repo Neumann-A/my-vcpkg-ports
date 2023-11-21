@@ -1,0 +1,17 @@
+{
+  "name": "python-attrs",
+  "version": "23.1.0",
+  "description": "Python Classes Without Boilerplate",
+  "homepage": "https://www.attrs.org/",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    "pypa-hatchling",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    "python-attrs"
+  ]
+}

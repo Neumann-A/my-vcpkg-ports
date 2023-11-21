@@ -1,0 +1,15 @@
+{
+  "name": "python-rpds",
+  "version-date": "2014-04-06",
+  "description": "A multi-use Python based data storage format.",
+  "homepage": "https://referencing.readthedocs.io/",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+    ]
+}

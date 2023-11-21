@@ -1,9 +1,9 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO huggingface/peft
-    REF v${VERSION}
-    SHA512 b5b591ddab09220db31a79b828119feece0fe563e083423420b36c4df66e1cd97e25af07dfd3a16b7f0ec7a2c0e550b4c3e4f0a74ae6bbb92e88f98a9fa1e98e
-    HEAD_REF main
+    REPO uqfoundation/dill
+    REF dill-${VERSION}
+    SHA512 33ec55dc32c9ddf275ce6e502187949bbc7ecc6d24560e132a7bed23e93254b771d38e59c4b6313bbfc25313305c43c6cba2fe07763a93238e1ba66c4bbd8cd4
+    HEAD_REF master
 )
 
 pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")

@@ -1,0 +1,17 @@
+{
+  "name": "python-referencing",
+  "version": "0.31.0",
+  "description": "An implementation-agnostic implementation of JSON reference resolution",
+  "homepage": "https://referencing.readthedocs.io/",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    "pypa-hatchling",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    "python-rpds-py"
+  ]
+}

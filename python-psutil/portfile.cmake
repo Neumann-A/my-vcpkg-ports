@@ -1,8 +1,8 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO huggingface/peft
-    REF v${VERSION}
-    SHA512 b5b591ddab09220db31a79b828119feece0fe563e083423420b36c4df66e1cd97e25af07dfd3a16b7f0ec7a2c0e550b4c3e4f0a74ae6bbb92e88f98a9fa1e98e
+    REPO giampaolo/psutil
+    REF release-${VERSION}
+    SHA512 716a39e5a5e278717a14b74786f8b941f0b4335f6e0c4de338346b825925e8793315f41908ec10bbb97ed6f9a9e5ffca27e031377025f03d73300876b9ff60e8
     HEAD_REF main
 )
 

@@ -18,6 +18,7 @@
     "python-huggingface-hub",
     "python-pillow",
     "python-pandas",
-    "python-requests"
+    "python-requests",
+    "python-aiohttp"
   ]
 }

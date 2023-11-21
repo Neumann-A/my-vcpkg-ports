@@ -12,6 +12,7 @@
     },
     "python3",
     "python-starlette",
-    "python-typing-extension"
+    "python-typing-extension",
+    "python-multipart"
   ]
 }

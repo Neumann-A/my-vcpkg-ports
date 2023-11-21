@@ -1,8 +1,8 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO huggingface/peft
+    REPO altair-viz/altair
     REF v${VERSION}
-    SHA512 b5b591ddab09220db31a79b828119feece0fe563e083423420b36c4df66e1cd97e25af07dfd3a16b7f0ec7a2c0e550b4c3e4f0a74ae6bbb92e88f98a9fa1e98e
+    SHA512 f668902064fbe58537114716c85e6b63da993e5f0cacd75b4255ffe3ccf2db35998fdfe74fe1fa3e3c34cd4986e7fbe43e24f12798a090d2977a5539dba46e0b
     HEAD_REF main
 )
 

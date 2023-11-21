@@ -1,0 +1,19 @@
+{
+  "name": "python-jsonschema",
+  "version": "4.19.2",
+  "description": "An implementation of the JSON Schema specification for Python",
+  "homepage": "https://python-jsonschema.readthedocs.io/",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    "pypa-hatchling",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    "python-attrs",
+    "python-referencing",
+    "python-jsonschema-specifications"
+  ]
+}

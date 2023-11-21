@@ -1,0 +1,22 @@
+{
+  "name": "python-altair",
+  "version": "5.1.2",
+  "description": "Declarative statistical visualization library for Python",
+  "homepage": "https://altair-viz.github.io/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "pypa-setuptools",
+    "pypa-hatchling",
+    "numpy",
+    "python-jinja",
+    "python-pandas",
+    "python-typing-extensions",
+    "python-jsonschema",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    "python-toolz"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "python-aiohttp",
+  "version": "3.8.6",
+  "description": "Asynchronous HTTP client/server framework for asyncio and Python",
+  "homepage": "https://docs.aiohttp.org/",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    "python-multidict",
+    "python-yarl",
+    "python-async-timeout",
+    "python-aiosignal"
+  ]
+}

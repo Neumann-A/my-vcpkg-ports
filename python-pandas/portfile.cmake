@@ -38,4 +38,10 @@ file(REMOVE_RECURSE
     "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pandas/tests/io/formats/data/html")
 )
 
+file(WRITE "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pandas-${VERSION}.dist-info/METADATA"
+"Metadata-Version: 2.1\n\
+Name: pandas\n\
+Version: ${VERSION}\n"
+)
+
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)

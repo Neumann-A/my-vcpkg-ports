@@ -1,0 +1,16 @@
+{
+  "name": "python-xxhash",
+  "version": "3.4.1",
+  "description": "Python Binding for xxHash",
+  "homepage": "https://pypi.org/project/xxhash/",
+  "license": "BSD-2-Clause",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3",
+    "xxhash"
+  ]
+}

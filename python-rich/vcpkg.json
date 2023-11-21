@@ -1,0 +1,15 @@
+{
+  "name": "python-rich",
+  "version": "13.7.0",
+  "description": "Rich is a Python library for rich text and beautiful formatting in the terminal",
+  "homepage": "https://rich.readthedocs.io/en/latest/",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

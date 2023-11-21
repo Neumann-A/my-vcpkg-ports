@@ -1,9 +1,9 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO huggingface/peft
+    REPO Textualize/rich
     REF v${VERSION}
-    SHA512 b5b591ddab09220db31a79b828119feece0fe563e083423420b36c4df66e1cd97e25af07dfd3a16b7f0ec7a2c0e550b4c3e4f0a74ae6bbb92e88f98a9fa1e98e
-    HEAD_REF main
+    SHA512 c5c432bd73b0c28d9585bce2e122d6b9da0a0744ea7824b4682948f11e153dfc615f5ed94d9531ced422298d352371fba5f25ddf16ca7a1d669f799ab361d984
+    HEAD_REF master
 )
 
 pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")

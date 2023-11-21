@@ -1,0 +1,15 @@
+{
+  "name": "python-torch-grammar",
+  "version": "0.3.3",
+  "description": "Torch-Grammar restricts a model to output a token sequence that conforms to a provided EBNF grammar",
+  "homepage": "https://pypi.org/project/torch-grammar",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

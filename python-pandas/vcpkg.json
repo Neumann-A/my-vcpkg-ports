@@ -18,6 +18,7 @@
     {
       "name": "vcpkg-tool-meson",
       "host": true
-    }
+    },
+    "python-pytz"
   ]
 }

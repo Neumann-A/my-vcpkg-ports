@@ -1,0 +1,15 @@
+{
+  "name": "python-ffmpy",
+  "version": "0.3.1",
+  "description": "Pythonic interface for FFmpeg/FFprobe command line",
+  "homepage": "https://github.com/Ch00k/ffmpy",
+  "license": "MIT",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

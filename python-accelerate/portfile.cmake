@@ -1,8 +1,8 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO huggingface/peft
+    REPO huggingface/accelerate
     REF v${VERSION}
-    SHA512 b5b591ddab09220db31a79b828119feece0fe563e083423420b36c4df66e1cd97e25af07dfd3a16b7f0ec7a2c0e550b4c3e4f0a74ae6bbb92e88f98a9fa1e98e
+    SHA512 101982f7a924f45375ab5da07e1093b93bee55a5552d884b8d40d163910ef8cfac06c8d126c9eea5f0979760ed4fe99ec4cc3fa4f0d739ef288c68070ab11360
     HEAD_REF main
 )
 

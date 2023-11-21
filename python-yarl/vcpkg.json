@@ -1,0 +1,15 @@
+{
+  "name": "python-yarl",
+  "version": "1.9.2",
+  "description": "Yet another URL library",
+  "homepage": "https://yarl.aio-libs.org/",
+  "license": "Apache-2.0",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}
