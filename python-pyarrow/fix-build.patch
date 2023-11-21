@@ -1,0 +1,113 @@
+diff --git a/ python/CMakeLists.txt b/ python/CMakeLists.txt
+index 0421bda81e..c09a14f947 100644
+--- a/ python/CMakeLists.txt
++++ b/ python/CMakeLists.txt
+@@ -78,7 +78,7 @@ set(Python3_FIND_FRAMEWORK "LAST")
+ # Allow "make install" to not depend on all targets.
+ #
+ # Must be declared in the top-level CMakeLists.txt.
+-set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY true)
++#set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY true)
+ 
+ set(CMAKE_MACOSX_RPATH 1)
+ if(DEFINED ENV{MACOSX_DEPLOYMENT_TARGET})
+@@ -109,7 +109,7 @@ if(UNIX)
+ endif()
+ 
+ # Top level cmake dir
+-if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
++if(1)
+   option(PYARROW_BUILD_ACERO "Build the PyArrow Acero integration" OFF)
+   option(PYARROW_BUILD_CUDA "Build the PyArrow CUDA support" OFF)
+   option(PYARROW_BUILD_DATASET "Build the PyArrow Dataset integration" OFF)
+@@ -220,15 +220,15 @@ message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+ 
+ if(MSVC)
+   # MSVC makes its own output directories based on the build configuration
+-  set(BUILD_SUBDIR_NAME "")
++  #set(BUILD_SUBDIR_NAME "")
+ else()
+   # Set compile output directory
+-  string(TOLOWER ${CMAKE_BUILD_TYPE} BUILD_SUBDIR_NAME)
++  #string(TOLOWER ${CMAKE_BUILD_TYPE} BUILD_SUBDIR_NAME)
+ endif()
+ 
+ # If build in-source, create the latest symlink. If build out-of-source, which is
+ # preferred, simply output the binaries in the build folder
+-if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
++if(0)
+   set(BUILD_OUTPUT_ROOT_DIRECTORY
+       "${CMAKE_CURRENT_BINARY_DIR}/build/${BUILD_SUBDIR_NAME}")
+   # Link build/latest to the current build directory, to avoid developers
+@@ -241,22 +241,22 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
+   execute_process(COMMAND ln ${MORE_ARGS} -sf ${BUILD_OUTPUT_ROOT_DIRECTORY}
+                           ${CMAKE_CURRENT_BINARY_DIR}/build/latest)
+ else()
+-  set(BUILD_OUTPUT_ROOT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${BUILD_SUBDIR_NAME}")
++  #set(BUILD_OUTPUT_ROOT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${BUILD_SUBDIR_NAME}")
+ endif()
+ 
+ message(STATUS "Generator: ${CMAKE_GENERATOR}")
+ message(STATUS "Build output directory: ${BUILD_OUTPUT_ROOT_DIRECTORY}")
+ 
+ # where to put generated archives (.a files)
+-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BUILD_OUTPUT_ROOT_DIRECTORY}")
+-set(ARCHIVE_OUTPUT_DIRECTORY "${BUILD_OUTPUT_ROOT_DIRECTORY}")
++#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${BUILD_OUTPUT_ROOT_DIRECTORY}")
++#set(ARCHIVE_OUTPUT_DIRECTORY "${BUILD_OUTPUT_ROOT_DIRECTORY}")
+ 
+ # where to put generated libraries (.so files)
+-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${BUILD_OUTPUT_ROOT_DIRECTORY}")
+-set(LIBRARY_OUTPUT_DIRECTORY "${BUILD_OUTPUT_ROOT_DIRECTORY}")
++#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${BUILD_OUTPUT_ROOT_DIRECTORY}")
++#set(LIBRARY_OUTPUT_DIRECTORY "${BUILD_OUTPUT_ROOT_DIRECTORY}")
+ 
+ # where to put generated binaries
+-set(EXECUTABLE_OUTPUT_PATH "${BUILD_OUTPUT_ROOT_DIRECTORY}")
++#set(EXECUTABLE_OUTPUT_PATH "${BUILD_OUTPUT_ROOT_DIRECTORY}")
+ 
+ # Python and Numpy libraries
+ find_package(Python3Alt REQUIRED)
+@@ -377,6 +377,7 @@ if(NOT PYARROW_CPP_LINK_LIBS)
+   endif()
+ endif()
+ 
++message(STATUS "${PYARROW_CPP_SRCS}")
+ add_library(arrow_python SHARED ${PYARROW_CPP_SRCS})
+ target_include_directories(arrow_python PUBLIC ${PYARROW_CPP_ROOT_DIR}
+                                                ${CMAKE_CURRENT_BINARY_DIR}/pyarrow/src)
+@@ -387,9 +388,9 @@ endif()
+ target_link_libraries(arrow_python PUBLIC ${PYARROW_CPP_LINK_LIBS} Python3::NumPy)
+ target_compile_definitions(arrow_python PRIVATE ARROW_PYTHON_EXPORTING)
+ install(TARGETS arrow_python
+-        ARCHIVE DESTINATION .
+-        LIBRARY DESTINATION .
+-        RUNTIME DESTINATION .)
++        ARCHIVE DESTINATION lib
++        LIBRARY DESTINATION lib
++        RUNTIME DESTINATION bin)
+ 
+ set(PYARROW_CPP_FLIGHT_SRCS ${PYARROW_CPP_SOURCE_DIR}/flight.cc)
+ if(PYARROW_BUILD_FLIGHT)
+@@ -509,9 +510,9 @@ function(bundle_arrow_dependency library_name)
+     get_filename_component(SHARED_LIB_NAME ${SHARED_LIB_PATH} NAME)
+     message(STATUS "Bundle dependency ${library_name}: ${SHARED_LIB_REALPATH} as ${SHARED_LIB_NAME}"
+     )
+-    install(FILES ${SHARED_LIB_REALPATH}
+-            DESTINATION "."
+-            RENAME ${SHARED_LIB_NAME})
++    #install(FILES ${SHARED_LIB_REALPATH}
++    #        DESTINATION "."
++    #        RENAME ${SHARED_LIB_NAME})
+   else()
+     message(FATAL_ERROR "Unable to bundle dependency: ${library_name}")
+   endif()
+@@ -753,7 +754,7 @@ foreach(module ${CYTHON_EXTENSIONS})
+ 
+   target_link_libraries(${module_name} PRIVATE ${LINK_LIBS})
+ 
+-  install(TARGETS ${module_name} LIBRARY DESTINATION ".")
++  install(TARGETS ${module_name} LIBRARY DESTINATION "lib")
+   foreach(output ${${module_name}_output})
+     if(output MATCHES "\\.${CYTHON_CXX_EXTENSION}$")
+       if(NOT PYARROW_BUNDLE_CYTHON_CPP)

@@ -1,0 +1,27 @@
+{
+  "name": "python-pyarrow",
+  "version": "14.0.0",
+  "description": "Cross-language development platform for in-memory analytics",
+  "homepage": "https://github.com/dateutil/dateutil",
+  "license": null,
+  "dependencies": [
+    "pypa-setuptools",
+    "python-cython",
+    "numpy",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    "python3",
+    {
+      "name": "arrow",
+      "features": ["python"],
+      "default-features": false
+    },
+    "python-multiprocess"
+  ]
+}
