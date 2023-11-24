@@ -19,6 +19,11 @@
     "python-hatch-fancy-pypi-readme",
     "python-pillow",
     "python-aiofiles",
-    "python-fastapi"
+    "python-fastapi",
+    "python-ffmpy",
+    "python-pydub",
+    "python-uvicorn",
+    "python-orjson",
+    "python-altair"
   ]
 }

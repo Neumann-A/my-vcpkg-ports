@@ -1,11 +1,17 @@
 {
   "name": "llama-cpp-python",
-  "version": "0.2.14",
+  "version": "0.2.19",
   "description": "Python bindings for llama.cpp",
   "homepage": "llama-cpp-python.readthedocs.io",
   "license": "MIT",
   "dependencies": [
     "python3",
-    "llama-cpp"
+    "llama-cpp",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python-diskcache",
+    "python-scikit-build-core"
   ]
 }
