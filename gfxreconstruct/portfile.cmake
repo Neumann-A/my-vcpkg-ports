@@ -6,7 +6,7 @@ vcpkg_from_github(
     HEAD_REF main
 )
 
-#BUILD_STATIC 
+string(COMPARE EQUAL "${VCPKG_LIBRARY_LINAKGE}" "static" BUILD_STATIC)
 
 vcpkg_cmake_configure(
   SOURCE_PATH "${SOURCE_PATH}"
@@ -14,6 +14,7 @@ vcpkg_cmake_configure(
     -DBUILD_WERROR=OFF
     "-DVULKAN_HEADER=${CURRENT_INSTALLED_DIR}/include/vulkan/vulkan_core.h"
     -DD3D12_SUPPORT=OFF
+    -DBUILD_STATIC=${BUILD_STATIC}
 )
 vcpkg_cmake_install()
 
@@ -30,3 +31,4 @@ foreach(file IN LISTS files)
 endforeach()
 
 set(VCPKG_POLICY_DLLS_WITHOUT_LIBS enabled)
+set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)

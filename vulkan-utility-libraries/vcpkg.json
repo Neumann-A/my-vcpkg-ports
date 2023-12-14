@@ -4,6 +4,7 @@
   "description": "Utility libraries for Vulkan developers",
   "homepage": "https://github.com/KhronosGroup/Vulkan-Utility-Libraries",
   "license": null,
+  "supports": "!android",
   "dependencies": [
     {
       "name": "vcpkg-cmake",
@@ -12,6 +13,7 @@
     {
       "name": "vcpkg-cmake-config",
       "host": true
-    }
+    },
+    "vulkan-headers"
   ]
 }
