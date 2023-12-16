@@ -1,0 +1,588 @@
+diff --git a/cMake/FindSMESH.cmake b/cMake/FindSMESH.cmake
+index f014c76..c05631a 100644
+--- a/cMake/FindSMESH.cmake	
++++ b/cMake/FindSMESH.cmake
+@@ -8,6 +8,7 @@
+ 
+ # SMESH needs VTK
+ find_package(VTK REQUIRED)
++get_target_property(VTK_INCLUDE_DIRS VTK::CommonCore INTERFACE_INCLUDE_DIRECTORIES)
+ 
+ # If this definition is not set, linker errors will occur against SMESH on 64 bit machines.
+ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+@@ -18,7 +19,7 @@ find_package(SalomeSMESH CONFIG REQUIRED)
+ 
+ IF(SalomeSMESH_FOUND)
+   SET(SMESH_FOUND TRUE)
+-  set(EXTERNAL_SMESH_LIBS SalomeIDLSMESH SMDS SMDS_MemoryLimit SMESHDS SMESHUtils SMESHControls MeshDriver MEDWrapper mprint_version MeshDriverMED MeshDriverDAT MeshDriverUNV MeshDriverSTL MeshDriverGMF SMESHimpl SMESHEngine SMESHClient StdMeshers StdMeshersEngine MeshCut SalomeIDLSPADDER MeshJobManagerEngine SPADDERPluginTesterEngine)
++  set(EXTERNAL_SMESH_LIBS SalomeIDLSMESH SMDS  SMESHDS SMESHUtils SMESHControls MeshDriver MEDWrapper MeshDriverMED MeshDriverDAT MeshDriverUNV MeshDriverSTL MeshDriverGMF SMESHimpl SMESHEngine SMESHClient StdMeshers StdMeshersEngine SalomeIDLSPADDER MeshJobManagerEngine SPADDERPluginTesterEngine)
+ ELSE(SalomeSMESH_FOUND)
+ 	message(FATAL_ERROR "SMESH libraries NOT FOUND!")
+ ENDIF(SalomeSMESH_FOUND)
+diff --git a/cMake/FreeCAD_Helpers/SetupSalomeSMESH.cmake b/cMake/FreeCAD_Helpers/SetupSalomeSMESH.cmake
+index 1a58efa..3839e08 100644
+--- a/cMake/FreeCAD_Helpers/SetupSalomeSMESH.cmake	
++++ b/cMake/FreeCAD_Helpers/SetupSalomeSMESH.cmake
+@@ -5,9 +5,9 @@ macro(SetupSalomeSMESH)
+     if(BUILD_SMESH)
+         # set the internal smesh version:
+         # see src/3rdParty/salomonemesh/CMakeLists.txt and commit https://github.com/FreeCAD/FreeCAD/commit/666a3e5 and https://forum.freecad.org/viewtopic.php?f=10&t=30838
+-        set(SMESH_VERSION_MAJOR 7)
+-        set(SMESH_VERSION_MINOR 7)
+-        set(SMESH_VERSION_PATCH 1)
++        set(SMESH_VERSION_MAJOR 9)
++        set(SMESH_VERSION_MINOR 10)
++        set(SMESH_VERSION_PATCH 0)
+         set(SMESH_VERSION_TWEAK 0)
+ 
+         #if we use smesh we definitely also need vtk, no matter of external or internal smesh
+@@ -131,14 +131,19 @@ macro(SetupSalomeSMESH)
+                                 "================\n")
+                 endif()
+             endif()
+-            set (SMESH_INCLUDE_DIR ${SMESH_INCLUDE_PATH})
+-            set(EXTERNAL_SMESH_LIBS ${SMESH_LIBRARIES})
++            set (SMESH_INCLUDE_DIR ${SMESH_INCLUDE_DIRS})
++            set(EXTERNAL_SMESH_LIBS SalomeIDLSMESH SMDS SMESHDS SMESHUtils SMESHControls MeshDriver MEDWrapper MeshDriverMED MeshDriverDAT MeshDriverUNV MeshDriverSTL MeshDriverGMF SMESHimpl SMESHEngine SMESHClient StdMeshers StdMeshersEngine SalomeIDLSPADDER MeshJobManagerEngine SPADDERPluginTesterEngine)
+ 
+-            include_directories(${SMESH_INCLUDE_DIR})
++            include_directories(${SMESH_INCLUDE_DIRS})
+         endif()
+ 
+         set(SMESH_FOUND TRUE)
+         configure_file(${CMAKE_SOURCE_DIR}/src/SMESH_Version.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/SMESH_Version.h)
+     endif(BUILD_SMESH)
+ 
++SET(SMESH_VERSION_MAJOR 9)  # see main CMakeLists.txt of FreeCAD
++SET(SMESH_VERSION_MINOR 10)
++SET(SMESH_VERSION_PATCH 0)
++SET(SMESH_VERSION_TWEAK 0)
++
+ endmacro(SetupSalomeSMESH)
+diff --git a/src/3rdParty/salomesmesh/CMakeLists.txt b/src/3rdParty/salomesmesh/CMakeLists.txt
+index 144edf1..35dfd34 100644
+--- a/src/3rdParty/salomesmesh/CMakeLists.txt	
++++ b/src/3rdParty/salomesmesh/CMakeLists.txt
+@@ -2,9 +2,9 @@
+ #PROJECT(SMESH Fortran CXX)
+ set(CMAKE_AUTOMOC FALSE)
+ 
+-SET(SMESH_VERSION_MAJOR 7)  # see main CMakeLists.txt of FreeCAD
+-SET(SMESH_VERSION_MINOR 7)
+-SET(SMESH_VERSION_PATCH 1)
++SET(SMESH_VERSION_MAJOR 9)  # see main CMakeLists.txt of FreeCAD
++SET(SMESH_VERSION_MINOR 10)
++SET(SMESH_VERSION_PATCH 0)
+ SET(SMESH_VERSION_TWEAK 0)
+ 
+ # Suppress gcc warnings
+diff --git a/src/App/Application.cpp b/src/App/Application.cpp
+index 73630e1..31896f0 100644
+--- a/src/App/Application.cpp	
++++ b/src/App/Application.cpp
+@@ -2946,7 +2946,7 @@ void Application::LoadParameters()
+ }
+ 
+ 
+-#if defined(_MSC_VER)
++#if 0
+ // fix weird error while linking boost (all versions of VC)
+ // VS2010: https://forum.freecad.org/viewtopic.php?f=4&t=1886&p=12553&hilit=boost%3A%3Afilesystem%3A%3Aget#p12553
+ namespace boost { namespace program_options { std::string arg="arg"; } }
+diff --git a/src/Gui/3Dconnexion/GuiNativeEventLinuxX11.cpp b/src/Gui/3Dconnexion/GuiNativeEventLinuxX11.cpp
+index 2ef1c98..07f614b 100644
+--- a/src/Gui/3Dconnexion/GuiNativeEventLinuxX11.cpp	
++++ b/src/Gui/3Dconnexion/GuiNativeEventLinuxX11.cpp
+@@ -86,7 +86,7 @@ void Gui::GuiNativeEvent::initSpaceball(QMainWindow *window)
+ 
+ #if QT_VERSION >= 0x050000
+ 
+-bool Gui::GuiNativeEvent::xcbEventFilter(void *xcb_void, long* result)
++bool Gui::GuiNativeEvent::xcbEventFilter(void *xcb_void, qintptr* result)
+ {
+     Q_UNUSED(result);
+     auto inst(dynamic_cast<Gui::GUIApplicationNativeEventAware *>(QApplication::instance()));
+diff --git a/src/Gui/3Dconnexion/GuiNativeEventWin32.cpp b/src/Gui/3Dconnexion/GuiNativeEventWin32.cpp
+index 2fcf5df..e0eb899 100644
+--- a/src/Gui/3Dconnexion/GuiNativeEventWin32.cpp	
++++ b/src/Gui/3Dconnexion/GuiNativeEventWin32.cpp
+@@ -325,7 +325,7 @@ unsigned short HidToVirtualKey(unsigned long pid, unsigned short hidKeyCode)
+ }
+ 
+ 
+-bool Gui::GuiNativeEvent::RawInputEventFilter(void *msg, long *result)
++bool Gui::GuiNativeEvent::RawInputEventFilter(void *msg, qintptr *result)
+ {
+     if (gMouseInput == 0)
+         return false;
+diff --git a/src/Gui/3Dconnexion/GuiNativeEventWin32.h b/src/Gui/3Dconnexion/GuiNativeEventWin32.h
+index 94a223b..949fbd7 100644
+--- a/src/Gui/3Dconnexion/GuiNativeEventWin32.h	
++++ b/src/Gui/3Dconnexion/GuiNativeEventWin32.h
+@@ -62,7 +62,7 @@ namespace Gui
+ 
+     private:
+         bool InitializeRawInput(HWND hwndTarget);
+-        static bool RawInputEventFilter(void* msg, long* result);
++        static bool RawInputEventFilter(void* msg, qintptr* result);
+         void OnRawInput(UINT nInputCode, HRAWINPUT hRawInput);
+         UINT GetRawInputBuffer(PRAWINPUT pData, PUINT pcbSize, UINT cbSizeHeader);
+         bool TranslateRawInputData(UINT nInputCode, PRAWINPUT pRawInput);
+diff --git a/src/Gui/3Dconnexion/GuiRawInputEventFilter.h b/src/Gui/3Dconnexion/GuiRawInputEventFilter.h
+index ce26116..2d2c878 100644
+--- a/src/Gui/3Dconnexion/GuiRawInputEventFilter.h	
++++ b/src/Gui/3Dconnexion/GuiRawInputEventFilter.h
+@@ -30,13 +30,13 @@ namespace Gui
+     class RawInputEventFilter : public QAbstractNativeEventFilter
+     {
+     public:
+-        using EventFilter = bool (*)(void *message, long *result);
++        using EventFilter = bool (*)(void *message, qintptr *result);
+         RawInputEventFilter(EventFilter filter) : eventFilter(filter) {
+         }
+         virtual ~RawInputEventFilter() {
+         }
+ 
+-        virtual bool nativeEventFilter(const QByteArray & /*eventType*/, void *message, long *result) {
++        virtual bool nativeEventFilter(const QByteArray & /*eventType*/, void *message, qintptr *result) {
+             return eventFilter(message, result);
+         }
+ 
+diff --git a/src/Gui/CMakeLists.txt b/src/Gui/CMakeLists.txt
+index 4282978..b237142 100644
+--- a/src/Gui/CMakeLists.txt	
++++ b/src/Gui/CMakeLists.txt
+@@ -1288,7 +1288,7 @@ if (EIGEN3_NO_DEPRECATED_COPY)
+ endif ()
+ 
+ add_library(FreeCADGui SHARED ${FreeCADGui_SRCS})
+-target_link_libraries(FreeCADGui ${FreeCADGui_LIBS})
++target_link_libraries(FreeCADGui ${FreeCADGui_LIBS} Qt6::GuiPrivate)
+ 
+ SET_BIN_DIR(FreeCADGui FreeCADGui)
+ 
+diff --git a/src/Gui/FileDialog.cpp b/src/Gui/FileDialog.cpp
+index 8fb4b00..2354622 100644
+--- a/src/Gui/FileDialog.cpp	
++++ b/src/Gui/FileDialog.cpp
+@@ -37,11 +37,12 @@
+ # include <QRegularExpression>
+ # include <QRegularExpressionMatch>
+ # include <QResizeEvent>
+-# include <QStandardPaths>
+ # include <QStyle>
+ # include <QUrl>
+ #endif
+ 
++# include <QStandardPaths>
++
+ #include <Base/Parameter.h>
+ #include <App/Application.h>
+ 
+diff --git a/src/Gui/MainWindow.cpp b/src/Gui/MainWindow.cpp
+index 118843e..c01d85b 100644
+--- a/src/Gui/MainWindow.cpp	
++++ b/src/Gui/MainWindow.cpp
+@@ -55,9 +55,11 @@
+ #endif
+ 
+ #if defined(Q_OS_WIN)
+-# include <QtPlatformHeaders/QWindowsWindowFunctions>
++#include <qnativeinterface.h>
++#include <qpa/qplatformwindow_p.h>
+ #endif
+ 
++
+ #include <App/Application.h>
+ #include <App/Document.h>
+ #include <App/DocumentObject.h>
+@@ -109,10 +111,6 @@
+ 
+ FC_LOG_LEVEL_INIT("MainWindow",false,true,true)
+ 
+-#if defined(Q_OS_WIN32)
+-#define slots
+-#endif
+-
+ using namespace Gui;
+ using namespace Gui::DockWnd;
+ using namespace std;
+@@ -1605,9 +1603,13 @@ void MainWindow::loadWindowSettings()
+ 
+     // make menus and tooltips usable in fullscreen under Windows, see issue #7563
+ #if defined(Q_OS_WIN)
+-    if (QWindow* win = this->windowHandle()) {
+-        QWindowsWindowFunctions::setHasBorderInFullScreen(win, true);
+-    }
++    using namespace QNativeInterface::Private;
++    if (auto *windowsWindow = dynamic_cast<QWindowsWindow*>(this->windowHandle()))
++        windowsWindow->setHasBorderInFullScreen(true);
++
++    //if (QWindow* win = this->windowHandle()) {
++    //    QWindowsWindowFunctions::setHasBorderInFullScreen(win, true);
++    //}
+ #endif
+ 
+     statusBar()->setVisible(config.value(QString::fromLatin1("StatusBar"), true).toBool());
+diff --git a/src/Gui/ViewProviderLink.cpp b/src/Gui/ViewProviderLink.cpp
+index c22f080..82bed6a 100644
+--- a/src/Gui/ViewProviderLink.cpp	
++++ b/src/Gui/ViewProviderLink.cpp
+@@ -105,6 +105,7 @@ do{\
+ #endif
+ 
+ ////////////////////////////////////////////////////////////////////////////
++
+ class Gui::LinkInfo {
+ 
+ public:
+@@ -318,8 +319,8 @@ public:
+     // compilation  here.
+     //
+ #ifdef _MSC_VER
+-    friend void ::intrusive_ptr_add_ref(LinkInfo *px);
+-    friend void ::intrusive_ptr_release(LinkInfo *px);
++    friend void ::Gui::intrusive_ptr_add_ref(LinkInfo *px);
++    friend void ::Gui::intrusive_ptr_release(LinkInfo *px);
+ #else
+     friend inline void intrusive_ptr_add_ref(LinkInfo *px) { px->addref(); }
+     friend inline void intrusive_ptr_release(LinkInfo *px) { px->release(); }
+@@ -687,15 +688,7 @@ public:
+     }
+ };
+ 
+-#ifdef _MSC_VER
+-void intrusive_ptr_add_ref(Gui::LinkInfo *px){
+-    px->addref();
+-}
+ 
+-void intrusive_ptr_release(Gui::LinkInfo *px){
+-    px->release();
+-}
+-#endif
+ 
+ ////////////////////////////////////////////////////////////////////////////////////
+ 
+@@ -3437,3 +3430,13 @@ namespace Gui {
+ PROPERTY_SOURCE_TEMPLATE(Gui::ViewProviderLinkPython, Gui::ViewProviderLink)
+ template class GuiExport ViewProviderPythonFeatureT<ViewProviderLink>;
+ }
++
++#if 1
++void Gui::intrusive_ptr_add_ref(Gui::LinkInfo *px){
++    px->addref();
++}
++
++void Gui::intrusive_ptr_release(Gui::LinkInfo *px){
++    px->release();
++}
++#endif
+\ No newline at end of file
+diff --git a/src/Gui/ViewProviderLink.h b/src/Gui/ViewProviderLink.h
+index a3277f7..015e01b 100644
+--- a/src/Gui/ViewProviderLink.h	
++++ b/src/Gui/ViewProviderLink.h
+@@ -335,12 +335,14 @@ protected:
+ 
+ using ViewProviderLinkPython = ViewProviderPythonFeatureT<ViewProviderLink>;
+ 
+-} //namespace Gui
+-
+ #ifdef _MSC_VER
+ // forward declaration to please VC 2013
+ void intrusive_ptr_add_ref(Gui::LinkInfo *px);
+ void intrusive_ptr_release(Gui::LinkInfo *px);
+ #endif
+ 
++} //namespace Gui
++
++
++
+ #endif // GUI_VIEWPROVIDER_LINK_H
+diff --git a/src/Mod/Fem/App/AppFem.cpp b/src/Mod/Fem/App/AppFem.cpp
+index e2e4f4a..1c09577 100644
+--- a/src/Mod/Fem/App/AppFem.cpp	
++++ b/src/Mod/Fem/App/AppFem.cpp
+@@ -101,7 +101,7 @@ PyMOD_INIT_FUNC(Fem)
+     Fem::StdMeshers_LayerDistributionPy         ::init_type(femModule);
+     Fem::StdMeshers_LengthFromEdgesPy           ::init_type(femModule);
+     Fem::StdMeshers_MaxElementVolumePy          ::init_type(femModule);
+-    Fem::StdMeshers_MEFISTO_2DPy                ::init_type(femModule);
++    // Fem::StdMeshers_MEFISTO_2DPy                ::init_type(femModule);
+     Fem::StdMeshers_NumberOfLayersPy            ::init_type(femModule);
+     Fem::StdMeshers_NumberOfSegmentsPy          ::init_type(femModule);
+     Fem::StdMeshers_Prism_3DPy                  ::init_type(femModule);
+diff --git a/src/Mod/Fem/App/CMakeLists.txt b/src/Mod/Fem/App/CMakeLists.txt
+index ea04bbf..dbc919d 100644
+--- a/src/Mod/Fem/App/CMakeLists.txt	
++++ b/src/Mod/Fem/App/CMakeLists.txt
+@@ -30,7 +30,7 @@ include_directories(
+     ${OCC_INCLUDE_DIR}
+     ${PYTHON_INCLUDE_DIRS}
+     ${ZLIB_INCLUDE_DIR}
+-    ${SMESH_INCLUDE_DIR}
++    ${SMESH_INCLUDE_DIRS}
+     ${NETGEN_INCLUDE_DIRS}
+     ${VTK_INCLUDE_DIRS}
+ )
+@@ -46,7 +46,8 @@ set(Fem_LIBS
+ )
+ 
+ if (FREECAD_USE_EXTERNAL_SMESH)
+-   list(APPEND Fem_LIBS ${EXTERNAL_SMESH_LIBS})
++   find_package(SalomeNETGENPLUGIN REQUIRED)
++   list(APPEND Fem_LIBS ${EXTERNAL_SMESH_LIBS} SalomeIDLNETGENPLUGIN NETGENEngine)
+ else()
+    if (BUILD_FEM_NETGEN)
+        list(APPEND Fem_LIBS StdMeshers SMESH SMDS SMESHDS NETGENPlugin)
+diff --git a/src/Mod/Fem/App/HypothesisPy.cpp b/src/Mod/Fem/App/HypothesisPy.cpp
+index ed0a9d0..9db746b 100644
+--- a/src/Mod/Fem/App/HypothesisPy.cpp	
++++ b/src/Mod/Fem/App/HypothesisPy.cpp
+@@ -1189,28 +1189,28 @@ Py::Object StdMeshers_NumberOfLayersPy::getNumLayers(const Py::Tuple& args)
+ 
+ // ---------------------------------------------------------------------------
+ 
+-void StdMeshers_MEFISTO_2DPy::init_type(PyObject* module)
+-{
+-    behaviors().name("StdMeshers_MEFISTO_2D");
+-    behaviors().doc("StdMeshers_MEFISTO_2D");
+-    SMESH_HypothesisPyBase::init_type(module);
+-}
+-
+-#if SMESH_VERSION_MAJOR >= 9
+-StdMeshers_MEFISTO_2DPy::StdMeshers_MEFISTO_2DPy(int hypId, SMESH_Gen* gen)
+-  : SMESH_HypothesisPyBase(new StdMeshers_MEFISTO_2D(hypId, gen))
+-{
+-}
+-#else
+-StdMeshers_MEFISTO_2DPy::StdMeshers_MEFISTO_2DPy(int hypId, int studyId, SMESH_Gen* gen)
+-  : SMESH_HypothesisPyBase(new StdMeshers_MEFISTO_2D(hypId, studyId, gen))
+-{
+-}
+-#endif
+-
+-StdMeshers_MEFISTO_2DPy::~StdMeshers_MEFISTO_2DPy()
+-{
+-}
++// void StdMeshers_MEFISTO_2DPy::init_type(PyObject* module)
++// {
++    // behaviors().name("StdMeshers_MEFISTO_2D");
++    // behaviors().doc("StdMeshers_MEFISTO_2D");
++    // SMESH_HypothesisPyBase::init_type(module);
++// }
++
++// #if SMESH_VERSION_MAJOR >= 9
++// StdMeshers_MEFISTO_2DPy::StdMeshers_MEFISTO_2DPy(int hypId, SMESH_Gen* gen)
++  // : SMESH_HypothesisPyBase(new StdMeshers_MEFISTO_2D(hypId, gen))
++// {
++// }
++// #else
++// StdMeshers_MEFISTO_2DPy::StdMeshers_MEFISTO_2DPy(int hypId, int studyId, SMESH_Gen* gen)
++  // : SMESH_HypothesisPyBase(new StdMeshers_MEFISTO_2D(hypId, studyId, gen))
++// {
++// }
++// #endif
++
++// StdMeshers_MEFISTO_2DPy::~StdMeshers_MEFISTO_2DPy()
++// {
++// }
+ 
+ // ---------------------------------------------------------------------------
+ 
+diff --git a/src/Mod/Fem/App/HypothesisPy.h b/src/Mod/Fem/App/HypothesisPy.h
+index 5b321ac..e34c089 100644
+--- a/src/Mod/Fem/App/HypothesisPy.h	
++++ b/src/Mod/Fem/App/HypothesisPy.h
+@@ -344,13 +344,13 @@ public:
+     Py::Object getNumLayers(const Py::Tuple& args);
+ };
+ 
+-class StdMeshers_MEFISTO_2DPy : public SMESH_HypothesisPy<StdMeshers_MEFISTO_2DPy>
+-{
+-public:
+-    static void init_type(PyObject*);
+-    StdMeshers_MEFISTO_2DPy(int hypId, SMESH_Gen* gen);
+-    ~StdMeshers_MEFISTO_2DPy();
+-};
++// class StdMeshers_MEFISTO_2DPy : public SMESH_HypothesisPy<StdMeshers_MEFISTO_2DPy>
++// {
++// public:
++    // static void init_type(PyObject*);
++    // StdMeshers_MEFISTO_2DPy(int hypId, SMESH_Gen* gen);
++    // ~StdMeshers_MEFISTO_2DPy();
++// };
+ 
+ class StdMeshers_MaxElementVolumePy : public SMESH_HypothesisPy<StdMeshers_MaxElementVolumePy>
+ {
+@@ -680,13 +680,13 @@ public:
+     Py::Object getNumLayers(const Py::Tuple& args);
+ };
+ 
+-class StdMeshers_MEFISTO_2DPy : public SMESH_HypothesisPy<StdMeshers_MEFISTO_2DPy>
+-{
+-public:
+-    static void init_type(PyObject*);
+-    StdMeshers_MEFISTO_2DPy(int hypId, int studyId, SMESH_Gen* gen);
+-    ~StdMeshers_MEFISTO_2DPy() override;
+-};
++// class StdMeshers_MEFISTO_2DPy : public SMESH_HypothesisPy<StdMeshers_MEFISTO_2DPy>
++// {
++// public:
++    // static void init_type(PyObject*);
++    // StdMeshers_MEFISTO_2DPy(int hypId, int studyId, SMESH_Gen* gen);
++    // ~StdMeshers_MEFISTO_2DPy() override;
++// };
+ 
+ class StdMeshers_MaxElementVolumePy : public SMESH_HypothesisPy<StdMeshers_MaxElementVolumePy>
+ {
+diff --git a/src/Mod/Fem/App/PreCompiled.h b/src/Mod/Fem/App/PreCompiled.h
+index 17c6982..e4082b5 100644
+--- a/src/Mod/Fem/App/PreCompiled.h	
++++ b/src/Mod/Fem/App/PreCompiled.h
+@@ -59,7 +59,6 @@
+ #include <SMDS_MeshElement.hxx>
+ #include <SMDS_MeshGroup.hxx>
+ #include <SMDS_MeshNode.hxx>
+-#include <SMDS_PolyhedralVolumeOfNodes.hxx>
+ #include <SMDSAbs_ElementType.hxx>
+ #include <SMESH_Gen.hxx>
+ #include <SMESH_Group.hxx>
+@@ -81,7 +80,7 @@
+ #include <StdMeshers_MaxElementArea.hxx>
+ #include <StdMeshers_MaxElementVolume.hxx>
+ #include <StdMeshers_MaxLength.hxx>
+-#include <StdMeshers_MEFISTO_2D.hxx>
++
+ #include <StdMeshers_NotConformAllowed.hxx>
+ #include <StdMeshers_NumberOfLayers.hxx>
+ #include <StdMeshers_NumberOfSegments.hxx>
+@@ -111,7 +110,7 @@
+ #include <BRep_Tool.hxx>
+ #include <BRepAdaptor_Curve.hxx>
+ #if OCC_VERSION_HEX < 0x070600
+-# include <BRepAdaptor_HSurface.hxx>
++//# include <BRepAdaptor_HSurface.hxx>
+ #endif
+ #include <BRepAdaptor_Surface.hxx>
+ #include <BRepBndLib.hxx>
+diff --git a/src/Mod/Fem/Gui/CMakeLists.txt b/src/Mod/Fem/Gui/CMakeLists.txt
+index 625c851..7eeb513 100644
+--- a/src/Mod/Fem/Gui/CMakeLists.txt	
++++ b/src/Mod/Fem/Gui/CMakeLists.txt
+@@ -30,7 +30,7 @@ include_directories(
+     ${ZLIB_INCLUDE_DIR}
+     ${OCC_INCLUDE_DIR}
+     ${PYTHON_INCLUDE_DIRS}
+-    ${SMESH_INCLUDE_DIR}
++    ${SMESH_INCLUDE_DIRS}
+     ${VTK_INCLUDE_DIRS}
+ )
+ 
+diff --git a/src/Mod/MeshPart/App/CMakeLists.txt b/src/Mod/MeshPart/App/CMakeLists.txt
+index 6ee9deb..8ba3470 100644
+--- a/src/Mod/MeshPart/App/CMakeLists.txt	
++++ b/src/Mod/MeshPart/App/CMakeLists.txt
+@@ -19,7 +19,7 @@ include_directories(
+     ${OCC_INCLUDE_DIR}
+     ${ZLIB_INCLUDE_DIR}
+     ${PYTHON_INCLUDE_DIRS}
+-    ${SMESH_INCLUDE_DIR}
++    ${SMESH_INCLUDE_DIRS}
+     ${VTK_INCLUDE_DIRS}
+     ${EIGEN3_INCLUDE_DIR}
+ )
+@@ -34,7 +34,8 @@ set(MeshPart_LIBS
+ )
+ 
+ if (FREECAD_USE_EXTERNAL_SMESH)
+-   list(APPEND MeshPart_LIBS ${EXTERNAL_SMESH_LIBS})
++  find_package(SalomeNETGENPLUGIN REQUIRED)
++  list(APPEND MeshPart_LIBS ${EXTERNAL_SMESH_LIBS} VTK::CommonMisc VTK::CommonSystem SalomeIDLNETGENPLUGIN NETGENEngine)
+ else()
+    if (BUILD_FEM_NETGEN)
+        list(APPEND MeshPart_LIBS StdMeshers NETGENPlugin SMESH SMDS)
+diff --git a/src/Mod/MeshPart/App/Mesher.cpp b/src/Mod/MeshPart/App/Mesher.cpp
+index 4e55dbe..88149b8 100644
+--- a/src/Mod/MeshPart/App/Mesher.cpp	
++++ b/src/Mod/MeshPart/App/Mesher.cpp
+@@ -48,9 +48,9 @@
+ # pragma GCC diagnostic ignored "-Wpedantic"
+ #endif
+ 
+-#include <SMESH_Gen.hxx>
+ #include <StdMeshers_MaxLength.hxx>
+ #include <SMESH_Mesh.hxx>
++#include <SMESH_Gen.hxx>
+ #include <SMESHDS_Mesh.hxx>
+ 
+ #if SMESH_VERSION_MAJOR < 7
+@@ -60,7 +60,6 @@
+ #include <StdMeshers_LocalLength.hxx>
+ #include <StdMeshers_NumberOfSegments.hxx>
+ #include <StdMeshers_AutomaticLength.hxx>
+-#include <StdMeshers_MEFISTO_2D.hxx>
+ #include <StdMeshers_Deflection1D.hxx>
+ #include <StdMeshers_Arithmetic1D.hxx>
+ #include <StdMeshers_MaxElementArea.hxx>
+@@ -493,11 +492,11 @@ Mesh::MeshObject* Mesher::createMesh() const
+         hypoth.push_back(hyp2d_1);
+ #endif
+ #if SMESH_VERSION_MAJOR >= 9
+-        StdMeshers_MEFISTO_2D* alg2d = new StdMeshers_MEFISTO_2D(hyp++,meshgen);
++//        StdMeshers_MEFISTO_2D* alg2d = new StdMeshers_MEFISTO_2D(hyp++,meshgen);
+ #else
+-        StdMeshers_MEFISTO_2D* alg2d = new StdMeshers_MEFISTO_2D(hyp++,0,meshgen);
++//        StdMeshers_MEFISTO_2D* alg2d = new StdMeshers_MEFISTO_2D(hyp++,0,meshgen);
+ #endif
+-        hypoth.push_back(alg2d);
++//        hypoth.push_back(alg2d);
+     } break;
+ #endif
+     default:
+diff --git a/src/Mod/Part/App/OpenCascadeAll.h b/src/Mod/Part/App/OpenCascadeAll.h
+index ee77cde..cd4f38a 100644
+--- a/src/Mod/Part/App/OpenCascadeAll.h	
++++ b/src/Mod/Part/App/OpenCascadeAll.h
+@@ -71,7 +71,6 @@
+ #include <Standard_ShortReal.hxx>
+ #include <Standard_SStream.hxx>
+ #include <Standard_Stream.hxx>
+-#include <Standard_TooManyUsers.hxx>
+ #include <Standard_Transient.hxx>
+ #include <Standard_Type.hxx>
+ #include <Standard_TypeDef.hxx>
+@@ -393,7 +392,6 @@
+ // Quan*
+ #include <Quantity_Color.hxx>
+ #include <Quantity_NameOfColor.hxx>
+-#include <Quantity_PhysicalQuantity.hxx>
+ #include <Quantity_TypeOfColor.hxx>
+ 
+ // Shape*
+diff --git a/src/Mod/Path/libarea/CMakeLists.txt b/src/Mod/Path/libarea/CMakeLists.txt
+index 62118bc..8e48a7c 100644
+--- a/src/Mod/Path/libarea/CMakeLists.txt	
++++ b/src/Mod/Path/libarea/CMakeLists.txt
+@@ -188,7 +188,8 @@ message(STATUS "area module (for Path Workbench) will be installed to: " ${CMAKE
+ if(WIN32)
+     set_target_properties(area-native PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+     INSTALL(TARGETS area-native
+-        DESTINATION ${CMAKE_INSTALL_LIBDIR}
++        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+     )
+ else(WIN32)
+     INSTALL(TARGETS area-native
+diff --git a/src/Mod/Sketcher/App/planegcs/SubSystem.cpp b/src/Mod/Sketcher/App/planegcs/SubSystem.cpp
+index f6e5b0d..9143bac 100644
+--- a/src/Mod/Sketcher/App/planegcs/SubSystem.cpp	
++++ b/src/Mod/Sketcher/App/planegcs/SubSystem.cpp
+@@ -22,6 +22,7 @@
+ 
+ #include <iostream>
+ #include <iterator>
++#include <cassert>
+ 
+ #include "SubSystem.h"
+ 

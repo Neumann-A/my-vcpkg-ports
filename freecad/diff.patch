@@ -1,0 +1,111 @@
+diff --git a/cMake/FindEigen3.cmake b/cMake/FindEigen3.cmake
+index c6d733b..54d1c6f 100644
+--- a/cMake/FindEigen3.cmake	
++++ b/cMake/FindEigen3.cmake
+@@ -30,7 +30,8 @@ if(NOT Eigen3_FIND_VERSION)
+ endif(NOT Eigen3_FIND_VERSION)
+ 
+ macro(_eigen3_check_version)
+-  file(READ "${EIGEN3_INCLUDE_DIR}/Eigen/src/Core/util/Macros.h" _eigen3_version_header)
++   list(GET EIGEN3_INCLUDE_DIR 0 base_inc)
++  file(READ "${base_inc}/Eigen/src/Core/util/Macros.h" _eigen3_version_header)
+ 
+   string(REGEX MATCH "define[ \t]+EIGEN_WORLD_VERSION[ \t]+([0-9]+)" _eigen3_world_version_match "${_eigen3_version_header}")
+   set(EIGEN3_WORLD_VERSION "${CMAKE_MATCH_1}")
+diff --git a/cMake/FindSMESH.cmake b/cMake/FindSMESH.cmake
+index fa48982..f014c76 100644
+--- a/cMake/FindSMESH.cmake	
++++ b/cMake/FindSMESH.cmake
+@@ -14,57 +14,12 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+ 	add_definitions(-DSALOME_USE_64BIT_IDS)
+ endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
+ 
+-IF (CMAKE_COMPILER_IS_GNUCC)
+-    FIND_PATH(SMESH_INCLUDE_DIR SMESH_Mesh.hxx
+-    # These are default search paths, why specify them?
+-    PATH_SUFFIXES smesh SMESH smesh/SMESH
+-    )
+-    FIND_LIBRARY(SMESH_LIBRARY SMESH)
+-ELSE (CMAKE_COMPILER_IS_GNUCC)
+-    # Not yet implemented
+-ENDIF (CMAKE_COMPILER_IS_GNUCC)
++find_package(SalomeSMESH CONFIG REQUIRED)
+ 
+-IF(SMESH_INCLUDE_DIR)
+-	SET(SMESH_INC_ROOT "${SMESH_INCLUDE_DIR}/..")
+-	# Append extra include dirs
+-	SET(SMESH_INCLUDE_DIR
+-	"${SMESH_INCLUDE_DIR};
+-	${SMESH_INC_ROOT}/Controls;
+-	${SMESH_INC_ROOT}/Driver;
+-	${SMESH_INC_ROOT}/DriverDAT;
+-	${SMESH_INC_ROOT}/DriverGMF;
+-	${SMESH_INC_ROOT}/DriverSTL;
+-	${SMESH_INC_ROOT}/DriverUNV;
+-	${SMESH_INC_ROOT}/Geom;
+-	${SMESH_INC_ROOT}/Kernel;
+-	${SMESH_INC_ROOT}/MEFISTO2;
+-	${SMESH_INC_ROOT}/MeshVSLink;
+-	${SMESH_INC_ROOT}/Netgen;
+-	${SMESH_INC_ROOT}/NETGENPlugin;
+-	${SMESH_INC_ROOT}/SMDS;
+-	${SMESH_INC_ROOT}/SMESHDS;
+-	${SMESH_INC_ROOT}/SMESHUtils;
+-	${SMESH_INC_ROOT}/StdMeshers;")
+-ELSE(SMESH_INCLUDE_DIR)
+-	message(FATAL_ERROR "SMESH include directories not found!")
+-ENDIF(SMESH_INCLUDE_DIR)
+-
+-SET(SMESH_FOUND FALSE)
+-IF(SMESH_LIBRARY)
++IF(SalomeSMESH_FOUND)
+   SET(SMESH_FOUND TRUE)
+-  GET_FILENAME_COMPONENT(SMESH_LIBRARY_DIR ${SMESH_LIBRARY} PATH)
+-  set(SMESH_LIBRARIES
+-    ${SMESH_LIBRARY_DIR}/libDriver.so
+-    ${SMESH_LIBRARY_DIR}/libDriverDAT.so
+-    ${SMESH_LIBRARY_DIR}/libDriverSTL.so
+-    ${SMESH_LIBRARY_DIR}/libDriverUNV.so
+-    ${SMESH_LIBRARY_DIR}/libSMDS.so
+-    ${SMESH_LIBRARY_DIR}/libSMESH.so
+-    ${SMESH_LIBRARY_DIR}/libSMESHDS.so
+-    ${SMESH_LIBRARY_DIR}/libStdMeshers.so
+-  )
+-  set(EXTERNAL_SMESH_LIBS ${SMESH_LIBRARIES})
+-ELSE(SMESH_LIBRARY)
++  set(EXTERNAL_SMESH_LIBS SalomeIDLSMESH SMDS SMDS_MemoryLimit SMESHDS SMESHUtils SMESHControls MeshDriver MEDWrapper mprint_version MeshDriverMED MeshDriverDAT MeshDriverUNV MeshDriverSTL MeshDriverGMF SMESHimpl SMESHEngine SMESHClient StdMeshers StdMeshersEngine MeshCut SalomeIDLSPADDER MeshJobManagerEngine SPADDERPluginTesterEngine)
++ELSE(SalomeSMESH_FOUND)
+ 	message(FATAL_ERROR "SMESH libraries NOT FOUND!")
+-ENDIF(SMESH_LIBRARY)
++ENDIF(SalomeSMESH_FOUND)
+ 
+diff --git a/cMake/FreeCAD_Helpers/SetGlobalCompilerAndLinkerSettings.cmake b/cMake/FreeCAD_Helpers/SetGlobalCompilerAndLinkerSettings.cmake
+index f70ba71..27bcfee 100644
+--- a/cMake/FreeCAD_Helpers/SetGlobalCompilerAndLinkerSettings.cmake	
++++ b/cMake/FreeCAD_Helpers/SetGlobalCompilerAndLinkerSettings.cmake
+@@ -27,9 +27,9 @@ macro(SetGlobalCompilerAndLinkerSettings)
+         set (CMAKE_C_STANDARD_LIBRARIES "kernel32.lib user32.lib gdi32.lib winspool.lib SHFolder.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib winmm.lib comsupp.lib Ws2_32.lib dbghelp.lib ")
+         set (CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_C_STANDARD_LIBRARIES}")
+         # set linker flag /nodefaultlib
+-        set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB")
+-        set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /NODEFAULTLIB")
+-        set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB")
++        #set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB")
++        #set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /NODEFAULTLIB")
++        #set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB")
+         if(FREECAD_RELEASE_PDB)
+             set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
+             set (CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG")
+diff --git a/src/Base/StackWalker.cpp b/src/Base/StackWalker.cpp
+index dcf5998..e4421dc 100644
+--- a/src/Base/StackWalker.cpp	
++++ b/src/Base/StackWalker.cpp
+@@ -531,7 +531,7 @@ private:
+       return FALSE;
+     }
+ 
+-    hMods = (HMODULE*) malloc(sizeof(HMODULE) * (TTBUFLEN / sizeof HMODULE));
++    hMods = (HMODULE*) malloc(sizeof(HMODULE) * (TTBUFLEN / sizeof(HMODULE)));
+     tt = (char*) malloc(sizeof(char) * TTBUFLEN);
+     tt2 = (char*) malloc(sizeof(char) * TTBUFLEN);
+     if ( (hMods == NULL) || (tt == NULL) || (tt2 == NULL) )
