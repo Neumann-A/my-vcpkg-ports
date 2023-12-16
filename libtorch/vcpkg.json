@@ -65,7 +65,8 @@
       "description": "Build with CUDA GPU backend",
       "dependencies": [
         "cuda",
-        "cudnn"
+        "cudnn",
+        "cusparselt"
       ]
     },
     "dist": {
@@ -138,7 +139,8 @@
       "description": "Build with Vulkan GPU backend",
       "dependencies": [
         "vulkan",
-        "vulkan-memory-allocator"
+        "vulkan-memory-allocator",
+        "vulkan-loader"
       ]
     },
     "xnnpack": {

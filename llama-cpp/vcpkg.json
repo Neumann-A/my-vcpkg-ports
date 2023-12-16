@@ -1,6 +1,6 @@
 {
   "name": "llama-cpp",
-  "version-string": "b1550",
+  "version-string": "b1557",
   "description": "Port of Facebook's LLaMA model in C/C++ ",
   "license": "MIT",
   "dependencies": [
