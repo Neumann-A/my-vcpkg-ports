@@ -25,7 +25,7 @@ vcpkg_cmake_configure(
       "-DSALOME_INSTALL_PYTHON_SHARED=tools/python3/Lib/site-packages/salome/shared_modules"
       -DOMNIORB_IDL_COMPILER=${CURRENT_HOST_INSTALLED_DIR}/tools/omniorb/bin/omniidl${VCPKG_HOST_EXECUTABLE_SUFFIX}
       -DOMNIORB_OMNINAMES_COMMAND=${CURRENT_HOST_INSTALLED_DIR}/tools/omniorb/bin/omniNames${VCPKG_HOST_EXECUTABLE_SUFFIX}
-      -DOMNIORBPY_ROOT_DIR=${CURRENT_INSTALLED_DIR}
+      -DOMNIORBPY_ROOT_DIR=${CURRENT_INSTALLED_DIR}/tools/python3/lib/site-packages/omniidl_be
       -DPYTHON_INCLUDE_DIR=${CURRENT_INSTALLED_DIR}/include/python3.11
       -DSALOME_INSTALL_CMAKE:PATH=share/salomekernel
       -DSALOME_INSTALL_SCRIPT_DATA:PATH=share/salome/script
