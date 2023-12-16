@@ -1,0 +1,19 @@
+{
+  "name": "soqt",
+  "version": "1.6.1",
+  "description": "Old Coin GUI binding for Qt, replaced by Quarter",
+  "homepage": "https://github.com/coin3d/soqt",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "coin",
+    "python3",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ]
+}
