@@ -2,7 +2,6 @@
   "name": "cudnn",
   "version": "8.9.6.50",
   "description": "NVIDIA cuDNN is a GPU-accelerated library of primitives for deep neural networks.",
-  "homepage": "",
   "dependencies": [
     "cuda"
   ]
