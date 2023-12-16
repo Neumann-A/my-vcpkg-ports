@@ -24,6 +24,8 @@ vcpkg_cmake_configure(
       "-DKERNEL_ROOT_DIR:PATH=${CURRENT_INSTALLED_DIR}"
       "-DGEOM_ROOT_DIR:PATH=${CURRENT_INSTALLED_DIR}"
       "-DMEDCOUPLING_ROOT_DIR:PATH=${CURRENT_INSTALLED_DIR}"
+      "-DSALOME_INSTALL_PYTHON=tools/python3/Lib/site-packages/salome"
+      "-DSALOME_INSTALL_PYTHON_SHARED=tools/python3/Lib/site-packages/salome/shared_modules"
       -DPYTHON_EXECUTABLE=${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}
       -DSALOME_USE_64BIT_IDS=${SALOME_USE_64BIT_IDS}
       -DSALOME_BUILD_TESTS=OFF
@@ -51,7 +53,13 @@ if(NOT VCPKG_BUILD_TYPE)
 endif()
 
 vcpkg_cmake_config_fixup(PACKAGE_NAME SalomeSMESH CONFIG_PATH "adm_local/cmake_files")
-vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/SalomeSMESH/SalomeSMESHConfig.cmake" "/adm_local/cmake_files" "/share/SalomeSMESH")
+
+set(config "${CURRENT_PACKAGES_DIR}/share/salomegeom/SalomeSMESHConfig.cmake")
+file(READ "${config}" contents)
+string(REPLACE "/adm_local/cmake_files" "/share/SalomeSMESH" contents "${contents}")
+string(REPLACE "_PREREQ_SalomeSMESH  MEDCoupling MEDFile" "_PREREQ_SalomeSMESH  MEDCoupling MEDFile Eigen3" contents "${contents}")
+string(REPLACE "NO_DEFAULT_PATH" "" contents "${contents}")
+file(WRITE "${config}" "${contents}")
 
 if(VCPKG_TARGET_IS_WINDOWS)
   set(file "${CURRENT_PACKAGES_DIR}/share/SalomeSMESH/SalomeSMESHTargets-release.cmake")

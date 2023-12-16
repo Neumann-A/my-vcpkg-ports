@@ -14,8 +14,6 @@ vcpkg_find_acquire_program(SWIG)
 cmake_path(GET SWIG PARENT_PATH SWIG_DIR)
 vcpkg_add_to_path("${SWIG_DIR}")
 
-set(ENV{PYTHONPATH} "${CURRENT_HOST_INSTALLED_DIR}/tools/python3/Lib;${CURRENT_INSTALLED_DIR}/lib/python3.10/site-packages")
-
 string(COMPARE EQUAL "${VCPKG_TARGET_ARCHITECTURE}" "x64"  SALOME_USE_64BIT_IDS)
 
 vcpkg_cmake_configure(
@@ -23,6 +21,8 @@ vcpkg_cmake_configure(
     OPTIONS 
       "-DCONFIGURATION_ROOT_DIR=${SALOME_CONFIGURATION_ROOT_DIR}"
       "-DKERNEL_ROOT_DIR:PATH=${CURRENT_INSTALLED_DIR}"
+      "-DSALOME_INSTALL_PYTHON=tools/python3/Lib/site-packages/salome"
+      "-DSALOME_INSTALL_PYTHON_SHARED=tools/python3/Lib/site-packages/salome/shared_modules"
       -DPYTHON_EXECUTABLE=${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}
       -DSALOME_USE_64BIT_IDS=${SALOME_USE_64BIT_IDS}
       -DSALOME_BUILD_TESTS=OFF
@@ -30,7 +30,7 @@ vcpkg_cmake_configure(
       -DSALOME_BUILD_GUI=OFF
       -DSALOME_GEOM_USE_VTK=ON
       "-DOpenCASCADE_INCLUDE_DIR=${CURRENT_INSTALLED_DIR}/include/opencascade"
-      -DOPENCASCADE_ROOT_DIR=${CURRENT_INSTALLED_DIR}/share/opencascade
+      "-DOPENCASCADE_ROOT_DIR=${CURRENT_INSTALLED_DIR}/share/opencascade"
 )
 
 vcpkg_cmake_install()
@@ -60,7 +60,13 @@ foreach(idl_py IN LISTS idl_pys)
 endforeach()
 
 vcpkg_cmake_config_fixup(PACKAGE_NAME SalomeGEOM CONFIG_PATH "adm_local/cmake_files")
-vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/salomegeom/SalomeGEOMConfig.cmake" "/adm_local/cmake_files" "/share/SalomeGEOM")
+
+set(config "${CURRENT_PACKAGES_DIR}/share/salomegeom/SalomeGEOMConfig.cmake")
+file(READ "${config}" contents)
+string(REPLACE "/adm_local/cmake_files" "/share/SalomeGEOM" contents "${contents}")
+string(REPLACE "_PREREQ_SalomeGEOM  OpenCASCADE VTK" "_PREREQ_SalomeGEOM  OpenCASCADE VTK Eigen3" contents "${contents}")
+string(REPLACE "NO_DEFAULT_PATH" "" contents "${contents}")
+file(WRITE "${config}" "${contents}")
 
 if(VCPKG_TARGET_IS_WINDOWS)
   set(file "${CURRENT_PACKAGES_DIR}/share/SalomeGEOM/SalomeGEOMTargets-release.cmake")

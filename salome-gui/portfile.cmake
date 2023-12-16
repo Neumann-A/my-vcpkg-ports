@@ -27,6 +27,8 @@ vcpkg_cmake_configure(
     OPTIONS 
       "-DCONFIGURATION_ROOT_DIR=${SALOME_CONFIGURATION_ROOT_DIR}"
       "-DKERNEL_ROOT_DIR:PATH=${CURRENT_INSTALLED_DIR}/share/salomekernel"
+      "-DSALOME_INSTALL_PYTHON=tools/python3/Lib/site-packages/salome"
+      "-DSALOME_INSTALL_PYTHON_SHARED=tools/python3/Lib/site-packages/salome/shared_modules"
       -DSALOME_BUILD_TESTS=OFF
       -DSALOME_BUILD_DOC=OFF
       -DPYTHON_EXECUTABLE=${PYTHON3}

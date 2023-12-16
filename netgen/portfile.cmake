@@ -11,6 +11,7 @@ vcpkg_from_github(
       vcpkg-fix-cgns-link.patch
       cgns-scoped-enum.patch
       downstream-fixes.patch
+      add_filesystem.patch
 )
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
@@ -55,6 +56,15 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
   vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/nglib.h" "define NGLIB" "define NGLIB\n#define OCCGEOMETRY\n#define JPEGLIB\n#define FFMPEG\n")
   vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/core/ngcore_api.hpp" "!defined(NGSTATIC_BUILD)" "0")
 endif()
+
+set(config_file "${CURRENT_PACKAGES_DIR}/share/netgen/NetgenConfig.cmake")
+file(READ "${config_file}" contents)
+string(REPLACE "${SOURCE_PATH}" "NOT-USABLE" contents "${contents}")
+string(REPLACE "\${NETGEN_CMAKE_DIR}/../" "\${NETGEN_CMAKE_DIR}/../../" contents "${contents}")
+if(NOT VCPKG_BUILD_TYPE)
+  string(REPLACE "/lib" "$<$<CONFIG:DEBUG>:/debug>/lib" contents "${contents}")
+endif()
+file(WRITE "${config_file}" "${contents}")
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/netgen/NetgenConfig.cmake" "${SOURCE_PATH}" "NOT-USABLE")
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")

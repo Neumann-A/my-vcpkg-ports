@@ -137,7 +137,8 @@ endif()
 if("python" IN_LIST FEATURES)
     set(python_ver "")
     if(NOT VCPKG_TARGET_IS_WINDOWS)
-        set(python_ver 3.10)
+        set(python_ver 3.11)
+        set(python_site -DVTK_PYTHON_SITE_PACKAGES_SUFFIX="${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages")
     endif()
     list(APPEND ADDITIONAL_OPTIONS
         -DVTK_WRAP_PYTHON=ON
@@ -147,8 +148,8 @@ if("python" IN_LIST FEATURES)
         -DVTK_MODULE_ENABLE_VTK_Python=YES
         -DVTK_MODULE_ENABLE_VTK_PythonContext2D=YES # TODO: recheck
         -DVTK_MODULE_ENABLE_VTK_PythonInterpreter=YES
+        ${python_site}
     )
-    #VTK_PYTHON_SITE_PACKAGES_SUFFIX should be set to the install dir of the site-packages
 endif()
 
 if ("paraview" IN_LIST FEATURES OR "opengl" IN_LIST FEATURES)

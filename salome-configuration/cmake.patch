@@ -1,0 +1,342 @@
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindGraphviz.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindGraphviz.cmake
+index c4ce25b..5bc3f76 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindGraphviz.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindGraphviz.cmake
+@@ -36,7 +36,7 @@ IF(GRAPHVIZ_EXECUTABLE)
+   IF(NOT CMAKE_PREFIX_PATH) # Case where dot is in the path and -DGRAPHVIZ_ROOT_DIR not defined.
+     GET_FILENAME_COMPONENT(GRAPHVIZ_EXECUTABLE_DIR ${GRAPHVIZ_EXECUTABLE} PATH)
+     GET_FILENAME_COMPONENT(GRAPHVIZ_EXECUTABLE_DIR ${GRAPHVIZ_EXECUTABLE_DIR} PATH)
+-    SET(CMAKE_PREFIX_PATH "${GRAPHVIZ_EXECUTABLE_DIR}")
++    list(APPEND CMAKE_PREFIX_PATH "${GRAPHVIZ_EXECUTABLE_DIR}")
+   ENDIF(NOT CMAKE_PREFIX_PATH)
+ ENDIF(GRAPHVIZ_EXECUTABLE)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeBLSURFPLUGIN.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeBLSURFPLUGIN.cmake
+index 754bcd3..4826899 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeBLSURFPLUGIN.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeBLSURFPLUGIN.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeBLSURFPLUGIN_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome BLSURFPLUGIN ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${BLSURFPLUGIN_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${BLSURFPLUGIN_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeBLSURFPLUGIN SalomeBLSURFPLUGIN CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeCALCULATOR.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeCALCULATOR.cmake
+index e51baaf..1dc9154 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeCALCULATOR.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeCALCULATOR.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeCALCULATOR_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome CALCULATOR ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${CALCULATOR_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${CALCULATOR_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeCALCULATOR SalomeCALCULATOR CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeCOMPONENT.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeCOMPONENT.cmake
+index 798501a..01cdc60 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeCOMPONENT.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeCOMPONENT.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeCOMPONENT_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome COMPONENT ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${COMPONENT_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${COMPONENT_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeCOMPONENT SalomeCOMPONENT CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeFIELDS.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeFIELDS.cmake
+index 6165cc0..dadea01 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeFIELDS.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeFIELDS.cmake
+@@ -30,7 +30,7 @@ IF(NOT SalomeFIELDS_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome FIELDS ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${FIELDS_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${FIELDS_ROOT_DIR}")
+ SALOME_FIND_PACKAGE(SalomeFIELDS SalomeFIELDS CONFIG)
+ 
+ IF(NOT SalomeFIELDS_FIND_QUIETLY)
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeGEOM.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeGEOM.cmake
+index 4648256..76e65c5 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeGEOM.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeGEOM.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeGEOM_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome GEOM ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${GEOM_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${GEOM_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeGEOM SalomeGEOM CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeGHS3DPLUGIN.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeGHS3DPLUGIN.cmake
+index 6c02ef2..dc699fe 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeGHS3DPLUGIN.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeGHS3DPLUGIN.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeGHS3DPLUGIN_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome GHS3DPLUGIN ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${GHS3DPLUGIN_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${GHS3DPLUGIN_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeGHS3DPLUGIN SalomeGHS3DPLUGIN CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeGHS3DPRLPLUGIN.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeGHS3DPRLPLUGIN.cmake
+index bcfa205..7a695bb 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeGHS3DPRLPLUGIN.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeGHS3DPRLPLUGIN.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeGHS3DPRLPLUGIN_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome GHS3DPRLPLUGIN ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${GHS3DPRLPLUGIN_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${GHS3DPRLPLUGIN_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeGHS3DPRLPLUGIN SalomeGHS3DPRLPLUGIN CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeGMSHPLUGIN.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeGMSHPLUGIN.cmake
+index f8590b4..893b4a1 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeGMSHPLUGIN.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeGMSHPLUGIN.cmake
+@@ -22,7 +22,7 @@ IF(NOT SalomeGMSHPLUGIN_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome GMSHPLUGIN ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${GMSHPLUGIN_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${GMSHPLUGIN_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeGMSHPLUGIN SalomeGMSHPLUGIN CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeGUI.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeGUI.cmake
+index 832b027..52714e3 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeGUI.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeGUI.cmake
+@@ -30,7 +30,7 @@ IF(NOT SalomeGUI_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome GUI ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${GUI_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${GUI_ROOT_DIR}")
+ SALOME_FIND_PACKAGE(SalomeGUI SalomeGUI CONFIG)
+ 
+ IF(NOT SalomeGUI_FIND_QUIETLY)
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeHEXABLOCK.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeHEXABLOCK.cmake
+index 1bd6758..663a3cf 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeHEXABLOCK.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeHEXABLOCK.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeHEXABLOCK_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome HEXABLOCK ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${HEXABLOCK_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${HEXABLOCK_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeHEXABLOCK SalomeHEXABLOCK CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeHEXABLOCKPLUGIN.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeHEXABLOCKPLUGIN.cmake
+index e7cf30b..7901b5f 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeHEXABLOCKPLUGIN.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeHEXABLOCKPLUGIN.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeHEXABLOCKPLUGIN_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome HEXABLOCKPLUGIN ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${HEXABLOCKPLUGIN_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${HEXABLOCKPLUGIN_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeHEXABLOCKPLUGIN SalomeHEXABLOCKPLUGIN CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeHOMARD.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeHOMARD.cmake
+index 15ae6bf..2075341 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeHOMARD.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeHOMARD.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeHOMARD_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome HOMARD ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${HOMARD_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${HOMARD_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeHOMARD SalomeHOMARD CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeHYBRIDPLUGIN.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeHYBRIDPLUGIN.cmake
+index 564e411..4f02231 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeHYBRIDPLUGIN.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeHYBRIDPLUGIN.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeHYBRIDPLUGIN_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome HYBRIDPLUGIN ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${HYBRIDPLUGIN_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${HYBRIDPLUGIN_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeHYBRIDPLUGIN SalomeHYBRIDPLUGIN CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeHexoticPLUGIN.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeHexoticPLUGIN.cmake
+index d585604..19ed068 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeHexoticPLUGIN.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeHexoticPLUGIN.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeHexoticPLUGIN_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome HexoticPLUGIN ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${HexoticPLUGIN_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${HexoticPLUGIN_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeHexoticPLUGIN SalomeHexoticPLUGIN CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeJOBMANAGER.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeJOBMANAGER.cmake
+index 4dd41e5..7f3c25e 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeJOBMANAGER.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeJOBMANAGER.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeJOBMANAGER_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome JOBMANAGER ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${JOBMANAGER_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${JOBMANAGER_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeJOBMANAGER SalomeJOBMANAGER CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeKERNEL.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeKERNEL.cmake
+index 427740e..31227ab 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeKERNEL.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeKERNEL.cmake
+@@ -38,7 +38,7 @@ IF(NOT SalomeKERNEL_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome KERNEL ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${KERNEL_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${KERNEL_ROOT_DIR}")
+ SALOME_FIND_PACKAGE(SalomeKERNEL SalomeKERNEL CONFIG)
+ 
+ IF(NOT SalomeKERNEL_FIND_QUIETLY)
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeMEDCoupling.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeMEDCoupling.cmake
+index 0652b62..3ffea9a 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeMEDCoupling.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeMEDCoupling.cmake
+@@ -30,7 +30,7 @@ IF(NOT SalomeMEDCoupling_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for MEDCoupling tool ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${MEDCOUPLING_ROOT_DIR}/cmake_files")
++list(APPEND CMAKE_PREFIX_PATH "${MEDCOUPLING_ROOT_DIR}/cmake_files")
+ SALOME_FIND_PACKAGE(SalomeMEDCoupling MEDCoupling CONFIG)
+ 
+ IF(NOT SalomeMEDCoupling_FIND_QUIETLY)
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeNETGENPLUGIN.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeNETGENPLUGIN.cmake
+index 082a153..5a728d6 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeNETGENPLUGIN.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeNETGENPLUGIN.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeNETGENPLUGIN_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome NETGENPLUGIN ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${NETGENPLUGIN_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${NETGENPLUGIN_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeNETGENPLUGIN SalomeNETGENPLUGIN CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomePARAVIS.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomePARAVIS.cmake
+index f1dd951..53fce91 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomePARAVIS.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomePARAVIS.cmake
+@@ -30,7 +30,7 @@ IF(NOT SalomePARAVIS_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome PARAVIS ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${PARAVIS_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${PARAVIS_ROOT_DIR}")
+ SALOME_FIND_PACKAGE(SalomePARAVIS SalomePARAVIS CONFIG)
+ 
+ IF(NOT SalomePARAVIS_FIND_QUIETLY)
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomePythonLibs.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomePythonLibs.cmake
+index 4a4cfd1..65b3b56 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomePythonLibs.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomePythonLibs.cmake
+@@ -68,6 +68,6 @@ IF (SALOMEPYTHONLIBS_FOUND AND SALOMEPYTHONINTERP_FOUND)
+   IF("${maj_lib}.${min_lib}.${patch_lib}" STREQUAL "${maj_inter}.${min_inter}.${patch_inter}")
+     MESSAGE(STATUS "Python libs and interpreter versions are matching: ${PYTHONLIBS_VERSION_STRING}")
+   ELSE()
+-    MESSAGE(FATAL_ERROR "Python libs and interpreter versions are NOT matching: ${PYTHONLIBS_VERSION_STRING} vs ${PYTHON_VERSION_STRING}")
++    MESSAGE(WARNING "Python libs and interpreter versions are NOT matching: ${PYTHONLIBS_VERSION_STRING} vs ${PYTHON_VERSION_STRING}")
+   ENDIF()
+ ENDIF()
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeSHAPERSTUDY.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeSHAPERSTUDY.cmake
+index 269807b..1ffe1f5 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeSHAPERSTUDY.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeSHAPERSTUDY.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeSHAPERSTUDY_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome SHAPERSTUDY ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${SHAPERSTUDY_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${SHAPERSTUDY_ROOT_DIR}")
+ SALOME_FIND_PACKAGE(SalomeSHAPERSTUDY SalomeSHAPERSTUDY CONFIG)
+ 
+ IF(NOT SalomeSHAPERSTUDY_FIND_QUIETLY)
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeSMESH.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeSMESH.cmake
+index a6832f2..8302199 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeSMESH.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeSMESH.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeSMESH_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome SMESH ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${SMESH_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${SMESH_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeSMESH SalomeSMESH CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeYACS.cmake b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeYACS.cmake
+index 74881f2..70f42fb 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/FindSalomeYACS.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/FindSalomeYACS.cmake
+@@ -21,7 +21,7 @@ IF(NOT SalomeYACS_FIND_QUIETLY)
+   MESSAGE(STATUS "Looking for Salome YACS ...")
+ ENDIF()
+ 
+-SET(CMAKE_PREFIX_PATH "${YACS_ROOT_DIR}")
++list(APPEND CMAKE_PREFIX_PATH "${YACS_ROOT_DIR}")
+ 
+ SALOME_FIND_PACKAGE(SalomeYACS SalomeYACS CONFIG)
+ 
+diff --git a/bc2493e1fa-672ed84429.clean - Kopie/cmake/SalomeMacros.cmake b/bc2493e1fa-672ed84429.clean/cmake/SalomeMacros.cmake
+index bb38859..568194f 100644
+--- a/bc2493e1fa-672ed84429.clean - Kopie/cmake/SalomeMacros.cmake	
++++ b/bc2493e1fa-672ed84429.clean/cmake/SalomeMacros.cmake
+@@ -428,15 +428,11 @@ MACRO(SALOME_FIND_PACKAGE englobPkg stdPkg mode)
+       IF(${englobPkg}_FIND_COMPONENTS)
+         FIND_PACKAGE(${stdPkg} ${${englobPkg}_FIND_VERSION} ${_tmp_exact} 
+               NO_MODULE ${_tmp_quiet} ${_tmp_req} COMPONENTS ${${englobPkg}_FIND_COMPONENTS}
+-              PATH_SUFFIXES "salome_adm/cmake_files" "adm_local/cmake_files" "adm/cmake"
+-              NO_CMAKE_BUILDS_PATH NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_SYSTEM_PACKAGE_REGISTRY NO_CMAKE_SYSTEM_PATH
+-                NO_SYSTEM_ENVIRONMENT_PATH)
++              PATH_SUFFIXES "salome_adm/cmake_files" "adm_local/cmake_files" "adm/cmake")
+       ELSE()
+         FIND_PACKAGE(${stdPkg} ${${englobPkg}_FIND_VERSION} ${_tmp_exact} 
+               NO_MODULE ${_tmp_quiet} ${_tmp_req}
+-              PATH_SUFFIXES "salome_adm/cmake_files" "adm_local/cmake_files" "adm/cmake"
+-              NO_CMAKE_BUILDS_PATH NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_SYSTEM_PACKAGE_REGISTRY NO_CMAKE_SYSTEM_PATH
+-                 NO_SYSTEM_ENVIRONMENT_PATH)
++              PATH_SUFFIXES "salome_adm/cmake_files" "adm_local/cmake_files" "adm/cmake")
+       ENDIF()
+       MARK_AS_ADVANCED(${stdPkg}_DIR)
+       
+@@ -532,7 +528,7 @@ MACRO(SALOME_FIND_PACKAGE_AND_DETECT_CONFLICTS pkg referenceVariable upCount)
+   # Override the variable - don't append to it, as it would give precedence
+   # to what was stored there before!  
+   IF(DEFINED ${_envvar})
+-    SET(CMAKE_PREFIX_PATH "${${_envvar}}")
++    list(APPEND CMAKE_PREFIX_PATH "${${_envvar}}")
+   ENDIF()
+     
+   # Try find_package in config mode. This has the priority, but is 

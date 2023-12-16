@@ -9,11 +9,13 @@ vcpkg_from_github(
 )
 
 vcpkg_add_to_path("${CURRENT_INSTALLED_DIR}/tools/Qt6/bin")
-set(ENV{PYTHONPATH} "${CURRENT_INSTALLED_DIR}/Lib/site-packages")
-#x_vcpkg_get_python_packages(PYTHON_VERSION "3" OUT_PYTHON_VAR "PYTHON3" PACKAGES pyside6 shiboken6 pivy)
 
 string(APPEND VCPKG_C_FLAGS " -DHAVE_SHIBOKEN6 -DHAVE_PYSIDE6")
 string(APPEND VCPKG_CXX_FLAGS " -DHAVE_SHIBOKEN6 -DHAVE_PYSIDE6")
+
+vcpkg_find_acquire_program(SWIG)
+cmake_path(GET SWIG PARENT_PATH SWIG_DIR)
+vcpkg_add_to_path("${SWIG_DIR}")
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
@@ -31,7 +33,6 @@ vcpkg_cmake_configure(
       -DBUILD_TEST=OFF
       "-DFREECAD_USE_EXTERNAL_SMESH=ON"
       "-DFREECAD_USE_EXTERNAL_KDL=ON"
-#      "-DPYTHON3_EXECUTABLE=${PYTHON3}"
       -DFREECAD_USE_SHIBOKEN=ON
       -DFREECAD_USE_PYSIDE=ON
       "-DEIGEN3_INCLUDE_DIR=${CURRENT_INSTALLED_DIR}/include/Eigen3"
@@ -44,6 +45,8 @@ vcpkg_copy_tools(TOOL_NAMES FreeCAD CreeCADCmd  DESTINATION "${CURRENT_PACKAGES_
 
 file(COPY "${CURRENT_PACKAGES_DIR}/tools/Qt6/bin/qt.conf" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin")
 file(COPY "${CURRENT_PACKAGES_DIR}/tools/Qt6/bin/QtWebEngineProcess${VCPKG_TARGET_EXECUTABLE_SUFFIX}" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin")
+file(COPY "${CURRENT_PACKAGES_DIR}/tools/python3/Lib" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin")
+
 
 file(RENAME "${CURRENT_PACKAGES_DIR}/Mod" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/Mod")
 file(RENAME "${CURRENT_PACKAGES_DIR}/Ext" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/Ext")

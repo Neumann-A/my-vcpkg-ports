@@ -13,13 +13,14 @@ set(ENV{LLVM_INSTALL_DIR} "${CURRENT_HOST_INSTALLED_DIR}/tools/llvm")
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS 
-      -DPYTHON_EXECUTABLE=${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}
+      "-DPYTHON_EXECUTABLE=${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}"
       #-DSHIBOKEN_BUILD_TOOLS=OFF
       -DBUILD_TESTS=OFF
       -DNO_QT_TOOLS=yes
       #-DPYTHON_LIMITED_API=OFF
       #-DSHIBOKEN_PYTHON_LIMITED_API=OFF
-      -DFORCE_LIMITED_API=OFF
+      -DFORCE_LIMITED_API=OFF # Theoretically the default could be ON and OFF could be a feature 
+      -DNUMPY_INCLUDE_DIR="${CURRENT_INSTALLED_DIR}/tools/python3/Lib/site-packages/numpy/core/include"
 )
 
 
