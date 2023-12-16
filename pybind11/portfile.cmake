@@ -24,3 +24,15 @@ file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/")
 
 file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/usage" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
+
+if("scripts" IN_LIST FEATURES)
+set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
+
+pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
+
+file(REMOVE_RECURSE 
+  "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pybind11/include"
+  "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pybind11/share"
+)
+
+endif()

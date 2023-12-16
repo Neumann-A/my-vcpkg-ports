@@ -589,6 +589,7 @@ lib_depend := $(omnicosdynamic_dll_name)
 COSDynamic_lib_depend := $(GENERATE_LIB_DEPEND)
 
 #OMNIIDL = $(BASE_OMNI_TREE)/$(WRAPPER_FPATH)/oidlwrapper.exe $(XLN)
+OMNIIDL = $(OMNIORB_BINDIR)/omniidl@VCPKG_HOST_EXECUTABLE_SUFFIX@
 OMNIORB_IDL_ONLY = $(OMNIIDL) -T -bcxx -Wbh=.hh -Wbs=SK.cc
 OMNIORB_IDL_ANY_FLAGS = -Wba
 OMNIORB_IDL = $(OMNIORB_IDL_ONLY) $(OMNIORB_IDL_ANY_FLAGS)
@@ -873,3 +874,5 @@ RANLIB       = true
  # $(AR) -out $@ $^; \
 # )
 # endef
+
+INSTALLPYTHONDIR := $(DESTDIR)$(prefix)/tools/python3/lib/site-packages

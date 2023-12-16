@@ -1,12 +1,13 @@
 {
   "name": "pivy",
-  "version": "0.6.8",
+  "version-date": "2023-12-02",
   "description": "python bindings to coin3d",
-  "homepage": "https://www.numpy.org/",
+  "homepage": "https://github.com/coin3d/pivy",
   "license": "BSD-3-Clause",
   "dependencies": [
     "coin",
     "python3",
+    "soqt",
     {
       "name": "vcpkg-cmake",
       "host": true

@@ -192,7 +192,7 @@ index 138001831..6c53712ab 100644
  PYVERSION := $(shell $(PYTHON) -c 'import sys; sys.stdout.write(".".join(sys.version.split(".")[:2]))')
  PYPREFIX  := $(shell $(PYTHON) -c 'import sys; sys.stdout.write(sys.exec_prefix.replace("\\","/"))')
 -PYINCDIR  := $(shell $(PYTHON) -c 'import sys, distutils.sysconfig; sys.stdout.write(distutils.sysconfig.get_python_inc().replace("\\","/"))')
-+PYINCDIR  := $(includedir)/python3.10
++PYINCDIR  := $(includedir)/python3.11
  
  PythonSHAREDLIB_SUFFIX = $(shell $(PYTHON) -c 'import sys, distutils.sysconfig; sys.stdout.write((distutils.sysconfig.get_config_var("SO") or ".so").lstrip("."))')
  
@@ -216,7 +216,7 @@ index 584311356..986f8cbb1 100644
  PYPREFIX  := $(subst program files,progra~1,$(subst \,/,$(PYPREFIX1)))
  PYVERSION := $(shell $(PYTHON) -c 'import sys; sys.stdout.write(".".join(sys.version.split(".")[:2]))')
 -PYINCDIR  := $(PYPREFIX)/include
-+PYINCDIR  := $(includedir)/python3.10
++PYINCDIR  := $(includedir)/python3.11
  PYLIBDIR  := $(PYPREFIX)/libs
 -PYLIB     := python$(subst .,,$(PYVERSION)).lib
 +# PYLIB     := python$(subst .,,$(PYVERSION)).lib
@@ -249,7 +249,7 @@ index 584311356..986f8cbb1 100644
  
  PYPREFIX = $(shell $(PYTHON) -c "import sys;print sys.exec_prefix")
 -CXXOPTIONS += -I$(PYPREFIX)/include
-+CXXOPTIONS += -I$(includedir)/python3.10
++CXXOPTIONS += -I$(includedir)/python3.11
  CXXLINKOPTIONS += -nostdlib -r
  SO = .so
  libname = _omnicodesetsmodule$(SO)
@@ -273,7 +273,7 @@ index f00e6e330..2d8830013 100644
  PYPREFIX  := $(subst program files,progra~1,$(subst \,/,$(PYPREFIX1)))
  PYVERSION := $(shell $(PYTHON) -c 'import sys; sys.stdout.write(".".join(sys.version.split(".")[:2]))')
 -PYINCDIR  := $(PYPREFIX)/include
-+PYINCDIR  := $(includedir)/python3.10
++PYINCDIR  := $(includedir)/python3.11
  PYLIBDIR  := $(PYPREFIX)/libs
 -PYLIB     := python$(subst .,,$(PYVERSION)).lib
 +# PYLIB     := python$(subst .,,$(PYVERSION)).lib
@@ -296,7 +296,7 @@ index f00e6e330..2d8830013 100644
  
  PYPREFIX = $(shell $(PYTHON) -c "import sys;print sys.exec_prefix")
 -CXXOPTIONS += -I$(PYPREFIX)/include
-+CXXOPTIONS += -I$(includedir)/python3.10
++CXXOPTIONS += -I$(includedir)/python3.11
  CXXLINKOPTIONS += -nostdlib -r
  SO = .so
  libname = _omniConnMgmtmodule$(SO)
@@ -320,7 +320,7 @@ index aa41b3068..ac0098107 100644
  PYPREFIX  := $(subst program files,progra~1,$(subst \,/,$(PYPREFIX1)))
  PYVERSION := $(shell $(PYTHON) -c 'import sys; sys.stdout.write(".".join(sys.version.split(".")[:2]))')
 -PYINCDIR  := $(PYPREFIX)/include
-+PYINCDIR  := $(includedir)/python3.10
++PYINCDIR  := $(includedir)/python3.11
  PYLIBDIR  := $(PYPREFIX)/libs
 -PYLIB     := python$(subst .,,$(PYVERSION)).lib
 +# PYLIB     := python$(subst .,,$(PYVERSION)).lib
@@ -351,7 +351,7 @@ index aa41b3068..ac0098107 100644
  
  PYPREFIX = $(shell $(PYTHON) -c "import sys;print sys.exec_prefix")
 -CXXOPTIONS += -I$(PYPREFIX)/include
-+CXXOPTIONS += -I$(includedir)/python3.10
++CXXOPTIONS += -I$(includedir)/python3.11
  CXXLINKOPTIONS += -nostdlib -r
  SO = .so
  libname = _omnipymodule$(SO)
@@ -375,7 +375,7 @@ index 686de6ed7..967b51dac 100644
  PYPREFIX  := $(subst program files,progra~1,$(subst \,/,$(PYPREFIX1)))
  PYVERSION := $(shell $(PYTHON) -c 'import sys; sys.stdout.write(".".join(sys.version.split(".")[:2]))')
 -PYINCDIR  := $(PYPREFIX)/include
-+PYINCDIR  := $(includedir)/python3.10
++PYINCDIR  := $(includedir)/python3.11
  PYLIBDIR  := $(PYPREFIX)/libs
 -PYLIB     := python$(subst .,,$(PYVERSION)).lib
 +# PYLIB     := python$(subst .,,$(PYVERSION)).lib
@@ -413,7 +413,7 @@ index 28f670228..5904ab352 100644
  PYPREFIX  := $(subst program files,progra~1,$(subst \,/,$(PYPREFIX1)))
  PYVERSION := $(shell $(PYTHON) -c 'import sys; sys.stdout.write(".".join(sys.version.split(".")[:2]))')
 -PYINCDIR  := $(PYPREFIX)/include
-+PYINCDIR  := $(includedir)/python3.10
++PYINCDIR  := $(includedir)/python3.11
  PYLIBDIR  := $(PYPREFIX)/libs
 -PYLIB     := python$(subst .,,$(PYVERSION)).lib
 +# PYLIB     := python$(subst .,,$(PYVERSION)).lib
@@ -451,7 +451,7 @@ index 9195005b2..93e33fd5a 100644
  PYPREFIX  := $(subst program files,progra~1,$(subst \,/,$(PYPREFIX1)))
  PYVERSION := $(shell $(PYTHON) -c 'import sys; sys.stdout.write(".".join(sys.version.split(".")[:2]))')
 -PYINCDIR  := $(PYPREFIX)/include
-+PYINCDIR  := $(includedir)/python3.10
++PYINCDIR  := $(includedir)/python3.11
  PYLIBDIR  := $(PYPREFIX)/libs
 -PYLIB     := python$(subst .,,$(PYVERSION)).lib
 +# PYLIB     := python$(subst .,,$(PYVERSION)).lib
@@ -483,7 +483,7 @@ index 9195005b2..93e33fd5a 100644
  
  PYPREFIX = $(shell $(PYTHON) -c "import sys;print sys.exec_prefix")
 -CXXOPTIONS += -I$(PYPREFIX)/include
-+CXXOPTIONS += -I$(includedir)/python3.10
++CXXOPTIONS += -I$(includedir)/python3.11
  CXXLINKOPTIONS += -nostdlib -r
  SO = .so
  libname = _omnisslTPmodule$(SO)
@@ -507,7 +507,7 @@ index e9ce31aa0..f32196090 100644
  PYPREFIX  := $(subst program files,progra~1,$(subst \,/,$(PYPREFIX1)))
  PYVERSION := $(shell $(PYTHON) -c 'import sys; sys.stdout.write(".".join(sys.version.split(".")[:2]))')
 -PYINCDIR  := $(PYPREFIX)/include
-+PYINCDIR  := $(includedir)/python3.10
++PYINCDIR  := $(includedir)/python3.11
  PYLIBDIR  := $(PYPREFIX)/libs
 -PYLIB     := python$(subst .,,$(PYVERSION)).lib
 +# PYLIB     := python$(subst .,,$(PYVERSION)).lib
@@ -530,7 +530,7 @@ index e9ce31aa0..f32196090 100644
  
  PYPREFIX = $(shell $(PYTHON) -c "import sys;print sys.exec_prefix")
 -CXXOPTIONS += -I$(PYPREFIX)/include
-+CXXOPTIONS += -I$(includedir)/python3.10
++CXXOPTIONS += -I$(includedir)/python3.11
  CXXLINKOPTIONS += -nostdlib -r
  SO = .so
  libname = _omniZIOPmodule$(SO)

@@ -7,7 +7,7 @@ index 4b59dcaa0..9972daea4 100644
  
  find_package(Python REQUIRED COMPONENTS Interpreter Development)
 +file(TO_CMAKE_PATH "${Python_SITEARCH}" Python_SITEARCH)
-+string(REPLACE "${VCPKG_INSTALLED_DIR}" "${CMAKE_INSTALL_PREFIX}" Python_SITEARCH "${Python_SITEARCH}")
++string(REPLACE "${VCPKG_INSTALLED_DIR}/{VCPKG_TARGET_TRIPLET}" "${CMAKE_INSTALL_PREFIX}" Python_SITEARCH "${Python_SITEARCH}")
  
  # SWIGIFY HEADERS
  # doing this with the origin python functions

@@ -11,9 +11,10 @@ vcpkg_extract_source_archive(
     PATCHES wip.patch
 )
 
+
 vcpkg_add_to_path("${CURRENT_HOST_INSTALLED_DIR}/tools/python3") # port ask python distutils for info.
 vcpkg_add_to_path("${CURRENT_HOST_INSTALLED_DIR}/tools/omniorb/bin")
-set(ENV{PYTHONPATH} "${CURRENT_HOST_INSTALLED_DIR}/tools/python3/Lib;${CURRENT_INSTALLED_DIR}/lib/python3.10/site-packages;${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/lib/python;${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/lib/python")
+set(ENV{PYTHONPATH} "${CURRENT_HOST_INSTALLED_DIR}/tools/python3/Lib;${CURRENT_HOST_INSTALLED_DIR}/tools/python3/site-packages;${CURRENT_INSTALLED_DIR}/lib/python3.11/site-packages;${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/lib/python;${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/lib/python")
 
 file(COPY "${CURRENT_INSTALLED_DIR}/share/omniorb/idl/omniORB/" DESTINATION "${SOURCE_PATH}/idl")
 
@@ -62,18 +63,30 @@ vcpkg_install_make(
   ADD_BIN_TO_PATH
 )
 
+file(GLOB_RECURSE pyd_files "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/*.pyd" "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/*.pdb")
+file(COPY ${pyd_files}  DESTINATION "${CURRENT_PACKAGES_DIR}/bin")
+file(GLOB_RECURSE pyd_files "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/*.lib")
+file(COPY ${pyd_files}  DESTINATION "${CURRENT_PACKAGES_DIR}/lib" PATTERN EXCLUDE "COPYING.lib")
+
+if(NOT VCPKG_BUILD_TYPE)
+  file(GLOB_RECURSE pyd_files "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/*.pyd" "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/*.pdb")
+  file(COPY ${pyd_files}  DESTINATION "${CURRENT_PACKAGES_DIR}/debug/bin")
+  file(GLOB_RECURSE pyd_files "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/*.lib")
+  file(COPY ${pyd_files}  DESTINATION "${CURRENT_PACKAGES_DIR}/debug/lib" PATTERN EXCLUDE "COPYING.lib")
+endif()
+
 vcpkg_fixup_pkgconfig()
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING.LIB") # Lib is LGPL
 
-file(REMOVE lib/python3.10/site-packages)
+#file(REMOVE lib/python3.11/site-packages)
 
 
 
 file(REMOVE_RECURSE 
       "${CURRENT_PACKAGES_DIR}/debug/share"
-      "${CURRENT_PACKAGES_DIR}/debug/lib/python3.10/site-packages/omniidl_be/__init__.py"
-      "${CURRENT_PACKAGES_DIR}/debug/lib/python3.10/site-packages/omniidl_be/__pycache__/__init__.cpython-310.pyc"
-      "${CURRENT_PACKAGES_DIR}/lib/python3.10/site-packages/omniidl_be/__init__.py"
-      "${CURRENT_PACKAGES_DIR}/lib/python3.10/site-packages/omniidl_be/__pycache__/__init__.cpython-310.pyc"
+      "${CURRENT_PACKAGES_DIR}/debug/tools/python3/lib/site-packages/omniidl_be/__init__.py"
+      "${CURRENT_PACKAGES_DIR}/debug/tools/python3/lib/site-packages/omniidl_be/__pycache__"
+      "${CURRENT_PACKAGES_DIR}/tools/python3/lib/site-packages/omniidl_be/__init__.py"
+      "${CURRENT_PACKAGES_DIR}/tools/python3/lib/site-packages/omniidl_be/__pycache__"
     )

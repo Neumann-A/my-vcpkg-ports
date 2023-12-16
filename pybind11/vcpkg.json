@@ -14,5 +14,18 @@
       "name": "vcpkg-cmake-config",
       "host": true
     }
-  ]
+  ],
+  "features": {
+    "scripts": {
+      "description": "Install pybind python scripts",
+      "dependencies": [
+      "pypa-setuptools",
+      {
+        "name": "python-pypa-scripts",
+        "host": true
+      },
+      "python3"
+    ]
+    }
+  }
 }
