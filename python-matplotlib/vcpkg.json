@@ -21,6 +21,8 @@
     "python-pyparsing",
     "python-cycler",
     "python-dateutil",
-    "python-kiwisolver"
+    "python-kiwisolver",
+    "python-certifi",
+    "python-pillow"
     ]
 }

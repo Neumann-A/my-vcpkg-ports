@@ -1,0 +1,15 @@
+{
+  "name": "python-omniidl",
+  "version": "4.2.2",
+  "description": "omniidl backend code",
+  "homepage": "http://omniorb.sourceforge.net/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "pypa-setuptools",
+    {
+      "name": "python-pypa-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

@@ -363,3 +363,6 @@ if (NOT VCPKG_TARGET_IS_WINDOWS)
         replace_dirs_in_config_file("${python_config_file}")
     endif()
 endif()
+
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/tools/python3/Lib/distutils/command/build_ext.py" "'libs'" "'../../lib'")
+# E:\all\vcpkg\packages\python3_x64-win-llvm-release\tools\python3\Lib\distutils\command\build_ext.py Fix 'libs'

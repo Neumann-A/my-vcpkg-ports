@@ -6,6 +6,23 @@ vcpkg_from_github(
     HEAD_REF master
 )
 
+
+file(WRITE "${SOURCE_PATH}/py/src/version.h" 
+"\n\
+/* ----------------------------------------------------------------------------\n\
+| Copyright (c) 2013-2021, Nucleic Development Team.\n\
+|\n\
+| Distributed under the terms of the Modified BSD License.\n\
+|\n\
+| The full license is in the file LICENSE, distributed with this software.\n\
+| ---------------------------------------------------------------------------*/\n\
+\n\
+#pragma once\n\
+\n\
+#define PY_KIWI_VERSION \"${VERSION}\"\n\
+\n"
+)
+
 set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
 
 pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
@@ -13,3 +30,6 @@ pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+
+
