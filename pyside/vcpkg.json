@@ -1,6 +1,6 @@
 {
   "name": "pyside",
-  "version": "6.4.3",
+  "version": "6.6.0",
   "description": "Qt For Python is the Python Qt bindings project, providing access to the complete Qt framework as well as to generator tools for rapidly generating bindings for any C++ libraries.",
   "homepage": "https://wiki.qt.io/Qt_for_Python",
   "license": null,
@@ -15,6 +15,7 @@
     },
     "numpy",
     "python3",
+    "pypa-setuptools",
     {
       "name": "python3",
       "host": true
@@ -34,6 +35,30 @@
       "features": [
         "webchannel"
       ]
+    },
+    "qtmultimedia",
+    "qtpositioning",
+    "qtlocation",
+    "qtquick3d",
+    "qtremoteobjects",
+    "qtserialport",
+    "qtserialbus",
+    "qtcharts",
+    "qtsvg",
+    "qtdatavis3d",
+    "qtgraphs",
+    "qtwebsockets",
+    "qthttpserver",
+    "qt3d",
+    "qtspeech",
+    "qtconnectivity",
+    "qtscxml",
+    "qtnetworkauth",
+    "qt5compat",
+    "qtsensors",
+    {
+      "name": "qtactiveqt",
+      "platform": "windows"
     },
     {
       "name": "vcpkg-cmake",

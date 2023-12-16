@@ -1,0 +1,25 @@
+--- a/sources/pyside6/qtexampleicons/CMakeLists.txt
++++ b/sources/pyside6/qtexampleicons/CMakeLists.txt
+@@ -32,6 +32,7 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+     target_compile_definitions(QtExampleIcons PRIVATE "-DNDEBUG")
+ endif()
+ 
++get_property(SHIBOKEN_PYTHON_INCLUDE_DIRS GLOBAL PROPERTY shiboken_python_include_dirs)
+ target_include_directories(QtExampleIcons PRIVATE ${SHIBOKEN_PYTHON_INCLUDE_DIRS})
+ 
+ get_property(SHIBOKEN_PYTHON_LIBRARIES GLOBAL PROPERTY shiboken_python_libraries)
+diff --git a/sources/shiboken6/ApiExtractor/CMakeLists.txt b/sources/shiboken6/ApiExtractor/CMakeLists.txt
+index f80be6d..f96d81b 100644
+--- a/sources/shiboken6/ApiExtractor/CMakeLists.txt
++++ b/sources/shiboken6/ApiExtractor/CMakeLists.txt
+@@ -82,8 +82,8 @@ parser/enumvalue.cpp parser/enumvalue.h
+ parser/typeinfo.cpp parser/typeinfo.h
+ )
+ 
+-find_package(LibXml2 2.6.32)
+-find_package(LibXslt 1.1.19)
++find_package(LibXml2)
++find_package(LibXslt)
+ 
+ set(HAS_LIBXSLT 0)
+ if (LIBXSLT_FOUND AND LIBXML2_FOUND)
