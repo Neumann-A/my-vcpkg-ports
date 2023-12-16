@@ -5,6 +5,7 @@ vcpkg_from_git(
     PATCHES 
       opencascada-fix.patch
       undef.patch
+      fix-build.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static"  SMESH_BUILD_STATIC)
@@ -72,6 +73,8 @@ foreach(idl_py IN LISTS idl_pys)
   string(REPLACE "${CURRENT_BUILDTREES_DIR}" "" contents "${contents}")
   file(WRITE "${idl_py}" "${contents}")
 endforeach()
+
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/SalomeSMESH/SalomeSMESHConfig.cmake" ";${SWIG_DIR}" "")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
 file(REMOVE "${CURRENT_PACKAGES_DIR}/tools/salome/bin/VERSION")

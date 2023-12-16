@@ -1,0 +1,94 @@
+diff --git a/src/ARCHIMEDE/CMakeLists.txt b/src/ARCHIMEDE/CMakeLists.txt
+index d83e27e..e546e51 100644
+--- a/src/ARCHIMEDE/CMakeLists.txt
++++ b/src/ARCHIMEDE/CMakeLists.txt
+@@ -35,6 +35,7 @@ ADD_DEFINITIONS(
+ SET(_link_LIBRARIES
+   ${OpenCASCADE_FoundationClasses_LIBRARIES}
+   ${OpenCASCADE_ModelingAlgorithms_LIBRARIES}
++  ${OpenCASCADE_ModelingData_LIBRARIES}
+   ${KERNEL_SALOMELocalTrace}
+   )
+ 
+diff --git a/src/BlockFix/CMakeLists.txt b/src/BlockFix/CMakeLists.txt
+index af44327..cefd57c 100644
+--- a/src/BlockFix/CMakeLists.txt
++++ b/src/BlockFix/CMakeLists.txt
+@@ -36,6 +36,7 @@ ADD_DEFINITIONS(
+ SET(_link_LIBRARIES
+   ${OpenCASCADE_FoundationClasses_LIBRARIES}
+   ${OpenCASCADE_ModelingAlgorithms_LIBRARIES}
++  ${OpenCASCADE_ModelingData_LIBRARIES}
+   ${KERNEL_SALOMELocalTrace}
+   )
+ 
+diff --git a/src/GEOMClient/CMakeLists.txt b/src/GEOMClient/CMakeLists.txt
+index 9572412..47fe226 100644
+--- a/src/GEOMClient/CMakeLists.txt
++++ b/src/GEOMClient/CMakeLists.txt
+@@ -39,6 +39,7 @@ ADD_DEFINITIONS(
+ SET(_link_LIBRARIES
+   SalomeIDLGEOM
+   ${OpenCASCADE_ModelingData_LIBRARIES}
++  ${OpenCASCADE_FoundationClasses_LIBRARIES}
+   ${KERNEL_SALOMELocalTrace}
+   )
+ 
+diff --git a/src/GEOMImpl/GEOMImpl_ICurvesOperations.cxx b/src/GEOMImpl/GEOMImpl_ICurvesOperations.cxx
+index 4727a5c..b47d729 100644
+--- a/src/GEOMImpl/GEOMImpl_ICurvesOperations.cxx
++++ b/src/GEOMImpl/GEOMImpl_ICurvesOperations.cxx
+@@ -20,6 +20,8 @@
+ // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+ //
+ 
++#include <Python.h>
++
+ #ifdef WIN32
+ // E.A. : On windows with python 2.6, there is a conflict
+ // E.A. : between pymath.h and Standard_math.h which define
+@@ -28,7 +30,6 @@
+ #include <pymath.h>
+ #endif
+ 
+-#include <Python.h>
+ #include <structmember.h>
+ 
+ #ifdef HAVE_FINITE
+diff --git a/src/GEOMUtils/CMakeLists.txt b/src/GEOMUtils/CMakeLists.txt
+index bb8e034..0cf5511 100644
+--- a/src/GEOMUtils/CMakeLists.txt
++++ b/src/GEOMUtils/CMakeLists.txt
+@@ -39,6 +39,7 @@ SET(_link_LIBRARIES
+   ${OpenCASCADE_ModelingData_LIBRARIES} 
+   ${OpenCASCADE_ModelingAlgorithms_LIBRARIES} 
+   ${OpenCASCADE_Visualization_LIBRARIES}
++  ${OpenCASCADE_FoundationClasses_LIBRARIES}
+   ${LIBXML2_LIBRARIES}
+   ${KERNEL_SALOMELocalTrace}
+   )
+diff --git a/src/ShHealOper/CMakeLists.txt b/src/ShHealOper/CMakeLists.txt
+index 93e2064..2685e59 100644
+--- a/src/ShHealOper/CMakeLists.txt
++++ b/src/ShHealOper/CMakeLists.txt
+@@ -33,7 +33,7 @@ ADD_DEFINITIONS(
+ 
+ # libraries to link to
+ SET(_link_LIBRARIES
+-  ${OpenCASCADE_ApplicationFramework_LIBRARIES} ${OpenCASCADE_ModelingAlgorithms_LIBRARIES}
++  ${OpenCASCADE_ApplicationFramework_LIBRARIES} ${OpenCASCADE_ModelingAlgorithms_LIBRARIES} ${OpenCASCADE_ModelingData_LIBRARIES} ${OpenCASCADE_FoundationClasses_LIBRARIES}
+   ${KERNEL_SALOMELocalTrace}
+   )
+ 
+diff --git a/src/XAO/CMakeLists.txt b/src/XAO/CMakeLists.txt
+index a3c903c..fc1106f 100644
+--- a/src/XAO/CMakeLists.txt
++++ b/src/XAO/CMakeLists.txt
+@@ -42,6 +42,7 @@ SET(_link_LIBRARIES
+   ${LIBXML2_LIBRARIES}
+   ${OpenCASCADE_ModelingData_LIBRARIES}
+   ${OpenCASCADE_ModelingAlgorithms_LIBRARIES}
++  ${OpenCASCADE_FoundationClasses_LIBRARIES}
+   )
+ 
+ # --- headers ---

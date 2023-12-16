@@ -5,6 +5,7 @@ vcpkg_from_git(
     PATCHES 
       fix-newer-opencascada.patch
       more-fixes.patch
+      fix-link.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static"  SMESH_BUILD_STATIC)
@@ -76,6 +77,8 @@ if(VCPKG_TARGET_IS_WINDOWS)
 endif()
 
 file(RENAME "${CURRENT_PACKAGES_DIR}/bin/salome" "${CURRENT_PACKAGES_DIR}/tools/salome/bin/salome")
+
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/SalomeGEOM/SalomeGEOMConfig.cmake" ";${SWIG_DIR}" "")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
 

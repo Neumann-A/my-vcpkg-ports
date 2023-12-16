@@ -2,12 +2,12 @@ diff --git a/src/GEOMUtils/GEOMUtils_TrsfCurve2d.cxx b/src/GEOMUtils/GEOMUtils_T
 index 05d12eadb..b0e6ccc2d 100644
 --- a/src/GEOMUtils/GEOMUtils_TrsfCurve2d.cxx
 +++ b/src/GEOMUtils/GEOMUtils_TrsfCurve2d.cxx
-@@ -20,8 +20,6 @@
+@@ -20,6 +20,8 @@
  
  #include <GEOMUtils_TrsfCurve2d.hxx>
  #include <GEOMUtils_HTrsfCurve2d.hxx>
--#include "Geom2d_BSplineCurve.hxx"
--#include "Geom2d_BezierCurve.hxx"
++#include "Geom2d_BSplineCurve.hxx"
++#include "Geom2d_BezierCurve.hxx"
  
  //=======================================================================
  //function : TrsfCurve2d

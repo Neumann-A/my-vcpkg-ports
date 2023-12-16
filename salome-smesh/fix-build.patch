@@ -1,0 +1,49 @@
+diff --git a/src/SMESH/SMESH_MeshEditor.hxx b/src/SMESH/SMESH_MeshEditor.hxx
+index deab63a..9353c9e 100644
+--- a/src/SMESH/SMESH_MeshEditor.hxx
++++ b/src/SMESH/SMESH_MeshEditor.hxx
+@@ -49,11 +49,11 @@ class SMDS_MeshNode;
+ class SMESHDS_Group;
+ class SMESHDS_Mesh;
+ class SMESHDS_SubMesh;
+-class SMESH_ElementSearcher;
++struct SMESH_ElementSearcher;
+ class SMESH_Group;
+ class SMESH_Mesh;
+ class SMESH_MesherHelper;
+-class SMESH_NodeSearcher;
++struct SMESH_NodeSearcher;
+ class SMESH_subMesh;
+ class TopoDS_Edge;
+ class TopoDS_Shape;
+diff --git a/src/SMESHDS/CMakeLists.txt b/src/SMESHDS/CMakeLists.txt
+index 3c9320c..32109e6 100644
+--- a/src/SMESHDS/CMakeLists.txt
++++ b/src/SMESHDS/CMakeLists.txt
+@@ -46,6 +46,7 @@ ENDIF(SALOME_SMESH_USE_TBB)
+ SET(_link_LIBRARIES
+   ${OpenCASCADE_KERNEL}
+   ${OpenCASCADE_ModelingData_LIBRARIES}
++  ${OpenCASCADE_FoundationClasses_LIBRARIES}
+   ${KERNEL_SALOMELocalTrace}
+   SMDS
+   ${TBB_LIBS}
+diff --git a/src/SMESH_I/SMESH_MeshEditor_i.cxx b/src/SMESH_I/SMESH_MeshEditor_i.cxx
+index 7110615..c0b8e3b 100644
+--- a/src/SMESH_I/SMESH_MeshEditor_i.cxx
++++ b/src/SMESH_I/SMESH_MeshEditor_i.cxx
+@@ -84,7 +84,13 @@
+ 
+ #define cast2Node(elem) static_cast<const SMDS_MeshNode*>( elem )
+ 
+-using namespace std;
++using std::vector;
++using std::string;
++using std::map;
++using std::list;
++using std::set;
++using std::make_pair;
++
+ using SMESH::TPythonDump;
+ using SMESH::TVar;
+ 

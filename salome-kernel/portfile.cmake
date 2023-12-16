@@ -9,12 +9,10 @@ vcpkg_from_git(
 
 string(COMPARE EQUAL "${VCPKG_TARGET_ARCHITECTURE}" "x64"  SALOME_USE_64BIT_IDS)
 
-set(ENV{PYTHONPATH} "${CURRENT_INSTALLED_DIR}/Lib/site-packages")
-
 vcpkg_find_acquire_program(SWIG)
 cmake_path(GET SWIG PARENT_PATH SWIG_DIR)
 vcpkg_add_to_path("${SWIG_DIR}")
-set(ENV{PYTHONPATH} "${CURRENT_HOST_INSTALLED_DIR}/tools/python3/Lib;${CURRENT_INSTALLED_DIR}/lib/python3.10/site-packages")
+set(ENV{PYTHONPATH} "${CURRENT_HOST_INSTALLED_DIR}/tools/python3/Lib;${CURRENT_INSTALLED_DIR}/lib/python3.11/site-packages")
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS 
@@ -26,7 +24,7 @@ vcpkg_cmake_configure(
       -DOMNIORB_IDL_COMPILER=${CURRENT_HOST_INSTALLED_DIR}/tools/omniorb/bin/omniidl${VCPKG_HOST_EXECUTABLE_SUFFIX}
       -DOMNIORB_OMNINAMES_COMMAND=${CURRENT_HOST_INSTALLED_DIR}/tools/omniorb/bin/omniNames${VCPKG_HOST_EXECUTABLE_SUFFIX}
       -DOMNIORBPY_ROOT_DIR=${CURRENT_INSTALLED_DIR}
-      -DPYTHON_INCLUDE_DIR=${CURRENT_INSTALLED_DIR}/include/python3.10
+      -DPYTHON_INCLUDE_DIR=${CURRENT_INSTALLED_DIR}/include/python3.11
       -DSALOME_INSTALL_CMAKE:PATH=share/salomekernel
       -DSALOME_INSTALL_SCRIPT_DATA:PATH=share/salome/script
       -DSALOME_INSTALL_SCRIPT_PYTHON:PATH=share/salome/script
@@ -82,9 +80,14 @@ foreach(idl_py IN LISTS idl_pys)
   file(WRITE "${idl_py}" "${contents}")
 endforeach()
 
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/salomekernel/SalomeKERNELConfig.cmake" ";${SWIG_DIR}" "")
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/salomekernel/SalomeKERNELConfig.cmake" "SET_AND_CHECK(SWIG_ROOT_DIR_EXP     \"${SWIG_DIR}\")" "")
+
 # TODO remove NO_MODULE from Config.cmake
 
 file(RENAME "${CURRENT_PACKAGES_DIR}/bin/salome" "${CURRENT_PACKAGES_DIR}/tools/salome/bin/salome")
+
+
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
 vcpkg_copy_tool_dependencies("${CURRENT_PACKAGES_DIR}/tools/salome/bin")

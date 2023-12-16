@@ -10,6 +10,11 @@
       "name": "python3",
       "host": true
     },
+    {
+      "name": "qtbase",
+      "default-features": false,
+      "features": [ "gui", "widgets" ]
+    },
     "salome-configuration",
     "salome-geom",
     "salome-kernel",
