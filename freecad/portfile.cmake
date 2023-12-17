@@ -17,6 +17,8 @@ vcpkg_find_acquire_program(SWIG)
 cmake_path(GET SWIG PARENT_PATH SWIG_DIR)
 vcpkg_add_to_path("${SWIG_DIR}")
 
+file(REMOVE "${SOURCE_PATH}/cMake/FindEigen3.cmake")
+
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
@@ -30,6 +32,7 @@ vcpkg_cmake_configure(
       -DPython_EXECUTABLE=${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}
       -DBUILD_TECHDRAW=OFF # Requires xmlpattern
       -DFREECAD_QT_VERSION=6
+      -DEIGEN3_VERSION=3.4
       -DBUILD_TEST=OFF
       "-DFREECAD_USE_EXTERNAL_SMESH=ON"
       "-DFREECAD_USE_EXTERNAL_KDL=ON"

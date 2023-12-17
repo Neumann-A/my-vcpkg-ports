@@ -27,6 +27,8 @@ vcpkg_cmake_configure(
       "-DSALOME_INSTALL_PYTHON=tools/python3/Lib/site-packages/salome"
       "-DSALOME_INSTALL_PYTHON_SHARED=tools/python3/Lib/site-packages/salome/shared_modules"
       -DPYTHON_EXECUTABLE=${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}
+      -DPYTHONLIBS_VERSION_STRING=3.11.5
+      -DOMNIORBPY_ROOT_DIR=${CURRENT_INSTALLED_DIR}/tools/python3/lib/site-packages/omniidl_be
       -DSALOME_USE_64BIT_IDS=${SALOME_USE_64BIT_IDS}
       -DSALOME_BUILD_TESTS=OFF
       -DSALOME_BUILD_DOC=OFF
@@ -54,7 +56,7 @@ endif()
 
 vcpkg_cmake_config_fixup(PACKAGE_NAME SalomeSMESH CONFIG_PATH "adm_local/cmake_files")
 
-set(config "${CURRENT_PACKAGES_DIR}/share/salomegeom/SalomeSMESHConfig.cmake")
+set(config "${CURRENT_PACKAGES_DIR}/share/salomesmesh/SalomeSMESHConfig.cmake")
 file(READ "${config}" contents)
 string(REPLACE "/adm_local/cmake_files" "/share/SalomeSMESH" contents "${contents}")
 string(REPLACE "_PREREQ_SalomeSMESH  MEDCoupling MEDFile" "_PREREQ_SalomeSMESH  MEDCoupling MEDFile Eigen3" contents "${contents}")
@@ -83,6 +85,7 @@ foreach(idl_py IN LISTS idl_pys)
 endforeach()
 
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/SalomeSMESH/SalomeSMESHConfig.cmake" ";${SWIG_DIR}" "")
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/SalomeSMESH/SalomeSMESHConfig.cmake" "INCLUDE(\"\${GEOM_ROOT_DIR_EXP}/\${SALOME_INSTALL_CMAKE_LOCAL}/SalomeGEOMTargets.cmake\")" "find_package(SalomeGEOM REQUIRED)")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
 file(REMOVE "${CURRENT_PACKAGES_DIR}/tools/salome/bin/VERSION")

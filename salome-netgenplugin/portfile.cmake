@@ -26,6 +26,9 @@ vcpkg_cmake_configure(
       -DPYTHON_EXECUTABLE=${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}
       "-DSALOME_INSTALL_PYTHON=tools/python3/Lib/site-packages/salome"
       "-DSALOME_INSTALL_PYTHON_SHARED=tools/python3/Lib/site-packages/salome/shared_modules"
+      -DPYTHONLIBS_VERSION_STRING=3.11.5
+      -DQT_VERSION=6
+      -DOMNIORBPY_ROOT_DIR=${CURRENT_INSTALLED_DIR}/tools/python3/lib/site-packages/omniidl_be
       -DSALOME_USE_64BIT_IDS=${SALOME_USE_64BIT_IDS}
       -DSALOME_BUILD_TESTS=OFF
       -DSALOME_BUILD_DOC=OFF

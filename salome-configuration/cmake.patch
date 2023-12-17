@@ -340,3 +340,16 @@ index bb38859..568194f 100644
    ENDIF()
      
    # Try find_package in config mode. This has the priority, but is 
+diff --git a/cmake/UseQtExt.cmake b/cmake/UseQtExt.cmake
+index c44caef..1390644 100644
+--- a/cmake/UseQtExt.cmake	
++++ b/cmake/UseQtExt.cmake
+@@ -19,6 +19,8 @@
+ 
+ IF (QT_VERSION VERSION_LESS "5.0")
+   INCLUDE(${QT_USE_FILE})
++else()
++  find_package(Qt${QT_VERSION} COMPONENTS Tools Core REQUIRED)
+ ENDIF()
+ 
+ # This MACRO uses the following vars

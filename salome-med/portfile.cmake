@@ -70,3 +70,5 @@ vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
 
 file(REMOVE "${CURRENT_PACKAGES_DIR}/tools/salome/bin/VERSION")
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/share/salome/script/test")
+
+#E:\all\vcpkg\packages\salome-med_x64-win-llvm-release\share\salome\script\medcalc_testutils.py
