@@ -59,11 +59,11 @@ file(RENAME "${CURRENT_PACKAGES_DIR}/Ext" "${CURRENT_PACKAGES_DIR}/tools/${PORT}
 file(RENAME "${CURRENT_PACKAGES_DIR}/doc" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/doc")
 file(RENAME "${CURRENT_PACKAGES_DIR}/data" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/data")
 
-file(TOUCH "${CURRENT_PACKAGES_DIR}\tools\freecad\data\Mod\Material\StandardMaterial\Tools\NotEmpty")
+file(TOUCH "${CURRENT_PACKAGES_DIR}/tools/freecad/data/Mod/Material/StandardMaterial/Tools/NotEmpty")
 
-file(REMOVE "${CURRENT_PACKAGES_DIR}\tools\freecad\bin\Lib\site-packages\pybind11\share\pkgconfig\pybind11.pc")
+file(REMOVE "${CURRENT_PACKAGES_DIR}/tools/freecad/bin/Lib/site-packages/pybind11/share/pkgconfig/pybind11.pc")
 
-set(py_file "${CURRENT_PACKAGES_DIR}\tools\freecad\Ext\freecad\__init__.py")
+set(py_file "${CURRENT_PACKAGES_DIR}/tools/freecad/Ext/freecad/__init__.py")
 file(READ "${py_file}" contents)
 string(REPLACE "\"${CURRENT_PACKAGES_DIR}" "os.path.dirname(__file__) + \"/../.. " contents "${contents}")
 file(WRITE "${py_file}" "${contents}")
