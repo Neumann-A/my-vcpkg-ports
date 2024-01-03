@@ -32,7 +32,7 @@ file(REMOVE_RECURSE ${includes}
 
 vcpkg_replace_string("${SOURCE_PATH}/python/setup.py" "self._run_cmake()" "")
 
-pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/python" OPTIONS -x -Cbdist_dir=${CURRENT_BUILDTREES_DIR}/build -C--build-dir=${CURRENT_BUILDTREES_DIR}/build)
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/python" OPTIONS -x -Cbdist_dir=${CURRENT_BUILDTREES_DIR}/build -C--build-dir=${CURRENT_BUILDTREES_DIR}/build)
 
 #file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/")
 #file(INSTALL "${SOURCE_PATH}/python/pyarrow/" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pyarrow")

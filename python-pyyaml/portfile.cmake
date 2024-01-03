@@ -9,7 +9,7 @@ vcpkg_from_github(
       remove_ver_constrain.patch
 )
 
-pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 

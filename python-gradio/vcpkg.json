@@ -6,13 +6,13 @@
   "license": "Apache-2.0",
   "dependencies": [
     "python3",
-    "pypa-packaging",
+    "python-packaging",
     "numpy",
     "python-pandas",
-    "pypa-hatchling",
-    "pypa-hatch",
+    "python-hatchling",
+    "python-hatch",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python-hatch-requirements-txt",

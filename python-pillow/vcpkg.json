@@ -5,9 +5,9 @@
   "homepage": "https://python-pillow.org/",
   "license": null,
   "dependencies": [
-    "pypa-setuptools",
+    "python-setuptools",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     {

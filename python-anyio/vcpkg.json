@@ -5,10 +5,10 @@
   "homepage": "https://github.com/agronholm/anyio",
   "license": "MIT",
   "dependencies": [
-    "pypa-setuptools",
-    "pypa-setuptools-scm",
+    "python-setuptools",
+    "python-setuptools-scm",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python3"

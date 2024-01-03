@@ -5,7 +5,7 @@ vcpkg_download_distfile(
     SHA512 c236be01f0122aaa42db662e56bb1e766aa4983eebb9e626d71d29f021ebd9371209d753efb6ed3e0ada90a772a96b0b053f0ebc4c37b4f80affa90bfdc38514
 )
 
-pypa_install_wheel(WHEEL "${wheel}")
+vcpkg_python_install_wheel(WHEEL "${wheel}")
 
 vcpkg_install_copyright(FILE_LIST "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/tqdm-4.66.1.dist-info/LICENCE")
 

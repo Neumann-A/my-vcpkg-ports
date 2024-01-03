@@ -10,7 +10,7 @@ set(ENV{PKG_CONFIG_PATH} "${CURRENT_INSTALLED_DIR}/lib/pkgconfig;${CURRENT_INSTA
 set(ENV{INCLUDE} "${CURRENT_INSTALLED_DIR}/include;$ENV{INCLUDE}")
 
 set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
-pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -Csetup-args=-Dsystem-freetype=true -Csetup-args=-Dsystem-qhull=true -x)
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -Csetup-args=-Dsystem-freetype=true -Csetup-args=-Dsystem-qhull=true -x)
 
 file(GLOB licenses "${SOURCE_PATH}/LICENSE/*")
 

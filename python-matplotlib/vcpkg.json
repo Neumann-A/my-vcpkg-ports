@@ -11,7 +11,7 @@
       "host": true
     },
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python3",

@@ -5,9 +5,9 @@
   "homepage": "http://andrew-d.github.io/python-multipart/",
   "license": null,
   "dependencies": [
-    "pypa-setuptools",
+    "python-setuptools",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python3"

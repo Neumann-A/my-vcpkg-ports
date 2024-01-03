@@ -5,8 +5,8 @@
   "homepage": "https://astunparse.readthedocs.io/en/latest/",
   "license": null,
   "dependencies": [
-    "pypa-setuptools",
-    "python-pypa-scripts",
+    "python-setuptools",
+    "vcpkg-python-scripts",
     "python3"
   ]
 }

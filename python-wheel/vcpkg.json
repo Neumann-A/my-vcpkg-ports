@@ -1,0 +1,16 @@
+{
+  "name": "python-wheel",
+  "version": "0.41.3",
+  "description": "The official binary distribution format for Python",
+  "homepage": "https://github.com/pypa/wheel",
+  "license": "MIT",
+  "dependencies": [
+    "python-build",
+    "python-installer",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    },
+    "python3"
+  ]
+}

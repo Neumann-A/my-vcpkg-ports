@@ -5,12 +5,12 @@
   "homepage": "https://requests.readthedocs.io/en/latest/",
   "license": "BSD-3-Clause",
   "dependencies": [
-    "pypa-setuptools",
+    "python-setuptools",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python3",
-    "pypa-hatchling"
+    "python-hatchling"
   ]
 }

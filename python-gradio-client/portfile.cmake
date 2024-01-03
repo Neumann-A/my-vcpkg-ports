@@ -34,7 +34,7 @@ vcpkg_download_distfile(
     SHA512 c1b1f66a53558cf7debdc21ac17bec32cf64249bcde7a8505ebeef47c27061814d0e249761abc1b78b12f0e0a49e014fa0f588e548e75962a7af4e83a2e78f6f
 )
 
-pypa_install_wheel(WHEEL "${wheel}")
+vcpkg_python_install_wheel(WHEEL "${wheel}")
 
 file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/share/${PORT}")
 file(TOUCH "${CURRENT_PACKAGES_DIR}\\share\\${PORT}\\copyright")

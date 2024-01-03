@@ -5,10 +5,10 @@
   "homepage": "pluggy.readthedocs.io/en/latest/",
   "license": "MIT",
   "dependencies": [
-    "pypa-setuptools",
-    "pypa-setuptools-scm",
+    "python-setuptools",
+    "python-setuptools-scm",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python-tomli-wheel",

@@ -8,7 +8,7 @@ vcpkg_from_github(
 
 set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
 
-pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
 
 #file(COPY "${SOURCE_PATH}/llama_cpp" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages")
 

@@ -12,7 +12,7 @@ vcpkg_add_to_path("${CURRENT_INSTALLED_DIR}/tools/python3")
 set(ENV{PYTHON} "${CURRENT_INSTALLED_DIR}/tools/python3/python.exe")
 set(ENV{LINK} "$ENV{LINK} /LIBPATH:${CURRENT_INSTALLED_DIR}/lib")
 
-pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
 vcpkg_install_copyright(FILE_LIST 
 "${SOURCE_PATH}/LICENSE-APACHE"

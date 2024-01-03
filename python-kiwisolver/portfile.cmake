@@ -25,7 +25,7 @@ file(WRITE "${SOURCE_PATH}/py/src/version.h"
 
 set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
 
-pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 

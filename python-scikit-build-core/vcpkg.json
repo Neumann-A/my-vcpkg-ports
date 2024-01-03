@@ -5,10 +5,10 @@
   "homepage": "https://scikit-build-core.readthedocs.io/",
   "license": "Apache-2.0",
   "dependencies": [
-    "pypa-setuptools",
-    "pypa-hatchling",
+    "python-setuptools",
+    "python-hatchling",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python3"

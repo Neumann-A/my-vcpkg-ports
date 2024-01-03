@@ -15,7 +15,7 @@ set(ENV{RUST_BACKTRACE} full)
 #set(PYO3_PYTHON "${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python3.11.exe" )
 #set(PYTHON_SYS_EXECUTEABLE "${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python3.11.exe")
 set(ENV{PYTHON_VERSION} 3.11)
-pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 

@@ -126,8 +126,8 @@
       "description": "Build with python",
       "dependencies": [
         "python3",
-        "pypa-setuptools",
-        "python-pypa-scripts",
+        "python-setuptools",
+        "vcpkg-python-scripts",
         "numpy",
         "python-typing-extensions",
         "python-astunparse",

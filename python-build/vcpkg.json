@@ -1,0 +1,13 @@
+{
+  "name": "python-build",
+  "version": "0.10.0",
+  "description": "A simple, correct Python build frontend ",
+  "homepage": "python-build.readthedocs.io/en/stable/",
+  "license": "MIT",
+  "dependencies": [
+    "python-packaging",
+    "python-pyproject-hooks",
+    "python-tomli",
+    "python3"
+  ]
+}

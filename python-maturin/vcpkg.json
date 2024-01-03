@@ -5,10 +5,10 @@
   "homepage": "https://maturin.rs/",
   "license": null,
   "dependencies": [
-    "pypa-setuptools",
-    "pypa-setuptools-rust",
+    "python-setuptools",
+    "python-setuptools-rust",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python3",

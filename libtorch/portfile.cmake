@@ -138,6 +138,7 @@ vcpkg_cmake_configure(
         -DCAFFE2_CUSTOM_PROTOC_EXECUTABLE:FILEPATH=${PROTOC}
         -DPYTHON_EXECUTABLE:FILEPATH=${PYTHON3}
         #-DPython3_EXECUTABLE:FILEPATH=${PYTHON3}
+        -DCAFFE2_STATIC_LINK_CUDA=ON
         -DCAFFE2_USE_MSVC_STATIC_RUNTIME=${USE_STATIC_RUNTIME}
         -DBUILD_CUSTOM_PROTOBUF=OFF
         -DUSE_LITE_PROTO=OFF
@@ -168,7 +169,6 @@ vcpkg_cmake_configure(
         -DUSE_SYSTEM_GLOO=ON
         -DUSE_SYSTEM_NCCL=ON
         -DUSE_SYSTEM_LIBS=ON
-        DUSE_SYSTEM_PYBIND11=ON
         #-DUSE_MPI=${VCPKG_TARGET_IS_LINUX}
         -DBUILD_JNI=${VCPKG_TARGET_IS_ANDROID}
         -DUSE_NNAPI=${VCPKG_TARGET_IS_ANDROID}
@@ -264,7 +264,7 @@ if("python" IN_LIST FEATURES)
   vcpkg_replace_string("${SOURCE_PATH}/setup.py" "@TARGET_TRIPLET@" "${TARGET_TRIPLET}-rel")
   vcpkg_replace_string("${SOURCE_PATH}/tools/setup_helpers/env.py" "@TARGET_TRIPLET@" "${TARGET_TRIPLET}-rel")
   vcpkg_replace_string("${SOURCE_PATH}/torch/utils/cpp_extension.py" "@TARGET_TRIPLET@" "${TARGET_TRIPLET}-rel")
-  pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
+  vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
 endif()
 
 set(VCPKG_POLICY_DLLS_WITHOUT_EXPORTS enabled) # torch_global_deps.dll is empty.c and just for linking deps

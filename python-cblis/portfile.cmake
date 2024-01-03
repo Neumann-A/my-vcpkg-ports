@@ -22,7 +22,7 @@ file(COPY "${SOURCE_BLIS_PATH}/" DESTINATION "${SOURCE_PATH}/flame-blis" )
 
 # Compiles something with clang?
 #vcpkg_replace_string( "cython<3.0" "cython")
-pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 

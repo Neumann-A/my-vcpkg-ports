@@ -10,7 +10,7 @@ vcpkg_from_github(
       fix-maturing.patch
 )
 
-pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/license-apache" "${SOURCE_PATH}/license-mit")
 

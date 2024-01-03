@@ -5,10 +5,10 @@
   "homepage": "https://referencing.readthedocs.io/",
   "license": "MIT",
   "dependencies": [
-    "pypa-setuptools",
-    "pypa-hatchling",
+    "python-setuptools",
+    "python-hatchling",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python3",

@@ -8,7 +8,7 @@
     "python3",
     "llama-cpp",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python-diskcache",

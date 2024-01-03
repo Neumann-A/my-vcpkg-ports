@@ -41,8 +41,8 @@
       "description": "Build python extension",
       "dependencies": [
         "python3",
-        "pypa-setuptools",
-        "python-pypa-scripts",
+        "python-setuptools",
+        "vcpkg-python-scripts",
         "python-pillow"
       ]
     }

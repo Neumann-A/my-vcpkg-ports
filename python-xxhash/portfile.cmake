@@ -11,7 +11,7 @@ set(ENV{XXHASH_LINK_SO} 1)
 set(ENV{LINK} "$ENV{LINK} /LIBPATH:${CURRENT_INSTALLED_DIR}/lib")
 set(ENV{CL} "$ENV{CL} /I${CURRENT_INSTALLED_DIR}/include")
 
-pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 

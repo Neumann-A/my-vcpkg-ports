@@ -19,9 +19,9 @@
     "scripts": {
       "description": "Install pybind python scripts",
       "dependencies": [
-      "pypa-setuptools",
+      "python-setuptools",
       {
-        "name": "python-pypa-scripts",
+        "name": "vcpkg-python-scripts",
         "host": true
       },
       "python3"

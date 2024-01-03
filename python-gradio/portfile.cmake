@@ -33,7 +33,7 @@ vcpkg_download_distfile(
     SHA512 adcdc5655688e966b1fd1641e8db9c9f5ee3173379e782f2c0a57f538d43bfbb908398e51b59e543e10d6d18d3fffc059bbbec43aaa573eca04b6408f5010869
 )
 
-pypa_install_wheel(WHEEL "${wheel}")
+vcpkg_python_install_wheel(WHEEL "${wheel}")
 
 vcpkg_install_copyright(FILE_LIST "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/${name}.dist-info/licenses/LICENSE")
 

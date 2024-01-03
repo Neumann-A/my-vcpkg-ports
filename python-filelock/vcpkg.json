@@ -5,11 +5,11 @@
   "homepage": "https://py-filelock.readthedocs.io/",
   "license": "Unlicense",
   "dependencies": [
-    "pypa-setuptools",
-    "pypa-hatchling",
+    "python-setuptools",
+    "python-hatchling",
     "python-hatch-vcs",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python3"

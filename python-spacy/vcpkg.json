@@ -5,14 +5,14 @@
   "homepage": "https://spacy.io/",
   "license": "MIT",
   "dependencies": [
-    "pypa-setuptools",
+    "python-setuptools",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python3",
     "numpy",
-    "pypa-packaging",
+    "python-packaging",
     "python-cython",
     "python-pip",
     "python-preshed",

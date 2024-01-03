@@ -5,10 +5,10 @@
   "homepage": "pygments.org/",
   "license": "BSD-2-Clause",
   "dependencies": [
-    "pypa-packaging",
-    "pypa-setuptools",
+    "python-packaging",
+    "python-setuptools",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python-typing-extensions",

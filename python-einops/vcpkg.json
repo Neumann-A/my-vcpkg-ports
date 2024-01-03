@@ -5,10 +5,10 @@
   "homepage": "https://einops.rocks/",
   "license": "MIT",
   "dependencies": [
-    "pypa-hatchling",
-    "pypa-wheel",
+    "python-hatchling",
+    "python-wheel",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python3"

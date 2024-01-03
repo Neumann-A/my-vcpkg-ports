@@ -5,9 +5,9 @@
   "homepage": "https://github.com/mrabarnett/mrab-regex",
   "license": "MIT",
   "dependencies": [
-    "pypa-setuptools",
+    "python-setuptools",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
     },
     "python3"

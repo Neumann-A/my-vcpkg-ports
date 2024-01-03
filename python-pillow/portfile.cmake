@@ -14,7 +14,7 @@ set(ENV{LIB} "${CURRENT_INSTALLED_DIR}/lib;$ENV{LIB}")
 
 #TODO: Setup CFLAGS and everything.
 
-pypa_build_and_install_wheel(
+vcpkg_python_build_and_install_wheel(
   SOURCE_PATH "${SOURCE_PATH}" 
   OPTIONS 
     -C raqm=disable # linkage issues. Without pc file missing linakge to harfbuzz fribidi
