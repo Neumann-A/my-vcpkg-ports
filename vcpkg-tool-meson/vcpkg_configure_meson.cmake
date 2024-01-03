@@ -435,9 +435,7 @@ function(vcpkg_configure_meson)
         endif()
 
         z_vcpkg_meson_setup_variables(${buildtype})
-        configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/meson.template.in" "${meson_input_file_${buildtype}}" @ONLY)
-
-    list(INSERT MESON 1 "-E")
+        configure_file("${SCRIPTS}/buildsystems/meson/meson.template.in" "${meson_input_file_${buildtype}}" @ONLY)
 
         vcpkg_execute_required_process(
             COMMAND ${MESON} ${arg_OPTIONS} ${arg_OPTIONS_${buildtype}} ${arg_SOURCE_PATH}
