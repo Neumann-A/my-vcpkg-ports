@@ -218,4 +218,4 @@ endif()
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/tools/${PORT}/debug")
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
 
-file(COPY "${CURRENT_PACKAGES_DIR}/tools/python3/lib/site-packages/" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/omniorb/bin")
+file(COPY "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/omniorb/bin")

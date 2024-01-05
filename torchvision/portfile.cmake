@@ -37,7 +37,7 @@ file(REMOVE_RECURSE
 )
 
 if("python" IN_LIST FEATURES)
-  file(COPY "${SOURCE_PATH}/torchvision" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/")
+  file(COPY "${SOURCE_PATH}/torchvision" DESTINATION "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/")
   #vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")# OPTIONS -x)
 endif()
 

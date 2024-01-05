@@ -37,8 +37,8 @@ endif()
 set(abi cp311-win_amd64) # abi3 if limited
 
 
-vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/Shiboken6/Shiboken6Config.${abi}.cmake" "/Lib/site-packages/" "/tools/python3/Lib/site-packages/")
-vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/PySide6/PySide6Config.${abi}.cmake" "/Lib/site-packages/" "/tools/python3/Lib/site-packages/")
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/Shiboken6/Shiboken6Config.${abi}.cmake" "/Lib/site-packages/" "/${PYTHON3_SITE}/")
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/PySide6/PySide6Config.${abi}.cmake" "/Lib/site-packages/" "/${PYTHON3_SITE}/")
 
 
 vcpkg_fixup_pkgconfig()
@@ -72,7 +72,7 @@ vcpkg_install_copyright(FILE_LIST ${lics})
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/lib/site-packages/PySide6/__init__.py" "${CURRENT_BUILDTREES_DIR}" "do-not-use-and-force-false")
 
 file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/")
-file(RENAME "${CURRENT_PACKAGES_DIR}/lib/site-packages" "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages")
+file(RENAME "${CURRENT_PACKAGES_DIR}/lib/site-packages" "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}")
 
 #TODO: Need to add "os.add_dll_directory(os.path.dirname(__file__)+'/../../../bin')" to "vcpkg\installed\triplet\lib\site-packages\shiboken6\__init__.py" before "from shiboken6.Shiboken import *"
 

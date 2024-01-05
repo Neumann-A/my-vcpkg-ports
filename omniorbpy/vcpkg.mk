@@ -875,4 +875,4 @@ RANLIB       = true
 # )
 # endef
 
-INSTALLPYTHONDIR := $(DESTDIR)$(prefix)/tools/python3/lib/site-packages
+INSTALLPYTHONDIR := $(DESTDIR)$(prefix)/@PYTHON3_SITE@

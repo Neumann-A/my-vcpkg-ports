@@ -57,7 +57,7 @@ vcpkg_fixup_pkgconfig()
 
 #vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE.txt")
 
-file(WRITE "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/numpy-${version}.dist-info/METADATA"
+file(WRITE "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/numpy-${version}.dist-info/METADATA"
 [[
 Metadata-Version: 2.1
 Name: numpy

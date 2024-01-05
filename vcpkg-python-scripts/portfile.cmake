@@ -1,5 +1,5 @@
 file(INSTALL
-    "${CMAKE_CURRENT_LIST_DIR}/pypa_python_functions.cmake"
+    "${CMAKE_CURRENT_LIST_DIR}/vcpkg_python_functions.cmake"
     "${CMAKE_CURRENT_LIST_DIR}/vcpkg-port-config.cmake"
     DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
 

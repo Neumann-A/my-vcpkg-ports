@@ -42,9 +42,14 @@ function(vcpkg_python_install_wheel)
 
   set(build_ops "")
 
+  set(install_prefix "${CURRENT_INSTALLED_DIR}")
+  if(VCPKG_TARGET_IS_WINDOWS)
+    string(APPEND install_prefix"/tools/python3")
+  endif()
+
   message(STATUS "Installing python wheel:'${arg_WHEEL}'")
   vcpkg_execute_required_process(COMMAND "${PYTHON3}" -m installer 
-    --prefix "${CURRENT_INSTALLED_DIR}/tools/python3" 
+    --prefix "${install_prefix}" 
     --destdir "${CURRENT_PACKAGES_DIR}" "${arg_WHEEL}"
     LOGNAME "python-installer-${TARGET_TRIPLET}"
     WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}"
@@ -59,10 +64,10 @@ function(vcpkg_python_install_wheel)
   string(REPLACE "/" ";" path_list "${without_drive_letter_installed}")
   list(GET path_list 1 path_to_delete)
 
-  if(NOT EXISTS "${CURRENT_PACKAGES_DIR}/tools")
+  if(NOT EXISTS "${CURRENT_PACKAGES_DIR}/tools" AND EXISTS "${CURRENT_PACKAGES_DIR}${without_drive_letter_installed}/tools")
     file(RENAME "${CURRENT_PACKAGES_DIR}${without_drive_letter_installed}/tools" "${CURRENT_PACKAGES_DIR}/tools")
   else()
-    file(COPY "${CURRENT_PACKAGES_DIR}${without_drive_letter_installed}/tools/" DESTINATION "${CURRENT_PACKAGES_DIR}/tools")
+    file(COPY "${CURRENT_PACKAGES_DIR}${without_drive_letter_installed}/" DESTINATION "${CURRENT_PACKAGES_DIR}/")
   endif()
   file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/${path_to_delete}")
 endfunction()

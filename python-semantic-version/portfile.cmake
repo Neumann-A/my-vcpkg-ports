@@ -7,6 +7,6 @@ vcpkg_download_distfile(
 
 vcpkg_python_install_wheel(WHEEL "${wheel}")
 
-vcpkg_install_copyright(FILE_LIST "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/semantic_version-2.10.0.dist-info/LICENSE")
+vcpkg_install_copyright(FILE_LIST "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/semantic_version-2.10.0.dist-info/LICENSE")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)

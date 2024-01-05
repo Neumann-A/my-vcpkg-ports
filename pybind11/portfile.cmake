@@ -31,8 +31,8 @@ set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
 vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
 
 file(REMOVE_RECURSE 
-  "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pybind11/include"
-  "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pybind11/share"
+  "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/pybind11/include"
+  "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/pybind11/share"
 )
 
 endif()

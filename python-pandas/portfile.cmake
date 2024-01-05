@@ -21,9 +21,9 @@ vcpkg_fixup_pkgconfig()
 
 
 if(VCPKG_TARGET_IS_WINDOWS)
-    file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/")
-    file(RENAME "${CURRENT_PACKAGES_DIR}/lib/site-packages/pandas" "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pandas")
-    file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/Lib")
+    file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/")
+    file(RENAME "${CURRENT_PACKAGES_DIR}/lib/site-packages/pandas" "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/pandas")
+    file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/lib")
 endif()
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")

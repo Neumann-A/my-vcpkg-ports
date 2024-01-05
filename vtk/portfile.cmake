@@ -138,7 +138,7 @@ if("python" IN_LIST FEATURES)
     set(python_ver "")
     if(NOT VCPKG_TARGET_IS_WINDOWS)
         set(python_ver 3.11)
-        set(python_site -DVTK_PYTHON_SITE_PACKAGES_SUFFIX="${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages")
+        set(python_site -DVTK_PYTHON_SITE_PACKAGES_SUFFIX="${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}")
     endif()
     list(APPEND ADDITIONAL_OPTIONS
         -DVTK_WRAP_PYTHON=ON

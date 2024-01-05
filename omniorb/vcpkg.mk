@@ -88,4 +88,4 @@ define ExportSharedLibraryToDir
  $(LN_S) $(<F) $$soname;
 endef
 
-INSTALLPYTHONDIR := $(DESTDIR)$(prefix)/tools/python3/lib/site-packages
+INSTALLPYTHONDIR := $(DESTDIR)$(prefix)/@PYTHON_SITE@

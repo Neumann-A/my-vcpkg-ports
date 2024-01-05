@@ -19,7 +19,7 @@ string(REPLACE "." ";" version_list "${VERSION}")
 list(GET version_list 0 version_major)
 list(GET version_list 1 version_minor)
 list(GET version_list 2 version_patch)
-file(WRITE "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packakges/matplotlib/_version.py"
+file(WRITE "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/matplotlib/_version.py"
 "\n\
 TYPE_CHECKING = False\n\
 if TYPE_CHECKING:\n\

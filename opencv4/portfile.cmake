@@ -467,7 +467,7 @@ vcpkg_cmake_configure(
         ${ADDITIONAL_BUILD_FLAGS}
         -DBUILD_IPP_IW=${WITH_IPP}
         -DOPENCV_LAPACK_FIND_PACKAGE_ONLY=
-        -D__INSTALL_PATH_PYTHON3=${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/cv2
+        -D__INSTALL_PATH_PYTHON3=${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/cv2
 )
 
 vcpkg_cmake_install()

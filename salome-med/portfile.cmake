@@ -73,4 +73,3 @@ file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/share/salome/script/test")
 
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/share/salome/script/medcalc_testutils.py" "${CURRENT_PACKAGES_DIR}" "")
 
-#E:\all\vcpkg\packages\salome-med_x64-win-llvm-release\share\salome\script\medcalc_testutils.py

@@ -38,7 +38,7 @@ vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/python" OPTIONS
 #file(INSTALL "${SOURCE_PATH}/python/pyarrow/" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pyarrow")
 
 file(GLOB_RECURSE pyds "${CURRENT_PACKAGES_DIR}/lib/*.pyd")
-file(COPY ${pyds} DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pyarrow")
+file(COPY ${pyds} DESTINATION "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/pyarrow")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE.txt")
 
@@ -62,7 +62,7 @@ file(REMOVE_RECURSE
 "${CURRENT_PACKAGES_DIR}/include/arrow/vendored"
 )
 
-file(WRITE "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pyarrow-${VERSION}.dist-info/METADATA"
+file(WRITE "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/pyarrow-${VERSION}.dist-info/METADATA"
 "Metadata-Version: 2.1\n\
 Name: pyarrow\n\
 Version: ${VERSION}"

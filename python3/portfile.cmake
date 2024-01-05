@@ -364,5 +364,10 @@ if (NOT VCPKG_TARGET_IS_WINDOWS)
     endif()
 endif()
 
-vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/tools/python3/Lib/distutils/command/build_ext.py" "'libs'" "'../../lib'")
-# E:\all\vcpkg\packages\python3_x64-win-llvm-release\tools\python3\Lib\distutils\command\build_ext.py Fix 'libs'
+if(VCPKG_TARGET_IS_WINDOWS)
+  vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/tools/python3/Lib/distutils/command/build_ext.py" "'libs'" "'../../lib'")
+else()
+  vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/lib/python3.${PYTHON_VERSION_MINOR}/distutils/command/build_ext.py" "'libs'" "'../../lib'")
+endif()
+
+configure_file("${CMAKE_CURRENT_LIST_DIR}/vcpkg-port-config.cmake" "${CURRENT_PACKAGES_DIR}/share/python3/vcpkg-port-config.cmake" @ONLY)

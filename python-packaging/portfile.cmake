@@ -6,7 +6,7 @@ vcpkg_from_github(
     HEAD_REF main
 )
 
-file(COPY "${SOURCE_PATH}/src/packaging" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/")
+file(COPY "${SOURCE_PATH}/src/packaging" DESTINATION "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
