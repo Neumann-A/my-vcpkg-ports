@@ -5,14 +5,14 @@
   "homepage": "https://maturin.rs/",
   "license": null,
   "dependencies": [
+    "python-semantic-version",
     "python-setuptools",
     "python-setuptools-rust",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
     },
-    "python3",
-    "python-semantic-version",
     {
       "name": "vcpkg-rust",
       "host": true

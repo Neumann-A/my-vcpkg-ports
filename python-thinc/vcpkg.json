@@ -5,13 +5,13 @@
   "homepage": "https://thinc.ai/",
   "license": "MIT",
   "dependencies": [
+    "python-catalogue",
+    "python-cblis",
     "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-cblis",
-    "python-catalogue"
+    }
   ]
 }

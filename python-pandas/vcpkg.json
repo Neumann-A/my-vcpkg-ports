@@ -5,12 +5,13 @@
   "homepage": "https://pandas.pydata.org/",
   "license": "BSD-3-Clause",
   "dependencies": [
-    "python3",
-    "python-versioneer",
     {
       "name": "python-cython",
       "host": true
     },
+    "python-pytz",
+    "python-versioneer",
+    "python3",
     {
       "name": "vcpkg-get-python-packages",
       "host": true
@@ -18,7 +19,6 @@
     {
       "name": "vcpkg-tool-meson",
       "host": true
-    },
-    "python-pytz"
+    }
   ]
 }

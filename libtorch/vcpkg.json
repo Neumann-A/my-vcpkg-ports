@@ -125,22 +125,22 @@
     "python": {
       "description": "Build with python",
       "dependencies": [
-        "python3",
-        "python-setuptools",
-        "vcpkg-python-scripts",
         "numpy",
-        "python-typing-extensions",
         "python-astunparse",
+        "python-setuptools",
         "python-six",
-        "python-sympy"
+        "python-sympy",
+        "python-typing-extensions",
+        "python3",
+        "vcpkg-python-scripts"
       ]
     },
     "vulkan": {
       "description": "Build with Vulkan GPU backend",
       "dependencies": [
         "vulkan",
-        "vulkan-memory-allocator",
-        "vulkan-loader"
+        "vulkan-loader",
+        "vulkan-memory-allocator"
       ]
     },
     "xnnpack": {

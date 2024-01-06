@@ -6,10 +6,10 @@
   "license": "MPL-2.0",
   "dependencies": [
     "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3"
+    }
   ]
 }

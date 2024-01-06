@@ -5,12 +5,12 @@
   "homepage": "pypi.org/p/trove-classifiers/",
   "license": "MIT",
   "dependencies": [
+    "python-calver",
     "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-calver"
+    }
   ]
 }

@@ -4,8 +4,8 @@
   "description": "Port of Facebook's LLaMA model in C/C++ ",
   "license": "MIT",
   "dependencies": [
-    "cuda",
     "blas",
+    "cuda",
     "cuda",
     {
       "name": "vcpkg-cmake",

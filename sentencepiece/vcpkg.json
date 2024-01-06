@@ -4,33 +4,33 @@
   "description": "SentencePiece is an unsupervised text tokenizer and detokenizer mainly for Neural Network-based text generation systems where the vocabulary size is predetermined prior to the neural model training",
   "license": "Apache-2.0",
   "dependencies": [
-    {
-      "name": "vcpkg-cmake",
-      "host": true
-    },
+    "abseil",
     "protobuf",
     {
       "name": "protobuf",
       "host": true
     },
-    "abseil"
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    }
   ],
   "features": {
-      "python": {
-          "description": "Install python binding",
-          "dependencies": [
-              "python-setuptools",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    },
-    "python3",
-    {
-      "name": "pkgconf",
-      "host": true,
-      "platform": "windows"
+    "python": {
+      "description": "Install python binding",
+      "dependencies": [
+        {
+          "name": "pkgconf",
+          "host": true,
+          "platform": "windows"
+        },
+        "python-setuptools",
+        "python3",
+        {
+          "name": "vcpkg-python-scripts",
+          "host": true
+        }
+      ]
     }
-          ]
-      }
   }
 }

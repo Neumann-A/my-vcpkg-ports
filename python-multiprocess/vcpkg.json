@@ -5,12 +5,12 @@
   "homepage": "http://multiprocess.rtfd.io/",
   "license": null,
   "dependencies": [
+    "python-dill",
     "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-dill"
+    }
   ]
 }

@@ -7,10 +7,10 @@
   "dependencies": [
     "python-build",
     "python-installer",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3"
+    }
   ]
 }

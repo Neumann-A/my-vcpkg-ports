@@ -14,11 +14,17 @@
       ]
     },
     "numpy",
-    "python3",
     "python-setuptools",
+    "python3",
     {
       "name": "python3",
       "host": true
+    },
+    "qt3d",
+    "qt5compat",
+    {
+      "name": "qtactiveqt",
+      "platform": "windows"
     },
     {
       "name": "qtbase",
@@ -30,36 +36,30 @@
         "widgets"
       ]
     },
+    "qtcharts",
+    "qtconnectivity",
+    "qtdatavis3d",
+    "qtgraphs",
+    "qthttpserver",
+    "qtlocation",
+    "qtmultimedia",
+    "qtnetworkauth",
+    "qtpositioning",
+    "qtquick3d",
+    "qtremoteobjects",
+    "qtscxml",
+    "qtsensors",
+    "qtserialbus",
+    "qtserialport",
+    "qtspeech",
+    "qtsvg",
     {
       "name": "qtwebengine",
       "features": [
         "webchannel"
       ]
     },
-    "qtmultimedia",
-    "qtpositioning",
-    "qtlocation",
-    "qtquick3d",
-    "qtremoteobjects",
-    "qtserialport",
-    "qtserialbus",
-    "qtcharts",
-    "qtsvg",
-    "qtdatavis3d",
-    "qtgraphs",
     "qtwebsockets",
-    "qthttpserver",
-    "qt3d",
-    "qtspeech",
-    "qtconnectivity",
-    "qtscxml",
-    "qtnetworkauth",
-    "qt5compat",
-    "qtsensors",
-    {
-      "name": "qtactiveqt",
-      "platform": "windows"
-    },
     {
       "name": "vcpkg-cmake",
       "host": true

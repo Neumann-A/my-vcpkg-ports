@@ -6,10 +6,10 @@
   "license": "MIT",
   "dependencies": [
     "python-wheel",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3"
+    }
   ]
 }

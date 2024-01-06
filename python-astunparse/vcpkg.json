@@ -6,7 +6,7 @@
   "license": null,
   "dependencies": [
     "python-setuptools",
-    "vcpkg-python-scripts",
-    "python3"
+    "python3",
+    "vcpkg-python-scripts"
   ]
 }

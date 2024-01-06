@@ -5,12 +5,12 @@
   "homepage": "https://scikit-build-core.readthedocs.io/",
   "license": "Apache-2.0",
   "dependencies": [
-    "python-setuptools",
     "python-hatchling",
+    "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3"
+    }
   ]
 }

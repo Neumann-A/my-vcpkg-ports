@@ -7,8 +7,8 @@
   "dependencies": [
     "blas",
     "lapack",
-    "python3",
     "numpy",
+    "python3",
     {
       "name": "vcpkg-get-python-packages",
       "host": true

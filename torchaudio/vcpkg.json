@@ -5,13 +5,6 @@
   "homepage": "https://pytorch.org/audio",
   "license": null,
   "dependencies": [
-    "python3",
-    "sox",
-    { 
-      "name": "pkgconf",
-      "platform": "windows",
-      "host": true
-    },
     {
       "name": "ffmpeg",
       "default-features": false,
@@ -26,6 +19,13 @@
       "name": "libtorch",
       "default-features": false
     },
+    {
+      "name": "pkgconf",
+      "host": true,
+      "platform": "windows"
+    },
+    "python3",
+    "sox",
     {
       "name": "vcpkg-cmake",
       "host": true

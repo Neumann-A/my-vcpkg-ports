@@ -5,12 +5,12 @@
   "homepage": "https://requests.readthedocs.io/en/latest/",
   "license": "BSD-3-Clause",
   "dependencies": [
+    "python-hatchling",
     "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-hatchling"
+    }
   ]
 }

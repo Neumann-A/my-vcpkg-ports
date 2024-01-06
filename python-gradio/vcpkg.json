@@ -5,25 +5,25 @@
   "homepage": "http://www.gradio.app/",
   "license": "Apache-2.0",
   "dependencies": [
-    "python3",
-    "python-packaging",
     "numpy",
-    "python-pandas",
-    "python-hatchling",
+    "python-aiofiles",
+    "python-altair",
+    "python-fastapi",
+    "python-ffmpy",
     "python-hatch",
+    "python-hatch-fancy-pypi-readme",
+    "python-hatch-requirements-txt",
+    "python-hatchling",
+    "python-orjson",
+    "python-packaging",
+    "python-pandas",
+    "python-pillow",
+    "python-pydub",
+    "python-uvicorn",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python-hatch-requirements-txt",
-    "python-hatch-fancy-pypi-readme",
-    "python-pillow",
-    "python-aiofiles",
-    "python-fastapi",
-    "python-ffmpy",
-    "python-pydub",
-    "python-uvicorn",
-    "python-orjson",
-    "python-altair"
+    }
   ]
 }

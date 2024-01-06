@@ -5,18 +5,45 @@
   "homepage": "https://www.salome-platform.org",
   "license": "GPL-2.0-or-later",
   "dependencies": [
-    "salome-configuration",
-    "salome-kernel",
     "opencascade",
     {
       "name": "paraview",
       "default-features": false,
-      "features": ["tools" , "python"]
+      "features": [
+        "python",
+        "tools"
+      ]
     },
+    "pyside",
     {
       "name": "python3",
       "host": true
     },
+    {
+      "name": "qtbase",
+      "default-features": false,
+      "features": [
+        "gui",
+        "network",
+        "opengl",
+        "testlib",
+        "widgets"
+      ]
+    },
+    {
+      "name": "qttools",
+      "default-features": false,
+      "features": [
+        "linguist"
+      ]
+    },
+    {
+      "name": "qtwebengine",
+      "default-features": false
+    },
+    "qwt",
+    "salome-configuration",
+    "salome-kernel",
     {
       "name": "vcpkg-cmake",
       "host": true
@@ -28,22 +55,6 @@
     {
       "name": "vcpkg-get-python-packages",
       "host": true
-    },
-    {
-      "name": "qtwebengine",
-      "default-features": false
-    },
-    {
-      "name": "qtbase",
-      "default-features": false,
-      "features": [ "gui" , "widgets", "testlib", "network", "opengl" ]
-    },
-    {
-      "name": "qttools",
-      "default-features": false,
-      "features": [ "linguist" ]
-    },
-    "pyside",
-    "qwt"
+    }
   ]
 }

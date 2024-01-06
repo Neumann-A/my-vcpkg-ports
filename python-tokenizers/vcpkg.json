@@ -5,13 +5,13 @@
   "homepage": "https://huggingface.co/docs/tokenizers",
   "license": "Apache-2.0",
   "dependencies": [
+    "python-maturin",
     "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
     },
-    "python3",
-    "python-maturin",
     "vcpkg-rust"
   ]
 }

@@ -5,19 +5,19 @@
   "homepage": "https://github.com/pypa/setuptools_scm",
   "license": "MIT",
   "dependencies": [
+    "python-importlib-metadata",
     "python-packaging",
     "python-packaging-wheel",
-    "python-setuptools",
-    "python-importlib-metadata",
     "python-pygments",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    },
+    "python-setuptools",
     "python-tomli-wheel",
     "python-typing-extensions",
     "python3",
     "vcpkg-get-python-packages",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    },
     "vcpkg-tool-mecurial"
   ]
 }

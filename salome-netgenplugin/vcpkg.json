@@ -13,7 +13,10 @@
     {
       "name": "qtbase",
       "default-features": false,
-      "features": [ "gui", "widgets" ]
+      "features": [
+        "gui",
+        "widgets"
+      ]
     },
     "salome-configuration",
     "salome-geom",

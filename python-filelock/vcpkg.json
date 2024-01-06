@@ -5,13 +5,13 @@
   "homepage": "https://py-filelock.readthedocs.io/",
   "license": "Unlicense",
   "dependencies": [
-    "python-setuptools",
-    "python-hatchling",
     "python-hatch-vcs",
+    "python-hatchling",
+    "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3"
+    }
   ]
 }

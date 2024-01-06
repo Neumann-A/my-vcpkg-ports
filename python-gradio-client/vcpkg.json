@@ -5,21 +5,21 @@
   "homepage": "http://www.gradio.app/",
   "license": "Apache-2.0",
   "dependencies": [
-    "python3",
-    "python-packaging",
     "numpy",
-    "python-pandas",
-    "python-hatchling",
+    "python-fsspec",
     "python-hatch",
+    "python-hatch-fancy-pypi-readme",
+    "python-hatch-requirements-txt",
+    "python-hatchling",
+    "python-httpx",
+    "python-packaging",
+    "python-pandas",
+    "python-rich",
+    "python-websockets",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python-hatch-requirements-txt",
-    "python-hatch-fancy-pypi-readme",
-    "python-websockets",
-    "python-fsspec",
-    "python-httpx",
-    "python-rich"
+    }
   ]
 }

@@ -5,23 +5,27 @@
   "homepage": "https://github.com/turboderp/exllamav2",
   "license": "MIT",
   "dependencies": [
+    {
+      "name": "libtorch",
+      "features": [
+        "python"
+      ]
+    },
+    "python-pandas",
+    "python-pygments",
+    "python-regex",
     "python-setuptools",
+    "python-websockets",
+    "python3",
+    {
+      "name": "sentencepiece",
+      "features": [
+        "python"
+      ]
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    {
-      "name": "libtorch",
-      "features": ["python"]
-    },
-    {
-      "name": "sentencepiece",
-      "features": ["python"]
-    },
-    "python-pygments",
-    "python-regex",
-    "python-pandas",
-    "python-websockets"
+    }
   ]
 }

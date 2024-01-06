@@ -5,15 +5,15 @@
   "homepage": "https://github.com/pydantic/pydantic",
   "license": "MIT",
   "dependencies": [
+    "python-annotated-types",
+    "python-hatch-fancy-pypi-readme",
+    "python-pydantic-core",
     "python-setuptools",
+    "python-wasabi",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-hatch-fancy-pypi-readme",
-    "python-pydantic-core",
-    "python-annotated-types",
-    "python-wasabi"
+    }
   ]
 }

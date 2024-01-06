@@ -6,7 +6,7 @@
   "license": "BSD-3-Clause",
   "dependencies": [
     "calysto-metakernel",
-    "pypa-setuptools",
+    "python-setuptools",
     "python3"
   ]
 }

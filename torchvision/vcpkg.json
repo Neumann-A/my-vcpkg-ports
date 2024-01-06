@@ -40,10 +40,10 @@
     "python": {
       "description": "Build python extension",
       "dependencies": [
-        "python3",
+        "python-pillow",
         "python-setuptools",
-        "vcpkg-python-scripts",
-        "python-pillow"
+        "python3",
+        "vcpkg-python-scripts"
       ]
     }
   }

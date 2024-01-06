@@ -5,12 +5,12 @@
   "homepage": "https://typer.tiangolo.com/",
   "license": "MIT",
   "dependencies": [
+    "python-flit-core",
     "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-flit-core"
+    }
   ]
 }

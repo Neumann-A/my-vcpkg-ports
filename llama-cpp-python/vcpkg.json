@@ -5,13 +5,13 @@
   "homepage": "llama-cpp-python.readthedocs.io",
   "license": "MIT",
   "dependencies": [
-    "python3",
     "llama-cpp",
+    "python-diskcache",
+    "python-scikit-build-core",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python-diskcache",
-    "python-scikit-build-core"
+    }
   ]
 }

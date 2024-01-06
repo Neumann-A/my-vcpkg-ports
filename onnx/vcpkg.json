@@ -29,8 +29,8 @@
       "description": "Build Python binaries",
       "dependencies": [
         "pybind11",
-        "python3",
-        "python-googlesearch"
+        "python-googlesearch",
+        "python3"
       ]
     }
   }

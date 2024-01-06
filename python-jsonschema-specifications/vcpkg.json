@@ -5,12 +5,12 @@
   "homepage": "https://jsonschema-specifications.readthedocs.io/",
   "license": "MIT",
   "dependencies": [
-    "python-setuptools",
     "python-hatchling",
+    "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3"
+    }
   ]
 }

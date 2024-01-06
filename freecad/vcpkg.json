@@ -20,12 +20,7 @@
     "eigen3",
     "freetype",
     "matplotlib-cpp",
-    "salome-med-fichier",
     "netgen",
-    {
-      "name": "pybind11",
-      "features": ["scripts"]
-    },
     {
       "name": "opencascade",
       "default-features": false
@@ -48,13 +43,22 @@
       ]
     },
     "pivy",
+    {
+      "name": "pybind11",
+      "features": [
+        "scripts"
+      ]
+    },
     "pyside",
+    "python-matplotlib",
+    "python-pip",
     "python3",
     "qtsvg",
     {
       "name": "qtwebengine",
       "default-features": false
     },
+    "salome-med-fichier",
     "salome-netgenplugin",
     "salome-smesh",
     {
@@ -65,8 +69,6 @@
       "name": "vcpkg-cmake-config",
       "host": true
     },
-    "xerces-c",
-    "python-pip",
-    "python-matplotlib"
+    "xerces-c"
   ]
 }

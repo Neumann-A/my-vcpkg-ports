@@ -7,11 +7,11 @@
   "dependencies": [
     "python-setuptools",
     "python-setuptools-scm",
+    "python-tomli-wheel",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python-tomli-wheel",
-    "python3"
+    }
   ]
 }

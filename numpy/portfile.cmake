@@ -1,3 +1,11 @@
+set(PYTHON3_BASEDIR "${CURRENT_INSTALLED_DIR}/tools/python3")
+unset(PYTHON3 CACHE)
+unset(PYTHON3)
+find_program(PYTHON3 NAMES python${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR} python${PYTHON3_VERSION_MAJOR} python PATHS "${PYTHON3_BASEDIR}" NO_DEFAULT_PATH)
+find_program(CYTHON NAMES cython PATHS "${PYTHON3_BASEDIR}" "${PYTHON3_BASEDIR}/Scripts" NO_DEFAULT_PATH)
+message(STATUS "PYTHON3:${PYTHON3}")
+vcpkg_add_to_path(PREPEND ${PYTHON3_BASEDIR})
+
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO numpy/numpy
@@ -39,8 +47,6 @@ vcpkg_from_github(
 
 file(COPY "${SOURCE_PATH_SVML}/" DESTINATION "${SOURCE_PATH}/numpy/core/src/umath/svml")
 
-x_vcpkg_get_python_packages(PYTHON_VERSION "3" OUT_PYTHON_VAR "PYTHON3" PACKAGES cython)
-set(CYTHON "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-venv/Scripts/cython${VCPKG_HOST_EXECUTABLE_SUFFIX}")
 
 set(VCPKG_BUILD_TYPE release) # No debug builds required for pure python modules
 
@@ -54,8 +60,8 @@ vcpkg_configure_meson(
         -Duse-ilp64=true
     ADDITIONAL_BINARIES
       cython=['${CYTHON}']
-      python3=['${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}']
-      python=['${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}']
+      python3=['${PYTHON3}']
+      python=['${PYTHON3}']
     )
 vcpkg_install_meson()
 vcpkg_fixup_pkgconfig()
@@ -66,7 +72,11 @@ vcpkg_fixup_pkgconfig()
 	# line  84:                 "lib directory": r"E:/all/vcpkg/installed/x64-win-llvm-release/lib",
 	# line  86:                 "pc file directory": r"E:/all/vcpkg/installed/x64-win-llvm-release/lib/pkgconfig",
 	# line  90:             "path": r"E:\b\numpy\x64-win-llvm-release-venv\Scripts\python.exe",
-set(pyfile "${CURRENT_PACKAGES_DIR}/lib/site-packages/numpy/__config__.py")
+set(subdir "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/")
+if(VCPKG_TARGET_IS_WINDOWS)
+  set(subdir "${CURRENT_PACKAGES_DIR}/lib/site-packages/")
+endif()
+set(pyfile "${subdir}/numpy/__config__.py")
 file(READ "${pyfile}" contents)
 string(REPLACE "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-venv/Scripts/" "" contents "${contents}")
 string(REPLACE "${CURRENT_INSTALLED_DIR}" "$(prefix)" contents "${contents}")
@@ -74,8 +84,8 @@ file(WRITE "${pyfile}" "${contents}")
 
 
 if(VCPKG_TARGET_IS_WINDOWS)
-    file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/")
-    file(RENAME "${CURRENT_PACKAGES_DIR}/lib/site-packages/numpy" "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/numpy")
+    file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}")
+    file(RENAME "${CURRENT_PACKAGES_DIR}/lib/site-packages/numpy" "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/numpy")
     file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/lib")
 endif()
 
@@ -86,10 +96,12 @@ file(REMOVE_RECURSE
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE.txt")
 
-file(WRITE "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/numpy-${VERSION}.dist-info/METADATA"
+file(WRITE "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/numpy-${VERSION}.dist-info/METADATA"
 "Metadata-Version: 2.1\n\
 Name: numpy\n\
 Version: ${VERSION}"
 )
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+set(VCPKG_FIXUP_ELF_RPATH ON)

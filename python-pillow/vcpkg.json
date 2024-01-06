@@ -5,26 +5,28 @@
   "homepage": "https://python-pillow.org/",
   "license": null,
   "dependencies": [
-    "python-setuptools",
+    "freetype",
+    "lcms",
+    "libjpeg-turbo",
+    "libraqm",
     {
-      "name": "vcpkg-python-scripts",
-      "host": true
+      "name": "libwebp",
+      "features": [
+        "libwebpmux"
+      ]
     },
+    "openjpeg",
     {
       "name": "pkgconf",
       "host": true
     },
+    "python-setuptools",
     "python3",
-    "zlib",
-    "libjpeg-turbo",
     "tiff",
-    "freetype",
-    "lcms",
     {
-      "name": "libwebp",
-      "features" : [ "libwebpmux"]
+      "name": "vcpkg-python-scripts",
+      "host": true
     },
-    "openjpeg",
-    "libraqm"
+    "zlib"
   ]
 }

@@ -5,14 +5,14 @@
   "homepage": "https://fastapi.tiangolo.com/",
   "license": "MIT",
   "dependencies": [
+    "python-multipart",
     "python-setuptools",
+    "python-starlette",
+    "python-typing-extensions",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-starlette",
-    "python-typing-extensions",
-    "python-multipart"
+    }
   ]
 }

@@ -5,9 +5,9 @@
   "homepage": "https://pypi.org/project/PyYAML/",
   "license": "MIT",
   "dependencies": [
-    "python-setuptools",
     "python-cython",
-    "vcpkg-python-scripts",
-    "python3"
+    "python-setuptools",
+    "python3",
+    "vcpkg-python-scripts"
   ]
 }

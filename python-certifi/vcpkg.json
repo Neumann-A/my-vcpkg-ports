@@ -5,12 +5,12 @@
   "homepage": "https://github.com/certifi/python-certifi",
   "license": null,
   "dependencies": [
+    "python-semantic-version",
     "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-semantic-version"
+    }
   ]
 }

@@ -5,15 +5,15 @@
   "homepage": "https://docs.aiohttp.org/",
   "license": "MIT",
   "dependencies": [
+    "python-aiosignal",
+    "python-async-timeout",
+    "python-multidict",
     "python-setuptools",
+    "python-yarl",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-multidict",
-    "python-yarl",
-    "python-async-timeout",
-    "python-aiosignal"
+    }
   ]
 }

@@ -5,15 +5,15 @@
   "homepage": "https://python-jsonschema.readthedocs.io/",
   "license": "MIT",
   "dependencies": [
-    "python-setuptools",
+    "python-attrs",
     "python-hatchling",
+    "python-jsonschema-specifications",
+    "python-referencing",
+    "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-attrs",
-    "python-referencing",
-    "python-jsonschema-specifications"
+    }
   ]
 }

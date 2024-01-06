@@ -5,24 +5,24 @@
   "homepage": "https://matplotlib.org/stable/",
   "license": null,
   "dependencies": [
+    "freetype",
+    "pybind11",
+    "python-certifi",
+    "python-cycler",
+    "python-dateutil",
+    "python-kiwisolver",
     "python-meson",
-    {
-      "name": "vcpkg-tool-meson",
-      "host": true
-    },
+    "python-pillow",
+    "python-pyparsing",
+    "python3",
+    "qhull",
     {
       "name": "vcpkg-python-scripts",
       "host": true
     },
-    "python3",
-    "freetype",
-    "qhull",
-    "pybind11",
-    "python-pyparsing",
-    "python-cycler",
-    "python-dateutil",
-    "python-kiwisolver",
-    "python-certifi",
-    "python-pillow"
-    ]
+    {
+      "name": "vcpkg-tool-meson",
+      "host": true
+    }
+  ]
 }

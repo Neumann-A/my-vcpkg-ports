@@ -5,12 +5,12 @@
   "homepage": "https://sympy.org/",
   "license": null,
   "dependencies": [
+    "python-mpmath",
     "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-mpmath"
+    }
   ]
 }

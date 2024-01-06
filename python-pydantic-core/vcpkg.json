@@ -5,16 +5,16 @@
   "homepage": "https://github.com/pydantic/pydantic-core",
   "license": "MIT",
   "dependencies": [
+    "python-maturin",
     "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
     },
-    "python3",
     {
       "name": "vcpkg-rust",
       "host": true
-    },
-    "python-maturin"
+    }
   ]
 }

@@ -5,18 +5,18 @@
   "homepage": "https://altair-viz.github.io/",
   "license": "BSD-3-Clause",
   "dependencies": [
-    "python-setuptools",
-    "python-hatchling",
     "numpy",
+    "python-hatchling",
     "python-jinja",
-    "python-pandas",
-    "python-typing-extensions",
     "python-jsonschema",
+    "python-pandas",
+    "python-setuptools",
+    "python-toolz",
+    "python-typing-extensions",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-toolz"
+    }
   ]
 }

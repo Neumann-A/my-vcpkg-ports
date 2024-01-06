@@ -5,19 +5,19 @@
   "homepage": "https://www.encode.io/httpcore/",
   "license": "BSD-3-Clause",
   "dependencies": [
-    "python-hatchling",
+    "python-h11",
     "python-hatch",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    },
-    "python-hatch-requirements-txt",
     "python-hatch-fancy-pypi-readme",
+    "python-hatch-requirements-txt",
+    "python-hatchling",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
     },
-    "python3",
-    "python-h11"
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
   ]
 }

@@ -5,13 +5,13 @@
   "homepage": "https://www.uvicorn.org/",
   "license": null,
   "dependencies": [
+    "python-maturin",
     "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
     },
-    "python3",
-    "vcpkg-rust",
-    "python-maturin"
+    "vcpkg-rust"
   ]
 }

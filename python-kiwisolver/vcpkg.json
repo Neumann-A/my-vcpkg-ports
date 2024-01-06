@@ -5,12 +5,12 @@
   "homepage": "https://kiwisolver.readthedocs.io/en/latest/",
   "license": null,
   "dependencies": [
+    "python-cppy",
     "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-cppy"
+    }
   ]
 }

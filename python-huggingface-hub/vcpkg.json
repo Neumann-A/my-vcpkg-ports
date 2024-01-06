@@ -5,20 +5,22 @@
   "homepage": "https://huggingface.co/docs/huggingface_hub",
   "license": "Apache-2.0",
   "dependencies": [
-    "python-setuptools",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    },
-    "python-packaging",
-    "python-requests",
-    "python-typing-extensions",
-    "python-pyyaml",
     {
       "name": "libtorch",
       "default-features": false,
-      "features": [ "python"]
+      "features": [
+        "python"
+      ]
     },
-    "python3"
+    "python-packaging",
+    "python-pyyaml",
+    "python-requests",
+    "python-setuptools",
+    "python-typing-extensions",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
   ]
 }

@@ -5,12 +5,12 @@
   "homepage": "https://github.com/explosion/murmurhash",
   "license": "MIT",
   "dependencies": [
+    "murmurhash",
     "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "murmurhash"
+    }
   ]
 }

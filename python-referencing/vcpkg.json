@@ -5,13 +5,13 @@
   "homepage": "https://referencing.readthedocs.io/",
   "license": "MIT",
   "dependencies": [
-    "python-setuptools",
     "python-hatchling",
+    "python-rpds-py",
+    "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-rpds-py"
+    }
   ]
 }

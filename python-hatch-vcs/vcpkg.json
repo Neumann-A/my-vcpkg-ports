@@ -5,13 +5,13 @@
   "homepage": "https://github.com/ofek/hatch-vcs",
   "license": "MIT",
   "dependencies": [
-    "python-setuptools",
     "python-hatchling",
+    "python-setuptools",
     "python-setuptools-scm",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3"
+    }
   ]
 }

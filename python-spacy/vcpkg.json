@@ -5,25 +5,25 @@
   "homepage": "https://spacy.io/",
   "license": "MIT",
   "dependencies": [
+    "numpy",
+    "python-catalogue",
+    "python-click",
+    "python-confection",
+    "python-cython",
+    "python-jinja",
+    "python-langcodes",
+    "python-packaging",
+    "python-pip",
+    "python-preshed",
     "python-setuptools",
+    "python-srsly",
+    "python-thinc",
+    "python-typer",
+    "python-weasel",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "numpy",
-    "python-packaging",
-    "python-cython",
-    "python-pip",
-    "python-preshed",
-    "python-thinc",
-    "python-confection",
-    "python-catalogue",
-    "python-srsly",
-    "python-langcodes",
-    "python-typer",
-    "python-click",
-    "python-weasel",
-    "python-jinja"
+    }
   ]
 }

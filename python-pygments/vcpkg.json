@@ -7,11 +7,11 @@
   "dependencies": [
     "python-packaging",
     "python-setuptools",
+    "python-typing-extensions",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python-typing-extensions",
-    "python3"
+    }
   ]
 }

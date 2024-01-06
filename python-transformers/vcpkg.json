@@ -5,32 +5,36 @@
   "homepage": "https://huggingface.co/transformers",
   "license": "Apache-2.0",
   "dependencies": [
-    "python-setuptools",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    },
-    "python3",
-    "numpy",
-    "python-huggingface-hub",
     {
       "name": "libtorch",
       "default-features": false,
-      "features": [ "python"]
+      "features": [
+        "python"
+      ]
     },
-    "python-urllib3",
-    "python-charset-normalizer",
-    "python-idna",
-    "python-certifi",
-    "python-tqdm",
-    "python-regex",
-    "python-safetensors",
-    "python-spacy",
-    "python-filelock",
+    "numpy",
     {
       "name": "onnx",
       "default-features": false,
-      "features": [ "python"]
+      "features": [
+        "python"
+      ]
+    },
+    "python-certifi",
+    "python-charset-normalizer",
+    "python-filelock",
+    "python-huggingface-hub",
+    "python-idna",
+    "python-regex",
+    "python-safetensors",
+    "python-setuptools",
+    "python-spacy",
+    "python-tqdm",
+    "python-urllib3",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
     }
-    ]
+  ]
 }

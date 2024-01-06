@@ -5,16 +5,16 @@
   "homepage": "https://github.com/PanQiWei/AutoGPTQ",
   "license": "MIT",
   "dependencies": [
+    "numpy",
+    "python-accelerate",
+    "python-datasets",
+    "python-peft",
     "python-setuptools",
+    "python-transformers",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3",
-    "python-accelerate",
-    "python-datasets",
-    "python-transformers",
-    "python-peft",
-    "numpy"
+    }
   ]
 }

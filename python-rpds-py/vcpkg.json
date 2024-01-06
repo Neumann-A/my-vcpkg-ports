@@ -5,13 +5,13 @@
   "homepage": "https://github.com/crate-py/rpds",
   "license": "MIT",
   "dependencies": [
+    "python-maturin",
     "python-setuptools",
+    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true
     },
-    "python3",
-    "python-maturin",
     "vcpkg-rust"
-    ]
+  ]
 }

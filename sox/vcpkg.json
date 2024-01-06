@@ -6,23 +6,23 @@
   "license": null,
   "dependencies": [
     {
+      "name": "alsa",
+      "platform": "linux"
+    },
+    "libflac",
+    "libmad",
+    "libogg",
+    "libpng",
+    "libsndfile",
+    "libsndfile",
+    "libvorbis",
+    "mp3lame",
+    "opusfile",
+    {
       "name": "vcpkg-cmake",
       "host": true
     },
-    "mp3lame",
-    "libpng",
-    "libflac",
-    "zlib",
-    "libogg",
-    "libvorbis",
-    "libmad",
-    "libsndfile",
     "wavpack",
-    "libsndfile",
-    "opusfile",
-    {
-      "name": "alsa",
-      "platform": "linux"
-    }
+    "zlib"
   ]
 }
