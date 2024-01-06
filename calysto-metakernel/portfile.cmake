@@ -7,8 +7,8 @@ vcpkg_from_github(
 )
 
 
-pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/metakernel_python")
-pypa_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/metakernel_echo")
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/metakernel_python")
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/metakernel_echo")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE.txt")
 

@@ -5,12 +5,12 @@
   "homepage": "https://github.com/Calysto/metakernel",
   "license": "BSD-3-Clause",
   "dependencies": [
-    "pypa-hatch",
-    "pypa-setuptools",
+    "python-hatch",
+    "python-setuptools",
+    "python3",
     {
-      "name": "python-pypa-scripts",
+      "name": "vcpkg-python-scripts",
       "host": true
-    },
-    "python3"
+    }
   ]
 }
