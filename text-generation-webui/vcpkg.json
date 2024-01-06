@@ -1,0 +1,31 @@
+{
+  "name": "text-generation-webui",
+  "version-date": "2023-12-32",
+  "description": "A Gradio web UI for Large Language Models. Supports transformers, GPTQ, AWQ, EXL2, llama.cpp (GGUF), Llama models.",
+  "homepage": "https://github.com/oobabooga/text-generation-webui",
+  "license": null,
+  "dependencies": [
+    "numpy",
+    "python-accelerate",
+    "python-datasets",
+    "python-einops",
+    "python-gradio",
+    "python-markdown",
+    "python-pandas",
+    "python-peft",
+    "python-pillow",
+    "python-pyyaml",
+    "python-requests",
+    "python-rich",
+    "python-safetensors",
+    "python-scipy",
+    "python-tqdm",
+    "python-transformers",
+    {
+      "name": "sentenciepice",
+      "features": [
+        "python"
+      ]
+    }
+  ]
+}
