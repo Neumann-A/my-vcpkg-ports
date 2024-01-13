@@ -18,7 +18,7 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
 if(VCPKG_TARGET_IS_OSX)
     list(APPEND FEATURE_OPTIONS -DWITH_MPS=ON)
 endif()
-
+set(VCPKG_CONCURRENCY 2)
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS

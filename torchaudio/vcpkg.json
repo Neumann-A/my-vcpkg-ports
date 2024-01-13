@@ -1,6 +1,6 @@
 {
   "name": "torchaudio",
-  "version": "2.1.0",
+  "version": "2.1.2",
   "description": "Data manipulation and transformation for audio signal processing, powered by PyTorch",
   "homepage": "https://pytorch.org/audio",
   "license": null,
