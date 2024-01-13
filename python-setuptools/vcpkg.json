@@ -5,6 +5,7 @@
   "homepage": " pypi.org/project/setuptools/",
   "license": "MIT",
   "dependencies": [
+    "python-packaging",
     "python-wheel",
     "python3",
     {

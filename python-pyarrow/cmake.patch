@@ -1,0 +1,99 @@
+diff --git a/python/CMakeLists.txt b/python/CMakeLists.txt
+index 0421bda..7508fc5 100644
+--- a/python/CMakeLists.txt
++++ b/python/CMakeLists.txt
+@@ -78,7 +78,7 @@ set(Python3_FIND_FRAMEWORK "LAST")
+ # Allow "make install" to not depend on all targets.
+ #
+ # Must be declared in the top-level CMakeLists.txt.
+-set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY true)
++#set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY true)
+ 
+ set(CMAKE_MACOSX_RPATH 1)
+ if(DEFINED ENV{MACOSX_DEPLOYMENT_TARGET})
+@@ -387,9 +387,9 @@ endif()
+ target_link_libraries(arrow_python PUBLIC ${PYARROW_CPP_LINK_LIBS} Python3::NumPy)
+ target_compile_definitions(arrow_python PRIVATE ARROW_PYTHON_EXPORTING)
+ install(TARGETS arrow_python
+-        ARCHIVE DESTINATION .
+-        LIBRARY DESTINATION .
+-        RUNTIME DESTINATION .)
++        ARCHIVE DESTINATION lib
++        LIBRARY DESTINATION lib
++        RUNTIME DESTINATION bin)
+ 
+ set(PYARROW_CPP_FLIGHT_SRCS ${PYARROW_CPP_SOURCE_DIR}/flight.cc)
+ if(PYARROW_BUILD_FLIGHT)
+@@ -411,9 +411,9 @@ if(PYARROW_BUILD_FLIGHT)
+                                                    ArrowFlight::arrow_flight_shared)
+   target_compile_definitions(arrow_python_flight PRIVATE ARROW_PYFLIGHT_EXPORTING)
+   install(TARGETS arrow_python_flight
+-          ARCHIVE DESTINATION .
+-          LIBRARY DESTINATION .
+-          RUNTIME DESTINATION .)
++          ARCHIVE DESTINATION lib
++          LIBRARY DESTINATION lib
++          RUNTIME DESTINATION bin)
+ endif()
+ 
+ if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+@@ -448,25 +448,25 @@ function(bundle_arrow_lib library_path)
+   # Only copy the shared library with ABI version on Linux and macOS
+ 
+   if(MSVC)
+-    install(FILES ${LIBRARY_PATH_REAL}
+-            DESTINATION "."
+-            RENAME ${LIBRARY_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
++    #install(FILES ${LIBRARY_PATH_REAL}
++    #        DESTINATION "."
++    #        RENAME ${LIBRARY_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
+   elseif(APPLE)
+-    install(FILES ${LIBRARY_PATH_REAL}
+-            DESTINATION "."
+-            RENAME ${LIBRARY_NAME}.${ARG_SO_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX})
++    #install(FILES ${LIBRARY_PATH_REAL}
++    #        DESTINATION "."
++    #        RENAME ${LIBRARY_NAME}.${ARG_SO_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX})
+   else()
+-    install(FILES ${LIBRARY_PATH_REAL}
+-            DESTINATION "."
+-            RENAME ${LIBRARY_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.${ARG_SO_VERSION})
++    #install(FILES ${LIBRARY_PATH_REAL}
++    #        DESTINATION "."
++    #        RENAME ${LIBRARY_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}.${ARG_SO_VERSION})
+   endif()
+ endfunction()
+ 
+ function(bundle_arrow_import_lib library_path)
+   get_filename_component(LIBRARY_NAME ${library_path} NAME_WE)
+-  install(FILES ${library_path}
+-          DESTINATION "."
+-          RENAME ${LIBRARY_NAME}.lib)
++  #install(FILES ${library_path}
++  #        DESTINATION "."
++  #        RENAME ${LIBRARY_NAME}.lib)
+ endfunction()
+ 
+ function(bundle_arrow_dependency library_name)
+@@ -509,9 +509,9 @@ function(bundle_arrow_dependency library_name)
+     get_filename_component(SHARED_LIB_NAME ${SHARED_LIB_PATH} NAME)
+     message(STATUS "Bundle dependency ${library_name}: ${SHARED_LIB_REALPATH} as ${SHARED_LIB_NAME}"
+     )
+-    install(FILES ${SHARED_LIB_REALPATH}
+-            DESTINATION "."
+-            RENAME ${SHARED_LIB_NAME})
++    #install(FILES ${SHARED_LIB_REALPATH}
++    #        DESTINATION "."
++    #        RENAME ${SHARED_LIB_NAME})
+   else()
+     message(FATAL_ERROR "Unable to bundle dependency: ${library_name}")
+   endif()
+@@ -753,7 +753,7 @@ foreach(module ${CYTHON_EXTENSIONS})
+ 
+   target_link_libraries(${module_name} PRIVATE ${LINK_LIBS})
+ 
+-  install(TARGETS ${module_name} LIBRARY DESTINATION ".")
++  install(TARGETS ${module_name} LIBRARY DESTINATION "lib")
+   foreach(output ${${module_name}_output})
+     if(output MATCHES "\\.${CYTHON_CXX_EXTENSION}$")
+       if(NOT PYARROW_BUNDLE_CYTHON_CPP)

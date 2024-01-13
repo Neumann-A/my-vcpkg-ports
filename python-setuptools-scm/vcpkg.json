@@ -7,10 +7,9 @@
   "dependencies": [
     "python-importlib-metadata",
     "python-packaging",
-    "python-packaging-wheel",
     "python-pygments",
     "python-setuptools",
-    "python-tomli-wheel",
+    "python-tomli",
     "python-typing-extensions",
     "python3",
     "vcpkg-get-python-packages",

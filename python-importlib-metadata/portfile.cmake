@@ -6,6 +6,9 @@ vcpkg_from_github(
     HEAD_REF main
 )
 
-file(COPY "${SOURCE_PATH}/importlib_metadata" DESTINATION "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}")
+# -x to avoid setuptools_scm cycle. 
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
+
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)

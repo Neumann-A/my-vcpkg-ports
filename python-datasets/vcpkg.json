@@ -1,6 +1,6 @@
 {
   "name": "python-datasets",
-  "version": "2.14.6",
+  "version": "2.16.1",
   "description": "The largest hub of ready-to-use datasets for ML models with fast, easy-to-use and efficient data manipulation tools",
   "homepage": "https://huggingface.co/docs/huggingface_hub",
   "license": "Apache-2.0",
@@ -11,9 +11,12 @@
     "python-packaging",
     "python-pandas",
     "python-pillow",
+    "python-pyarrow",
+    "python-pyarrow-hotfix",
     "python-pyyaml",
     "python-requests",
     "python-setuptools",
+    "python-xxhash",
     "python3",
     {
       "name": "vcpkg-python-scripts",

@@ -6,6 +6,7 @@
   "license": "MIT",
   "dependencies": [
     "python-attrs",
+    "python-hatch-fancy-pypi-readme",
     "python-hatchling",
     "python-setuptools",
     "python3",

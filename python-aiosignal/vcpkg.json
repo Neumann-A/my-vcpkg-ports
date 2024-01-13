@@ -5,6 +5,7 @@
   "homepage": "https://aiosignal.readthedocs.io/",
   "license": null,
   "dependencies": [
+    "python-frozenlist",
     "python-setuptools",
     "python3",
     {

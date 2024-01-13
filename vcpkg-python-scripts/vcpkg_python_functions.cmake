@@ -44,7 +44,7 @@ function(vcpkg_python_install_wheel)
 
   set(install_prefix "${CURRENT_INSTALLED_DIR}")
   if(VCPKG_TARGET_IS_WINDOWS)
-    string(APPEND install_prefix"/tools/python3")
+    string(APPEND install_prefix "/tools/python3")
   endif()
 
   message(STATUS "Installing python wheel:'${arg_WHEEL}'")

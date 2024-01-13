@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO huggingface/huggingface_hub
     REF v${VERSION}
-    SHA512 827932c36e6af7faba12fb6efad1586a37e4de6bfcf5c47c7ff5634e7d90fbe574eaac2657254e79dc3c743d6fd9d92f62559ec2ada9918e4358c6117710ba5d
+    SHA512 50fe8ed10f31912481353202158b9ff245a33656c69accbc9a46d5953b5b76cf20ccdfa3c2ca89a6ebad54a5513f52fc7d75381a0f55187d174161d2e0a03707
     HEAD_REF master
 )
 

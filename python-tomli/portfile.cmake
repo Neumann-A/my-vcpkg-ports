@@ -6,7 +6,8 @@ vcpkg_from_github(
     HEAD_REF main
 )
 
-file(COPY "${SOURCE_PATH}/src/tomli" DESTINATION "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}")
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
+#file(COPY "${SOURCE_PATH}/src/tomli" DESTINATION "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 

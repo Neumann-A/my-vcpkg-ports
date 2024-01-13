@@ -6,11 +6,13 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO huggingface/safetensors
     REF v${VERSION}
-    SHA512 da38f184f2c0730a59b1d4ca490758b71cb5ed3e1e16741bbf4b7bfac35fa1a4f24e5acbc35f3b38f10e4c46d81554896fbd95accfd671ee066c9fcbd50551ab
+    SHA512 f2170184050cb040444f8357f5a49c4c574a56de8f67ab4cc3cde6dee844ea953a146106202800dbc655523996674fdfb80676a7de240356c56ecc849197f747
     HEAD_REF master
 )
 
 set(ENV{LINK} "$ENV{LINK} /LIBPATH:${CURRENT_INSTALLED_DIR}/lib")
+
+file(COPY "${SOURCE_PATH}/README.md" DESTINATION "${SOURCE_PATH}/safetensors" ) # Error in the build scripts ?
 
 vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/bindings/python")
 

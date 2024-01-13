@@ -1,6 +1,6 @@
 {
   "name": "python-huggingface-hub",
-  "version": "0.18.0",
+  "version": "0.20.2",
   "description": "All the open source things related to the Hugging Face Hub",
   "homepage": "https://huggingface.co/docs/huggingface_hub",
   "license": "Apache-2.0",

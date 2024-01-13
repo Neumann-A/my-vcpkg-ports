@@ -2,12 +2,13 @@ vcpkg_download_distfile(
     ARCHIVE_PATH
     URLS "https://archive.apache.org/dist/arrow/arrow-${VERSION}/apache-arrow-${VERSION}.tar.gz"
     FILENAME apache-arrow-${VERSION}.tar.gz
-    SHA512 9e1f8179e37279a47baa3587c66d8b385362478d998601b5f0a8bb2f360ec8cdb954705f397dac413ac1411e72d4dd740e3785823cc063ca35eb80585d2eedf2
-    PATCHES fix-build.patch
+    SHA512 dd6cf6cbb817a48ef5275bb409367e5904526a3c16a17a37ea75101085ea19a71ba6bf936a6f099012e7c528811db1728ef2f14dcb16a1056a22088839280ce0
 )
 vcpkg_extract_source_archive(
     SOURCE_PATH
     ARCHIVE ${ARCHIVE_PATH}
+    PATCHES 
+      fix-build.patch
 )
 
 vcpkg_cmake_configure(
@@ -32,13 +33,18 @@ file(REMOVE_RECURSE ${includes}
 
 vcpkg_replace_string("${SOURCE_PATH}/python/setup.py" "self._run_cmake()" "")
 
-vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/python" OPTIONS -x -Cbdist_dir=${CURRENT_BUILDTREES_DIR}/build -C--build-dir=${CURRENT_BUILDTREES_DIR}/build)
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/python" OPTIONS -x 
+  -Cbdist_dir=${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel 
+  -C--build-dir=${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel
+)
 
 #file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/")
 #file(INSTALL "${SOURCE_PATH}/python/pyarrow/" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pyarrow")
 
 file(GLOB_RECURSE pyds "${CURRENT_PACKAGES_DIR}/lib/*.pyd")
 file(COPY ${pyds} DESTINATION "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/pyarrow")
+
+file(REMOVE ${pyds})
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE.txt")
 

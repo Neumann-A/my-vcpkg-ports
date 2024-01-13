@@ -1,7 +1,7 @@
-diff --git a/ python/CMakeLists.txt b/ python/CMakeLists.txt
+diff --git a/python/CMakeLists.txt b/python/CMakeLists.txt
 index 0421bda81e..c09a14f947 100644
---- a/ python/CMakeLists.txt
-+++ b/ python/CMakeLists.txt
+--- a/python/CMakeLists.txt
++++ b/python/CMakeLists.txt
 @@ -78,7 +78,7 @@ set(Python3_FIND_FRAMEWORK "LAST")
  # Allow "make install" to not depend on all targets.
  #

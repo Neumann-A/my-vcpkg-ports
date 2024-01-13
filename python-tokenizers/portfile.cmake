@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO huggingface/tokenizers
     REF v${VERSION}
-    SHA512 b584a93aa7b07eeea6e871eb7f90f0a1965175ef2eb3dd5ba422c82dc57f5c551f5fee882e3387a8df32baf1bfa17bab7516cefb105821c3e53de867dcd7ff84
+    SHA512 2d355e67059a245613229965f9b0d65f6f149c552a5917ade142f150bc242da1425a025f72bc664dd17793a20fd5a6b880b43bfd3fc7fdc7db52ff9f54d1016c
     HEAD_REF main
 )
 

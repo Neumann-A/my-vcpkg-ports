@@ -5,6 +5,7 @@
   "homepage": "https://scikit-build-core.readthedocs.io/",
   "license": "Apache-2.0",
   "dependencies": [
+    "python-hatch-vcs",
     "python-hatchling",
     "python-setuptools",
     "python3",

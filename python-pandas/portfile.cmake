@@ -35,7 +35,8 @@ file(REMOVE_RECURSE
     "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pandas/tests/reshape/data"
     "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pandas/tests/reshape/merge/data"
     "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pandas/tests/tseries/offsets/data"
-    "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pandas/tests/io/formats/data/html")
+    "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pandas/tests/io/formats/data/html"
+    "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pandas/tests/io/formats/data"
 )
 
 file(WRITE "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/pandas-${VERSION}.dist-info/METADATA"

@@ -6,7 +6,12 @@
   "license": null,
   "dependencies": [
     "freetype",
-    "pybind11",
+    {
+      "name": "pybind11",
+      "features": [
+        "scripts"
+      ]
+    },
     "python-certifi",
     "python-cycler",
     "python-dateutil",

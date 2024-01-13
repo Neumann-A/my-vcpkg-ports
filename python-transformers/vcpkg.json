@@ -1,6 +1,6 @@
 {
   "name": "python-transformers",
-  "version": "4.35.0",
+  "version": "4.36.2",
   "description": "Transformers: State-of-the-art Machine Learning for Pytorch, TensorFlow, and JAX.",
   "homepage": "https://huggingface.co/transformers",
   "license": "Apache-2.0",
@@ -29,6 +29,7 @@
     "python-safetensors",
     "python-setuptools",
     "python-spacy",
+    "python-tokenizers",
     "python-tqdm",
     "python-urllib3",
     "python3",

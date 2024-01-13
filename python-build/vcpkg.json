@@ -5,9 +5,7 @@
   "homepage": "python-build.readthedocs.io/en/stable/",
   "license": "MIT",
   "dependencies": [
-    "python-packaging",
     "python-pyproject-hooks",
-    "python-tomli",
     "python3"
   ]
 }
