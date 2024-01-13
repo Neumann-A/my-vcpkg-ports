@@ -1,1 +1,2 @@
 ./vcpkg.exe x-add-version --all --overlay-ports=../my-vcpkg-ports/ --x-builtin-registry-versions-dir=../my-vcpkg-ports/versions/ --x-builtin-ports-root=../my-vcpkg-ports/
+./vcpkg.exe format-manifest --all --overlay-ports=../my-vcpkg-ports/ --x-builtin-ports-root=../my-vcpkg-ports/
