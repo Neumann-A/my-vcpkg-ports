@@ -254,4 +254,8 @@ file(REMOVE_RECURSE
     "${CURRENT_PACKAGES_DIR}/lib/intel64/pkgconfig"
 )
 
+if(interfache STREQUAL "ilp64")
+  vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/mkl.h" "#define _MKL_H_" "#define _MKL_H_\n#define MKL_ILP64")
+endif()
+
 file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/usage" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
