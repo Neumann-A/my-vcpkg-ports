@@ -1,0 +1,35 @@
+diff --git a/c++/src/wrap/orc-proto-wrapper.cc b/c++/src/wrap/orc-proto-wrapper.cc
+index 2c9c927..3fdc85b 100644
+--- a/c++/src/wrap/orc-proto-wrapper.cc
++++ b/c++/src/wrap/orc-proto-wrapper.cc
+@@ -42,7 +42,7 @@ DIAGNOSTIC_IGNORE("-Wweak-vtables")
+ DIAGNOSTIC_IGNORE("-Wzero-as-null-pointer-constant")
+ #endif
+ 
+-#if defined(_MSC_VER)
++#if defined(_MSC_VER) && !defined(__clang__)
+ DIAGNOSTIC_IGNORE(4146)  // unary minus operator applied to unsigned type, result still unsigned
+ DIAGNOSTIC_IGNORE(4800)  // forcing value to bool 'true' or 'false'
+ #endif
+diff --git a/c++/src/wrap/orc-proto-wrapper.hh b/c++/src/wrap/orc-proto-wrapper.hh
+index 014c7d6..238596f 100644
+--- a/c++/src/wrap/orc-proto-wrapper.hh
++++ b/c++/src/wrap/orc-proto-wrapper.hh
+@@ -31,7 +31,7 @@ DIAGNOSTIC_IGNORE("-Wsign-conversion")
+ DIAGNOSTIC_IGNORE("-Wunused-parameter")
+ #endif
+ 
+-#ifdef __clang__
++#if defined(__clang__)
+ DIAGNOSTIC_IGNORE("-Wnested-anon-types")
+ DIAGNOSTIC_IGNORE("-Wreserved-id-macro")
+ DIAGNOSTIC_IGNORE("-Wshorten-64-to-32")
+@@ -40,7 +40,7 @@ DIAGNOSTIC_IGNORE("-Wweak-vtables")
+ DIAGNOSTIC_IGNORE("-Wzero-as-null-pointer-constant")
+ #endif
+ 
+-#if defined(_MSC_VER)
++#if defined(_MSC_VER) && !defined(__clang__)
+ DIAGNOSTIC_IGNORE(4146)  // unary minus operator applied to unsigned type, result still unsigned
+ DIAGNOSTIC_IGNORE(4800)  // forcing value to bool 'true' or 'false'
+ #endif
