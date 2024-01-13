@@ -18,6 +18,7 @@
     "libvorbis",
     "mp3lame",
     "opusfile",
+    "speexdsp",
     {
       "name": "vcpkg-cmake",
       "host": true
