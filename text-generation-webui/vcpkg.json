@@ -5,25 +5,46 @@
   "homepage": "https://github.com/oobabooga/text-generation-webui",
   "license": null,
   "dependencies": [
+    "llama-cpp",
     "numpy",
     "python-accelerate",
+    "python-autogptq",
     "python-datasets",
     "python-einops",
     "python-gradio",
+    "python-gradio-client",
     "python-markdown",
+    "python-matplotlib",
     "python-pandas",
     "python-peft",
     "python-pillow",
+    "python-psutil",
     "python-pyyaml",
     "python-requests",
     "python-rich",
     "python-safetensors",
     "python-scipy",
+    "python-tokenizers",
+    "python-torch-grammar",
     "python-tqdm",
     "python-transformers",
     {
-      "name": "sentenciepice",
+      "name": "sentencepiece",
       "features": [
+        "python"
+      ]
+    },
+    {
+      "name": "torchaudio",
+      "features": [
+        "cuda",
+        "extension"
+      ]
+    },
+    {
+      "name": "torchvision",
+      "features": [
+        "cuda",
         "python"
       ]
     }
