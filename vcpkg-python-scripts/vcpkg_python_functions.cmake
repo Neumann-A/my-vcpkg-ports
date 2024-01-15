@@ -95,3 +95,21 @@ function(vcpkg_python_build_and_install_wheel)
   vcpkg_python_build_wheel(${opts} SOURCE_PATH "${arg_SOURCE_PATH}" OUTPUT_WHEEL WHEEL OPTIONS ${arg_OPTIONS})
   vcpkg_python_install_wheel(WHEEL "${WHEEL}")
 endfunction()
+
+function(vcpkg_python_test_import)
+    cmake_parse_arguments(
+        PARSE_ARGV 0
+        "arg"
+        ""
+        "MODULE"
+        ""
+    )
+
+  message(STATUS "Testing package!")
+  set(ENV{PYTHONPATH} "${CURRENT_PACKAGES_DIR}/lib/python${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}/site-packages")
+  vcpkg_execute_required_process(COMMAND "${PYTHON3}" -c "from ${arg_MODULE} import *"
+    LOGNAME "python-test-import-${TARGET_TRIPLET}"
+    WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}"
+  )
+  message(STATUS "Finished testing package!")
+endfunction()
