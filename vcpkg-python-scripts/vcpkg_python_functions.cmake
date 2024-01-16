@@ -106,7 +106,7 @@ function(vcpkg_python_test_import)
     )
 
   message(STATUS "Testing package!")
-  set(ENV{PYTHONPATH} "${CURRENT_PACKAGES_DIR}/lib/python${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}/site-packages")
+  set(ENV{PYTHONPATH} "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}")
   vcpkg_execute_required_process(COMMAND "${PYTHON3}" -c "from ${arg_MODULE} import *"
     LOGNAME "python-test-import-${TARGET_TRIPLET}"
     WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}"
