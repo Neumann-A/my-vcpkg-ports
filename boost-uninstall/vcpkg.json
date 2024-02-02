@@ -4,5 +4,11 @@
   "version": "1.83.0",
   "port-version": 1,
   "description": "Internal vcpkg port used to uninstall Boost",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake-get-vars",
+      "host": true
+    }
+]
 }

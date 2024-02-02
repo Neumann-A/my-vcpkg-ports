@@ -3,6 +3,22 @@ set(VCPKG_POLICY_EMPTY_PACKAGE enabled)
 message(STATUS "\nPlease use the following command when you need to remove all boost ports/components:\n\
     \"./vcpkg remove boost-uninstall:${TARGET_TRIPLET} --recurse\"\n")
 
+vcpkg_cmake_get_vars(cmake_vars_file)
+include("${cmake_vars_file}")
+
+set(BOOST_COMPILER "")
+if(VCPKG_DETECTED_CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  if(VCPKG_PLATFORM_TOOLSET MATCHES "v(14.)")
+      set(BOOST_COMPILER -vc${CMAKE_MATCH_1})
+      set(BOOST_COMPILER -vc${CMAKE_MATCH_1})
+  elseif(VCPKG_PLATFORM_TOOLSET MATCHES "v120")
+      set(BOOST_COMPILER -vc120)
+  endif()
+elseif(VCPKG_DETECTED_CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND VCPKG_DETECTED_CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")
+    string(REGEX MATCH "[^\\\.]+" clang_major_ver "${VCPKG_DETECTED_CMAKE_CXX_COMPILER_VERSION}")
+    set(BOOST_COMPILER -clangw${clang_major_ver})
+endif()
+
 vcpkg_download_distfile(
     FILE_PATH
     URLS https://gitlab.kitware.com/cmake/cmake/-/raw/v3.24.3/Modules/FindBoost.cmake
