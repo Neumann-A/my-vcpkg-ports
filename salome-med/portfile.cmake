@@ -1,7 +1,7 @@
 vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
     URL "https://git.salome-platform.org/gitpub/modules/med.git"
-    REF "d0a1739f565d2e6cb47002ea650094895f4bbfd4"
+    REF "443eae5d5205dcc14e5ec78a97bfcac5d7858a6f"
     PATCHES
 )
 

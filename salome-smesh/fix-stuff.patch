@@ -1,0 +1,72 @@
+diff --git a/src/DriverDAT/DriverDAT_R_SMDS_Mesh.cxx b/src/DriverDAT/DriverDAT_R_SMDS_Mesh.cxx
+index c0cc72a85..6ac55b859 100644
+--- a/src/DriverDAT/DriverDAT_R_SMDS_Mesh.cxx
++++ b/src/DriverDAT/DriverDAT_R_SMDS_Mesh.cxx
+@@ -21,6 +21,9 @@
+ //
+ 
+ #include <stdio.h>
++#include <locale>
++#include <codecvt>
++
+ 
+ #include "DriverDAT_R_SMDS_Mesh.h"
+ #include "SMDS_Mesh.hxx"
+@@ -51,8 +54,12 @@ Driver_Mesh::Status DriverDAT_R_SMDS_Mesh::Perform()
+    *                      OUVERTURE DU FICHIER EN LECTURE                      *
+    ****************************************************************************/
+ #if defined(WIN32) && defined(UNICODE)
+-  std::wstring file2Read = Kernel_Utils::utf8_decode_s(myFile);
+-  FILE* aFileId = _wfopen(file2Read.c_str(), L"r");
++  std::wstring file2Readw = Kernel_Utils::utf8_decode_s(myFile);
++  FILE* aFileId = _wfopen(file2Readw.c_str(), L"r");
++  using convert_type = std::codecvt_utf8<wchar_t>;
++  std::wstring_convert<convert_type, wchar_t> converter;
++  std::string file2Reads = converter.to_bytes( file2Readw );
++  char *file2Read = (char *)file2Reads.c_str();
+ #else
+   char *file2Read = (char *)myFile.c_str();
+   FILE* aFileId = fopen(file2Read, "r");
+diff --git a/src/DriverDAT/DriverDAT_W_SMDS_Mesh.cxx b/src/DriverDAT/DriverDAT_W_SMDS_Mesh.cxx
+index 119f8f9a0..54de31fd5 100644
+--- a/src/DriverDAT/DriverDAT_W_SMDS_Mesh.cxx
++++ b/src/DriverDAT/DriverDAT_W_SMDS_Mesh.cxx
+@@ -21,7 +21,8 @@
+ //
+ 
+ #include <stdio.h>
+-
++#include <locale>
++#include <codecvt>
+ #include "DriverDAT_W_SMDS_Mesh.h"
+ 
+ #include "SMDS_Mesh.hxx"
+@@ -47,9 +48,12 @@ Driver_Mesh::Status DriverDAT_W_SMDS_Mesh::Perform()
+ 
+   smIdType nbNodes, nbCells;
+ #if defined(WIN32) && defined(UNICODE)
+-  std::wstring file2Read = Kernel_Utils::utf8_decode_s(myFile);
+-  FILE* aFileId = _wfopen(file2Read.c_str(), L"w+");
+-
++  std::wstring file2Readw = Kernel_Utils::utf8_decode_s(myFile);
++  FILE* aFileId = _wfopen(file2Readw.c_str(), L"w+");
++  using convert_type = std::codecvt_utf8<wchar_t>;
++  std::wstring_convert<convert_type, wchar_t> converter;
++  std::string file2Reads = converter.to_bytes( file2Readw );
++  char *file2Read = (char *)file2Reads.c_str();
+ #else
+   char *file2Read = (char *)myFile.c_str();
+   FILE* aFileId = fopen(file2Read, "w+");
+diff --git a/src/SMESHUtils/SMESH_File.cxx b/src/SMESHUtils/SMESH_File.cxx
+index 9e3d75263..c161cb98f 100644
+--- a/src/SMESHUtils/SMESH_File.cxx
++++ b/src/SMESHUtils/SMESH_File.cxx
+@@ -149,7 +149,7 @@ void SMESH_File::close()
+     _pos = _end = 0;
+     _size = -1;
+   }
+-  else if ( _file >= 0 )
++  else if ( _file != 0 )
+   {
+ #ifdef WIN32
+     if(_file != INVALID_HANDLE_VALUE) {

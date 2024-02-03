@@ -1,8 +1,8 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO NGSolve/netgen
-    REF 3e52c44aebe468275372589bf4fb3a140c4f4da5
-    SHA512 01815293ce145850b31dcde438fb6f0bb10bc51eb372f1a8ad73be33011a520d2066d7bd73b0aae390bb199d9b01d4f8d4a353c2dfe18f4bd3ee9a11ca649441
+    REF v${VERSION}
+    SHA512 647ccc0f1990918330457c2d014f243791e7dae8f9ec91880dbab714fa9b2e9b030387958fe74e94a9b4988c3d185c251c5c47764d587826d6d56277658b57d9
     HEAD_REF master
     PATCHES 
       git-ver.patch
@@ -12,6 +12,8 @@ vcpkg_from_github(
       cgns-scoped-enum.patch
       downstream-fixes.patch
       add_filesystem.patch
+      occ-78.patch
+      fix_m_pi.patch
 )
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
@@ -25,6 +27,7 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
 endif()
 
 vcpkg_cmake_configure(
+    DISABLE_PARALLEL_CONFIGURE
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS  ${OPTIONS}
       -DUSE_PYTHON=OFF
@@ -40,11 +43,17 @@ vcpkg_cmake_configure(
       -DUSE_MPI=OFF
       -DUSE_SUPERBUILD=OFF
       -DNETGEN_VERSION_GIT=v${VERSION} # this variable is patched in via git-ver.patch
+      -DNG_INSTALL_DIR_CMAKE=lib/cmake/netgen
+      -DNG_INSTALL_DIR_BIN=bin
+      -DNG_INSTALL_DIR_LIB=lib
+      -DNG_INSTALL_DIR_RES=share
+      -DNG_INSTALL_DIR_INCLUDE=include
+      -DSKBUILD=ON
 )
 
 vcpkg_cmake_install()
 
-vcpkg_cmake_config_fixup(CONFIG_PATH cmake)
+vcpkg_cmake_config_fixup(CONFIG_PATH lib/cmake/netgen)
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")

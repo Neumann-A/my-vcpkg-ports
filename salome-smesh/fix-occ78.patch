@@ -1,0 +1,266 @@
+diff --git a/src/DriverSTL/DriverSTL_R_SMDS_Mesh.cxx b/src/DriverSTL/DriverSTL_R_SMDS_Mesh.cxx
+index a401971028..8b47c34810 100644
+--- a/src/DriverSTL/DriverSTL_R_SMDS_Mesh.cxx
++++ b/src/DriverSTL/DriverSTL_R_SMDS_Mesh.cxx
+@@ -52,7 +52,19 @@ namespace
+ 
+       point.Coord( U.R[0], U.R[1], U.R[2] );
+ 
+-      return ::HashCode(U.I[0]/23+U.I[1]/19+U.I[2]/17+U.I[3]/13+U.I[4]/11+U.I[5]/7,Upper);
++      return std::hash<Standard_Integer>{}(U.I[0]/23+U.I[1]/19+U.I[2]/17+U.I[3]/13+U.I[4]/11+U.I[5]/7);
++    }
++    inline Standard_Integer operator()(const gp_Pnt& point) const
++    {
++      union
++      {
++        Standard_Real    R[3];
++        Standard_Integer I[6];
++      } U;
++
++      point.Coord( U.R[0], U.R[1], U.R[2] );
++
++      return std::hash<Standard_Integer>{}(U.I[0]/23+U.I[1]/19+U.I[2]/17+U.I[3]/13+U.I[4]/11+U.I[5]/7);
+     }
+     //=======================================================================
+     //function : IsEqual
+@@ -66,6 +78,14 @@ namespace
+       point2.Coord(tab2[0],tab2[1],tab2[2]);
+       return (memcmp(tab1,tab2,sizeof(tab1)) == 0);
+     }
++    inline Standard_Boolean operator()
++    (const gp_Pnt& point1, const gp_Pnt& point2) const
++    {
++      static Standard_Real tab1[3], tab2[3];
++      point1.Coord(tab1[0],tab1[1],tab1[2]);
++      point2.Coord(tab2[0],tab2[1],tab2[2]);
++      return (memcmp(tab1,tab2,sizeof(tab1)) == 0);
++    }
+   };
+   typedef NCollection_DataMap<gp_Pnt,SMDS_MeshNode*,Hasher> TDataMapOfPntNodePtr;
+ 
+diff --git a/src/MEDWrapper/MED_Factory.cxx b/src/MEDWrapper/MED_Factory.cxx
+index 9baac5aa08..957db5ada0 100644
+--- a/src/MEDWrapper/MED_Factory.cxx
++++ b/src/MEDWrapper/MED_Factory.cxx
+@@ -83,7 +83,7 @@ namespace MED
+ #endif
+     bool res = (GetFileAttributes(path) != INVALID_FILE_ATTRIBUTES);
+ #ifdef UNICODE
+-    delete path;
++    delete[] path;
+ #endif
+     return res;
+ #else
+diff --git a/src/SMESH/CMakeLists.txt b/src/SMESH/CMakeLists.txt
+index 540389b0c6..0e6fc6c755 100644
+--- a/src/SMESH/CMakeLists.txt
++++ b/src/SMESH/CMakeLists.txt
+@@ -70,7 +70,7 @@ SET(_link_LIBRARIES
+   MeshDriverGMF
+   ${DriverCGNS_LIB}
+   ${MEDCoupling_medloader}
+-  Qt5::Core
++  Qt6::Core
+ )
+ 
+ # --- headers ---
+diff --git a/src/SMESH/SMESH_MeshEditor.cxx b/src/SMESH/SMESH_MeshEditor.cxx
+index a0db1ec7aa..58c002682a 100644
+--- a/src/SMESH/SMESH_MeshEditor.cxx
++++ b/src/SMESH/SMESH_MeshEditor.cxx
+@@ -7798,7 +7798,7 @@ class ComparableElement : public boost::container::flat_set< smIdType >
+   mutable int             myGroupID;
+ 
+ public:
+-
++  ComparableElement(){};
+   ComparableElement( const SMDS_MeshElement* theElem ):
+     myElem ( theElem ), mySumID( 0 ), myGroupID( -1 )
+   {
+@@ -7828,13 +7828,20 @@ public:
+ 
+   static int HashCode(const ComparableElement& se, int limit )
+   {
+-    return ::HashCode( FromSmIdType<int>(se.mySumID), limit );
++    return std::hash<int>{}(se.mySumID);
++  }
++  int operator()(const ComparableElement& se) const
++  {
++    return std::hash<int>{}(se.mySumID);
+   }
+   static Standard_Boolean IsEqual(const ComparableElement& se1, const ComparableElement& se2 )
+   {
+     return ( se1 == se2 );
+   }
+-
++  Standard_Boolean operator()(const ComparableElement& se1, const ComparableElement& se2 ) const
++  {
++    return ( se1 == se2 );
++  }
+ };
+ 
+ //=======================================================================
+diff --git a/src/SMESHDS/SMESHDS_DataMapOfShape.hxx b/src/SMESHDS/SMESHDS_DataMapOfShape.hxx
+index ac82e79ad6..95a1d72748 100644
+--- a/src/SMESHDS/SMESHDS_DataMapOfShape.hxx
++++ b/src/SMESHDS/SMESHDS_DataMapOfShape.hxx
+@@ -39,10 +39,19 @@ struct SMESHDS_Hasher
+   {
+     return S1.IsSame(S2);
+   }
++  inline Standard_Boolean operator()(const TopoDS_Shape& S1,
++                                     const TopoDS_Shape& S2) const
++  {
++    return S1.IsSame(S2);
++  }
+   static inline Standard_Integer HashCode(const TopoDS_Shape& S,
+                                           const Standard_Integer Upper)
+   {
+-    return ::HashCode( S, Upper);
++    return std::hash<TopoDS_Shape>{}(S);
++  }
++  inline Standard_Integer operator()(const TopoDS_Shape& S) const
++  {
++    return std::hash<TopoDS_Shape>{}(S);
+   }
+ };
+ 
+diff --git a/src/SMESHUtils/SMESH_Offset.cxx b/src/SMESHUtils/SMESH_Offset.cxx
+index ee14065d0b..fe167b1276 100644
+--- a/src/SMESHUtils/SMESH_Offset.cxx
++++ b/src/SMESHUtils/SMESH_Offset.cxx
+@@ -82,7 +82,10 @@ namespace
+       Standard_Integer n = ( link.myNode[0]->GetID() +
+                              link.myNode[1]->GetID() +
+                              link.myIndex );
+-      return ::HashCode( n, upper );
++      return std::hash<Standard_Integer>{}(n);
++    }
++    Standard_Integer operator()(const CutLink&         link) const {
++      return HashCode(link,0);
+     }
+     static Standard_Boolean IsEqual(const CutLink& link1, const CutLink& link2 )
+     {
+@@ -90,6 +93,12 @@ namespace
+                link1.myNode[1] == link2.myNode[1] &&
+                link1.myIndex == link2.myIndex );
+     }
++    Standard_Boolean operator()(const CutLink& link1, const CutLink& link2 ) const
++    {
++      return ( link1.myNode[0] == link2.myNode[0] &&
++               link1.myNode[1] == link2.myNode[1] &&
++               link1.myIndex == link2.myIndex );
++    }
+   };
+ 
+   typedef NCollection_Map< CutLink, CutLink > TCutLinkMap;
+@@ -254,7 +263,7 @@ namespace
+   {
+     mutable std::vector< EdgePart > myLinks;
+     const SMDS_MeshElement*         myInitFace;
+-
++    CutFace() {};
+     CutFace( const SMDS_MeshElement* face ): myInitFace( face ) {}
+     void AddEdge( const CutLink&          p1,
+                   const CutLink&          p2,
+@@ -277,12 +286,20 @@ namespace
+ 
+     static Standard_Integer HashCode(const CutFace& f, const Standard_Integer upper)
+     {
+-      return ::HashCode( FromSmIdType<int>(f.myInitFace->GetID()), upper );
++      return std::hash<int>{}(FromSmIdType<int>(f.myInitFace->GetID()));
++    }
++    Standard_Integer operator()(const CutFace& f) const
++    {
++      return std::hash<int>{}(FromSmIdType<int>(f.myInitFace->GetID()));
+     }
+     static Standard_Boolean IsEqual(const CutFace& f1, const CutFace& f2 )
+     {
+       return f1.myInitFace == f2.myInitFace;
+     }
++    Standard_Boolean operator()(const CutFace& f1, const CutFace& f2 ) const
++    {
++      return f1.myInitFace == f2.myInitFace;
++    }
+     void Dump() const;
+ 
+   private:
+diff --git a/src/SMESHUtils/SMESH_TypeDefs.hxx b/src/SMESHUtils/SMESH_TypeDefs.hxx
+index 8b89a12058..fd29893a35 100644
+--- a/src/SMESHUtils/SMESH_TypeDefs.hxx
++++ b/src/SMESHUtils/SMESH_TypeDefs.hxx
+@@ -148,6 +148,7 @@ namespace SMESHUtils
+ 
+ struct SMESH_TLink: public NLink
+ {
++  SMESH_TLink() {};
+   SMESH_TLink(const SMDS_MeshNode* n1, const SMDS_MeshNode* n2 ):NLink( n1, n2 )
+   { if ( n1->GetID() < n2->GetID() ) std::swap( first, second ); }
+   SMESH_TLink(const NLink& link ):NLink( link )
+@@ -160,10 +161,18 @@ struct SMESH_TLink: public NLink
+   {
+     return smIdHasher::HashCode( link.node1()->GetID() + link.node2()->GetID(), aLimit );
+   }
++  int operator()(const SMESH_TLink& link) const
++  {
++    return smIdHasher::HashCode( link.node1()->GetID() + link.node2()->GetID(), (std::numeric_limits<int>::max)() );
++  }
+   static Standard_Boolean IsEqual(const SMESH_TLink& l1, const SMESH_TLink& l2)
+   {
+     return ( l1.node1() == l2.node1() && l1.node2() == l2.node2() );
+   }
++  Standard_Boolean operator()(const SMESH_TLink& l1, const SMESH_TLink& l2) const
++  {
++    return ( l1.node1() == l2.node1() && l1.node2() == l2.node2() );
++  }
+ };
+ typedef SMESH_TLink SMESH_Link;
+ 
+@@ -222,10 +231,18 @@ struct SMESH_Hasher
+   {
+     return smIdHasher::HashCode( e->GetID(), upper );
+   }
++  Standard_Integer operator()(const SMDS_MeshElement* e) const
++  {
++    return smIdHasher::HashCode( e->GetID(), (std::numeric_limits<Standard_Integer>::max)() );
++  }
+   static Standard_Boolean IsEqual( const SMDS_MeshElement* e1, const SMDS_MeshElement* e2 )
+   {
+     return ( e1 == e2 );
+   }
++  Standard_Boolean operator()( const SMDS_MeshElement* e1, const SMDS_MeshElement* e2 ) const
++  {
++    return ( e1 == e2 );
++  }
+ };
+ 
+ //--------------------------------------------------
+@@ -262,10 +279,14 @@ typedef std::vector< const SMDS_MeshElement* > SMESH_SequenceOfElemPtr;
+ 
+ // --------------------------------------------------------------------------------
+ // class SMESH_SequenceOfNode
+-#include <NCollection_DefineSequence.hxx>
+ typedef const SMDS_MeshNode* SMDS_MeshNodePtr;
+ 
++#include <NCollection_Sequence.hxx>
++#define DEFINE_SEQUENCE(_ClassName_, _BaseCollection_, TheItemType)            \
++typedef NCollection_Sequence<TheItemType > _ClassName_;
++
+ DEFINE_SEQUENCE(SMESH_SequenceOfNode,
+                 SMESH_BaseCollectionNodePtr, SMDS_MeshNodePtr)
+ 
++#undef DEFINE_SEQUENCE
+ #endif
+diff --git a/src/StdMeshers/StdMeshers_Quadrangle_2D.cxx b/src/StdMeshers/StdMeshers_Quadrangle_2D.cxx
+index 26614d3a8d..42dd62fd19 100644
+--- a/src/StdMeshers/StdMeshers_Quadrangle_2D.cxx
++++ b/src/StdMeshers/StdMeshers_Quadrangle_2D.cxx
+@@ -49,7 +49,7 @@
+ #include <Bnd_Box.hxx>
+ #include <GeomAPI_ProjectPointOnSurf.hxx>
+ #include <Geom_Surface.hxx>
+-#include <NCollection_DefineArray2.hxx>
++//#include <NCollection_DefineArray2.hxx>
+ #include <Precision.hxx>
+ #include <ShapeAnalysis.hxx>
+ #include <TColStd_SequenceOfInteger.hxx>

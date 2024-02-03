@@ -1,0 +1,29 @@
+diff --git a/src/NETGENPlugin/NETGENPlugin_Mesher.cxx b/src/NETGENPlugin/NETGENPlugin_Mesher.cxx
+index 7f3fd66f0a..27aeada736 100644
+--- a/src/NETGENPlugin/NETGENPlugin_Mesher.cxx
++++ b/src/NETGENPlugin/NETGENPlugin_Mesher.cxx
+@@ -157,14 +157,22 @@ namespace
+     }
+     static int HashCode(const Link& aLink, int aLimit)
+     {
+-      return ::HashCode(aLink.n1 + aLink.n2, aLimit);
++      return std::hash<int>{}(aLink.n1 + aLink.n2);
++    }
++    int operator()(const Link& aLink) const
++    {
++      return std::hash<int>{}(aLink.n1 + aLink.n2);
+     }
+-
+     static Standard_Boolean IsEqual(const Link& aLink1, const Link& aLink2)
+     {
+       return (( aLink1.n1 == aLink2.n1 && aLink1.n2 == aLink2.n2 ) ||
+               ( aLink1.n1 == aLink2.n2 && aLink1.n2 == aLink2.n1 ));
+     }
++    Standard_Boolean operator()(const Link& aLink1, const Link& aLink2) const
++    {
++      return (( aLink1.n1 == aLink2.n1 && aLink1.n2 == aLink2.n2 ) ||
++              ( aLink1.n1 == aLink2.n2 && aLink1.n2 == aLink2.n1 ));
++    }
+   };
+ 
+   typedef NCollection_Map<Link,Link> TLinkMap;

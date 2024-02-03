@@ -1,6 +1,6 @@
 {
   "name": "salome-netgenplugin",
-  "version": "9.10.0",
+  "version": "9.12.0",
   "description": "Meshing plugin for Netgen",
   "homepage": "https://www.salome-platform.org",
   "license": "GPL-2.0-or-later",

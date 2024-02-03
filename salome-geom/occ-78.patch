@@ -1,0 +1,197 @@
+diff --git a/src/GEOMAlgo/GEOMAlgo_ClsfSolid.hxx b/src/GEOMAlgo/GEOMAlgo_ClsfSolid.hxx
+index 0bdf194034..ba3eda1f82 100644
+--- a/src/GEOMAlgo/GEOMAlgo_ClsfSolid.hxx
++++ b/src/GEOMAlgo/GEOMAlgo_ClsfSolid.hxx
+@@ -28,7 +28,6 @@
+ #include <Standard.hxx>
+ #include <Standard_DefineHandle.hxx>
+ #include <TopoDS_Shape.hxx>
+-#include <Standard_Address.hxx>
+ #include <GEOMAlgo_Clsf.hxx>
+ 
+ DEFINE_STANDARD_HANDLE(GEOMAlgo_ClsfSolid, GEOMAlgo_Clsf)
+diff --git a/src/GEOMAlgo/GEOMAlgo_IndexedDataMapOfIntegerShape.hxx b/src/GEOMAlgo/GEOMAlgo_IndexedDataMapOfIntegerShape.hxx
+index 1ccb1da63c..e5842a3cdb 100644
+--- a/src/GEOMAlgo/GEOMAlgo_IndexedDataMapOfIntegerShape.hxx
++++ b/src/GEOMAlgo/GEOMAlgo_IndexedDataMapOfIntegerShape.hxx
+@@ -29,13 +29,13 @@
+ 
+ #include <TopoDS_Shape.hxx>
+ #include <Standard_Integer.hxx>
+-#include <TColStd_MapIntegerHasher.hxx>
++#include <NCollection_DefaultHasher.hxx>
+ 
+ #define _NCollection_MapHasher
+ #include <NCollection_IndexedDataMap.hxx>
+ 
+ 
+-typedef NCollection_IndexedDataMap<Standard_Integer, TopoDS_Shape, TColStd_MapIntegerHasher> GEOMAlgo_IndexedDataMapOfIntegerShape;
++typedef NCollection_IndexedDataMap<Standard_Integer, TopoDS_Shape> GEOMAlgo_IndexedDataMapOfIntegerShape;
+ 
+ #undef _NCollection_MapHasher
+ 
+diff --git a/src/GEOMAlgo/GEOMAlgo_PassKey.cxx b/src/GEOMAlgo/GEOMAlgo_PassKey.cxx
+index f5adcdfb50..bca54b3efc 100644
+--- a/src/GEOMAlgo/GEOMAlgo_PassKey.cxx
++++ b/src/GEOMAlgo/GEOMAlgo_PassKey.cxx
+@@ -212,7 +212,11 @@ static
+ //=======================================================================
+   Standard_Integer GEOMAlgo_PassKey::HashCode(const Standard_Integer aUpper) const
+ {
+-  return ::HashCode(mySum, aUpper);
++  return std::hash<Standard_Integer>{}(mySum);
++}
++  Standard_Integer GEOMAlgo_PassKey::operator()(const Standard_Integer Upper) const
++{
++  return std::hash<Standard_Integer>{}(mySum);
+ }
+ //=======================================================================
+ //function : Dump
+diff --git a/src/GEOMAlgo/GEOMAlgo_PassKey.hxx b/src/GEOMAlgo/GEOMAlgo_PassKey.hxx
+index 0a038d58de..f583d1d2f1 100644
+--- a/src/GEOMAlgo/GEOMAlgo_PassKey.hxx
++++ b/src/GEOMAlgo/GEOMAlgo_PassKey.hxx
+@@ -91,6 +91,9 @@ class GEOMAlgo_PassKey  {
+   Standard_EXPORT
+     Standard_Integer HashCode(const Standard_Integer Upper) const;
+ 
++  Standard_EXPORT
++    Standard_Integer operator()(const Standard_Integer Upper) const;
++
+   Standard_EXPORT
+     Standard_Integer Id(const Standard_Integer aIndex) const;
+ 
+diff --git a/src/GEOMAlgo/GEOMAlgo_PassKeyMapHasher.cxx b/src/GEOMAlgo/GEOMAlgo_PassKeyMapHasher.cxx
+index 37f3684923..6000fddaa1 100644
+--- a/src/GEOMAlgo/GEOMAlgo_PassKeyMapHasher.cxx
++++ b/src/GEOMAlgo/GEOMAlgo_PassKeyMapHasher.cxx
+@@ -35,6 +35,10 @@
+                                                        const Standard_Integer Upper)
+ {
+   return aPK.HashCode(Upper);
++}
++  Standard_Integer GEOMAlgo_PassKeyMapHasher::operator()(const GEOMAlgo_PassKey& aPK) const
++{
++  return aPK.HashCode((std::numeric_limits<Standard_Integer>::max)());
+ }
+ //=======================================================================
+ //function :IsEqual
+@@ -44,4 +48,9 @@
+                                                       const GEOMAlgo_PassKey& aPK2)
+ {
+   return aPK1.IsEqual(aPK2);
++}
++  Standard_Boolean GEOMAlgo_PassKeyMapHasher::operator()(const GEOMAlgo_PassKey& aPK1,
++                                                      const GEOMAlgo_PassKey& aPK2) const
++{
++  return aPK1.IsEqual(aPK2);
+ }
+diff --git a/src/GEOMAlgo/GEOMAlgo_PassKeyMapHasher.hxx b/src/GEOMAlgo/GEOMAlgo_PassKeyMapHasher.hxx
+index e1837fbc72..ce28695d19 100644
+--- a/src/GEOMAlgo/GEOMAlgo_PassKeyMapHasher.hxx
++++ b/src/GEOMAlgo/GEOMAlgo_PassKeyMapHasher.hxx
+@@ -44,8 +44,15 @@ class GEOMAlgo_PassKeyMapHasher  {
+     static  Standard_Integer HashCode(const GEOMAlgo_PassKey& aPKey,
+                                       const Standard_Integer Upper) ;
+ 
++  Standard_EXPORT
++    Standard_Integer operator()(const GEOMAlgo_PassKey& aPKey) const;
++
+   Standard_EXPORT
+     static  Standard_Boolean IsEqual(const GEOMAlgo_PassKey& aPKey1,
+                                      const GEOMAlgo_PassKey& aPKey2) ;
++
++  Standard_EXPORT
++    Standard_Boolean operator()(const GEOMAlgo_PassKey& aPKey1,
++                              const GEOMAlgo_PassKey& aPKey2) const;
+ };
+ #endif
+diff --git a/src/GEOMAlgo/GEOMAlgo_PassKeyShape.cxx b/src/GEOMAlgo/GEOMAlgo_PassKeyShape.cxx
+index 3ca56882e8..bfe2d9d318 100644
+--- a/src/GEOMAlgo/GEOMAlgo_PassKeyShape.cxx
++++ b/src/GEOMAlgo/GEOMAlgo_PassKeyShape.cxx
+@@ -94,7 +94,7 @@ static
+   Clear();
+   myNbIds=1;
+   myMap.Add(aS1);
+-  aHC=aS1.HashCode(myUpper);
++  aHC=std::hash<TopoDS_Shape>{}(aS1);
+   mySum=NormalizedId(aHC, myNbIds);
+ }
+ //=======================================================================
+@@ -160,7 +160,7 @@ static
+   myNbIds=myMap.Extent();
+   for(i=1; i<=myNbIds; ++i) {
+     const TopoDS_Shape& aS=myMap(i);
+-    aId=aS.HashCode(myUpper);
++    aId=std::hash<TopoDS_Shape>{}(aS);
+     aIdN=NormalizedId(aId, myNbIds);
+     mySum+=aIdN;
+   }
+@@ -201,7 +201,7 @@ static
+ //=======================================================================
+   Standard_Integer GEOMAlgo_PassKeyShape::HashCode(const Standard_Integer aUpper) const
+ {
+-  return ::HashCode(mySum, aUpper);
++  return std::hash<Standard_Integer>{}(mySum);
+ }
+ //=======================================================================
+ //function : Dump
+diff --git a/src/GEOMAlgo/GEOMAlgo_PassKeyShapeMapHasher.cxx b/src/GEOMAlgo/GEOMAlgo_PassKeyShapeMapHasher.cxx
+index ec45ecea51..07baa617ae 100644
+--- a/src/GEOMAlgo/GEOMAlgo_PassKeyShapeMapHasher.cxx
++++ b/src/GEOMAlgo/GEOMAlgo_PassKeyShapeMapHasher.cxx
+@@ -35,6 +35,10 @@
+                                                             const Standard_Integer Upper)
+ {
+   return aPK.HashCode(Upper);
++}
++  Standard_Integer GEOMAlgo_PassKeyShapeMapHasher::operator()(const GEOMAlgo_PassKeyShape& aPK) const
++{
++  return aPK.HashCode((std::numeric_limits<Standard_Integer>::max)());
+ }
+ //=======================================================================
+ //function :IsEqual
+@@ -44,4 +48,9 @@
+                                                            const GEOMAlgo_PassKeyShape& aPK2)
+ {
+   return aPK1.IsEqual(aPK2);
++}
++  Standard_Boolean GEOMAlgo_PassKeyShapeMapHasher::operator()(const GEOMAlgo_PassKeyShape& aPK1,
++                                                           const GEOMAlgo_PassKeyShape& aPK2) const
++{
++  return aPK1.IsEqual(aPK2);
+ }
+diff --git a/src/GEOMAlgo/GEOMAlgo_PassKeyShapeMapHasher.hxx b/src/GEOMAlgo/GEOMAlgo_PassKeyShapeMapHasher.hxx
+index 802311a064..a505c7b210 100644
+--- a/src/GEOMAlgo/GEOMAlgo_PassKeyShapeMapHasher.hxx
++++ b/src/GEOMAlgo/GEOMAlgo_PassKeyShapeMapHasher.hxx
+@@ -45,8 +45,15 @@ class GEOMAlgo_PassKeyShapeMapHasher
+     static  Standard_Integer HashCode(const GEOMAlgo_PassKeyShape& aPKey,
+                                       const Standard_Integer Upper) ;
+ 
++  Standard_EXPORT
++    Standard_Integer operator()(const GEOMAlgo_PassKeyShape& aPKey) const;
++
+   Standard_EXPORT
+     static  Standard_Boolean IsEqual(const GEOMAlgo_PassKeyShape& aPKey1,
+                                      const GEOMAlgo_PassKeyShape& aPKey2) ;
++
++  Standard_EXPORT
++    Standard_Boolean operator()(const GEOMAlgo_PassKeyShape& aPKey1,
++                              const GEOMAlgo_PassKeyShape& aPKey2) const;
+ };
+ #endif
+diff --git a/src/GEOMImpl/GEOMImpl_ICurvesOperations.cxx b/src/GEOMImpl/GEOMImpl_ICurvesOperations.cxx
+index 01a80fec08..c0ba5086dc 100644
+--- a/src/GEOMImpl/GEOMImpl_ICurvesOperations.cxx
++++ b/src/GEOMImpl/GEOMImpl_ICurvesOperations.cxx
+@@ -20,8 +20,7 @@
+ #ifdef WIN32
+ // E.A. : On windows with python 2.6, there is a conflict
+ // E.A. : between pymath.h and Standard_math.h which define
+ // E.A. : some same symbols : acosh, asinh, ...
+-#include <Standard_math.hxx>
+ #include <pymath.h>
+ #endif
+ 

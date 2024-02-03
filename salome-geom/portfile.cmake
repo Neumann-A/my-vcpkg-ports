@@ -1,10 +1,9 @@
 vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
     URL "https://git.salome-platform.org/gitpub/modules/geom.git"
-    REF "abd699810f0d9758075b9a4158d94d4965b06539"
+    REF "6395ebefdffe2481f2e856ebf99e80d38e7f604f"
     PATCHES 
-      fix-newer-opencascada.patch
-      more-fixes.patch
+      occ-78.patch
       fix-link.patch
 )
 

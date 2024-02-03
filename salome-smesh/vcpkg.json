@@ -1,6 +1,6 @@
 {
   "name": "salome-smesh",
-  "version": "9.10.0",
+  "version": "9.12.0",
   "description": "SALOME Mesh module",
   "homepage": "https://www.salome-platform.org",
   "license": "GPL-2.0-or-later",

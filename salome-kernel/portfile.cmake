@@ -3,8 +3,8 @@ vcpkg_check_linkage(ONLY_DYNAMIC_LIBRARY) # hardcoded set(BUILD_SHARED_LIBS TRUE
 vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
     URL "https://git.salome-platform.org/gitpub/modules/kernel.git"
-    REF "5b6831fd8b2e3de8c64f9117977cadd47fe7ddcf"
-    PATCHES wip.patch
+    REF "4ff64dfe91bcf206ee346da12449336e202e709c"
+    PATCHES wip.patch occ-78.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_TARGET_ARCHITECTURE}" "x64"  SALOME_USE_64BIT_IDS)

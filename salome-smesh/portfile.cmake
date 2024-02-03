@@ -1,11 +1,13 @@
 vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
     URL "https://git.salome-platform.org/gitpub/modules/smesh.git"
-    REF "2653bcf37414d5a96c98ced7bb14b9b792422ca5"
+    REF "0d03310b89a97e8afe4e0cdf18c4ce182941011b"
     PATCHES 
-      opencascada-fix.patch
-      undef.patch
+      #opencascada-fix.patch
+      #undef.patch
+      fix-stuff.patch
       fix-build.patch
+      fix-occ78.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static"  SMESH_BUILD_STATIC)

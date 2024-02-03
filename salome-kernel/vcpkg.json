@@ -1,7 +1,7 @@
 {
   "name": "salome-kernel",
-  "version": "9.10.0",
-  "description": "SALOME KErnel module",
+  "version": "9.12.0",
+  "description": "SALOME Kernel module",
   "homepage": "https://www.salome-platform.org",
   "license": "GPL-2.0-or-later",
   "dependencies": [

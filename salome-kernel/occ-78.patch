@@ -1,0 +1,24 @@
+diff --git a/src/Basics/smIdType.hxx.in b/src/Basics/smIdType.hxx.in
+index 6950ed1bd7..e1e8ff4c23 100644
+--- a/src/Basics/smIdType.hxx.in
++++ b/src/Basics/smIdType.hxx.in
+@@ -40,11 +40,19 @@ struct smIdHasher
+   {
+     return static_cast<int> ((theValue & std::numeric_limits<smIdType>::max()) % theUpperBound + 1);
+   }
++  int operator()(const smIdType theValue) const
++  {
++    return HashCode(theValue, (std::numeric_limits<int>::max)());
++  }
+ 
+   static bool IsEqual( const smIdType& id1, const smIdType& id2 )
+   {
+     return id1 == id2;
+   }
++  bool operator()( const smIdType& id1, const smIdType& id2 ) const
++  {
++    return id1 == id2;
++  }
+ };
+ 
+ template <class T> inline smIdType ToSmIdType(T val)

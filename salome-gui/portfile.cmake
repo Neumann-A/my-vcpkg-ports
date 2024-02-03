@@ -3,7 +3,7 @@ vcpkg_check_linkage(ONLY_DYNAMIC_LIBRARY) # hardcoded set(BUILD_SHARED_LIBS TRUE
 vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
     URL "https://git.salome-platform.org/gitpub/modules/gui.git"
-    REF "9bb50954cc070ced6dabf894f3bc4e03b6c3d3f5"
+    REF "69471f09cf8172a912113b963ce5e2584537448c"
     PATCHES
 )
 

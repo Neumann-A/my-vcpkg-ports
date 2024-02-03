@@ -1,8 +1,8 @@
 vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
     URL "https://git.salome-platform.org/gitpub/plugins/netgenplugin.git"
-    REF "386a6ed69f935e6b799fb23e1479cb5200ca759c"
-    PATCHES fiix_build.patch
+    REF "3af617de2150a1f2aace89182033d20e6fc0b237"
+    PATCHES fix_build.patch fix-occ78.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static"  SMESH_BUILD_STATIC)

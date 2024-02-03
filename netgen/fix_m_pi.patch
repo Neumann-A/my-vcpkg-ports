@@ -1,0 +1,30 @@
+diff --git a/libsrc/core/autodiff.hpp b/libsrc/core/autodiff.hpp
+index dda8fc78d4..5bb2abebc5 100644
+--- a/libsrc/core/autodiff.hpp
++++ b/libsrc/core/autodiff.hpp
+@@ -7,6 +7,10 @@
+ /* Date:   24. Oct. 02                                                    */
+ /**************************************************************************/
+ 
++#define _USE_MATH_DEFINES
++#include <math.h>
++#include <cmath>
++
+ namespace ngcore
+ {
+   using ngcore::IfPos;
+diff --git a/libsrc/core/autodiffdiff.hpp b/libsrc/core/autodiffdiff.hpp
+index bf8c4059b6..b2fda217c6 100644
+--- a/libsrc/core/autodiffdiff.hpp
++++ b/libsrc/core/autodiffdiff.hpp
+@@ -7,10 +7,6 @@
+ /* Date:   13. June. 05                                                   */
+ /**************************************************************************/
+ 
+-#define _USE_MATH_DEFINES
+-#include <math.h>
+-#include <cmath>
+-
+ namespace ngcore
+ {
+   using ngcore::IfPos;
