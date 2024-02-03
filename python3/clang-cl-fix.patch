@@ -206,17 +206,3 @@ index b8615a7a8f..e07fb32a66 100644
  #else
  #define COMPILER _Py_PASTE_VERSION("32 bit (Intel)")
  #define PY_SUPPORT_TIER 1
-diff --git a/Python/pylifecycle.c b/Python/pylifecycle.c
-index a2cf5dc32f..89f866634e 100644
---- a/Python/pylifecycle.c
-+++ b/Python/pylifecycle.c
-@@ -151,7 +151,8 @@ PyStatus Init_vcpkg_DllSearchPath(void) {
-   {
-     buffer_size += buffer_size/2;
-     old_module_dirname = module_dirname;
--    if(module_dirname = (wchar_t*)realloc(module_dirname,buffer_size*sizeof(wchar_t))==NULL) {
-+    module_dirname = (wchar_t*)realloc(module_dirname,buffer_size*sizeof(wchar_t));
-+    if( module_dirname == NULL) {
-       // No memory?
-       free(old_module_dirname);
-       return PyStatus_NoMemory();

@@ -14,7 +14,7 @@ index eeaf20b46..13bb1fe7b 100644
     extern PyTypeObject PyWindowsConsoleIO_Type;
  #  define PyWindowsConsoleIO_Check(op) \
         (PyObject_TypeCheck((op), &PyWindowsConsoleIO_Type))
-@@ -88,8 +91,96 @@ __attribute__ ((section (".PyRuntime")))
+@@ -88,8 +91,97 @@ __attribute__ ((section (".PyRuntime")))
  = _PyRuntimeState_INIT;
  _Py_COMP_DIAG_POP
  
@@ -60,7 +60,8 @@ index eeaf20b46..13bb1fe7b 100644
 +  {
 +    buffer_size += buffer_size/2;
 +    old_module_dirname = module_dirname;
-+    if(module_dirname = (wchar_t*)realloc(module_dirname,buffer_size*sizeof(wchar_t))==NULL) {
++    module_dirname = (wchar_t*)realloc(module_dirname,buffer_size*sizeof(wchar_t));
++    if( module_dirname == NULL) {
 +      // No memory?
 +      free(old_module_dirname);
 +      return PyStatus_NoMemory();

@@ -8,6 +8,7 @@
     "python-attrs",
     "python-hatch-fancy-pypi-readme",
     "python-hatchling",
+    "python-hatch-vcs",
     "python-setuptools",
     "python3",
     {
