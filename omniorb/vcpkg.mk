@@ -88,4 +88,4 @@ define ExportSharedLibraryToDir
  $(LN_S) $(<F) $$soname;
 endef
 
-INSTALLPYTHONDIR := $(DESTDIR)$(prefix)/@PYTHON_SITE@
+INSTALLPYTHONDIR := $(DESTDIR)$(prefix)/@PYTHON3_SITE@

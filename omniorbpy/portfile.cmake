@@ -66,13 +66,13 @@ vcpkg_install_make(
 file(GLOB_RECURSE pyd_files "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/*.pyd" "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/*.pdb")
 file(COPY ${pyd_files}  DESTINATION "${CURRENT_PACKAGES_DIR}/bin")
 file(GLOB_RECURSE pyd_files "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/*.lib")
-file(COPY ${pyd_files}  DESTINATION "${CURRENT_PACKAGES_DIR}/lib" PATTERN EXCLUDE "COPYING.lib")
+file(COPY ${pyd_files}  DESTINATION "${CURRENT_PACKAGES_DIR}/lib" PATTERN "COPYING.lib" EXCLUDE)
 
 if(NOT VCPKG_BUILD_TYPE)
   file(GLOB_RECURSE pyd_files "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/*.pyd" "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/*.pdb")
   file(COPY ${pyd_files}  DESTINATION "${CURRENT_PACKAGES_DIR}/debug/bin")
   file(GLOB_RECURSE pyd_files "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/*.lib")
-  file(COPY ${pyd_files}  DESTINATION "${CURRENT_PACKAGES_DIR}/debug/lib" PATTERN EXCLUDE "COPYING.lib")
+  file(COPY ${pyd_files}  DESTINATION "${CURRENT_PACKAGES_DIR}/debug/lib" PATTERN "COPYING.lib" EXCLUDE)
 endif()
 
 vcpkg_fixup_pkgconfig()
