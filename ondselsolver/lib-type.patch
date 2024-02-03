@@ -1,0 +1,20 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e4da2f6ce9..b6b0b9636a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -15,14 +15,7 @@ ELSE()
+     set( ONDSELSOLVER_BUILD_SHARED OFF )
+ ENDIF ()
+ 
+-if ( ONDSELSOLVER_BUILD_SHARED )
+-    message( STATUS "[OndselSolver] Building shared library" )
+-    add_library(OndselSolver SHARED)
+-else()
+-    message( STATUS "[OndselSolver] Building static library" )
+-    add_library(OndselSolver STATIC)
+-endif()
+-
++add_library(OndselSolver)
+ 
+ set(ONDSELSOLVER_SRC
+         OndselSolver/Array.cpp

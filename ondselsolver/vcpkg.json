@@ -1,0 +1,12 @@
+{
+  "name": "ondselsolver",
+  "version-date": "2024-01-11",
+  "description": "Assembly Constraints and Multibody Dynamics code ",
+  "homepage": "https://github.com/Ondsel-Development/OndselSolver",
+  "dependencies": [
+  {
+    "name": "vcpkg-cmake",
+    "host": true
+  }
+  ]
+}

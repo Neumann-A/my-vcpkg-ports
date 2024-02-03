@@ -1,0 +1,76 @@
+{
+  "name": "freecad-ondsel",
+  "version": "2024.1.0",
+  "description": "FreeCAD, a free and opensource multiplatform 3D parametric modeler. ",
+  "homepage": "https://www.ondsel.com",
+  "license": "GPL-2.0-or-later",
+  "dependencies": [
+    "ondselsolver",
+    "yaml-cpp",
+    "boost-assign",
+    "boost-convert",
+    "boost-date-time",
+    "boost-filesystem",
+    "boost-geometry",
+    "boost-program-options",
+    "boost-python",
+    "boost-regex",
+    "boost-statechart",
+    "boost-system",
+    "boost-thread",
+    "coin",
+    "eigen3",
+    "freetype",
+    "matplotlib-cpp",
+    "netgen",
+    {
+      "name": "opencascade",
+      "default-features": false
+    },
+    {
+      "name": "opencv",
+      "default-features": false
+    },
+    "opengl",
+    "orocos-kdl",
+    {
+      "name": "pcl",
+      "default-features": false,
+      "features": [
+        "opengl",
+        "qt",
+        "simulation",
+        "visualization",
+        "vtk"
+      ]
+    },
+    "pivy",
+    {
+      "name": "pybind11",
+      "features": [
+        "scripts"
+      ]
+    },
+    "pyside",
+    "python-matplotlib",
+    "python-pip",
+    "python3",
+    "qtsvg",
+    {
+      "name": "qtwebengine",
+      "default-features": false
+    },
+    "salome-med-fichier",
+    "salome-netgenplugin",
+    "salome-smesh",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    "xerces-c"
+  ]
+}

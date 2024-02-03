@@ -1,0 +1,209 @@
+diff --git a/cMake/FindSMESH.cmake b/cMake/FindSMESH.cmake
+index f014c76..c05631a 100644
+--- a/cMake/FindSMESH.cmake	
++++ b/cMake/FindSMESH.cmake
+@@ -8,6 +8,7 @@
+ 
+ # SMESH needs VTK
+ find_package(VTK REQUIRED)
++get_target_property(VTK_INCLUDE_DIRS VTK::CommonCore INTERFACE_INCLUDE_DIRECTORIES)
+ 
+ # If this definition is not set, linker errors will occur against SMESH on 64 bit machines.
+ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+@@ -18,7 +19,7 @@ find_package(SalomeSMESH CONFIG REQUIRED)
+ 
+ IF(SalomeSMESH_FOUND)
+   SET(SMESH_FOUND TRUE)
+-  set(EXTERNAL_SMESH_LIBS SalomeIDLSMESH SMDS SMDS_MemoryLimit SMESHDS SMESHUtils SMESHControls MeshDriver MEDWrapper mprint_version MeshDriverMED MeshDriverDAT MeshDriverUNV MeshDriverSTL MeshDriverGMF SMESHimpl SMESHEngine SMESHClient StdMeshers StdMeshersEngine MeshCut SalomeIDLSPADDER MeshJobManagerEngine SPADDERPluginTesterEngine)
++  set(EXTERNAL_SMESH_LIBS SalomeIDLSMESH SMDS  SMESHDS SMESHUtils SMESHControls MeshDriver MEDWrapper MeshDriverMED MeshDriverDAT MeshDriverUNV MeshDriverSTL MeshDriverGMF SMESHimpl SMESHEngine SMESHClient StdMeshers StdMeshersEngine SalomeIDLSPADDER MeshJobManagerEngine SPADDERPluginTesterEngine)
+ ELSE(SalomeSMESH_FOUND)
+ 	message(FATAL_ERROR "SMESH libraries NOT FOUND!")
+ ENDIF(SalomeSMESH_FOUND)
+diff --git a/cMake/FreeCAD_Helpers/SetupSalomeSMESH.cmake b/cMake/FreeCAD_Helpers/SetupSalomeSMESH.cmake
+index 1a58efa..3839e08 100644
+--- a/cMake/FreeCAD_Helpers/SetupSalomeSMESH.cmake	
++++ b/cMake/FreeCAD_Helpers/SetupSalomeSMESH.cmake
+@@ -5,9 +5,9 @@ macro(SetupSalomeSMESH)
+     if(BUILD_SMESH)
+         # set the internal smesh version:
+         # see src/3rdParty/salomonemesh/CMakeLists.txt and commit https://github.com/FreeCAD/FreeCAD/commit/666a3e5 and https://forum.freecad.org/viewtopic.php?f=10&t=30838
+-        set(SMESH_VERSION_MAJOR 7)
+-        set(SMESH_VERSION_MINOR 7)
+-        set(SMESH_VERSION_PATCH 1)
++        set(SMESH_VERSION_MAJOR 9)
++        set(SMESH_VERSION_MINOR 10)
++        set(SMESH_VERSION_PATCH 0)
+         set(SMESH_VERSION_TWEAK 0)
+ 
+         #if we use smesh we definitely also need vtk, no matter of external or internal smesh
+@@ -131,14 +131,19 @@ macro(SetupSalomeSMESH)
+                                 "================\n")
+                 endif()
+             endif()
+-            set (SMESH_INCLUDE_DIR ${SMESH_INCLUDE_PATH})
+-            set(EXTERNAL_SMESH_LIBS ${SMESH_LIBRARIES})
++            set (SMESH_INCLUDE_DIR ${SMESH_INCLUDE_DIRS})
++            set(EXTERNAL_SMESH_LIBS SalomeIDLSMESH SMDS SMESHDS SMESHUtils SMESHControls MeshDriver MEDWrapper MeshDriverMED MeshDriverDAT MeshDriverUNV MeshDriverSTL MeshDriverGMF SMESHimpl SMESHEngine SMESHClient StdMeshers StdMeshersEngine SalomeIDLSPADDER MeshJobManagerEngine SPADDERPluginTesterEngine)
+ 
+-            include_directories(${SMESH_INCLUDE_DIR})
++            include_directories(${SMESH_INCLUDE_DIRS})
+         endif()
+ 
+         set(SMESH_FOUND TRUE)
+         configure_file(${CMAKE_SOURCE_DIR}/src/SMESH_Version.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/SMESH_Version.h)
+     endif(BUILD_SMESH)
+ 
++SET(SMESH_VERSION_MAJOR 9)  # see main CMakeLists.txt of FreeCAD
++SET(SMESH_VERSION_MINOR 10)
++SET(SMESH_VERSION_PATCH 0)
++SET(SMESH_VERSION_TWEAK 0)
++
+ endmacro(SetupSalomeSMESH)
+diff --git a/src/3rdParty/salomesmesh/CMakeLists.txt b/src/3rdParty/salomesmesh/CMakeLists.txt
+index 144edf1..35dfd34 100644
+--- a/src/3rdParty/salomesmesh/CMakeLists.txt	
++++ b/src/3rdParty/salomesmesh/CMakeLists.txt
+@@ -2,9 +2,9 @@
+ #PROJECT(SMESH Fortran CXX)
+ set(CMAKE_AUTOMOC FALSE)
+ 
+-SET(SMESH_VERSION_MAJOR 7)  # see main CMakeLists.txt of FreeCAD
+-SET(SMESH_VERSION_MINOR 7)
+-SET(SMESH_VERSION_PATCH 1)
++SET(SMESH_VERSION_MAJOR 9)  # see main CMakeLists.txt of FreeCAD
++SET(SMESH_VERSION_MINOR 10)
++SET(SMESH_VERSION_PATCH 0)
+ SET(SMESH_VERSION_TWEAK 0)
+ 
+ # Suppress gcc warnings
+diff --git a/src/Gui/CMakeLists.txt b/src/Gui/CMakeLists.txt
+index 4282978..b237142 100644
+--- a/src/Gui/CMakeLists.txt	
++++ b/src/Gui/CMakeLists.txt
+@@ -1288,7 +1288,7 @@ if (EIGEN3_NO_DEPRECATED_COPY)
+ endif ()
+ 
+ add_library(FreeCADGui SHARED ${FreeCADGui_SRCS})
+-target_link_libraries(FreeCADGui ${FreeCADGui_LIBS})
++target_link_libraries(FreeCADGui ${FreeCADGui_LIBS} Qt6::GuiPrivate)
+ 
+ SET_BIN_DIR(FreeCADGui FreeCADGui)
+ 
+diff --git a/src/Gui/FileDialog.cpp b/src/Gui/FileDialog.cpp
+index 8fb4b00..2354622 100644
+--- a/src/Gui/FileDialog.cpp	
++++ b/src/Gui/FileDialog.cpp
+@@ -37,11 +37,12 @@
+ # include <QRegularExpression>
+ # include <QRegularExpressionMatch>
+ # include <QResizeEvent>
+-# include <QStandardPaths>
+ # include <QStyle>
+ # include <QUrl>
+ #endif
+ 
++# include <QStandardPaths>
++
+ #include <Base/Parameter.h>
+ #include <App/Application.h>
+ 
+diff --git a/src/Gui/MainWindow.cpp b/src/Gui/MainWindow.cpp
+index 118843e..c01d85b 100644
+--- a/src/Gui/MainWindow.cpp	
++++ b/src/Gui/MainWindow.cpp
+@@ -109,10 +111,6 @@
+ 
+ FC_LOG_LEVEL_INIT("MainWindow",false,true,true)
+ 
+-#if defined(Q_OS_WIN32)
+-#define slots
+-#endif
+-
+ using namespace Gui;
+ using namespace Gui::DockWnd;
+ using namespace std;
+diff --git a/src/Mod/Fem/App/CMakeLists.txt b/src/Mod/Fem/App/CMakeLists.txt
+index ea04bbf..dbc919d 100644
+--- a/src/Mod/Fem/App/CMakeLists.txt	
++++ b/src/Mod/Fem/App/CMakeLists.txt
+@@ -30,7 +30,7 @@ include_directories(
+     ${OCC_INCLUDE_DIR}
+     ${PYTHON_INCLUDE_DIRS}
+     ${ZLIB_INCLUDE_DIR}
+-    ${SMESH_INCLUDE_DIR}
++    ${SMESH_INCLUDE_DIRS}
+     ${NETGEN_INCLUDE_DIRS}
+     ${VTK_INCLUDE_DIRS}
+ )
+@@ -46,7 +46,8 @@ set(Fem_LIBS
+ )
+ 
+ if (FREECAD_USE_EXTERNAL_SMESH)
+-   list(APPEND Fem_LIBS ${EXTERNAL_SMESH_LIBS})
++   find_package(SalomeNETGENPLUGIN REQUIRED)
++   list(APPEND Fem_LIBS ${EXTERNAL_SMESH_LIBS} SalomeIDLNETGENPLUGIN NETGENEngine)
+ else()
+    if (BUILD_FEM_NETGEN)
+        list(APPEND Fem_LIBS StdMeshers SMESH SMDS SMESHDS NETGENPlugin)
+diff --git a/src/Mod/Fem/Gui/CMakeLists.txt b/src/Mod/Fem/Gui/CMakeLists.txt
+index 625c851..7eeb513 100644
+--- a/src/Mod/Fem/Gui/CMakeLists.txt	
++++ b/src/Mod/Fem/Gui/CMakeLists.txt
+@@ -30,7 +30,7 @@ include_directories(
+     ${ZLIB_INCLUDE_DIR}
+     ${OCC_INCLUDE_DIR}
+     ${PYTHON_INCLUDE_DIRS}
+-    ${SMESH_INCLUDE_DIR}
++    ${SMESH_INCLUDE_DIRS}
+     ${VTK_INCLUDE_DIRS}
+ )
+ 
+diff --git a/src/Mod/MeshPart/App/CMakeLists.txt b/src/Mod/MeshPart/App/CMakeLists.txt
+index 6ee9deb..8ba3470 100644
+--- a/src/Mod/MeshPart/App/CMakeLists.txt	
++++ b/src/Mod/MeshPart/App/CMakeLists.txt
+@@ -19,7 +19,7 @@ include_directories(
+     ${OCC_INCLUDE_DIR}
+     ${ZLIB_INCLUDE_DIR}
+     ${PYTHON_INCLUDE_DIRS}
+-    ${SMESH_INCLUDE_DIR}
++    ${SMESH_INCLUDE_DIRS}
+     ${VTK_INCLUDE_DIRS}
+     ${EIGEN3_INCLUDE_DIR}
+ )
+@@ -34,7 +34,8 @@ set(MeshPart_LIBS
+ )
+ 
+ if (FREECAD_USE_EXTERNAL_SMESH)
+-   list(APPEND MeshPart_LIBS ${EXTERNAL_SMESH_LIBS})
++  find_package(SalomeNETGENPLUGIN REQUIRED)
++  list(APPEND MeshPart_LIBS ${EXTERNAL_SMESH_LIBS} VTK::CommonMisc VTK::CommonSystem SalomeIDLNETGENPLUGIN NETGENEngine)
+ else()
+    if (BUILD_FEM_NETGEN)
+        list(APPEND MeshPart_LIBS StdMeshers NETGENPlugin SMESH SMDS)
+diff --git a/src/Mod/Path/libarea/CMakeLists.txt b/src/Mod/Path/libarea/CMakeLists.txt
+index 62118bc..8e48a7c 100644
+--- a/src/Mod/Path/libarea/CMakeLists.txt	
++++ b/src/Mod/Path/libarea/CMakeLists.txt
+@@ -188,7 +188,8 @@ message(STATUS "area module (for Path Workbench) will be installed to: " ${CMAKE
+ if(WIN32)
+     set_target_properties(area-native PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+     INSTALL(TARGETS area-native
+-        DESTINATION ${CMAKE_INSTALL_LIBDIR}
++        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+     )
+ else(WIN32)
+     INSTALL(TARGETS area-native
+diff --git a/src/Mod/Sketcher/App/planegcs/SubSystem.cpp b/src/Mod/Sketcher/App/planegcs/SubSystem.cpp
+index f6e5b0d..9143bac 100644
+--- a/src/Mod/Sketcher/App/planegcs/SubSystem.cpp	
++++ b/src/Mod/Sketcher/App/planegcs/SubSystem.cpp
+@@ -22,6 +22,7 @@
+ 
+ #include <iostream>
+ #include <iterator>
++#include <cassert>
+ 
+ #include "SubSystem.h"
+ 

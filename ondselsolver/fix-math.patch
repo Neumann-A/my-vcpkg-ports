@@ -1,0 +1,2186 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b6b0b9636a..6a158ec788 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -336,7 +336,8 @@ set(ONDSELSOLVER_SRC
+         OndselSolver/ZRotation.cpp
+         OndselSolver/ZTranslation.cpp
+ )
+-
++file(GLOB ONDSELSOLVER_HEADERS OndselSolver/*.h)
++if(0)
+ set(ONDSELSOLVER_HEADERS
+         OndselSolver/Array.h
+         OndselSolver/FullVector.h
+@@ -655,7 +656,7 @@ set(ONDSELSOLVER_HEADERS
+         OndselSolver/ZRotation.h
+         OndselSolver/ZTranslation.h
+ )
+-
++endif()
+ target_sources(OndselSolver PRIVATE
+         "${ONDSELSOLVER_SRC}"
+         "${ONDSELSOLVER_HEADERS}")
+diff --git a/OndselSolver/AngleZIecJec.cpp b/OndselSolver/AngleZIecJec.cpp
+index 25bc4a1c7f..fa3816dda2 100644
+--- a/OndselSolver/AngleZIecJec.cpp
++++ b/OndselSolver/AngleZIecJec.cpp
+@@ -6,7 +6,7 @@
+  *   See LICENSE file for details about copyright.                         *
+  ***************************************************************************/
+ 
+-#include "corecrt_math_defines.h"
++#include "ondselsolver_math_defines.h"
+ 
+ #include "AngleZIecJec.h"
+ #include "Numeric.h"
+diff --git a/OndselSolver/FullMatrix.h b/OndselSolver/FullMatrix.h
+index 958e2ab44f..586dae17c7 100644
+--- a/OndselSolver/FullMatrix.h
++++ b/OndselSolver/FullMatrix.h
+@@ -8,7 +8,7 @@
+ 
+ #pragma once
+ 
+-#include "corecrt_math_defines.h"
++#include "ondselsolver_math_defines.h"
+ #include <memory>
+ 
+ #include "RowTypeMatrix.h"
+diff --git a/OndselSolver/Numeric.cpp b/OndselSolver/Numeric.cpp
+index 1c82d5f794..e7d00e7211 100644
+--- a/OndselSolver/Numeric.cpp
++++ b/OndselSolver/Numeric.cpp
+@@ -7,7 +7,7 @@
+  ***************************************************************************/
+ 
+ #include <cmath>
+-#include "corecrt_math_defines.h"
++#include "ondselsolver_math_defines.h"
+ #include <stdexcept>
+ 
+ #include "Numeric.h"
+diff --git a/OndselSolver/OrbitAngleZIecJec.cpp b/OndselSolver/OrbitAngleZIecJec.cpp
+index d35dd22c81..37733433a6 100644
+--- a/OndselSolver/OrbitAngleZIecJec.cpp
++++ b/OndselSolver/OrbitAngleZIecJec.cpp
+@@ -6,7 +6,7 @@
+  *   See LICENSE file for details about copyright.                         *
+  ***************************************************************************/
+  
+-#include "corecrt_math_defines.h"
++#include "ondselsolver_math_defines.h"
+ 
+ #include "OrbitAngleZIecJec.h"
+ #include "Numeric.h"
+diff --git a/OndselSolver/ScrewConstraintIJ.cpp b/OndselSolver/ScrewConstraintIJ.cpp
+index 996253f19b..e68f09eb5f 100644
+--- a/OndselSolver/ScrewConstraintIJ.cpp
++++ b/OndselSolver/ScrewConstraintIJ.cpp
+@@ -6,7 +6,7 @@
+  *   See LICENSE file for details about copyright.                         *
+  ***************************************************************************/
+  
+-#include "corecrt_math_defines.h"
++#include "ondselsolver_math_defines.h"
+ 
+ #include "ScrewConstraintIJ.h"
+ #include "ScrewConstraintIqcJqc.h"
+diff --git a/OndselSolver/ScrewConstraintIqcJc.cpp b/OndselSolver/ScrewConstraintIqcJc.cpp
+index e6ff72b9ef..cef652cdde 100644
+--- a/OndselSolver/ScrewConstraintIqcJc.cpp
++++ b/OndselSolver/ScrewConstraintIqcJc.cpp
+@@ -6,7 +6,7 @@
+  *   See LICENSE file for details about copyright.                         *
+  ***************************************************************************/
+ 
+-#include "corecrt_math_defines.h"
++#include "ondselsolver_math_defines.h"
+ 
+ #include "ScrewConstraintIqcJc.h"
+ #include "EndFrameqc.h"
+diff --git a/OndselSolver/ScrewConstraintIqcJqc.cpp b/OndselSolver/ScrewConstraintIqcJqc.cpp
+index bdc6ab7a36..eaaac66f8b 100644
+--- a/OndselSolver/ScrewConstraintIqcJqc.cpp
++++ b/OndselSolver/ScrewConstraintIqcJqc.cpp
+@@ -6,7 +6,7 @@
+  *   See LICENSE file for details about copyright.                         *
+  ***************************************************************************/
+ 
+-#include "corecrt_math_defines.h"
++#include "ondselsolver_math_defines.h"
+ 
+ #include "ScrewConstraintIqcJqc.h"
+ #include "EndFrameqc.h"
+diff --git a/OndselSolver/SymbolicParser.cpp b/OndselSolver/SymbolicParser.cpp
+index 162061a163..b2fd850d0e 100644
+--- a/OndselSolver/SymbolicParser.cpp
++++ b/OndselSolver/SymbolicParser.cpp
+@@ -6,7 +6,7 @@
+  *   See LICENSE file for details about copyright.                         *
+  ***************************************************************************/
+  
+-#include "corecrt_math_defines.h"
++#include "ondselsolver_math_defines.h"
+ #include <sstream>
+ #include <iomanip>
+ 
+diff --git a/OndselSolver/corecrt_math_defines.h b/OndselSolver/ondselsolver_math_defines.h
+similarity index 83%
+rename from OndselSolver/corecrt_math_defines.h
+rename to OndselSolver/ondselsolver_math_defines.h
+index 0ae075cb7d..07ff7924cd 100644
+--- a/OndselSolver/corecrt_math_defines.h
++++ b/OndselSolver/ondselsolver_math_defines.h
+@@ -1,14 +1,13 @@
+-//
+-// corecrt_math_defines.h
+-//
+-//      Copyright (c) Microsoft Corporation. All rights reserved.
+-//
+-// Definitions of useful mathematical constants
+-//
+ #pragma once
+ 
+-#ifndef _MATH_DEFINES_DEFINED
+-#define _MATH_DEFINES_DEFINED
++#ifndef _ondselsolver_math_defines_h
++#define _ondselsolver_math_defines_h
++
++#ifndef _USE_MATH_DEFINES
++#define _USE_MATH_DEFINES
++#endif
++
++#include <cmath>
+ // Definitions of useful mathematical constants
+ //
+ // Define _USE_MATH_DEFINES before including <math.h> to expose these macro
+diff --git a/OndselSolver/x64/Debug/ASMTAngleJoint.obj b/OndselSolver/x64/Debug/ASMTAngleJoint.obj
+new file mode 100644
+index 0000000000..b5a33b5614
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTAngleJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTAnimationParameters.obj b/OndselSolver/x64/Debug/ASMTAnimationParameters.obj
+new file mode 100644
+index 0000000000..fa15499e43
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTAnimationParameters.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTAssembly.obj b/OndselSolver/x64/Debug/ASMTAssembly.obj
+new file mode 100644
+index 0000000000..9f13503985
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTAssembly.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTAtPointJoint.obj b/OndselSolver/x64/Debug/ASMTAtPointJoint.obj
+new file mode 100644
+index 0000000000..ec9b0d4d7b
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTAtPointJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTCompoundJoint.obj b/OndselSolver/x64/Debug/ASMTCompoundJoint.obj
+new file mode 100644
+index 0000000000..a8a9412dcf
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTCompoundJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTConstantGravity.obj b/OndselSolver/x64/Debug/ASMTConstantGravity.obj
+new file mode 100644
+index 0000000000..15b84f50cb
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTConstantGravity.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTConstantVelocityJoint.obj b/OndselSolver/x64/Debug/ASMTConstantVelocityJoint.obj
+new file mode 100644
+index 0000000000..9b9faa79ae
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTConstantVelocityJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTConstraintSet.obj b/OndselSolver/x64/Debug/ASMTConstraintSet.obj
+new file mode 100644
+index 0000000000..ef3f2dd44c
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTConstraintSet.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTCylSphJoint.obj b/OndselSolver/x64/Debug/ASMTCylSphJoint.obj
+new file mode 100644
+index 0000000000..eead197ecf
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTCylSphJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTCylindricalJoint.obj b/OndselSolver/x64/Debug/ASMTCylindricalJoint.obj
+new file mode 100644
+index 0000000000..02f50eea86
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTCylindricalJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTExtrusion.obj b/OndselSolver/x64/Debug/ASMTExtrusion.obj
+new file mode 100644
+index 0000000000..6a3c488595
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTExtrusion.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTFixedJoint.obj b/OndselSolver/x64/Debug/ASMTFixedJoint.obj
+new file mode 100644
+index 0000000000..6819fc2742
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTFixedJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTForceTorque.obj b/OndselSolver/x64/Debug/ASMTForceTorque.obj
+new file mode 100644
+index 0000000000..240b5a79ce
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTForceTorque.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTGearJoint.obj b/OndselSolver/x64/Debug/ASMTGearJoint.obj
+new file mode 100644
+index 0000000000..c958f94dab
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTGearJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTGeneralMotion.obj b/OndselSolver/x64/Debug/ASMTGeneralMotion.obj
+new file mode 100644
+index 0000000000..d92c522f9e
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTGeneralMotion.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTInLineJoint.obj b/OndselSolver/x64/Debug/ASMTInLineJoint.obj
+new file mode 100644
+index 0000000000..cb741859de
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTInLineJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTInPlaneJoint.obj b/OndselSolver/x64/Debug/ASMTInPlaneJoint.obj
+new file mode 100644
+index 0000000000..1c471d669b
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTInPlaneJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTItem.obj b/OndselSolver/x64/Debug/ASMTItem.obj
+new file mode 100644
+index 0000000000..35c87da8b4
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTItem.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTItemIJ.obj b/OndselSolver/x64/Debug/ASMTItemIJ.obj
+new file mode 100644
+index 0000000000..d816852e8d
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTItemIJ.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTJoint.obj b/OndselSolver/x64/Debug/ASMTJoint.obj
+new file mode 100644
+index 0000000000..b87b216116
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTKinematicIJ.obj b/OndselSolver/x64/Debug/ASMTKinematicIJ.obj
+new file mode 100644
+index 0000000000..7c25bfa7a3
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTKinematicIJ.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTLineInPlaneJoint.obj b/OndselSolver/x64/Debug/ASMTLineInPlaneJoint.obj
+new file mode 100644
+index 0000000000..79952b81ce
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTLineInPlaneJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTMarker.obj b/OndselSolver/x64/Debug/ASMTMarker.obj
+new file mode 100644
+index 0000000000..37a91767c5
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTMarker.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTMotion.obj b/OndselSolver/x64/Debug/ASMTMotion.obj
+new file mode 100644
+index 0000000000..fee7d371db
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTMotion.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTNoRotationJoint.obj b/OndselSolver/x64/Debug/ASMTNoRotationJoint.obj
+new file mode 100644
+index 0000000000..e51ae58a93
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTNoRotationJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTParallelAxesJoint.obj b/OndselSolver/x64/Debug/ASMTParallelAxesJoint.obj
+new file mode 100644
+index 0000000000..7108bad7c0
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTParallelAxesJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTPart.obj b/OndselSolver/x64/Debug/ASMTPart.obj
+new file mode 100644
+index 0000000000..30ede400e2
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTPart.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTPerpendicularJoint.obj b/OndselSolver/x64/Debug/ASMTPerpendicularJoint.obj
+new file mode 100644
+index 0000000000..9383840b95
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTPerpendicularJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTPlanarJoint.obj b/OndselSolver/x64/Debug/ASMTPlanarJoint.obj
+new file mode 100644
+index 0000000000..32468b87c8
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTPlanarJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTPointInLineJoint.obj b/OndselSolver/x64/Debug/ASMTPointInLineJoint.obj
+new file mode 100644
+index 0000000000..2824101659
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTPointInLineJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTPointInPlaneJoint.obj b/OndselSolver/x64/Debug/ASMTPointInPlaneJoint.obj
+new file mode 100644
+index 0000000000..87510bd04d
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTPointInPlaneJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTPrincipalMassMarker.obj b/OndselSolver/x64/Debug/ASMTPrincipalMassMarker.obj
+new file mode 100644
+index 0000000000..c72ec57767
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTPrincipalMassMarker.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTRackPinionJoint.obj b/OndselSolver/x64/Debug/ASMTRackPinionJoint.obj
+new file mode 100644
+index 0000000000..c7dc592bfe
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTRackPinionJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTRefCurve.obj b/OndselSolver/x64/Debug/ASMTRefCurve.obj
+new file mode 100644
+index 0000000000..96795ecc21
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTRefCurve.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTRefItem.obj b/OndselSolver/x64/Debug/ASMTRefItem.obj
+new file mode 100644
+index 0000000000..c42bffffb8
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTRefItem.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTRefPoint.obj b/OndselSolver/x64/Debug/ASMTRefPoint.obj
+new file mode 100644
+index 0000000000..e80a35aa5c
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTRefPoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTRefSurface.obj b/OndselSolver/x64/Debug/ASMTRefSurface.obj
+new file mode 100644
+index 0000000000..24fa9b83ed
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTRefSurface.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTRevCylJoint.obj b/OndselSolver/x64/Debug/ASMTRevCylJoint.obj
+new file mode 100644
+index 0000000000..46bf7d11bc
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTRevCylJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTRevRevJoint.obj b/OndselSolver/x64/Debug/ASMTRevRevJoint.obj
+new file mode 100644
+index 0000000000..c7dcfcecac
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTRevRevJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTRevoluteJoint.obj b/OndselSolver/x64/Debug/ASMTRevoluteJoint.obj
+new file mode 100644
+index 0000000000..3a270c9192
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTRevoluteJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTRotationalMotion.obj b/OndselSolver/x64/Debug/ASMTRotationalMotion.obj
+new file mode 100644
+index 0000000000..8abc55c133
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTRotationalMotion.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTScrewJoint.obj b/OndselSolver/x64/Debug/ASMTScrewJoint.obj
+new file mode 100644
+index 0000000000..c066eddeb3
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTScrewJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTSimulationParameters.obj b/OndselSolver/x64/Debug/ASMTSimulationParameters.obj
+new file mode 100644
+index 0000000000..edf007f5d0
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTSimulationParameters.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTSpatialContainer.obj b/OndselSolver/x64/Debug/ASMTSpatialContainer.obj
+new file mode 100644
+index 0000000000..447ce1b07c
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTSpatialContainer.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTSpatialItem.obj b/OndselSolver/x64/Debug/ASMTSpatialItem.obj
+new file mode 100644
+index 0000000000..0093c514ab
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTSpatialItem.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTSphSphJoint.obj b/OndselSolver/x64/Debug/ASMTSphSphJoint.obj
+new file mode 100644
+index 0000000000..1194be339e
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTSphSphJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTSphericalJoint.obj b/OndselSolver/x64/Debug/ASMTSphericalJoint.obj
+new file mode 100644
+index 0000000000..9b92e7f2b3
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTSphericalJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTTime.obj b/OndselSolver/x64/Debug/ASMTTime.obj
+new file mode 100644
+index 0000000000..b539432445
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTTime.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTTranslationalJoint.obj b/OndselSolver/x64/Debug/ASMTTranslationalJoint.obj
+new file mode 100644
+index 0000000000..1e525bbbab
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTTranslationalJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTTranslationalMotion.obj b/OndselSolver/x64/Debug/ASMTTranslationalMotion.obj
+new file mode 100644
+index 0000000000..830494eb0d
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTTranslationalMotion.obj differ
+diff --git a/OndselSolver/x64/Debug/ASMTUniversalJoint.obj b/OndselSolver/x64/Debug/ASMTUniversalJoint.obj
+new file mode 100644
+index 0000000000..58b6b108b4
+Binary files /dev/null and b/OndselSolver/x64/Debug/ASMTUniversalJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/Abs.obj b/OndselSolver/x64/Debug/Abs.obj
+new file mode 100644
+index 0000000000..3bd8d5ae65
+Binary files /dev/null and b/OndselSolver/x64/Debug/Abs.obj differ
+diff --git a/OndselSolver/x64/Debug/AbsConstraint.obj b/OndselSolver/x64/Debug/AbsConstraint.obj
+new file mode 100644
+index 0000000000..faa2a5ca2c
+Binary files /dev/null and b/OndselSolver/x64/Debug/AbsConstraint.obj differ
+diff --git a/OndselSolver/x64/Debug/AccICKineNewtonRaphson.obj b/OndselSolver/x64/Debug/AccICKineNewtonRaphson.obj
+new file mode 100644
+index 0000000000..374a9fe02d
+Binary files /dev/null and b/OndselSolver/x64/Debug/AccICKineNewtonRaphson.obj differ
+diff --git a/OndselSolver/x64/Debug/AccICNewtonRaphson.obj b/OndselSolver/x64/Debug/AccICNewtonRaphson.obj
+new file mode 100644
+index 0000000000..b9e57c9c04
+Binary files /dev/null and b/OndselSolver/x64/Debug/AccICNewtonRaphson.obj differ
+diff --git a/OndselSolver/x64/Debug/AccKineNewtonRaphson.obj b/OndselSolver/x64/Debug/AccKineNewtonRaphson.obj
+new file mode 100644
+index 0000000000..4e9e0f46b2
+Binary files /dev/null and b/OndselSolver/x64/Debug/AccKineNewtonRaphson.obj differ
+diff --git a/OndselSolver/x64/Debug/AccNewtonRaphson.obj b/OndselSolver/x64/Debug/AccNewtonRaphson.obj
+new file mode 100644
+index 0000000000..b8b2f8586e
+Binary files /dev/null and b/OndselSolver/x64/Debug/AccNewtonRaphson.obj differ
+diff --git a/OndselSolver/x64/Debug/AngleJoint.obj b/OndselSolver/x64/Debug/AngleJoint.obj
+new file mode 100644
+index 0000000000..e0cedcdc8e
+Binary files /dev/null and b/OndselSolver/x64/Debug/AngleJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/AngleZIecJec.obj b/OndselSolver/x64/Debug/AngleZIecJec.obj
+new file mode 100644
+index 0000000000..ed40bcd715
+Binary files /dev/null and b/OndselSolver/x64/Debug/AngleZIecJec.obj differ
+diff --git a/OndselSolver/x64/Debug/AngleZIeqcJec.obj b/OndselSolver/x64/Debug/AngleZIeqcJec.obj
+new file mode 100644
+index 0000000000..b4d1b5cc32
+Binary files /dev/null and b/OndselSolver/x64/Debug/AngleZIeqcJec.obj differ
+diff --git a/OndselSolver/x64/Debug/AngleZIeqcJeqc.obj b/OndselSolver/x64/Debug/AngleZIeqcJeqc.obj
+new file mode 100644
+index 0000000000..57ab848122
+Binary files /dev/null and b/OndselSolver/x64/Debug/AngleZIeqcJeqc.obj differ
+diff --git a/OndselSolver/x64/Debug/AnyGeneralSpline.obj b/OndselSolver/x64/Debug/AnyGeneralSpline.obj
+new file mode 100644
+index 0000000000..4ed80d2fc3
+Binary files /dev/null and b/OndselSolver/x64/Debug/AnyGeneralSpline.obj differ
+diff --git a/OndselSolver/x64/Debug/AnyPosICNewtonRaphson.obj b/OndselSolver/x64/Debug/AnyPosICNewtonRaphson.obj
+new file mode 100644
+index 0000000000..2ab952c6ad
+Binary files /dev/null and b/OndselSolver/x64/Debug/AnyPosICNewtonRaphson.obj differ
+diff --git a/OndselSolver/x64/Debug/ArcSine.obj b/OndselSolver/x64/Debug/ArcSine.obj
+new file mode 100644
+index 0000000000..33421197cf
+Binary files /dev/null and b/OndselSolver/x64/Debug/ArcSine.obj differ
+diff --git a/OndselSolver/x64/Debug/ArcTan.obj b/OndselSolver/x64/Debug/ArcTan.obj
+new file mode 100644
+index 0000000000..600646c70b
+Binary files /dev/null and b/OndselSolver/x64/Debug/ArcTan.obj differ
+diff --git a/OndselSolver/x64/Debug/ArcTan2.obj b/OndselSolver/x64/Debug/ArcTan2.obj
+new file mode 100644
+index 0000000000..ca7f98f4c8
+Binary files /dev/null and b/OndselSolver/x64/Debug/ArcTan2.obj differ
+diff --git a/OndselSolver/x64/Debug/Arguments.obj b/OndselSolver/x64/Debug/Arguments.obj
+new file mode 100644
+index 0000000000..c761826669
+Binary files /dev/null and b/OndselSolver/x64/Debug/Arguments.obj differ
+diff --git a/OndselSolver/x64/Debug/Array.obj b/OndselSolver/x64/Debug/Array.obj
+new file mode 100644
+index 0000000000..ac885da4e1
+Binary files /dev/null and b/OndselSolver/x64/Debug/Array.obj differ
+diff --git a/OndselSolver/x64/Debug/AtPointConstraintIJ.obj b/OndselSolver/x64/Debug/AtPointConstraintIJ.obj
+new file mode 100644
+index 0000000000..ac386c33b1
+Binary files /dev/null and b/OndselSolver/x64/Debug/AtPointConstraintIJ.obj differ
+diff --git a/OndselSolver/x64/Debug/AtPointConstraintIqcJc.obj b/OndselSolver/x64/Debug/AtPointConstraintIqcJc.obj
+new file mode 100644
+index 0000000000..7e92843546
+Binary files /dev/null and b/OndselSolver/x64/Debug/AtPointConstraintIqcJc.obj differ
+diff --git a/OndselSolver/x64/Debug/AtPointConstraintIqcJqc.obj b/OndselSolver/x64/Debug/AtPointConstraintIqcJqc.obj
+new file mode 100644
+index 0000000000..e9b8d1455f
+Binary files /dev/null and b/OndselSolver/x64/Debug/AtPointConstraintIqcJqc.obj differ
+diff --git a/OndselSolver/x64/Debug/AtPointConstraintIqctJqc.obj b/OndselSolver/x64/Debug/AtPointConstraintIqctJqc.obj
+new file mode 100644
+index 0000000000..95d4c87e6f
+Binary files /dev/null and b/OndselSolver/x64/Debug/AtPointConstraintIqctJqc.obj differ
+diff --git a/OndselSolver/x64/Debug/AtPointJoint.obj b/OndselSolver/x64/Debug/AtPointJoint.obj
+new file mode 100644
+index 0000000000..48e47b16fe
+Binary files /dev/null and b/OndselSolver/x64/Debug/AtPointJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/BasicIntegrator.obj b/OndselSolver/x64/Debug/BasicIntegrator.obj
+new file mode 100644
+index 0000000000..7e5dd8f2a8
+Binary files /dev/null and b/OndselSolver/x64/Debug/BasicIntegrator.obj differ
+diff --git a/OndselSolver/x64/Debug/BasicQuasiIntegrator.obj b/OndselSolver/x64/Debug/BasicQuasiIntegrator.obj
+new file mode 100644
+index 0000000000..778fbabebb
+Binary files /dev/null and b/OndselSolver/x64/Debug/BasicQuasiIntegrator.obj differ
+diff --git a/OndselSolver/x64/Debug/BasicUserFunction.obj b/OndselSolver/x64/Debug/BasicUserFunction.obj
+new file mode 100644
+index 0000000000..3dd8bcacbe
+Binary files /dev/null and b/OndselSolver/x64/Debug/BasicUserFunction.obj differ
+diff --git a/OndselSolver/x64/Debug/CADSystem.obj b/OndselSolver/x64/Debug/CADSystem.obj
+new file mode 100644
+index 0000000000..df1066e386
+Binary files /dev/null and b/OndselSolver/x64/Debug/CADSystem.obj differ
+diff --git a/OndselSolver/x64/Debug/CREATE.obj b/OndselSolver/x64/Debug/CREATE.obj
+new file mode 100644
+index 0000000000..2ddffeb94d
+Binary files /dev/null and b/OndselSolver/x64/Debug/CREATE.obj differ
+diff --git a/OndselSolver/x64/Debug/CartesianFrame.obj b/OndselSolver/x64/Debug/CartesianFrame.obj
+new file mode 100644
+index 0000000000..3e1bd83531
+Binary files /dev/null and b/OndselSolver/x64/Debug/CartesianFrame.obj differ
+diff --git a/OndselSolver/x64/Debug/CompoundJoint.obj b/OndselSolver/x64/Debug/CompoundJoint.obj
+new file mode 100644
+index 0000000000..4affcb4923
+Binary files /dev/null and b/OndselSolver/x64/Debug/CompoundJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ConstVelConstraintIJ.obj b/OndselSolver/x64/Debug/ConstVelConstraintIJ.obj
+new file mode 100644
+index 0000000000..bc6771ce27
+Binary files /dev/null and b/OndselSolver/x64/Debug/ConstVelConstraintIJ.obj differ
+diff --git a/OndselSolver/x64/Debug/ConstVelConstraintIqcJc.obj b/OndselSolver/x64/Debug/ConstVelConstraintIqcJc.obj
+new file mode 100644
+index 0000000000..a3e7eadec0
+Binary files /dev/null and b/OndselSolver/x64/Debug/ConstVelConstraintIqcJc.obj differ
+diff --git a/OndselSolver/x64/Debug/ConstVelConstraintIqcJqc.obj b/OndselSolver/x64/Debug/ConstVelConstraintIqcJqc.obj
+new file mode 100644
+index 0000000000..4871bcd389
+Binary files /dev/null and b/OndselSolver/x64/Debug/ConstVelConstraintIqcJqc.obj differ
+diff --git a/OndselSolver/x64/Debug/Constant.obj b/OndselSolver/x64/Debug/Constant.obj
+new file mode 100644
+index 0000000000..d35a14d756
+Binary files /dev/null and b/OndselSolver/x64/Debug/Constant.obj differ
+diff --git a/OndselSolver/x64/Debug/ConstantGravity.obj b/OndselSolver/x64/Debug/ConstantGravity.obj
+new file mode 100644
+index 0000000000..12dd457bd8
+Binary files /dev/null and b/OndselSolver/x64/Debug/ConstantGravity.obj differ
+diff --git a/OndselSolver/x64/Debug/ConstantVelocityJoint.obj b/OndselSolver/x64/Debug/ConstantVelocityJoint.obj
+new file mode 100644
+index 0000000000..88610e67e1
+Binary files /dev/null and b/OndselSolver/x64/Debug/ConstantVelocityJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/Constraint.obj b/OndselSolver/x64/Debug/Constraint.obj
+new file mode 100644
+index 0000000000..86456b96e6
+Binary files /dev/null and b/OndselSolver/x64/Debug/Constraint.obj differ
+diff --git a/OndselSolver/x64/Debug/ConstraintIJ.obj b/OndselSolver/x64/Debug/ConstraintIJ.obj
+new file mode 100644
+index 0000000000..e2528d8e23
+Binary files /dev/null and b/OndselSolver/x64/Debug/ConstraintIJ.obj differ
+diff --git a/OndselSolver/x64/Debug/Cosine.obj b/OndselSolver/x64/Debug/Cosine.obj
+new file mode 100644
+index 0000000000..8e638450ab
+Binary files /dev/null and b/OndselSolver/x64/Debug/Cosine.obj differ
+diff --git a/OndselSolver/x64/Debug/CylSphJoint.obj b/OndselSolver/x64/Debug/CylSphJoint.obj
+new file mode 100644
+index 0000000000..36ba08217b
+Binary files /dev/null and b/OndselSolver/x64/Debug/CylSphJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/CylindricalJoint.obj b/OndselSolver/x64/Debug/CylindricalJoint.obj
+new file mode 100644
+index 0000000000..e4246f19c1
+Binary files /dev/null and b/OndselSolver/x64/Debug/CylindricalJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/DiagonalMatrix.obj b/OndselSolver/x64/Debug/DiagonalMatrix.obj
+new file mode 100644
+index 0000000000..b92574ee02
+Binary files /dev/null and b/OndselSolver/x64/Debug/DiagonalMatrix.obj differ
+diff --git a/OndselSolver/x64/Debug/DifferenceOperator.obj b/OndselSolver/x64/Debug/DifferenceOperator.obj
+new file mode 100644
+index 0000000000..8e23393017
+Binary files /dev/null and b/OndselSolver/x64/Debug/DifferenceOperator.obj differ
+diff --git a/OndselSolver/x64/Debug/DifferentiatedGeneralSpline.obj b/OndselSolver/x64/Debug/DifferentiatedGeneralSpline.obj
+new file mode 100644
+index 0000000000..8556edaca2
+Binary files /dev/null and b/OndselSolver/x64/Debug/DifferentiatedGeneralSpline.obj differ
+diff --git a/OndselSolver/x64/Debug/DirectionCosineConstraintIJ.obj b/OndselSolver/x64/Debug/DirectionCosineConstraintIJ.obj
+new file mode 100644
+index 0000000000..6e135d587b
+Binary files /dev/null and b/OndselSolver/x64/Debug/DirectionCosineConstraintIJ.obj differ
+diff --git a/OndselSolver/x64/Debug/DirectionCosineConstraintIqcJc.obj b/OndselSolver/x64/Debug/DirectionCosineConstraintIqcJc.obj
+new file mode 100644
+index 0000000000..43025977a3
+Binary files /dev/null and b/OndselSolver/x64/Debug/DirectionCosineConstraintIqcJc.obj differ
+diff --git a/OndselSolver/x64/Debug/DirectionCosineConstraintIqcJqc.obj b/OndselSolver/x64/Debug/DirectionCosineConstraintIqcJqc.obj
+new file mode 100644
+index 0000000000..c5847d3ddb
+Binary files /dev/null and b/OndselSolver/x64/Debug/DirectionCosineConstraintIqcJqc.obj differ
+diff --git a/OndselSolver/x64/Debug/DirectionCosineConstraintIqctJqc.obj b/OndselSolver/x64/Debug/DirectionCosineConstraintIqctJqc.obj
+new file mode 100644
+index 0000000000..6ff2328fb6
+Binary files /dev/null and b/OndselSolver/x64/Debug/DirectionCosineConstraintIqctJqc.obj differ
+diff --git a/OndselSolver/x64/Debug/DirectionCosineIecJec.obj b/OndselSolver/x64/Debug/DirectionCosineIecJec.obj
+new file mode 100644
+index 0000000000..0ff746dc47
+Binary files /dev/null and b/OndselSolver/x64/Debug/DirectionCosineIecJec.obj differ
+diff --git a/OndselSolver/x64/Debug/DirectionCosineIeqcJec.obj b/OndselSolver/x64/Debug/DirectionCosineIeqcJec.obj
+new file mode 100644
+index 0000000000..0dd08b63c7
+Binary files /dev/null and b/OndselSolver/x64/Debug/DirectionCosineIeqcJec.obj differ
+diff --git a/OndselSolver/x64/Debug/DirectionCosineIeqcJeqc.obj b/OndselSolver/x64/Debug/DirectionCosineIeqcJeqc.obj
+new file mode 100644
+index 0000000000..5184354395
+Binary files /dev/null and b/OndselSolver/x64/Debug/DirectionCosineIeqcJeqc.obj differ
+diff --git a/OndselSolver/x64/Debug/DirectionCosineIeqctJeqc.obj b/OndselSolver/x64/Debug/DirectionCosineIeqctJeqc.obj
+new file mode 100644
+index 0000000000..2235129bf7
+Binary files /dev/null and b/OndselSolver/x64/Debug/DirectionCosineIeqctJeqc.obj differ
+diff --git a/OndselSolver/x64/Debug/DiscontinuityError.obj b/OndselSolver/x64/Debug/DiscontinuityError.obj
+new file mode 100644
+index 0000000000..3b44454059
+Binary files /dev/null and b/OndselSolver/x64/Debug/DiscontinuityError.obj differ
+diff --git a/OndselSolver/x64/Debug/DispCompIecJecIe.obj b/OndselSolver/x64/Debug/DispCompIecJecIe.obj
+new file mode 100644
+index 0000000000..712f95f637
+Binary files /dev/null and b/OndselSolver/x64/Debug/DispCompIecJecIe.obj differ
+diff --git a/OndselSolver/x64/Debug/DispCompIecJecKec.obj b/OndselSolver/x64/Debug/DispCompIecJecKec.obj
+new file mode 100644
+index 0000000000..b45abe4da8
+Binary files /dev/null and b/OndselSolver/x64/Debug/DispCompIecJecKec.obj differ
+diff --git a/OndselSolver/x64/Debug/DispCompIecJecKeqc.obj b/OndselSolver/x64/Debug/DispCompIecJecKeqc.obj
+new file mode 100644
+index 0000000000..775158e24e
+Binary files /dev/null and b/OndselSolver/x64/Debug/DispCompIecJecKeqc.obj differ
+diff --git a/OndselSolver/x64/Debug/DispCompIecJecO.obj b/OndselSolver/x64/Debug/DispCompIecJecO.obj
+new file mode 100644
+index 0000000000..687aacd443
+Binary files /dev/null and b/OndselSolver/x64/Debug/DispCompIecJecO.obj differ
+diff --git a/OndselSolver/x64/Debug/DispCompIeqcJecIe.obj b/OndselSolver/x64/Debug/DispCompIeqcJecIe.obj
+new file mode 100644
+index 0000000000..10864d7255
+Binary files /dev/null and b/OndselSolver/x64/Debug/DispCompIeqcJecIe.obj differ
+diff --git a/OndselSolver/x64/Debug/DispCompIeqcJecKeqc.obj b/OndselSolver/x64/Debug/DispCompIeqcJecKeqc.obj
+new file mode 100644
+index 0000000000..89a334c861
+Binary files /dev/null and b/OndselSolver/x64/Debug/DispCompIeqcJecKeqc.obj differ
+diff --git a/OndselSolver/x64/Debug/DispCompIeqcJecO.obj b/OndselSolver/x64/Debug/DispCompIeqcJecO.obj
+new file mode 100644
+index 0000000000..13af430d28
+Binary files /dev/null and b/OndselSolver/x64/Debug/DispCompIeqcJecO.obj differ
+diff --git a/OndselSolver/x64/Debug/DispCompIeqcJeqcIe.obj b/OndselSolver/x64/Debug/DispCompIeqcJeqcIe.obj
+new file mode 100644
+index 0000000000..c2245a6a39
+Binary files /dev/null and b/OndselSolver/x64/Debug/DispCompIeqcJeqcIe.obj differ
+diff --git a/OndselSolver/x64/Debug/DispCompIeqcJeqcKeqc.obj b/OndselSolver/x64/Debug/DispCompIeqcJeqcKeqc.obj
+new file mode 100644
+index 0000000000..aa0abae3d0
+Binary files /dev/null and b/OndselSolver/x64/Debug/DispCompIeqcJeqcKeqc.obj differ
+diff --git a/OndselSolver/x64/Debug/DispCompIeqcJeqcKeqct.obj b/OndselSolver/x64/Debug/DispCompIeqcJeqcKeqct.obj
+new file mode 100644
+index 0000000000..2f51b8ddd4
+Binary files /dev/null and b/OndselSolver/x64/Debug/DispCompIeqcJeqcKeqct.obj differ
+diff --git a/OndselSolver/x64/Debug/DispCompIeqcJeqcO.obj b/OndselSolver/x64/Debug/DispCompIeqcJeqcO.obj
+new file mode 100644
+index 0000000000..09fd27f86e
+Binary files /dev/null and b/OndselSolver/x64/Debug/DispCompIeqcJeqcO.obj differ
+diff --git a/OndselSolver/x64/Debug/DispCompIeqctJeqcIe.obj b/OndselSolver/x64/Debug/DispCompIeqctJeqcIe.obj
+new file mode 100644
+index 0000000000..3c8447481c
+Binary files /dev/null and b/OndselSolver/x64/Debug/DispCompIeqctJeqcIe.obj differ
+diff --git a/OndselSolver/x64/Debug/DispCompIeqctJeqcKeqct.obj b/OndselSolver/x64/Debug/DispCompIeqctJeqcKeqct.obj
+new file mode 100644
+index 0000000000..d018dc253e
+Binary files /dev/null and b/OndselSolver/x64/Debug/DispCompIeqctJeqcKeqct.obj differ
+diff --git a/OndselSolver/x64/Debug/DispCompIeqctJeqcO.obj b/OndselSolver/x64/Debug/DispCompIeqctJeqcO.obj
+new file mode 100644
+index 0000000000..ed8109acd3
+Binary files /dev/null and b/OndselSolver/x64/Debug/DispCompIeqctJeqcO.obj differ
+diff --git a/OndselSolver/x64/Debug/DistIecJec.obj b/OndselSolver/x64/Debug/DistIecJec.obj
+new file mode 100644
+index 0000000000..64a5e21d13
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistIecJec.obj differ
+diff --git a/OndselSolver/x64/Debug/DistIeqcJec.obj b/OndselSolver/x64/Debug/DistIeqcJec.obj
+new file mode 100644
+index 0000000000..8f6dfe34a6
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistIeqcJec.obj differ
+diff --git a/OndselSolver/x64/Debug/DistIeqcJeqc.obj b/OndselSolver/x64/Debug/DistIeqcJeqc.obj
+new file mode 100644
+index 0000000000..82cba7a006
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistIeqcJeqc.obj differ
+diff --git a/OndselSolver/x64/Debug/DistIeqctJeqc.obj b/OndselSolver/x64/Debug/DistIeqctJeqc.obj
+new file mode 100644
+index 0000000000..9811f631f7
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistIeqctJeqc.obj differ
+diff --git a/OndselSolver/x64/Debug/DistanceConstraintIJ.obj b/OndselSolver/x64/Debug/DistanceConstraintIJ.obj
+new file mode 100644
+index 0000000000..0950258619
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistanceConstraintIJ.obj differ
+diff --git a/OndselSolver/x64/Debug/DistanceConstraintIqcJc.obj b/OndselSolver/x64/Debug/DistanceConstraintIqcJc.obj
+new file mode 100644
+index 0000000000..e2dff95bb8
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistanceConstraintIqcJc.obj differ
+diff --git a/OndselSolver/x64/Debug/DistanceConstraintIqcJqc.obj b/OndselSolver/x64/Debug/DistanceConstraintIqcJqc.obj
+new file mode 100644
+index 0000000000..4c57ee9732
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistanceConstraintIqcJqc.obj differ
+diff --git a/OndselSolver/x64/Debug/DistanceConstraintIqctJqc.obj b/OndselSolver/x64/Debug/DistanceConstraintIqctJqc.obj
+new file mode 100644
+index 0000000000..de60dcb14c
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistanceConstraintIqctJqc.obj differ
+diff --git a/OndselSolver/x64/Debug/DistancexyConstraintIJ.obj b/OndselSolver/x64/Debug/DistancexyConstraintIJ.obj
+new file mode 100644
+index 0000000000..f68e2565d4
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistancexyConstraintIJ.obj differ
+diff --git a/OndselSolver/x64/Debug/DistancexyConstraintIqcJc.obj b/OndselSolver/x64/Debug/DistancexyConstraintIqcJc.obj
+new file mode 100644
+index 0000000000..51cd7061b1
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistancexyConstraintIqcJc.obj differ
+diff --git a/OndselSolver/x64/Debug/DistancexyConstraintIqcJqc.obj b/OndselSolver/x64/Debug/DistancexyConstraintIqcJqc.obj
+new file mode 100644
+index 0000000000..91f019b0bc
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistancexyConstraintIqcJqc.obj differ
+diff --git a/OndselSolver/x64/Debug/DistxyIecJec.obj b/OndselSolver/x64/Debug/DistxyIecJec.obj
+new file mode 100644
+index 0000000000..9f2524ebe2
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistxyIecJec.obj differ
+diff --git a/OndselSolver/x64/Debug/DistxyIeqcJec.obj b/OndselSolver/x64/Debug/DistxyIeqcJec.obj
+new file mode 100644
+index 0000000000..0507beb4c7
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistxyIeqcJec.obj differ
+diff --git a/OndselSolver/x64/Debug/DistxyIeqcJeqc.obj b/OndselSolver/x64/Debug/DistxyIeqcJeqc.obj
+new file mode 100644
+index 0000000000..8a2815160c
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistxyIeqcJeqc.obj differ
+diff --git a/OndselSolver/x64/Debug/DistxyIeqctJeqc.obj b/OndselSolver/x64/Debug/DistxyIeqctJeqc.obj
+new file mode 100644
+index 0000000000..ced4f3249f
+Binary files /dev/null and b/OndselSolver/x64/Debug/DistxyIeqctJeqc.obj differ
+diff --git a/OndselSolver/x64/Debug/EigenDecomposition.obj b/OndselSolver/x64/Debug/EigenDecomposition.obj
+new file mode 100644
+index 0000000000..fc7b3a9efe
+Binary files /dev/null and b/OndselSolver/x64/Debug/EigenDecomposition.obj differ
+diff --git a/OndselSolver/x64/Debug/EndFramec.obj b/OndselSolver/x64/Debug/EndFramec.obj
+new file mode 100644
+index 0000000000..55709855d2
+Binary files /dev/null and b/OndselSolver/x64/Debug/EndFramec.obj differ
+diff --git a/OndselSolver/x64/Debug/EndFrameqc.obj b/OndselSolver/x64/Debug/EndFrameqc.obj
+new file mode 100644
+index 0000000000..83fba58f12
+Binary files /dev/null and b/OndselSolver/x64/Debug/EndFrameqc.obj differ
+diff --git a/OndselSolver/x64/Debug/EndFrameqct.obj b/OndselSolver/x64/Debug/EndFrameqct.obj
+new file mode 100644
+index 0000000000..c0a7a3384a
+Binary files /dev/null and b/OndselSolver/x64/Debug/EndFrameqct.obj differ
+diff --git a/OndselSolver/x64/Debug/EndFrameqct2.obj b/OndselSolver/x64/Debug/EndFrameqct2.obj
+new file mode 100644
+index 0000000000..c349d475e3
+Binary files /dev/null and b/OndselSolver/x64/Debug/EndFrameqct2.obj differ
+diff --git a/OndselSolver/x64/Debug/EulerAngles.obj b/OndselSolver/x64/Debug/EulerAngles.obj
+new file mode 100644
+index 0000000000..3d7a675ea1
+Binary files /dev/null and b/OndselSolver/x64/Debug/EulerAngles.obj differ
+diff --git a/OndselSolver/x64/Debug/EulerAnglesDDot.obj b/OndselSolver/x64/Debug/EulerAnglesDDot.obj
+new file mode 100644
+index 0000000000..f2f4b4d90e
+Binary files /dev/null and b/OndselSolver/x64/Debug/EulerAnglesDDot.obj differ
+diff --git a/OndselSolver/x64/Debug/EulerAnglesDot.obj b/OndselSolver/x64/Debug/EulerAnglesDot.obj
+new file mode 100644
+index 0000000000..fbaa28d75a
+Binary files /dev/null and b/OndselSolver/x64/Debug/EulerAnglesDot.obj differ
+diff --git a/OndselSolver/x64/Debug/EulerAngleszxz.obj b/OndselSolver/x64/Debug/EulerAngleszxz.obj
+new file mode 100644
+index 0000000000..276fee1523
+Binary files /dev/null and b/OndselSolver/x64/Debug/EulerAngleszxz.obj differ
+diff --git a/OndselSolver/x64/Debug/EulerAngleszxzDDot.obj b/OndselSolver/x64/Debug/EulerAngleszxzDDot.obj
+new file mode 100644
+index 0000000000..ef383e4996
+Binary files /dev/null and b/OndselSolver/x64/Debug/EulerAngleszxzDDot.obj differ
+diff --git a/OndselSolver/x64/Debug/EulerAngleszxzDot.obj b/OndselSolver/x64/Debug/EulerAngleszxzDot.obj
+new file mode 100644
+index 0000000000..f3ef51f0ae
+Binary files /dev/null and b/OndselSolver/x64/Debug/EulerAngleszxzDot.obj differ
+diff --git a/OndselSolver/x64/Debug/EulerArray.obj b/OndselSolver/x64/Debug/EulerArray.obj
+new file mode 100644
+index 0000000000..5b905e30a7
+Binary files /dev/null and b/OndselSolver/x64/Debug/EulerArray.obj differ
+diff --git a/OndselSolver/x64/Debug/EulerConstraint.obj b/OndselSolver/x64/Debug/EulerConstraint.obj
+new file mode 100644
+index 0000000000..098857ff34
+Binary files /dev/null and b/OndselSolver/x64/Debug/EulerConstraint.obj differ
+diff --git a/OndselSolver/x64/Debug/EulerParameters.obj b/OndselSolver/x64/Debug/EulerParameters.obj
+new file mode 100644
+index 0000000000..822e30ffa7
+Binary files /dev/null and b/OndselSolver/x64/Debug/EulerParameters.obj differ
+diff --git a/OndselSolver/x64/Debug/EulerParametersDDot.obj b/OndselSolver/x64/Debug/EulerParametersDDot.obj
+new file mode 100644
+index 0000000000..9697d48aa1
+Binary files /dev/null and b/OndselSolver/x64/Debug/EulerParametersDDot.obj differ
+diff --git a/OndselSolver/x64/Debug/EulerParametersDot.obj b/OndselSolver/x64/Debug/EulerParametersDot.obj
+new file mode 100644
+index 0000000000..633b61d006
+Binary files /dev/null and b/OndselSolver/x64/Debug/EulerParametersDot.obj differ
+diff --git a/OndselSolver/x64/Debug/Exponential.obj b/OndselSolver/x64/Debug/Exponential.obj
+new file mode 100644
+index 0000000000..2c725c8639
+Binary files /dev/null and b/OndselSolver/x64/Debug/Exponential.obj differ
+diff --git a/OndselSolver/x64/Debug/ExpressionX.obj b/OndselSolver/x64/Debug/ExpressionX.obj
+new file mode 100644
+index 0000000000..9509a172e4
+Binary files /dev/null and b/OndselSolver/x64/Debug/ExpressionX.obj differ
+diff --git a/OndselSolver/x64/Debug/ExternalSystem.obj b/OndselSolver/x64/Debug/ExternalSystem.obj
+new file mode 100644
+index 0000000000..67c8144eda
+Binary files /dev/null and b/OndselSolver/x64/Debug/ExternalSystem.obj differ
+diff --git a/OndselSolver/x64/Debug/FixedJoint.obj b/OndselSolver/x64/Debug/FixedJoint.obj
+new file mode 100644
+index 0000000000..0f446dee83
+Binary files /dev/null and b/OndselSolver/x64/Debug/FixedJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/ForceTorqueData.obj b/OndselSolver/x64/Debug/ForceTorqueData.obj
+new file mode 100644
+index 0000000000..3cf059ddd7
+Binary files /dev/null and b/OndselSolver/x64/Debug/ForceTorqueData.obj differ
+diff --git a/OndselSolver/x64/Debug/ForceTorqueItem.obj b/OndselSolver/x64/Debug/ForceTorqueItem.obj
+new file mode 100644
+index 0000000000..f2db8048f5
+Binary files /dev/null and b/OndselSolver/x64/Debug/ForceTorqueItem.obj differ
+diff --git a/OndselSolver/x64/Debug/FullColumn.obj b/OndselSolver/x64/Debug/FullColumn.obj
+new file mode 100644
+index 0000000000..1d2e3cd20b
+Binary files /dev/null and b/OndselSolver/x64/Debug/FullColumn.obj differ
+diff --git a/OndselSolver/x64/Debug/FullMatrix.obj b/OndselSolver/x64/Debug/FullMatrix.obj
+new file mode 100644
+index 0000000000..ff6a7f4097
+Binary files /dev/null and b/OndselSolver/x64/Debug/FullMatrix.obj differ
+diff --git a/OndselSolver/x64/Debug/FullMotion.obj b/OndselSolver/x64/Debug/FullMotion.obj
+new file mode 100644
+index 0000000000..cebfe0cf94
+Binary files /dev/null and b/OndselSolver/x64/Debug/FullMotion.obj differ
+diff --git a/OndselSolver/x64/Debug/FullRow.obj b/OndselSolver/x64/Debug/FullRow.obj
+new file mode 100644
+index 0000000000..6c15d646a7
+Binary files /dev/null and b/OndselSolver/x64/Debug/FullRow.obj differ
+diff --git a/OndselSolver/x64/Debug/FullVector.obj b/OndselSolver/x64/Debug/FullVector.obj
+new file mode 100644
+index 0000000000..20fcb40b75
+Binary files /dev/null and b/OndselSolver/x64/Debug/FullVector.obj differ
+diff --git a/OndselSolver/x64/Debug/Function.obj b/OndselSolver/x64/Debug/Function.obj
+new file mode 100644
+index 0000000000..7ca22fc3a6
+Binary files /dev/null and b/OndselSolver/x64/Debug/Function.obj differ
+diff --git a/OndselSolver/x64/Debug/FunctionFromData.obj b/OndselSolver/x64/Debug/FunctionFromData.obj
+new file mode 100644
+index 0000000000..4cd4122b14
+Binary files /dev/null and b/OndselSolver/x64/Debug/FunctionFromData.obj differ
+diff --git a/OndselSolver/x64/Debug/FunctionWithManyArgs.obj b/OndselSolver/x64/Debug/FunctionWithManyArgs.obj
+new file mode 100644
+index 0000000000..6238c79fd2
+Binary files /dev/null and b/OndselSolver/x64/Debug/FunctionWithManyArgs.obj differ
+diff --git a/OndselSolver/x64/Debug/FunctionX.obj b/OndselSolver/x64/Debug/FunctionX.obj
+new file mode 100644
+index 0000000000..8b5b5a5918
+Binary files /dev/null and b/OndselSolver/x64/Debug/FunctionX.obj differ
+diff --git a/OndselSolver/x64/Debug/FunctionXY.obj b/OndselSolver/x64/Debug/FunctionXY.obj
+new file mode 100644
+index 0000000000..d9724e4512
+Binary files /dev/null and b/OndselSolver/x64/Debug/FunctionXY.obj differ
+diff --git a/OndselSolver/x64/Debug/FunctionXcParameter.obj b/OndselSolver/x64/Debug/FunctionXcParameter.obj
+new file mode 100644
+index 0000000000..b3d9e46297
+Binary files /dev/null and b/OndselSolver/x64/Debug/FunctionXcParameter.obj differ
+diff --git a/OndselSolver/x64/Debug/Functions.obj b/OndselSolver/x64/Debug/Functions.obj
+new file mode 100644
+index 0000000000..9bfbe7435d
+Binary files /dev/null and b/OndselSolver/x64/Debug/Functions.obj differ
+diff --git a/OndselSolver/x64/Debug/GEFullMat.obj b/OndselSolver/x64/Debug/GEFullMat.obj
+new file mode 100644
+index 0000000000..5aa5800c87
+Binary files /dev/null and b/OndselSolver/x64/Debug/GEFullMat.obj differ
+diff --git a/OndselSolver/x64/Debug/GEFullMatFullPv.obj b/OndselSolver/x64/Debug/GEFullMatFullPv.obj
+new file mode 100644
+index 0000000000..3b63cbda12
+Binary files /dev/null and b/OndselSolver/x64/Debug/GEFullMatFullPv.obj differ
+diff --git a/OndselSolver/x64/Debug/GEFullMatParPv.obj b/OndselSolver/x64/Debug/GEFullMatParPv.obj
+new file mode 100644
+index 0000000000..2352288004
+Binary files /dev/null and b/OndselSolver/x64/Debug/GEFullMatParPv.obj differ
+diff --git a/OndselSolver/x64/Debug/GESpMat.obj b/OndselSolver/x64/Debug/GESpMat.obj
+new file mode 100644
+index 0000000000..cadb35a053
+Binary files /dev/null and b/OndselSolver/x64/Debug/GESpMat.obj differ
+diff --git a/OndselSolver/x64/Debug/GESpMatFullPv.obj b/OndselSolver/x64/Debug/GESpMatFullPv.obj
+new file mode 100644
+index 0000000000..d692ecbbdb
+Binary files /dev/null and b/OndselSolver/x64/Debug/GESpMatFullPv.obj differ
+diff --git a/OndselSolver/x64/Debug/GESpMatFullPvPosIC.obj b/OndselSolver/x64/Debug/GESpMatFullPvPosIC.obj
+new file mode 100644
+index 0000000000..097594bcaf
+Binary files /dev/null and b/OndselSolver/x64/Debug/GESpMatFullPvPosIC.obj differ
+diff --git a/OndselSolver/x64/Debug/GESpMatParPv.obj b/OndselSolver/x64/Debug/GESpMatParPv.obj
+new file mode 100644
+index 0000000000..7b83c9f8ad
+Binary files /dev/null and b/OndselSolver/x64/Debug/GESpMatParPv.obj differ
+diff --git a/OndselSolver/x64/Debug/GESpMatParPvMarko.obj b/OndselSolver/x64/Debug/GESpMatParPvMarko.obj
+new file mode 100644
+index 0000000000..5c9a39db5d
+Binary files /dev/null and b/OndselSolver/x64/Debug/GESpMatParPvMarko.obj differ
+diff --git a/OndselSolver/x64/Debug/GESpMatParPvMarkoFast.obj b/OndselSolver/x64/Debug/GESpMatParPvMarkoFast.obj
+new file mode 100644
+index 0000000000..f6012d79cb
+Binary files /dev/null and b/OndselSolver/x64/Debug/GESpMatParPvMarkoFast.obj differ
+diff --git a/OndselSolver/x64/Debug/GESpMatParPvPrecise.obj b/OndselSolver/x64/Debug/GESpMatParPvPrecise.obj
+new file mode 100644
+index 0000000000..b02686427b
+Binary files /dev/null and b/OndselSolver/x64/Debug/GESpMatParPvPrecise.obj differ
+diff --git a/OndselSolver/x64/Debug/GearConstraintIJ.obj b/OndselSolver/x64/Debug/GearConstraintIJ.obj
+new file mode 100644
+index 0000000000..b4ab2f1505
+Binary files /dev/null and b/OndselSolver/x64/Debug/GearConstraintIJ.obj differ
+diff --git a/OndselSolver/x64/Debug/GearConstraintIqcJc.obj b/OndselSolver/x64/Debug/GearConstraintIqcJc.obj
+new file mode 100644
+index 0000000000..91f9c8e9d0
+Binary files /dev/null and b/OndselSolver/x64/Debug/GearConstraintIqcJc.obj differ
+diff --git a/OndselSolver/x64/Debug/GearConstraintIqcJqc.obj b/OndselSolver/x64/Debug/GearConstraintIqcJqc.obj
+new file mode 100644
+index 0000000000..9b0e1ab01f
+Binary files /dev/null and b/OndselSolver/x64/Debug/GearConstraintIqcJqc.obj differ
+diff --git a/OndselSolver/x64/Debug/GearJoint.obj b/OndselSolver/x64/Debug/GearJoint.obj
+new file mode 100644
+index 0000000000..c2ef7b8c06
+Binary files /dev/null and b/OndselSolver/x64/Debug/GearJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/GeneralSpline.obj b/OndselSolver/x64/Debug/GeneralSpline.obj
+new file mode 100644
+index 0000000000..1771aee219
+Binary files /dev/null and b/OndselSolver/x64/Debug/GeneralSpline.obj differ
+diff --git a/OndselSolver/x64/Debug/ICKineIntegrator.obj b/OndselSolver/x64/Debug/ICKineIntegrator.obj
+new file mode 100644
+index 0000000000..0f2cbbbf69
+Binary files /dev/null and b/OndselSolver/x64/Debug/ICKineIntegrator.obj differ
+diff --git a/OndselSolver/x64/Debug/InLineJoint.obj b/OndselSolver/x64/Debug/InLineJoint.obj
+new file mode 100644
+index 0000000000..6055e29e0a
+Binary files /dev/null and b/OndselSolver/x64/Debug/InLineJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/InPlaneJoint.obj b/OndselSolver/x64/Debug/InPlaneJoint.obj
+new file mode 100644
+index 0000000000..6710268ce3
+Binary files /dev/null and b/OndselSolver/x64/Debug/InPlaneJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/IndependentVariable.obj b/OndselSolver/x64/Debug/IndependentVariable.obj
+new file mode 100644
+index 0000000000..6d545fe5a2
+Binary files /dev/null and b/OndselSolver/x64/Debug/IndependentVariable.obj differ
+diff --git a/OndselSolver/x64/Debug/Integral.obj b/OndselSolver/x64/Debug/Integral.obj
+new file mode 100644
+index 0000000000..c800cd7d98
+Binary files /dev/null and b/OndselSolver/x64/Debug/Integral.obj differ
+diff --git a/OndselSolver/x64/Debug/Integrator.obj b/OndselSolver/x64/Debug/Integrator.obj
+new file mode 100644
+index 0000000000..c7a40228b6
+Binary files /dev/null and b/OndselSolver/x64/Debug/Integrator.obj differ
+diff --git a/OndselSolver/x64/Debug/IntegratorInterface.obj b/OndselSolver/x64/Debug/IntegratorInterface.obj
+new file mode 100644
+index 0000000000..a0a4d92213
+Binary files /dev/null and b/OndselSolver/x64/Debug/IntegratorInterface.obj differ
+diff --git a/OndselSolver/x64/Debug/Item.obj b/OndselSolver/x64/Debug/Item.obj
+new file mode 100644
+index 0000000000..7db7199c82
+Binary files /dev/null and b/OndselSolver/x64/Debug/Item.obj differ
+diff --git a/OndselSolver/x64/Debug/Joint.obj b/OndselSolver/x64/Debug/Joint.obj
+new file mode 100644
+index 0000000000..c2f2753619
+Binary files /dev/null and b/OndselSolver/x64/Debug/Joint.obj differ
+diff --git a/OndselSolver/x64/Debug/KineIntegrator.obj b/OndselSolver/x64/Debug/KineIntegrator.obj
+new file mode 100644
+index 0000000000..a0ec18f4f2
+Binary files /dev/null and b/OndselSolver/x64/Debug/KineIntegrator.obj differ
+diff --git a/OndselSolver/x64/Debug/KinematicIeJe.obj b/OndselSolver/x64/Debug/KinematicIeJe.obj
+new file mode 100644
+index 0000000000..35cb238d05
+Binary files /dev/null and b/OndselSolver/x64/Debug/KinematicIeJe.obj differ
+diff --git a/OndselSolver/x64/Debug/LDUFullMat.obj b/OndselSolver/x64/Debug/LDUFullMat.obj
+new file mode 100644
+index 0000000000..16305aa6cd
+Binary files /dev/null and b/OndselSolver/x64/Debug/LDUFullMat.obj differ
+diff --git a/OndselSolver/x64/Debug/LDUFullMatParPv.obj b/OndselSolver/x64/Debug/LDUFullMatParPv.obj
+new file mode 100644
+index 0000000000..b57b06e316
+Binary files /dev/null and b/OndselSolver/x64/Debug/LDUFullMatParPv.obj differ
+diff --git a/OndselSolver/x64/Debug/LDUSpMat.obj b/OndselSolver/x64/Debug/LDUSpMat.obj
+new file mode 100644
+index 0000000000..a70cf73cb1
+Binary files /dev/null and b/OndselSolver/x64/Debug/LDUSpMat.obj differ
+diff --git a/OndselSolver/x64/Debug/LDUSpMatParPv.obj b/OndselSolver/x64/Debug/LDUSpMatParPv.obj
+new file mode 100644
+index 0000000000..3c8d6d4416
+Binary files /dev/null and b/OndselSolver/x64/Debug/LDUSpMatParPv.obj differ
+diff --git a/OndselSolver/x64/Debug/LDUSpMatParPvMarko.obj b/OndselSolver/x64/Debug/LDUSpMatParPvMarko.obj
+new file mode 100644
+index 0000000000..9be1cbaeb3
+Binary files /dev/null and b/OndselSolver/x64/Debug/LDUSpMatParPvMarko.obj differ
+diff --git a/OndselSolver/x64/Debug/LDUSpMatParPvPrecise.obj b/OndselSolver/x64/Debug/LDUSpMatParPvPrecise.obj
+new file mode 100644
+index 0000000000..37a3887105
+Binary files /dev/null and b/OndselSolver/x64/Debug/LDUSpMatParPvPrecise.obj differ
+diff --git a/OndselSolver/x64/Debug/LineInPlaneJoint.obj b/OndselSolver/x64/Debug/LineInPlaneJoint.obj
+new file mode 100644
+index 0000000000..79531b1516
+Binary files /dev/null and b/OndselSolver/x64/Debug/LineInPlaneJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/LinearMultiStepMethod.obj b/OndselSolver/x64/Debug/LinearMultiStepMethod.obj
+new file mode 100644
+index 0000000000..4405ef55cc
+Binary files /dev/null and b/OndselSolver/x64/Debug/LinearMultiStepMethod.obj differ
+diff --git a/OndselSolver/x64/Debug/Ln.obj b/OndselSolver/x64/Debug/Ln.obj
+new file mode 100644
+index 0000000000..96eaa79626
+Binary files /dev/null and b/OndselSolver/x64/Debug/Ln.obj differ
+diff --git a/OndselSolver/x64/Debug/Log10.obj b/OndselSolver/x64/Debug/Log10.obj
+new file mode 100644
+index 0000000000..e4497cde68
+Binary files /dev/null and b/OndselSolver/x64/Debug/Log10.obj differ
+diff --git a/OndselSolver/x64/Debug/LogN.obj b/OndselSolver/x64/Debug/LogN.obj
+new file mode 100644
+index 0000000000..61779f61ec
+Binary files /dev/null and b/OndselSolver/x64/Debug/LogN.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynAxialRotationJoint.obj b/OndselSolver/x64/Debug/MBDynAxialRotationJoint.obj
+new file mode 100644
+index 0000000000..32c25cf62d
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynAxialRotationJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynBlock.obj b/OndselSolver/x64/Debug/MBDynBlock.obj
+new file mode 100644
+index 0000000000..8fd670a380
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynBlock.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynBody.obj b/OndselSolver/x64/Debug/MBDynBody.obj
+new file mode 100644
+index 0000000000..31f85a67b6
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynBody.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynClampJoint.obj b/OndselSolver/x64/Debug/MBDynClampJoint.obj
+new file mode 100644
+index 0000000000..3c323e3373
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynClampJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynControlData.obj b/OndselSolver/x64/Debug/MBDynControlData.obj
+new file mode 100644
+index 0000000000..0994fd871a
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynControlData.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynData.obj b/OndselSolver/x64/Debug/MBDynData.obj
+new file mode 100644
+index 0000000000..7e0ec1c828
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynData.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynDrive.obj b/OndselSolver/x64/Debug/MBDynDrive.obj
+new file mode 100644
+index 0000000000..4dd4b47bcf
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynDrive.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynDriveHingeJoint.obj b/OndselSolver/x64/Debug/MBDynDriveHingeJoint.obj
+new file mode 100644
+index 0000000000..acea220ae6
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynDriveHingeJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynElement.obj b/OndselSolver/x64/Debug/MBDynElement.obj
+new file mode 100644
+index 0000000000..00e730cf61
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynElement.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynGravity.obj b/OndselSolver/x64/Debug/MBDynGravity.obj
+new file mode 100644
+index 0000000000..8b5308e63d
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynGravity.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynInLineJoint.obj b/OndselSolver/x64/Debug/MBDynInLineJoint.obj
+new file mode 100644
+index 0000000000..75a0b2fcc7
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynInLineJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynInPlaneJoint.obj b/OndselSolver/x64/Debug/MBDynInPlaneJoint.obj
+new file mode 100644
+index 0000000000..45f5637ba1
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynInPlaneJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynInitialValue.obj b/OndselSolver/x64/Debug/MBDynInitialValue.obj
+new file mode 100644
+index 0000000000..7bddc0a95b
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynInitialValue.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynItem.obj b/OndselSolver/x64/Debug/MBDynItem.obj
+new file mode 100644
+index 0000000000..1a4c3ff8b2
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynItem.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynJoint.obj b/OndselSolver/x64/Debug/MBDynJoint.obj
+new file mode 100644
+index 0000000000..3be456595b
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynMarker.obj b/OndselSolver/x64/Debug/MBDynMarker.obj
+new file mode 100644
+index 0000000000..d4cbc1d184
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynMarker.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynNode.obj b/OndselSolver/x64/Debug/MBDynNode.obj
+new file mode 100644
+index 0000000000..f1d5a317a5
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynNode.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynPrismaticJoint.obj b/OndselSolver/x64/Debug/MBDynPrismaticJoint.obj
+new file mode 100644
+index 0000000000..c91614e300
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynPrismaticJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynReference.obj b/OndselSolver/x64/Debug/MBDynReference.obj
+new file mode 100644
+index 0000000000..7b7ea705ff
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynReference.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynRevoluteHingeJoint.obj b/OndselSolver/x64/Debug/MBDynRevoluteHingeJoint.obj
+new file mode 100644
+index 0000000000..f65db37cf1
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynRevoluteHingeJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynRevolutePinJoint.obj b/OndselSolver/x64/Debug/MBDynRevolutePinJoint.obj
+new file mode 100644
+index 0000000000..61d0990207
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynRevolutePinJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynSphericalHingeJoint.obj b/OndselSolver/x64/Debug/MBDynSphericalHingeJoint.obj
+new file mode 100644
+index 0000000000..352fb95e46
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynSphericalHingeJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynStructural.obj b/OndselSolver/x64/Debug/MBDynStructural.obj
+new file mode 100644
+index 0000000000..91934f1542
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynStructural.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynSystem.obj b/OndselSolver/x64/Debug/MBDynSystem.obj
+new file mode 100644
+index 0000000000..821695853a
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynSystem.obj differ
+diff --git a/OndselSolver/x64/Debug/MBDynTotalJoint.obj b/OndselSolver/x64/Debug/MBDynTotalJoint.obj
+new file mode 100644
+index 0000000000..0b37dc006e
+Binary files /dev/null and b/OndselSolver/x64/Debug/MBDynTotalJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/MarkerFrame.obj b/OndselSolver/x64/Debug/MarkerFrame.obj
+new file mode 100644
+index 0000000000..3a5efdeeae
+Binary files /dev/null and b/OndselSolver/x64/Debug/MarkerFrame.obj differ
+diff --git a/OndselSolver/x64/Debug/MatrixDecomposition.obj b/OndselSolver/x64/Debug/MatrixDecomposition.obj
+new file mode 100644
+index 0000000000..0d273e8df3
+Binary files /dev/null and b/OndselSolver/x64/Debug/MatrixDecomposition.obj differ
+diff --git a/OndselSolver/x64/Debug/MatrixGaussElimination.obj b/OndselSolver/x64/Debug/MatrixGaussElimination.obj
+new file mode 100644
+index 0000000000..cb8b90ddd2
+Binary files /dev/null and b/OndselSolver/x64/Debug/MatrixGaussElimination.obj differ
+diff --git a/OndselSolver/x64/Debug/MatrixLDU.obj b/OndselSolver/x64/Debug/MatrixLDU.obj
+new file mode 100644
+index 0000000000..5abc6304e6
+Binary files /dev/null and b/OndselSolver/x64/Debug/MatrixLDU.obj differ
+diff --git a/OndselSolver/x64/Debug/MatrixSolver.obj b/OndselSolver/x64/Debug/MatrixSolver.obj
+new file mode 100644
+index 0000000000..7df44b617e
+Binary files /dev/null and b/OndselSolver/x64/Debug/MatrixSolver.obj differ
+diff --git a/OndselSolver/x64/Debug/MaximumIterationError.obj b/OndselSolver/x64/Debug/MaximumIterationError.obj
+new file mode 100644
+index 0000000000..f618311f83
+Binary files /dev/null and b/OndselSolver/x64/Debug/MaximumIterationError.obj differ
+diff --git a/OndselSolver/x64/Debug/MbDMath.obj b/OndselSolver/x64/Debug/MbDMath.obj
+new file mode 100644
+index 0000000000..615423a22c
+Binary files /dev/null and b/OndselSolver/x64/Debug/MbDMath.obj differ
+diff --git a/OndselSolver/x64/Debug/MomentOfInertiaSolver.obj b/OndselSolver/x64/Debug/MomentOfInertiaSolver.obj
+new file mode 100644
+index 0000000000..6ee215aebf
+Binary files /dev/null and b/OndselSolver/x64/Debug/MomentOfInertiaSolver.obj differ
+diff --git a/OndselSolver/x64/Debug/Negative.obj b/OndselSolver/x64/Debug/Negative.obj
+new file mode 100644
+index 0000000000..c9a6a3643c
+Binary files /dev/null and b/OndselSolver/x64/Debug/Negative.obj differ
+diff --git a/OndselSolver/x64/Debug/NewtonRaphson.obj b/OndselSolver/x64/Debug/NewtonRaphson.obj
+new file mode 100644
+index 0000000000..0457135d34
+Binary files /dev/null and b/OndselSolver/x64/Debug/NewtonRaphson.obj differ
+diff --git a/OndselSolver/x64/Debug/NewtonRaphsonError.obj b/OndselSolver/x64/Debug/NewtonRaphsonError.obj
+new file mode 100644
+index 0000000000..d2cac100f8
+Binary files /dev/null and b/OndselSolver/x64/Debug/NewtonRaphsonError.obj differ
+diff --git a/OndselSolver/x64/Debug/NoRotationJoint.obj b/OndselSolver/x64/Debug/NoRotationJoint.obj
+new file mode 100644
+index 0000000000..c98494c306
+Binary files /dev/null and b/OndselSolver/x64/Debug/NoRotationJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/NotKinematicError.obj b/OndselSolver/x64/Debug/NotKinematicError.obj
+new file mode 100644
+index 0000000000..37e54347cf
+Binary files /dev/null and b/OndselSolver/x64/Debug/NotKinematicError.obj differ
+diff --git a/OndselSolver/x64/Debug/Numeric.obj b/OndselSolver/x64/Debug/Numeric.obj
+new file mode 100644
+index 0000000000..724d4d03a8
+Binary files /dev/null and b/OndselSolver/x64/Debug/Numeric.obj differ
+diff --git a/OndselSolver/x64/Debug/OndselSolver.exe.recipe b/OndselSolver/x64/Debug/OndselSolver.exe.recipe
+new file mode 100644
+index 0000000000..69dd1f065c
+--- /dev/null
++++ b/OndselSolver/x64/Debug/OndselSolver.exe.recipe
+@@ -0,0 +1,11 @@
++﻿<?xml version="1.0" encoding="utf-8"?>
++<Project>
++  <ProjectOutputs>
++    <ProjectOutput>
++      <FullPath>E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\x64\Debug\OndselSolver.exe</FullPath>
++    </ProjectOutput>
++  </ProjectOutputs>
++  <ContentFiles />
++  <SatelliteDlls />
++  <NonRecipeFileRefs />
++</Project>
+\ No newline at end of file
+diff --git a/OndselSolver/x64/Debug/OndselSolver.ilk b/OndselSolver/x64/Debug/OndselSolver.ilk
+new file mode 100644
+index 0000000000..4282b24e07
+Binary files /dev/null and b/OndselSolver/x64/Debug/OndselSolver.ilk differ
+diff --git a/OndselSolver/x64/Debug/OndselSolver.log b/OndselSolver/x64/Debug/OndselSolver.log
+new file mode 100644
+index 0000000000..f5526f3cb1
+--- /dev/null
++++ b/OndselSolver/x64/Debug/OndselSolver.log
+@@ -0,0 +1,324 @@
++﻿  OndselSolver.cpp
++  Abs.cpp
++  AbsConstraint.cpp
++  AccICKineNewtonRaphson.cpp
++  AccICNewtonRaphson.cpp
++  AccKineNewtonRaphson.cpp
++  AccNewtonRaphson.cpp
++  AngleJoint.cpp
++  AngleZIecJec.cpp
++  AngleZIeqcJec.cpp
++  AngleZIeqcJeqc.cpp
++  AnyGeneralSpline.cpp
++  AnyPosICNewtonRaphson.cpp
++  ArcSine.cpp
++  ArcTan.cpp
++  ArcTan2.cpp
++  Arguments.cpp
++  Array.cpp
++  ASMTAngleJoint.cpp
++  ASMTAnimationParameters.cpp
++  ASMTAssembly.cpp
++  ASMTAtPointJoint.cpp
++  ASMTCompoundJoint.cpp
++  ASMTConstantGravity.cpp
++  ASMTConstantVelocityJoint.cpp
++  ASMTConstraintSet.cpp
++  ASMTCylindricalJoint.cpp
++  ASMTCylSphJoint.cpp
++  ASMTExtrusion.cpp
++  ASMTFixedJoint.cpp
++  ASMTForceTorque.cpp
++  ASMTGearJoint.cpp
++  ASMTGeneralMotion.cpp
++  ASMTInLineJoint.cpp
++  ASMTInPlaneJoint.cpp
++  ASMTLineInPlaneJoint.cpp
++  ASMTParallelAxesJoint.cpp
++  ASMTPerpendicularJoint.cpp
++  ASMTPlanarJoint.cpp
++  ASMTPointInLineJoint.cpp
++  ASMTItem.cpp
++  ASMTItemIJ.cpp
++  ASMTJoint.cpp
++  ASMTKinematicIJ.cpp
++  ASMTMarker.cpp
++  ASMTMotion.cpp
++  ASMTNoRotationJoint.cpp
++  ASMTPart.cpp
++  ASMTPointInPlaneJoint.cpp
++  ASMTPrincipalMassMarker.cpp
++  ASMTRackPinionJoint.cpp
++  ASMTRefCurve.cpp
++  ASMTRefItem.cpp
++  ASMTRefPoint.cpp
++  ASMTRefSurface.cpp
++  ASMTRevCylJoint.cpp
++  ASMTRevoluteJoint.cpp
++  ASMTRevRevJoint.cpp
++  ASMTRotationalMotion.cpp
++  ASMTScrewJoint.cpp
++  ASMTSimulationParameters.cpp
++  ASMTSpatialContainer.cpp
++  ASMTSpatialItem.cpp
++  ASMTSphericalJoint.cpp
++  ASMTSphSphJoint.cpp
++  ASMTTime.cpp
++  ASMTTranslationalMotion.cpp
++  ASMTTranslationalJoint.cpp
++  ASMTUniversalJoint.cpp
++  AtPointConstraintIJ.cpp
++  AtPointConstraintIqcJc.cpp
++  AtPointConstraintIqcJqc.cpp
++  AtPointConstraintIqctJqc.cpp
++  AtPointJoint.cpp
++  BasicIntegrator.cpp
++  BasicQuasiIntegrator.cpp
++  BasicUserFunction.cpp
++  CADSystem.cpp
++  CartesianFrame.cpp
++  CompoundJoint.cpp
++  Constant.cpp
++  ConstantGravity.cpp
++  ConstantVelocityJoint.cpp
++  Constraint.cpp
++  ConstraintIJ.cpp
++  ConstVelConstraintIJ.cpp
++  ConstVelConstraintIqcJc.cpp
++  ConstVelConstraintIqcJqc.cpp
++  Cosine.cpp
++  CREATE.cpp
++  CylindricalJoint.cpp
++  CylSphJoint.cpp
++  DifferentiatedGeneralSpline.cpp
++  EigenDecomposition.cpp
++  EndFrameqct2.cpp
++  EulerAngles.cpp
++  EulerAnglesDDot.cpp
++  EulerAnglesDot.cpp
++  Exponential.cpp
++  ExternalSystem.cpp
++  FunctionFromData.cpp
++  Functions.cpp
++  FunctionXcParameter.cpp
++  FunctionXY.cpp
++  GeneralSpline.cpp
++  Integral.cpp
++  Ln.cpp
++  Log10.cpp
++  LogN.cpp
++  MBDynAxialRotationJoint.cpp
++  MBDynBlock.cpp
++  MBDynBody.cpp
++  MBDynClampJoint.cpp
++  MBDynControlData.cpp
++  MBDynData.cpp
++  MBDynDrive.cpp
++  MBDynDriveHingeJoint.cpp
++  MBDynElement.cpp
++  MBDynGravity.cpp
++  MBDynInitialValue.cpp
++  MBDynInLineJoint.cpp
++  MBDynInPlaneJoint.cpp
++  MBDynItem.cpp
++  MBDynJoint.cpp
++  MBDynMarker.cpp
++  MBDynNode.cpp
++  MBDynPrismaticJoint.cpp
++  MBDynReference.cpp
++  MBDynRevoluteHingeJoint.cpp
++  MBDynRevolutePinJoint.cpp
++  MBDynSphericalHingeJoint.cpp
++  MBDynStructural.cpp
++  MBDynSystem.cpp
++  MBDynTotalJoint.cpp
++  MomentOfInertiaSolver.cpp
++  Negative.cpp
++  PiecewiseFunction.cpp
++  Polynomial.cpp
++  PosICDragNewtonRaphson.cpp
++  PosVelAccData.cpp
++  DiagonalMatrix.cpp
++  DifferenceOperator.cpp
++  DirectionCosineConstraintIJ.cpp
++  DirectionCosineConstraintIqcJc.cpp
++  DirectionCosineConstraintIqcJqc.cpp
++  DirectionCosineConstraintIqctJqc.cpp
++  DirectionCosineIecJec.cpp
++  DirectionCosineIeqcJec.cpp
++  DirectionCosineIeqcJeqc.cpp
++  DirectionCosineIeqctJeqc.cpp
++  DiscontinuityError.cpp
++  DispCompIecJecIe.cpp
++  DispCompIecJecKec.cpp
++  DispCompIecJecKeqc.cpp
++  DispCompIecJecO.cpp
++  DispCompIeqcJecIe.cpp
++  DispCompIeqcJecKeqc.cpp
++  DispCompIeqcJecO.cpp
++  DispCompIeqcJeqcIe.cpp
++  DispCompIeqcJeqcKeqc.cpp
++  DispCompIeqcJeqcKeqct.cpp
++  DispCompIeqcJeqcO.cpp
++  DispCompIeqctJeqcIe.cpp
++  DispCompIeqctJeqcKeqct.cpp
++  DispCompIeqctJeqcO.cpp
++  DistanceConstraintIJ.cpp
++  DistanceConstraintIqcJc.cpp
++  DistanceConstraintIqcJqc.cpp
++  DistanceConstraintIqctJqc.cpp
++  DistancexyConstraintIJ.cpp
++  DistancexyConstraintIqcJc.cpp
++  DistancexyConstraintIqcJqc.cpp
++  DistIecJec.cpp
++  DistIeqcJec.cpp
++  DistIeqcJeqc.cpp
++  DistIeqctJeqc.cpp
++  DistxyIecJec.cpp
++  DistxyIeqcJec.cpp
++  DistxyIeqcJeqc.cpp
++  DistxyIeqctJeqc.cpp
++  EndFramec.cpp
++  EndFrameqc.cpp
++  EndFrameqct.cpp
++  EulerAngleszxz.cpp
++  EulerAngleszxzDDot.cpp
++  EulerAngleszxzDot.cpp
++  EulerArray.cpp
++  EulerConstraint.cpp
++  EulerParameters.cpp
++  EulerParametersDDot.cpp
++  EulerParametersDot.cpp
++  ExpressionX.cpp
++  FixedJoint.cpp
++  ForceTorqueData.cpp
++  ForceTorqueItem.cpp
++  FullColumn.cpp
++  FullMatrix.cpp
++  FullMotion.cpp
++  FullRow.cpp
++  Function.cpp
++  FunctionWithManyArgs.cpp
++  FunctionX.cpp
++  GearConstraintIJ.cpp
++  GearConstraintIqcJc.cpp
++  GearConstraintIqcJqc.cpp
++  GearJoint.cpp
++  GEFullMat.cpp
++  GEFullMatFullPv.cpp
++  GEFullMatParPv.cpp
++  GESpMat.cpp
++  GESpMatFullPv.cpp
++  GESpMatFullPvPosIC.cpp
++  GESpMatParPv.cpp
++  GESpMatParPvMarko.cpp
++  GESpMatParPvMarkoFast.cpp
++  GESpMatParPvPrecise.cpp
++  ICKineIntegrator.cpp
++  IndependentVariable.cpp
++  InLineJoint.cpp
++  InPlaneJoint.cpp
++  Integrator.cpp
++  IntegratorInterface.cpp
++  Item.cpp
++  Joint.cpp
++  KineIntegrator.cpp
++  KinematicIeJe.cpp
++  LDUFullMatParPv.cpp
++  LDUSpMat.cpp
++  LDUSpMatParPv.cpp
++  LDUSpMatParPvMarko.cpp
++  LDUSpMatParPvPrecise.cpp
++  LinearMultiStepMethod.cpp
++  LineInPlaneJoint.cpp
++  MarkerFrame.cpp
++  MatrixDecomposition.cpp
++  MatrixGaussElimination.cpp
++  MatrixLDU.cpp
++  MatrixSolver.cpp
++  MaximumIterationError.cpp
++  MbDMath.cpp
++  NewtonRaphson.cpp
++  NewtonRaphsonError.cpp
++  NoRotationJoint.cpp
++  NotKinematicError.cpp
++  Numeric.cpp
++  OrbitAngleZIecJec.cpp
++  OrbitAngleZIeqcJec.cpp
++  OrbitAngleZIeqcJeqc.cpp
++  Orientation.cpp
++  ParallelAxesJoint.cpp
++  Part.cpp
++  PartFrame.cpp
++  PerpendicularJoint.cpp
++  PlanarJoint.cpp
++  PointInLineJoint.cpp
++  PointInPlaneJoint.cpp
++  PosICKineNewtonRaphson.cpp
++  PosICNewtonRaphson.cpp
++  PosKineNewtonRaphson.cpp
++  PosNewtonRaphson.cpp
++  Power.cpp
++  PrescribedMotion.cpp
++  Product.cpp
++  QuasiIntegrator.cpp
++  RackPinConstraintIJ.cpp
++  RackPinConstraintIqcJc.cpp
++  RackPinConstraintIqcJqc.cpp
++  RackPinJoint.cpp
++  RampStepFunction.cpp
++  Reciprocal.cpp
++  RedundantConstraint.cpp
++  RevCylJoint.cpp
++  RevoluteJoint.cpp
++  RevRevJoint.cpp
++  RowTypeMatrix.cpp
++  ScalarNewtonRaphson.cpp
++  ScrewConstraintIJ.cpp
++  ScrewConstraintIqcJc.cpp
++  ScrewConstraintIqcJqc.cpp
++  ScrewJoint.cpp
++  SimulationStoppingError.cpp
++  Sine.cpp
++  SingularMatrixError.cpp
++  Solver.cpp
++  SparseColumn.cpp
++  SparseMatrix.cpp
++  SparseRow.cpp
++  SparseVector.cpp
++  SphericalJoint.cpp
++  SphSphJoint.cpp
++  StableBackwardDifference.cpp
++  LDUFullMat.cpp
++  StateData.cpp
++  StepFunction.cpp
++  Sum.cpp
++  Symbolic.cpp
++  SymbolicParser.cpp
++  SyntaxError.cpp
++  System.cpp
++  SystemNewtonRaphson.cpp
++  SystemSolver.cpp
++  Time.cpp
++  TooManyTriesError.cpp
++  TooSmallStepSizeError.cpp
++  Transitions.cpp
++  Translation.cpp
++  TranslationalJoint.cpp
++  TranslationConstraintIJ.cpp
++  TranslationConstraintIqcJc.cpp
++  TranslationConstraintIqcJqc.cpp
++  TranslationConstraintIqctJqc.cpp
++  Units.cpp
++  UniversalJoint.cpp
++  UserFunction.cpp
++  Variable.cpp
++  FullVector.cpp
++  VectorNewtonRaphson.cpp
++  VelICKineSolver.cpp
++  VelICSolver.cpp
++  VelKineSolver.cpp
++  VelSolver.cpp
++  ZRotation.cpp
++  ZTranslation.cpp
++  OndselSolver.vcxproj -> E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\x64\Debug\OndselSolver.exe
+diff --git a/OndselSolver/x64/Debug/OndselSolver.obj b/OndselSolver/x64/Debug/OndselSolver.obj
+new file mode 100644
+index 0000000000..753451428f
+Binary files /dev/null and b/OndselSolver/x64/Debug/OndselSolver.obj differ
+diff --git a/OndselSolver/x64/Debug/OndselSolver.res b/OndselSolver/x64/Debug/OndselSolver.res
+new file mode 100644
+index 0000000000..36f26e234a
+Binary files /dev/null and b/OndselSolver/x64/Debug/OndselSolver.res differ
+diff --git a/OndselSolver/x64/Debug/OndselSolver.tlog/CL.11132.write.1.tlog b/OndselSolver/x64/Debug/OndselSolver.tlog/CL.11132.write.1.tlog
+new file mode 100644
+index 0000000000..8405655d55
+Binary files /dev/null and b/OndselSolver/x64/Debug/OndselSolver.tlog/CL.11132.write.1.tlog differ
+diff --git a/OndselSolver/x64/Debug/OndselSolver.tlog/CL.command.1.tlog b/OndselSolver/x64/Debug/OndselSolver.tlog/CL.command.1.tlog
+new file mode 100644
+index 0000000000..e810048ea9
+Binary files /dev/null and b/OndselSolver/x64/Debug/OndselSolver.tlog/CL.command.1.tlog differ
+diff --git a/OndselSolver/x64/Debug/OndselSolver.tlog/CL.read.1.tlog b/OndselSolver/x64/Debug/OndselSolver.tlog/CL.read.1.tlog
+new file mode 100644
+index 0000000000..02a468650a
+Binary files /dev/null and b/OndselSolver/x64/Debug/OndselSolver.tlog/CL.read.1.tlog differ
+diff --git a/OndselSolver/x64/Debug/OndselSolver.tlog/Cl.items.tlog b/OndselSolver/x64/Debug/OndselSolver.tlog/Cl.items.tlog
+new file mode 100644
+index 0000000000..cdd738ada0
+--- /dev/null
++++ b/OndselSolver/x64/Debug/OndselSolver.tlog/Cl.items.tlog
+@@ -0,0 +1,323 @@
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\testapp\OndselSolver.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\OndselSolver.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Abs.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Abs.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AbsConstraint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AbsConstraint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AccICKineNewtonRaphson.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AccICKineNewtonRaphson.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AccICNewtonRaphson.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AccICNewtonRaphson.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AccKineNewtonRaphson.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AccKineNewtonRaphson.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AccNewtonRaphson.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AccNewtonRaphson.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AngleJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AngleJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AngleZIecJec.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AngleZIecJec.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AngleZIeqcJec.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AngleZIeqcJec.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AngleZIeqcJeqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AngleZIeqcJeqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AnyGeneralSpline.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AnyGeneralSpline.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AnyPosICNewtonRaphson.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AnyPosICNewtonRaphson.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ArcSine.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ArcSine.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ArcTan.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ArcTan.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ArcTan2.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ArcTan2.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Arguments.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Arguments.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Array.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Array.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTAngleJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTAngleJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTAnimationParameters.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTAnimationParameters.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTAssembly.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTAssembly.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTAtPointJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTAtPointJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTCompoundJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTCompoundJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTConstantGravity.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTConstantGravity.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTConstantVelocityJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTConstantVelocityJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTConstraintSet.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTConstraintSet.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTCylindricalJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTCylindricalJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTCylSphJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTCylSphJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTExtrusion.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTExtrusion.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTFixedJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTFixedJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTForceTorque.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTForceTorque.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTGearJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTGearJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTGeneralMotion.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTGeneralMotion.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTInLineJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTInLineJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTInPlaneJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTInPlaneJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTLineInPlaneJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTLineInPlaneJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTParallelAxesJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTParallelAxesJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTPerpendicularJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTPerpendicularJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTPlanarJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTPlanarJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTPointInLineJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTPointInLineJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTItem.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTItem.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTItemIJ.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTItemIJ.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTKinematicIJ.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTKinematicIJ.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTMarker.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTMarker.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTMotion.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTMotion.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTNoRotationJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTNoRotationJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTPart.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTPart.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTPointInPlaneJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTPointInPlaneJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTPrincipalMassMarker.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTPrincipalMassMarker.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTRackPinionJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTRackPinionJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTRefCurve.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTRefCurve.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTRefItem.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTRefItem.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTRefPoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTRefPoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTRefSurface.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTRefSurface.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTRevCylJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTRevCylJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTRevoluteJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTRevoluteJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTRevRevJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTRevRevJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTRotationalMotion.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTRotationalMotion.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTScrewJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTScrewJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTSimulationParameters.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTSimulationParameters.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTSpatialContainer.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTSpatialContainer.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTSpatialItem.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTSpatialItem.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTSphericalJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTSphericalJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTSphSphJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTSphSphJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTTime.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTTime.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTTranslationalMotion.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTTranslationalMotion.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTTranslationalJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTTranslationalJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ASMTUniversalJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ASMTUniversalJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AtPointConstraintIJ.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AtPointConstraintIJ.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AtPointConstraintIqcJc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AtPointConstraintIqcJc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AtPointConstraintIqcJqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AtPointConstraintIqcJqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AtPointConstraintIqctJqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AtPointConstraintIqctJqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\AtPointJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\AtPointJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\BasicIntegrator.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\BasicIntegrator.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\BasicQuasiIntegrator.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\BasicQuasiIntegrator.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\BasicUserFunction.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\BasicUserFunction.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\CADSystem.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\CADSystem.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\CartesianFrame.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\CartesianFrame.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\CompoundJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\CompoundJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Constant.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Constant.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ConstantGravity.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ConstantGravity.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ConstantVelocityJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ConstantVelocityJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Constraint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Constraint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ConstraintIJ.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ConstraintIJ.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ConstVelConstraintIJ.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ConstVelConstraintIJ.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ConstVelConstraintIqcJc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ConstVelConstraintIqcJc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ConstVelConstraintIqcJqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ConstVelConstraintIqcJqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Cosine.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Cosine.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\CREATE.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\CREATE.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\CylindricalJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\CylindricalJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\CylSphJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\CylSphJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DifferentiatedGeneralSpline.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DifferentiatedGeneralSpline.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EigenDecomposition.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EigenDecomposition.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EndFrameqct2.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EndFrameqct2.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EulerAngles.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EulerAngles.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EulerAnglesDDot.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EulerAnglesDDot.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EulerAnglesDot.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EulerAnglesDot.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Exponential.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Exponential.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ExternalSystem.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ExternalSystem.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\FunctionFromData.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\FunctionFromData.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Functions.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Functions.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\FunctionXcParameter.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\FunctionXcParameter.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\FunctionXY.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\FunctionXY.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GeneralSpline.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GeneralSpline.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Integral.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Integral.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Ln.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Ln.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Log10.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Log10.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\LogN.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\LogN.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynAxialRotationJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynAxialRotationJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynBlock.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynBlock.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynBody.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynBody.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynClampJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynClampJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynControlData.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynControlData.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynData.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynData.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynDrive.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynDrive.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynDriveHingeJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynDriveHingeJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynElement.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynElement.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynGravity.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynGravity.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynInitialValue.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynInitialValue.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynInLineJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynInLineJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynInPlaneJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynInPlaneJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynItem.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynItem.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynMarker.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynMarker.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynNode.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynNode.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynPrismaticJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynPrismaticJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynReference.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynReference.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynRevoluteHingeJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynRevoluteHingeJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynRevolutePinJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynRevolutePinJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynSphericalHingeJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynSphericalHingeJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynStructural.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynStructural.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynSystem.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynSystem.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MBDynTotalJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MBDynTotalJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MomentOfInertiaSolver.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MomentOfInertiaSolver.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Negative.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Negative.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\PiecewiseFunction.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\PiecewiseFunction.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Polynomial.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Polynomial.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\PosICDragNewtonRaphson.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\PosICDragNewtonRaphson.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\PosVelAccData.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\PosVelAccData.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DiagonalMatrix.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DiagonalMatrix.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DifferenceOperator.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DifferenceOperator.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DirectionCosineConstraintIJ.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DirectionCosineConstraintIJ.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DirectionCosineConstraintIqcJc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DirectionCosineConstraintIqcJc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DirectionCosineConstraintIqcJqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DirectionCosineConstraintIqcJqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DirectionCosineConstraintIqctJqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DirectionCosineConstraintIqctJqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DirectionCosineIecJec.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DirectionCosineIecJec.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DirectionCosineIeqcJec.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DirectionCosineIeqcJec.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DirectionCosineIeqcJeqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DirectionCosineIeqcJeqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DirectionCosineIeqctJeqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DirectionCosineIeqctJeqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DiscontinuityError.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DiscontinuityError.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DispCompIecJecIe.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DispCompIecJecIe.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DispCompIecJecKec.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DispCompIecJecKec.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DispCompIecJecKeqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DispCompIecJecKeqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DispCompIecJecO.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DispCompIecJecO.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DispCompIeqcJecIe.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DispCompIeqcJecIe.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DispCompIeqcJecKeqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DispCompIeqcJecKeqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DispCompIeqcJecO.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DispCompIeqcJecO.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DispCompIeqcJeqcIe.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DispCompIeqcJeqcIe.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DispCompIeqcJeqcKeqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DispCompIeqcJeqcKeqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DispCompIeqcJeqcKeqct.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DispCompIeqcJeqcKeqct.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DispCompIeqcJeqcO.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DispCompIeqcJeqcO.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DispCompIeqctJeqcIe.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DispCompIeqctJeqcIe.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DispCompIeqctJeqcKeqct.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DispCompIeqctJeqcKeqct.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DispCompIeqctJeqcO.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DispCompIeqctJeqcO.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistanceConstraintIJ.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistanceConstraintIJ.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistanceConstraintIqcJc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistanceConstraintIqcJc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistanceConstraintIqcJqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistanceConstraintIqcJqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistanceConstraintIqctJqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistanceConstraintIqctJqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistancexyConstraintIJ.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistancexyConstraintIJ.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistancexyConstraintIqcJc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistancexyConstraintIqcJc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistancexyConstraintIqcJqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistancexyConstraintIqcJqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistIecJec.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistIecJec.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistIeqcJec.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistIeqcJec.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistIeqcJeqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistIeqcJeqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistIeqctJeqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistIeqctJeqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistxyIecJec.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistxyIecJec.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistxyIeqcJec.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistxyIeqcJec.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistxyIeqcJeqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistxyIeqcJeqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\DistxyIeqctJeqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\DistxyIeqctJeqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EndFramec.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EndFramec.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EndFrameqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EndFrameqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EndFrameqct.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EndFrameqct.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EulerAngleszxz.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EulerAngleszxz.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EulerAngleszxzDDot.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EulerAngleszxzDDot.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EulerAngleszxzDot.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EulerAngleszxzDot.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EulerArray.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EulerArray.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EulerConstraint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EulerConstraint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EulerParameters.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EulerParameters.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EulerParametersDDot.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EulerParametersDDot.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\EulerParametersDot.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\EulerParametersDot.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ExpressionX.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ExpressionX.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\FixedJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\FixedJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ForceTorqueData.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ForceTorqueData.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ForceTorqueItem.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ForceTorqueItem.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\FullColumn.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\FullColumn.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\FullMatrix.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\FullMatrix.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\FullMotion.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\FullMotion.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\FullRow.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\FullRow.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Function.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Function.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\FunctionWithManyArgs.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\FunctionWithManyArgs.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\FunctionX.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\FunctionX.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GearConstraintIJ.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GearConstraintIJ.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GearConstraintIqcJc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GearConstraintIqcJc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GearConstraintIqcJqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GearConstraintIqcJqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GearJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GearJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GEFullMat.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GEFullMat.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GEFullMatFullPv.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GEFullMatFullPv.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GEFullMatParPv.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GEFullMatParPv.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GESpMat.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GESpMat.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GESpMatFullPv.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GESpMatFullPv.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GESpMatFullPvPosIC.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GESpMatFullPvPosIC.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GESpMatParPv.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GESpMatParPv.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GESpMatParPvMarko.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GESpMatParPvMarko.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GESpMatParPvMarkoFast.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GESpMatParPvMarkoFast.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\GESpMatParPvPrecise.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\GESpMatParPvPrecise.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ICKineIntegrator.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ICKineIntegrator.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\IndependentVariable.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\IndependentVariable.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\InLineJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\InLineJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\InPlaneJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\InPlaneJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Integrator.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Integrator.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\IntegratorInterface.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\IntegratorInterface.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Item.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Item.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Joint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Joint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\KineIntegrator.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\KineIntegrator.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\KinematicIeJe.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\KinematicIeJe.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\LDUFullMatParPv.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\LDUFullMatParPv.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\LDUSpMat.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\LDUSpMat.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\LDUSpMatParPv.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\LDUSpMatParPv.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\LDUSpMatParPvMarko.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\LDUSpMatParPvMarko.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\LDUSpMatParPvPrecise.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\LDUSpMatParPvPrecise.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\LinearMultiStepMethod.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\LinearMultiStepMethod.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\LineInPlaneJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\LineInPlaneJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MarkerFrame.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MarkerFrame.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MatrixDecomposition.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MatrixDecomposition.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MatrixGaussElimination.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MatrixGaussElimination.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MatrixLDU.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MatrixLDU.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MatrixSolver.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MatrixSolver.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MaximumIterationError.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MaximumIterationError.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\MbDMath.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\MbDMath.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\NewtonRaphson.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\NewtonRaphson.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\NewtonRaphsonError.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\NewtonRaphsonError.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\NoRotationJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\NoRotationJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\NotKinematicError.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\NotKinematicError.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Numeric.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Numeric.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\OrbitAngleZIecJec.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\OrbitAngleZIecJec.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\OrbitAngleZIeqcJec.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\OrbitAngleZIeqcJec.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\OrbitAngleZIeqcJeqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\OrbitAngleZIeqcJeqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Orientation.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Orientation.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ParallelAxesJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ParallelAxesJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Part.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Part.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\PartFrame.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\PartFrame.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\PerpendicularJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\PerpendicularJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\PlanarJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\PlanarJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\PointInLineJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\PointInLineJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\PointInPlaneJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\PointInPlaneJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\PosICKineNewtonRaphson.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\PosICKineNewtonRaphson.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\PosICNewtonRaphson.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\PosICNewtonRaphson.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\PosKineNewtonRaphson.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\PosKineNewtonRaphson.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\PosNewtonRaphson.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\PosNewtonRaphson.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Power.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Power.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\PrescribedMotion.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\PrescribedMotion.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Product.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Product.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\QuasiIntegrator.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\QuasiIntegrator.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\RackPinConstraintIJ.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\RackPinConstraintIJ.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\RackPinConstraintIqcJc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\RackPinConstraintIqcJc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\RackPinConstraintIqcJqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\RackPinConstraintIqcJqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\RackPinJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\RackPinJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\RampStepFunction.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\RampStepFunction.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Reciprocal.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Reciprocal.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\RedundantConstraint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\RedundantConstraint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\RevCylJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\RevCylJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\RevoluteJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\RevoluteJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\RevRevJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\RevRevJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\RowTypeMatrix.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\RowTypeMatrix.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ScalarNewtonRaphson.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ScalarNewtonRaphson.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ScrewConstraintIJ.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ScrewConstraintIJ.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ScrewConstraintIqcJc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ScrewConstraintIqcJc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ScrewConstraintIqcJqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ScrewConstraintIqcJqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ScrewJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ScrewJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\SimulationStoppingError.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\SimulationStoppingError.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Sine.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Sine.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\SingularMatrixError.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\SingularMatrixError.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Solver.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Solver.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\SparseColumn.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\SparseColumn.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\SparseMatrix.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\SparseMatrix.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\SparseRow.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\SparseRow.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\SparseVector.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\SparseVector.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\SphericalJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\SphericalJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\SphSphJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\SphSphJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\StableBackwardDifference.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\StableBackwardDifference.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\LDUFullMat.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\LDUFullMat.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\StateData.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\StateData.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\StepFunction.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\StepFunction.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Sum.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Sum.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Symbolic.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Symbolic.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\SymbolicParser.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\SymbolicParser.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\SyntaxError.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\SyntaxError.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\System.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\System.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\SystemNewtonRaphson.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\SystemNewtonRaphson.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\SystemSolver.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\SystemSolver.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Time.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Time.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\TooManyTriesError.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\TooManyTriesError.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\TooSmallStepSizeError.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\TooSmallStepSizeError.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Transitions.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Transitions.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Translation.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Translation.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\TranslationalJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\TranslationalJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\TranslationConstraintIJ.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\TranslationConstraintIJ.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\TranslationConstraintIqcJc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\TranslationConstraintIqcJc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\TranslationConstraintIqcJqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\TranslationConstraintIqcJqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\TranslationConstraintIqctJqc.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\TranslationConstraintIqctJqc.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Units.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Units.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\UniversalJoint.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\UniversalJoint.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\UserFunction.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\UserFunction.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\Variable.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\Variable.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\FullVector.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\FullVector.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\VectorNewtonRaphson.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\VectorNewtonRaphson.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\VelICKineSolver.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\VelICKineSolver.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\VelICSolver.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\VelICSolver.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\VelKineSolver.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\VelKineSolver.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\VelSolver.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\VelSolver.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ZRotation.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ZRotation.obj
++E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\ZTranslation.cpp;E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\OndselSolver\x64\Debug\ZTranslation.obj
+diff --git a/OndselSolver/x64/Debug/OndselSolver.tlog/OndselSolver.lastbuildstate b/OndselSolver/x64/Debug/OndselSolver.tlog/OndselSolver.lastbuildstate
+new file mode 100644
+index 0000000000..0f8b63deb0
+--- /dev/null
++++ b/OndselSolver/x64/Debug/OndselSolver.tlog/OndselSolver.lastbuildstate
+@@ -0,0 +1,2 @@
++PlatformToolSet=v143:VCToolArchitecture=Native64Bit:VCToolsVersion=14.37.32822:TargetPlatformVersion=10.0.22621.0:
++Debug|x64|E:\all\vcpkg\buildtrees\ondselsolver\src\c8b6cde787-6e188a505a\|
+diff --git a/OndselSolver/x64/Debug/OndselSolver.tlog/link.command.1.tlog b/OndselSolver/x64/Debug/OndselSolver.tlog/link.command.1.tlog
+new file mode 100644
+index 0000000000..480706083c
+Binary files /dev/null and b/OndselSolver/x64/Debug/OndselSolver.tlog/link.command.1.tlog differ
+diff --git a/OndselSolver/x64/Debug/OndselSolver.tlog/link.read.1.tlog b/OndselSolver/x64/Debug/OndselSolver.tlog/link.read.1.tlog
+new file mode 100644
+index 0000000000..47a637fbb5
+Binary files /dev/null and b/OndselSolver/x64/Debug/OndselSolver.tlog/link.read.1.tlog differ
+diff --git a/OndselSolver/x64/Debug/OndselSolver.tlog/link.write.1.tlog b/OndselSolver/x64/Debug/OndselSolver.tlog/link.write.1.tlog
+new file mode 100644
+index 0000000000..663cf96475
+Binary files /dev/null and b/OndselSolver/x64/Debug/OndselSolver.tlog/link.write.1.tlog differ
+diff --git a/OndselSolver/x64/Debug/OndselSolver.tlog/rc.command.1.tlog b/OndselSolver/x64/Debug/OndselSolver.tlog/rc.command.1.tlog
+new file mode 100644
+index 0000000000..32190ac815
+Binary files /dev/null and b/OndselSolver/x64/Debug/OndselSolver.tlog/rc.command.1.tlog differ
+diff --git a/OndselSolver/x64/Debug/OndselSolver.tlog/rc.read.1.tlog b/OndselSolver/x64/Debug/OndselSolver.tlog/rc.read.1.tlog
+new file mode 100644
+index 0000000000..f3fd662d37
+Binary files /dev/null and b/OndselSolver/x64/Debug/OndselSolver.tlog/rc.read.1.tlog differ
+diff --git a/OndselSolver/x64/Debug/OndselSolver.tlog/rc.write.1.tlog b/OndselSolver/x64/Debug/OndselSolver.tlog/rc.write.1.tlog
+new file mode 100644
+index 0000000000..e0414dc778
+Binary files /dev/null and b/OndselSolver/x64/Debug/OndselSolver.tlog/rc.write.1.tlog differ
+diff --git a/OndselSolver/x64/Debug/OrbitAngleZIecJec.obj b/OndselSolver/x64/Debug/OrbitAngleZIecJec.obj
+new file mode 100644
+index 0000000000..fe12ed0796
+Binary files /dev/null and b/OndselSolver/x64/Debug/OrbitAngleZIecJec.obj differ
+diff --git a/OndselSolver/x64/Debug/OrbitAngleZIeqcJec.obj b/OndselSolver/x64/Debug/OrbitAngleZIeqcJec.obj
+new file mode 100644
+index 0000000000..4715bd69c1
+Binary files /dev/null and b/OndselSolver/x64/Debug/OrbitAngleZIeqcJec.obj differ
+diff --git a/OndselSolver/x64/Debug/OrbitAngleZIeqcJeqc.obj b/OndselSolver/x64/Debug/OrbitAngleZIeqcJeqc.obj
+new file mode 100644
+index 0000000000..4b4f6af1a5
+Binary files /dev/null and b/OndselSolver/x64/Debug/OrbitAngleZIeqcJeqc.obj differ
+diff --git a/OndselSolver/x64/Debug/Orientation.obj b/OndselSolver/x64/Debug/Orientation.obj
+new file mode 100644
+index 0000000000..0885568dcd
+Binary files /dev/null and b/OndselSolver/x64/Debug/Orientation.obj differ
+diff --git a/OndselSolver/x64/Debug/ParallelAxesJoint.obj b/OndselSolver/x64/Debug/ParallelAxesJoint.obj
+new file mode 100644
+index 0000000000..d20fedca62
+Binary files /dev/null and b/OndselSolver/x64/Debug/ParallelAxesJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/Part.obj b/OndselSolver/x64/Debug/Part.obj
+new file mode 100644
+index 0000000000..5d899056ed
+Binary files /dev/null and b/OndselSolver/x64/Debug/Part.obj differ
+diff --git a/OndselSolver/x64/Debug/PartFrame.obj b/OndselSolver/x64/Debug/PartFrame.obj
+new file mode 100644
+index 0000000000..2c1012f5d1
+Binary files /dev/null and b/OndselSolver/x64/Debug/PartFrame.obj differ
+diff --git a/OndselSolver/x64/Debug/PerpendicularJoint.obj b/OndselSolver/x64/Debug/PerpendicularJoint.obj
+new file mode 100644
+index 0000000000..f9a9c61c52
+Binary files /dev/null and b/OndselSolver/x64/Debug/PerpendicularJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/PiecewiseFunction.obj b/OndselSolver/x64/Debug/PiecewiseFunction.obj
+new file mode 100644
+index 0000000000..0b31f724a8
+Binary files /dev/null and b/OndselSolver/x64/Debug/PiecewiseFunction.obj differ
+diff --git a/OndselSolver/x64/Debug/PlanarJoint.obj b/OndselSolver/x64/Debug/PlanarJoint.obj
+new file mode 100644
+index 0000000000..ab2eb73277
+Binary files /dev/null and b/OndselSolver/x64/Debug/PlanarJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/PointInLineJoint.obj b/OndselSolver/x64/Debug/PointInLineJoint.obj
+new file mode 100644
+index 0000000000..f0ce3d133e
+Binary files /dev/null and b/OndselSolver/x64/Debug/PointInLineJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/PointInPlaneJoint.obj b/OndselSolver/x64/Debug/PointInPlaneJoint.obj
+new file mode 100644
+index 0000000000..ac9c584870
+Binary files /dev/null and b/OndselSolver/x64/Debug/PointInPlaneJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/Polynomial.obj b/OndselSolver/x64/Debug/Polynomial.obj
+new file mode 100644
+index 0000000000..bf8696370f
+Binary files /dev/null and b/OndselSolver/x64/Debug/Polynomial.obj differ
+diff --git a/OndselSolver/x64/Debug/PosICDragNewtonRaphson.obj b/OndselSolver/x64/Debug/PosICDragNewtonRaphson.obj
+new file mode 100644
+index 0000000000..f7c235a59c
+Binary files /dev/null and b/OndselSolver/x64/Debug/PosICDragNewtonRaphson.obj differ
+diff --git a/OndselSolver/x64/Debug/PosICKineNewtonRaphson.obj b/OndselSolver/x64/Debug/PosICKineNewtonRaphson.obj
+new file mode 100644
+index 0000000000..97a37a73c3
+Binary files /dev/null and b/OndselSolver/x64/Debug/PosICKineNewtonRaphson.obj differ
+diff --git a/OndselSolver/x64/Debug/PosICNewtonRaphson.obj b/OndselSolver/x64/Debug/PosICNewtonRaphson.obj
+new file mode 100644
+index 0000000000..6094683947
+Binary files /dev/null and b/OndselSolver/x64/Debug/PosICNewtonRaphson.obj differ
+diff --git a/OndselSolver/x64/Debug/PosKineNewtonRaphson.obj b/OndselSolver/x64/Debug/PosKineNewtonRaphson.obj
+new file mode 100644
+index 0000000000..f17cd17113
+Binary files /dev/null and b/OndselSolver/x64/Debug/PosKineNewtonRaphson.obj differ
+diff --git a/OndselSolver/x64/Debug/PosNewtonRaphson.obj b/OndselSolver/x64/Debug/PosNewtonRaphson.obj
+new file mode 100644
+index 0000000000..873a93784c
+Binary files /dev/null and b/OndselSolver/x64/Debug/PosNewtonRaphson.obj differ
+diff --git a/OndselSolver/x64/Debug/PosVelAccData.obj b/OndselSolver/x64/Debug/PosVelAccData.obj
+new file mode 100644
+index 0000000000..efd203e6c2
+Binary files /dev/null and b/OndselSolver/x64/Debug/PosVelAccData.obj differ
+diff --git a/OndselSolver/x64/Debug/Power.obj b/OndselSolver/x64/Debug/Power.obj
+new file mode 100644
+index 0000000000..ed3eff4827
+Binary files /dev/null and b/OndselSolver/x64/Debug/Power.obj differ
+diff --git a/OndselSolver/x64/Debug/PrescribedMotion.obj b/OndselSolver/x64/Debug/PrescribedMotion.obj
+new file mode 100644
+index 0000000000..c4e523b6d5
+Binary files /dev/null and b/OndselSolver/x64/Debug/PrescribedMotion.obj differ
+diff --git a/OndselSolver/x64/Debug/Product.obj b/OndselSolver/x64/Debug/Product.obj
+new file mode 100644
+index 0000000000..3ae726c6fc
+Binary files /dev/null and b/OndselSolver/x64/Debug/Product.obj differ
+diff --git a/OndselSolver/x64/Debug/QuasiIntegrator.obj b/OndselSolver/x64/Debug/QuasiIntegrator.obj
+new file mode 100644
+index 0000000000..1e2f30c159
+Binary files /dev/null and b/OndselSolver/x64/Debug/QuasiIntegrator.obj differ
+diff --git a/OndselSolver/x64/Debug/RackPinConstraintIJ.obj b/OndselSolver/x64/Debug/RackPinConstraintIJ.obj
+new file mode 100644
+index 0000000000..4452bfbbdc
+Binary files /dev/null and b/OndselSolver/x64/Debug/RackPinConstraintIJ.obj differ
+diff --git a/OndselSolver/x64/Debug/RackPinConstraintIqcJc.obj b/OndselSolver/x64/Debug/RackPinConstraintIqcJc.obj
+new file mode 100644
+index 0000000000..bfb7325ed9
+Binary files /dev/null and b/OndselSolver/x64/Debug/RackPinConstraintIqcJc.obj differ
+diff --git a/OndselSolver/x64/Debug/RackPinConstraintIqcJqc.obj b/OndselSolver/x64/Debug/RackPinConstraintIqcJqc.obj
+new file mode 100644
+index 0000000000..3c29fb45b5
+Binary files /dev/null and b/OndselSolver/x64/Debug/RackPinConstraintIqcJqc.obj differ
+diff --git a/OndselSolver/x64/Debug/RackPinJoint.obj b/OndselSolver/x64/Debug/RackPinJoint.obj
+new file mode 100644
+index 0000000000..03763eb05c
+Binary files /dev/null and b/OndselSolver/x64/Debug/RackPinJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/RampStepFunction.obj b/OndselSolver/x64/Debug/RampStepFunction.obj
+new file mode 100644
+index 0000000000..29097b9c95
+Binary files /dev/null and b/OndselSolver/x64/Debug/RampStepFunction.obj differ
+diff --git a/OndselSolver/x64/Debug/Reciprocal.obj b/OndselSolver/x64/Debug/Reciprocal.obj
+new file mode 100644
+index 0000000000..e50cd3d55e
+Binary files /dev/null and b/OndselSolver/x64/Debug/Reciprocal.obj differ
+diff --git a/OndselSolver/x64/Debug/RedundantConstraint.obj b/OndselSolver/x64/Debug/RedundantConstraint.obj
+new file mode 100644
+index 0000000000..55438d06d0
+Binary files /dev/null and b/OndselSolver/x64/Debug/RedundantConstraint.obj differ
+diff --git a/OndselSolver/x64/Debug/RevCylJoint.obj b/OndselSolver/x64/Debug/RevCylJoint.obj
+new file mode 100644
+index 0000000000..f690979217
+Binary files /dev/null and b/OndselSolver/x64/Debug/RevCylJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/RevRevJoint.obj b/OndselSolver/x64/Debug/RevRevJoint.obj
+new file mode 100644
+index 0000000000..0a0fd246f3
+Binary files /dev/null and b/OndselSolver/x64/Debug/RevRevJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/RevoluteJoint.obj b/OndselSolver/x64/Debug/RevoluteJoint.obj
+new file mode 100644
+index 0000000000..a439a04d41
+Binary files /dev/null and b/OndselSolver/x64/Debug/RevoluteJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/RowTypeMatrix.obj b/OndselSolver/x64/Debug/RowTypeMatrix.obj
+new file mode 100644
+index 0000000000..6975811630
+Binary files /dev/null and b/OndselSolver/x64/Debug/RowTypeMatrix.obj differ
+diff --git a/OndselSolver/x64/Debug/ScalarNewtonRaphson.obj b/OndselSolver/x64/Debug/ScalarNewtonRaphson.obj
+new file mode 100644
+index 0000000000..d1c91f9c2f
+Binary files /dev/null and b/OndselSolver/x64/Debug/ScalarNewtonRaphson.obj differ
+diff --git a/OndselSolver/x64/Debug/ScrewConstraintIJ.obj b/OndselSolver/x64/Debug/ScrewConstraintIJ.obj
+new file mode 100644
+index 0000000000..e65dd04cce
+Binary files /dev/null and b/OndselSolver/x64/Debug/ScrewConstraintIJ.obj differ
+diff --git a/OndselSolver/x64/Debug/ScrewConstraintIqcJc.obj b/OndselSolver/x64/Debug/ScrewConstraintIqcJc.obj
+new file mode 100644
+index 0000000000..b372f38bc2
+Binary files /dev/null and b/OndselSolver/x64/Debug/ScrewConstraintIqcJc.obj differ
+diff --git a/OndselSolver/x64/Debug/ScrewConstraintIqcJqc.obj b/OndselSolver/x64/Debug/ScrewConstraintIqcJqc.obj
+new file mode 100644
+index 0000000000..00677792c2
+Binary files /dev/null and b/OndselSolver/x64/Debug/ScrewConstraintIqcJqc.obj differ
+diff --git a/OndselSolver/x64/Debug/ScrewJoint.obj b/OndselSolver/x64/Debug/ScrewJoint.obj
+new file mode 100644
+index 0000000000..2630ed70f7
+Binary files /dev/null and b/OndselSolver/x64/Debug/ScrewJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/SimulationStoppingError.obj b/OndselSolver/x64/Debug/SimulationStoppingError.obj
+new file mode 100644
+index 0000000000..af4f27d050
+Binary files /dev/null and b/OndselSolver/x64/Debug/SimulationStoppingError.obj differ
+diff --git a/OndselSolver/x64/Debug/Sine.obj b/OndselSolver/x64/Debug/Sine.obj
+new file mode 100644
+index 0000000000..b39b0e35e6
+Binary files /dev/null and b/OndselSolver/x64/Debug/Sine.obj differ
+diff --git a/OndselSolver/x64/Debug/SingularMatrixError.obj b/OndselSolver/x64/Debug/SingularMatrixError.obj
+new file mode 100644
+index 0000000000..f576b0b9c9
+Binary files /dev/null and b/OndselSolver/x64/Debug/SingularMatrixError.obj differ
+diff --git a/OndselSolver/x64/Debug/Solver.obj b/OndselSolver/x64/Debug/Solver.obj
+new file mode 100644
+index 0000000000..9bf662a7c5
+Binary files /dev/null and b/OndselSolver/x64/Debug/Solver.obj differ
+diff --git a/OndselSolver/x64/Debug/SparseColumn.obj b/OndselSolver/x64/Debug/SparseColumn.obj
+new file mode 100644
+index 0000000000..f98c0b35b2
+Binary files /dev/null and b/OndselSolver/x64/Debug/SparseColumn.obj differ
+diff --git a/OndselSolver/x64/Debug/SparseMatrix.obj b/OndselSolver/x64/Debug/SparseMatrix.obj
+new file mode 100644
+index 0000000000..fd8cd3bc47
+Binary files /dev/null and b/OndselSolver/x64/Debug/SparseMatrix.obj differ
+diff --git a/OndselSolver/x64/Debug/SparseRow.obj b/OndselSolver/x64/Debug/SparseRow.obj
+new file mode 100644
+index 0000000000..09e3e0ef80
+Binary files /dev/null and b/OndselSolver/x64/Debug/SparseRow.obj differ
+diff --git a/OndselSolver/x64/Debug/SparseVector.obj b/OndselSolver/x64/Debug/SparseVector.obj
+new file mode 100644
+index 0000000000..ac591ccfd0
+Binary files /dev/null and b/OndselSolver/x64/Debug/SparseVector.obj differ
+diff --git a/OndselSolver/x64/Debug/SphSphJoint.obj b/OndselSolver/x64/Debug/SphSphJoint.obj
+new file mode 100644
+index 0000000000..b5cc439871
+Binary files /dev/null and b/OndselSolver/x64/Debug/SphSphJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/SphericalJoint.obj b/OndselSolver/x64/Debug/SphericalJoint.obj
+new file mode 100644
+index 0000000000..1cedf9fddb
+Binary files /dev/null and b/OndselSolver/x64/Debug/SphericalJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/StableBackwardDifference.obj b/OndselSolver/x64/Debug/StableBackwardDifference.obj
+new file mode 100644
+index 0000000000..851000af91
+Binary files /dev/null and b/OndselSolver/x64/Debug/StableBackwardDifference.obj differ
+diff --git a/OndselSolver/x64/Debug/StateData.obj b/OndselSolver/x64/Debug/StateData.obj
+new file mode 100644
+index 0000000000..f9fdef5c7b
+Binary files /dev/null and b/OndselSolver/x64/Debug/StateData.obj differ
+diff --git a/OndselSolver/x64/Debug/StepFunction.obj b/OndselSolver/x64/Debug/StepFunction.obj
+new file mode 100644
+index 0000000000..a8e56c7384
+Binary files /dev/null and b/OndselSolver/x64/Debug/StepFunction.obj differ
+diff --git a/OndselSolver/x64/Debug/Sum.obj b/OndselSolver/x64/Debug/Sum.obj
+new file mode 100644
+index 0000000000..438d359c0b
+Binary files /dev/null and b/OndselSolver/x64/Debug/Sum.obj differ
+diff --git a/OndselSolver/x64/Debug/Symbolic.obj b/OndselSolver/x64/Debug/Symbolic.obj
+new file mode 100644
+index 0000000000..6e2e8350b3
+Binary files /dev/null and b/OndselSolver/x64/Debug/Symbolic.obj differ
+diff --git a/OndselSolver/x64/Debug/SymbolicParser.obj b/OndselSolver/x64/Debug/SymbolicParser.obj
+new file mode 100644
+index 0000000000..64a81fa13a
+Binary files /dev/null and b/OndselSolver/x64/Debug/SymbolicParser.obj differ
+diff --git a/OndselSolver/x64/Debug/SyntaxError.obj b/OndselSolver/x64/Debug/SyntaxError.obj
+new file mode 100644
+index 0000000000..419cf645ec
+Binary files /dev/null and b/OndselSolver/x64/Debug/SyntaxError.obj differ
+diff --git a/OndselSolver/x64/Debug/System.obj b/OndselSolver/x64/Debug/System.obj
+new file mode 100644
+index 0000000000..e71681c6c1
+Binary files /dev/null and b/OndselSolver/x64/Debug/System.obj differ
+diff --git a/OndselSolver/x64/Debug/SystemNewtonRaphson.obj b/OndselSolver/x64/Debug/SystemNewtonRaphson.obj
+new file mode 100644
+index 0000000000..3f6e553b47
+Binary files /dev/null and b/OndselSolver/x64/Debug/SystemNewtonRaphson.obj differ
+diff --git a/OndselSolver/x64/Debug/SystemSolver.obj b/OndselSolver/x64/Debug/SystemSolver.obj
+new file mode 100644
+index 0000000000..803665053b
+Binary files /dev/null and b/OndselSolver/x64/Debug/SystemSolver.obj differ
+diff --git a/OndselSolver/x64/Debug/Time.obj b/OndselSolver/x64/Debug/Time.obj
+new file mode 100644
+index 0000000000..6660d1c374
+Binary files /dev/null and b/OndselSolver/x64/Debug/Time.obj differ
+diff --git a/OndselSolver/x64/Debug/TooManyTriesError.obj b/OndselSolver/x64/Debug/TooManyTriesError.obj
+new file mode 100644
+index 0000000000..f05f121e51
+Binary files /dev/null and b/OndselSolver/x64/Debug/TooManyTriesError.obj differ
+diff --git a/OndselSolver/x64/Debug/TooSmallStepSizeError.obj b/OndselSolver/x64/Debug/TooSmallStepSizeError.obj
+new file mode 100644
+index 0000000000..ae4e47dafc
+Binary files /dev/null and b/OndselSolver/x64/Debug/TooSmallStepSizeError.obj differ
+diff --git a/OndselSolver/x64/Debug/Transitions.obj b/OndselSolver/x64/Debug/Transitions.obj
+new file mode 100644
+index 0000000000..6aa5fc2672
+Binary files /dev/null and b/OndselSolver/x64/Debug/Transitions.obj differ
+diff --git a/OndselSolver/x64/Debug/Translation.obj b/OndselSolver/x64/Debug/Translation.obj
+new file mode 100644
+index 0000000000..8cf5e9d0dd
+Binary files /dev/null and b/OndselSolver/x64/Debug/Translation.obj differ
+diff --git a/OndselSolver/x64/Debug/TranslationConstraintIJ.obj b/OndselSolver/x64/Debug/TranslationConstraintIJ.obj
+new file mode 100644
+index 0000000000..0a660d5216
+Binary files /dev/null and b/OndselSolver/x64/Debug/TranslationConstraintIJ.obj differ
+diff --git a/OndselSolver/x64/Debug/TranslationConstraintIqcJc.obj b/OndselSolver/x64/Debug/TranslationConstraintIqcJc.obj
+new file mode 100644
+index 0000000000..595e5266e8
+Binary files /dev/null and b/OndselSolver/x64/Debug/TranslationConstraintIqcJc.obj differ
+diff --git a/OndselSolver/x64/Debug/TranslationConstraintIqcJqc.obj b/OndselSolver/x64/Debug/TranslationConstraintIqcJqc.obj
+new file mode 100644
+index 0000000000..6d5a616b5d
+Binary files /dev/null and b/OndselSolver/x64/Debug/TranslationConstraintIqcJqc.obj differ
+diff --git a/OndselSolver/x64/Debug/TranslationConstraintIqctJqc.obj b/OndselSolver/x64/Debug/TranslationConstraintIqctJqc.obj
+new file mode 100644
+index 0000000000..dcad173254
+Binary files /dev/null and b/OndselSolver/x64/Debug/TranslationConstraintIqctJqc.obj differ
+diff --git a/OndselSolver/x64/Debug/TranslationalJoint.obj b/OndselSolver/x64/Debug/TranslationalJoint.obj
+new file mode 100644
+index 0000000000..ebbe9a150a
+Binary files /dev/null and b/OndselSolver/x64/Debug/TranslationalJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/Units.obj b/OndselSolver/x64/Debug/Units.obj
+new file mode 100644
+index 0000000000..1ce54f052e
+Binary files /dev/null and b/OndselSolver/x64/Debug/Units.obj differ
+diff --git a/OndselSolver/x64/Debug/UniversalJoint.obj b/OndselSolver/x64/Debug/UniversalJoint.obj
+new file mode 100644
+index 0000000000..980ac46c3e
+Binary files /dev/null and b/OndselSolver/x64/Debug/UniversalJoint.obj differ
+diff --git a/OndselSolver/x64/Debug/UserFunction.obj b/OndselSolver/x64/Debug/UserFunction.obj
+new file mode 100644
+index 0000000000..9395121036
+Binary files /dev/null and b/OndselSolver/x64/Debug/UserFunction.obj differ
+diff --git a/OndselSolver/x64/Debug/Variable.obj b/OndselSolver/x64/Debug/Variable.obj
+new file mode 100644
+index 0000000000..9d62bf413e
+Binary files /dev/null and b/OndselSolver/x64/Debug/Variable.obj differ
+diff --git a/OndselSolver/x64/Debug/VectorNewtonRaphson.obj b/OndselSolver/x64/Debug/VectorNewtonRaphson.obj
+new file mode 100644
+index 0000000000..afb45e2ef6
+Binary files /dev/null and b/OndselSolver/x64/Debug/VectorNewtonRaphson.obj differ
+diff --git a/OndselSolver/x64/Debug/VelICKineSolver.obj b/OndselSolver/x64/Debug/VelICKineSolver.obj
+new file mode 100644
+index 0000000000..562bb75e0f
+Binary files /dev/null and b/OndselSolver/x64/Debug/VelICKineSolver.obj differ
+diff --git a/OndselSolver/x64/Debug/VelICSolver.obj b/OndselSolver/x64/Debug/VelICSolver.obj
+new file mode 100644
+index 0000000000..3f85e7de25
+Binary files /dev/null and b/OndselSolver/x64/Debug/VelICSolver.obj differ
+diff --git a/OndselSolver/x64/Debug/VelKineSolver.obj b/OndselSolver/x64/Debug/VelKineSolver.obj
+new file mode 100644
+index 0000000000..ad874f6eee
+Binary files /dev/null and b/OndselSolver/x64/Debug/VelKineSolver.obj differ
+diff --git a/OndselSolver/x64/Debug/VelSolver.obj b/OndselSolver/x64/Debug/VelSolver.obj
+new file mode 100644
+index 0000000000..81d4af2d7f
+Binary files /dev/null and b/OndselSolver/x64/Debug/VelSolver.obj differ
+diff --git a/OndselSolver/x64/Debug/ZRotation.obj b/OndselSolver/x64/Debug/ZRotation.obj
+new file mode 100644
+index 0000000000..7b6ae78e11
+Binary files /dev/null and b/OndselSolver/x64/Debug/ZRotation.obj differ
+diff --git a/OndselSolver/x64/Debug/ZTranslation.obj b/OndselSolver/x64/Debug/ZTranslation.obj
+new file mode 100644
+index 0000000000..3e5948cc9d
+Binary files /dev/null and b/OndselSolver/x64/Debug/ZTranslation.obj differ
+diff --git a/OndselSolver/x64/Debug/vc143.idb b/OndselSolver/x64/Debug/vc143.idb
+new file mode 100644
+index 0000000000..95e250da7f
+Binary files /dev/null and b/OndselSolver/x64/Debug/vc143.idb differ
+diff --git a/OndselSolver/x64/Debug/vc143.pdb b/OndselSolver/x64/Debug/vc143.pdb
+new file mode 100644
+index 0000000000..2893103534
+Binary files /dev/null and b/OndselSolver/x64/Debug/vc143.pdb differ
