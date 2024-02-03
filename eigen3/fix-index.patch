@@ -1,0 +1,52 @@
+diff --git a/unsupported/Eigen/src/LevenbergMarquardt/LMqrsolv.h b/unsupported/Eigen/src/LevenbergMarquardt/LMqrsolv.h
+index 49bf6e1..bd84523 100644
+--- a/unsupported/Eigen/src/LevenbergMarquardt/LMqrsolv.h
++++ b/unsupported/Eigen/src/LevenbergMarquardt/LMqrsolv.h
+@@ -95,7 +95,7 @@ void lmqrsolv(Matrix<Scalar, Rows, Cols> &s, const PermutationMatrix<Dynamic, Dy
+ }
+ 
+ template <typename Scalar, int Options_, typename Index>
+-void lmqrsolv(SparseMatrix<Scalar, Options_, Index> &s, const PermutationMatrix<Dynamic, Dynamic> &iPerm,
++void lmqrsolv(SparseMatrix<Scalar, Options_, Index> &s, const PermutationMatrix<Dynamic, Dynamic, Index> &iPerm,
+               const Matrix<Scalar, Dynamic, 1> &diag, const Matrix<Scalar, Dynamic, 1> &qtb,
+               Matrix<Scalar, Dynamic, 1> &x, Matrix<Scalar, Dynamic, 1> &sdiag) {
+   /* Local variables */
+diff --git a/unsupported/Eigen/src/LevenbergMarquardt/LevenbergMarquardt.h b/unsupported/Eigen/src/LevenbergMarquardt/LevenbergMarquardt.h
+index b8a6dda..5c85719 100644
+--- a/unsupported/Eigen/src/LevenbergMarquardt/LevenbergMarquardt.h
++++ b/unsupported/Eigen/src/LevenbergMarquardt/LevenbergMarquardt.h
+@@ -108,7 +108,7 @@ class LevenbergMarquardt : internal::no_assignment_operator {
+   typedef typename JacobianType::RealScalar RealScalar;
+   typedef typename QRSolver::StorageIndex PermIndex;
+   typedef Matrix<Scalar, Dynamic, 1> FVectorType;
+-  typedef PermutationMatrix<Dynamic, Dynamic, int> PermutationType;
++  typedef PermutationMatrix<Dynamic, Dynamic, PermIndex> PermutationType;
+ 
+  public:
+   LevenbergMarquardt(FunctorType &functor)
+diff --git a/unsupported/Eigen/src/NonLinearOptimization/LevenbergMarquardt.h b/unsupported/Eigen/src/NonLinearOptimization/LevenbergMarquardt.h
+index 808fd7d..81bee00 100644
+--- a/unsupported/Eigen/src/NonLinearOptimization/LevenbergMarquardt.h
++++ b/unsupported/Eigen/src/NonLinearOptimization/LevenbergMarquardt.h
+@@ -98,7 +98,7 @@ class LevenbergMarquardt {
+   Parameters parameters;
+   FVectorType fvec, qtf, diag;
+   JacobianType fjac;
+-  PermutationMatrix<Dynamic, Dynamic> permutation;
++  PermutationMatrix<Dynamic, Dynamic, Index> permutation;
+   Index nfev;
+   Index njev;
+   Index iter;
+diff --git a/unsupported/Eigen/src/NonLinearOptimization/qrsolv.h b/unsupported/Eigen/src/NonLinearOptimization/qrsolv.h
+index 2e4d036..e7a8c68 100644
+--- a/unsupported/Eigen/src/NonLinearOptimization/qrsolv.h
++++ b/unsupported/Eigen/src/NonLinearOptimization/qrsolv.h
+@@ -9,7 +9,7 @@ namespace internal {
+ template <typename Scalar>
+ void qrsolv(Matrix<Scalar, Dynamic, Dynamic> &s,
+             // TODO : use a PermutationMatrix once lmpar is no more:
+-            const VectorXi &ipvt, const Matrix<Scalar, Dynamic, 1> &diag, const Matrix<Scalar, Dynamic, 1> &qtb,
++            const Matrix<Index, Dynamic, 1> &ipvt, const Matrix<Scalar, Dynamic, 1> &diag, const Matrix<Scalar, Dynamic, 1> &qtb,
+             Matrix<Scalar, Dynamic, 1> &x, Matrix<Scalar, Dynamic, 1> &sdiag)
+ 
+ {
