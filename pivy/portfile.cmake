@@ -6,7 +6,9 @@ vcpkg_from_github(
     REF 7592a6dfbb4bd721073d607a6f017e3beec2b684
     SHA512 92b47f3b88c7deb046ae2c63a50e302513101faf227803dccede36a69cbe7033e67d3cb6be2c8cdcc275efa41f7d3952455053181f7e31272ef42b749083576f
     HEAD_REF master
-    PATCHES fix-install-dest.diff
+    PATCHES 
+      fix-install-dest.diff
+      fix-build.patch
 )
 
 vcpkg_find_acquire_program(SWIG)
@@ -16,6 +18,8 @@ vcpkg_cmake_configure(
     OPTIONS 
       "-DSWIG_EXECUTABLE=${SWIG}"
       "-DPIVY_USE_QT6=ON"
+      #"-DPython3_EXECUTABLE:PATH=${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python3.11${VCPKG_EXECUTABLE_SUFFIX}"
+      #"-DPython_LIBRARIES=${CURRENT_INSTALLED_DIR}/lib/libpython3.11.a"
 )
 
 vcpkg_cmake_install()

@@ -1,0 +1,33 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f046c0b8fa..3d36a52185 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -26,9 +26,14 @@ string(REPLACE "${VCPKG_INSTALLED_DIR}/{VCPKG_TARGET_TRIPLET}" "${CMAKE_INSTALL_
+ # SWIGIFY HEADERS
+ # doing this with the origin python functions
+ 
++
++
+ execute_process(COMMAND ${Python_EXECUTABLE} -c
+ "import sys; sys.path.append('${CMAKE_SOURCE_DIR}'); \
+-import install_helpers; install_helpers.swigify('${CMAKE_SOURCE_DIR}', '${Coin_INCLUDE_DIR}');")
++import install_helpers; install_helpers.swigify('${CMAKE_SOURCE_DIR}', '${Coin_INCLUDE_DIR}');"
++WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
++ECHO_OUTPUT_VARIABLE
++COMMAND_ERROR_IS_FATAL ANY)
+ 
+ 
+ # copy the python module
+diff --git a/interfaces/CMakeLists.txt b/interfaces/CMakeLists.txt
+index 35fbbded8c..ae3f39f60c 100644
+--- a/interfaces/CMakeLists.txt
++++ b/interfaces/CMakeLists.txt
+@@ -1,7 +1,6 @@
+ function(set_swig_properties NAME)
+     set_property(SOURCE ${NAME} PROPERTY CPLUSPLUS ON)
+     set_property(SOURCE ${NAME} PROPERTY SWIG_FLAGS "-includeall")
+-    set_property(SOURCE ${NAME} APPEND PROPERTY SWIG_FLAGS "-py3")
+     set_property(SOURCE ${NAME} APPEND PROPERTY SWIG_FLAGS "-D__PIVY__")
+     if(DISABLE_SWIG_WARNINGS)
+         set_property(SOURCE ${NAME} APPEND PROPERTY SWIG_FLAGS
+ 
