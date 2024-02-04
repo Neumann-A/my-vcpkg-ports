@@ -1,0 +1,116 @@
+diff --git a/config_asm.h b/config_asm.h
+index 71ffb9f8c8..ac8c801b50 100644
+--- a/config_asm.h
++++ b/config_asm.h
+@@ -47,7 +47,7 @@
+ // Also see https://bugs.llvm.org/show_bug.cgi?id=39895 .
+ // #define CRYPTOPP_DISABLE_MIXED_ASM 1
+ 
+-#if defined(__clang__) || (defined(__APPLE__) && defined(__GNUC__)) || defined(__SUNPRO_CC)
++#if (defined(__clang__) && !defined(_MSC_VER)) || (defined(__APPLE__) && defined(__GNUC__)) || defined(__SUNPRO_CC)
+ # undef CRYPTOPP_DISABLE_MIXED_ASM
+ # define CRYPTOPP_DISABLE_MIXED_ASM 1
+ #endif
+diff --git a/config_ver.h b/config_ver.h
+index 876584418e..6d054d5895 100644
+--- a/config_ver.h
++++ b/config_ver.h
+@@ -82,7 +82,7 @@
+ # define CRYPTOPP_INTEL_VERSION (__INTEL_COMPILER)
+ #endif
+ 
+-#if defined(_MSC_VER) && !defined(__clang__)
++#if defined(_MSC_VER)
+ # undef CRYPTOPP_LLVM_CLANG_VERSION
+ # define CRYPTOPP_MSC_VERSION (_MSC_VER)
+ #endif
+diff --git a/gcm.cpp b/gcm.cpp
+index 6a56f48dcd..ef09f584c0 100644
+--- a/gcm.cpp
++++ b/gcm.cpp
+@@ -558,7 +558,7 @@ size_t GCM_Base::AuthenticateBlocks(const byte *data, size_t len)
+         return len % 16;
+ #endif
+ 
+-#if CRYPTOPP_SSE2_ASM_AVAILABLE
++#if CRYPTOPP_SSE2_ASM_AVAILABLE && !CRYPTOPP_X64_MASM_AVAILABLE
+ 
+     case 1:        // SSE2 and 2K tables
+         {
+diff --git a/rijndael.cpp b/rijndael.cpp
+index 3d6665e857..1b36326799 100644
+--- a/rijndael.cpp
++++ b/rijndael.cpp
+@@ -755,7 +755,7 @@ void Rijndael::Dec::ProcessAndXorBlock(const byte *inBlock, const byte *xorBlock
+ 
+ #endif // #ifndef CRYPTOPP_GENERATE_X64_MASM
+ 
+-#if CRYPTOPP_SSE2_ASM_AVAILABLE && !defined(CRYPTOPP_DISABLE_RIJNDAEL_ASM)
++#if CRYPTOPP_SSE2_ASM_AVAILABLE && !defined(CRYPTOPP_DISABLE_RIJNDAEL_ASM) && !defined(CRYPTOPP_X64_MASM_AVAILABLE)
+ 
+ CRYPTOPP_NAKED void CRYPTOPP_FASTCALL Rijndael_Enc_AdvancedProcessBlocks_SSE2(void *locals, const word32 *k)
+ {
+diff --git a/salsa.cpp b/salsa.cpp
+index 7536a3c1f0..032f5dbc5b 100644
+--- a/salsa.cpp
++++ b/salsa.cpp
+@@ -203,7 +203,7 @@ void Salsa20_Policy::OperateKeystream(KeystreamOperation operation, byte *output
+ #endif
+ 
+ #if CRYPTOPP_SSE2_ASM_AVAILABLE
+-#ifdef CRYPTOPP_GENERATE_X64_MASM
++#if CRYPTOPP_GENERATE_X64_MASM
+ 		ALIGN   8
+ 	Salsa20_OperateKeystream	PROC FRAME
+ 		mov		r10, [rsp + 5*8]			; state
+@@ -243,6 +243,16 @@ void Salsa20_Policy::OperateKeystream(KeystreamOperation operation, byte *output
+ 		#define REG_temp			rdx
+ 		#define SSE2_WORKSPACE		%5		/* constant */
+ 
++	#define REG_output			rcx
++	#define REG_input			rdx
++	#define REG_iterationCount	r8
++	#define REG_state			r10
++	#define REG_rounds			r9d
++	#define REG_roundsLeft		eax
++	#define REG_temp32			r11d
++	#define REG_temp			r11
++	#define SSE2_WORKSPACE		rsp
++
+ 		CRYPTOPP_ALIGN_DATA(16) byte workspace[16*32];
+ 	#else
+ 		#define REG_output			edi
+diff --git a/sha.cpp b/sha.cpp
+index 4c03e45c2b..9225d747b1 100644
+--- a/sha.cpp
++++ b/sha.cpp
+@@ -515,7 +515,7 @@ void SHA256::InitState(HashWordType *state)
+ }
+ #endif // Not CRYPTOPP_GENERATE_X64_MASM
+ 
+-#if defined(CRYPTOPP_X86_ASM_AVAILABLE)
++#if defined(CRYPTOPP_X86_ASM_AVAILABLE) && !CRYPTOPP_X64_MASM_AVAILABLE
+ 
+ ANONYMOUS_NAMESPACE_BEGIN
+ 
+diff --git a/whrlpool.cpp b/whrlpool.cpp
+index 02b2f92ab2..0298d1f7da 100644
+--- a/whrlpool.cpp
++++ b/whrlpool.cpp
+@@ -420,7 +420,7 @@ void Whirlpool::Transform(word64 *digest, const word64 *block)
+ 	CRYPTOPP_ASSERT(digest != NULLPTR);
+ 	CRYPTOPP_ASSERT(block != NULLPTR);
+ 
+-#if CRYPTOPP_SSE2_ASM_AVAILABLE
++#if CRYPTOPP_SSE2_ASM_AVAILABLE && !CRYPTOPP_X64_MASM_AVAILABLE
+ 	if (HasSSE2())
+ 	{
+ 		// MMX version has the same structure as C version below
+@@ -448,6 +448,7 @@ void Whirlpool::Transform(word64 *digest, const word64 *block)
+ 	#endif
+ #else
+ 	#define SSE2_workspace	%3
++  #define SSE2_workspace	rsp
+ #endif
+ 		AS2(	xor		esi, esi)
+ 		ASL(0)

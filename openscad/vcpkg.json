@@ -1,0 +1,49 @@
+{
+  "name": "openscad",
+  "version-date": "2024-01-26",
+  "description": "OpenSCAD - The Programmers Solid 3D CAD Modeller",
+  "homepage": "www.openscad.org",
+  "license": "GPL-2.0",
+  "dependencies": [
+    "boost-filesystem",
+    "boost-program-options",
+    "boost-regex",
+    "boost-system",
+    "cairo",
+    "cgal",
+    "cryptopp",
+    "double-conversion",
+    "eigen3",
+    "fontconfig",
+    "glad",
+    "glib",
+    "harfbuzz",
+    "hidapi",
+    "libxml2",
+    "libzip",
+    "mimalloc",
+    "opencsg",
+    "pkgconf",
+    "pybind11",
+    "python3",
+    "qscintilla",
+    {
+      "name": "qtbase",
+      "default-features": false,
+      "features": [
+        "concurrent",
+        "dbus",
+        "gui",
+        "network",
+        "opengl",
+        "widgets"
+      ]
+    },
+    "qtmultimedia",
+    "qtsvg",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    }
+  ]
+}

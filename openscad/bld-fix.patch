@@ -1,0 +1,319 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c8f3cc448b..a31cb47441 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -255,6 +256,9 @@ macro(find_graphics)
+   endif()
+ endmacro(find_graphics)
+ 
++
++set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
++
+ if (MSVC)
+   # Flex lexer options
+   set(WINCOMPAT "--wincompat --nounistd")
+@@ -275,30 +279,22 @@ if (MSVC)
+   target_include_directories(OpenSCAD SYSTEM PRIVATE ${HARFBUZZ_INCLUDE_DIRS}/harfbuzz)
+   target_link_libraries(OpenSCAD PRIVATE harfbuzz::harfbuzz)
+ 
+-  find_package(unofficial-fontconfig CONFIG REQUIRED)
+-  target_link_libraries(OpenSCAD PRIVATE unofficial::fontconfig::fontconfig)
++  find_package(Fontconfig REQUIRED)
++  target_link_libraries(OpenSCAD PRIVATE Fontconfig::Fontconfig)
+ 
+-  find_package(unofficial-glib CONFIG REQUIRED)
++  find_package(GLIB2 REQUIRED)
+   target_include_directories(OpenSCAD SYSTEM PRIVATE ${GLIB2_INCLUDE_DIRS})
+-  target_link_libraries(OpenSCAD PRIVATE unofficial::glib::gio unofficial::glib::glib unofficial::glib::gmodule unofficial::glib::gobject)
++  target_link_libraries(OpenSCAD PRIVATE ${GLIB2_LIBRARIES})
+ 
+   find_package(double-conversion CONFIG REQUIRED)
+   target_link_libraries(OpenSCAD PRIVATE double-conversion::double-conversion)
+ 
+-  find_library(GETTEXT_LIBRARY libintl)
+-  target_link_libraries(OpenSCAD PRIVATE ${GETTEXT_LIBRARY})
++  find_package(Intl)
++  target_link_libraries(OpenSCAD PRIVATE ${Intl_LIBRARY})
+ 
+   # call before setting local CMAKE_MODULE_PATH so we use VCPKG version of FindGLEW
+   find_graphics()
+-
+-  # needed for QtQScintilla, maybe others
+-  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
+ else()
+-  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
+-  if(MXECROSS)
+-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/MXE")
+-  endif()
+-
+   if(NOT "$ENV{OPENSCAD_LIBRARIES}" STREQUAL "")
+     list(APPEND CMAKE_PREFIX_PATH "$ENV{OPENSCAD_LIBRARIES}")
+     if(APPLE)
+@@ -322,9 +318,9 @@ else()
+   target_include_directories(OpenSCAD SYSTEM PRIVATE ${HARFBUZZ_INCLUDE_DIRS})
+   target_link_libraries(OpenSCAD PRIVATE ${HARFBUZZ_LIBRARIES})
+ 
+-  find_package(FontConfig 2.8.0 REQUIRED QUIET)
++  find_package(Fontconfig 2.8.0 REQUIRED QUIET)
+   message(STATUS "Fontconfig: ${FONTCONFIG_VERSION}")
+-  target_link_libraries(OpenSCAD PRIVATE ${FONTCONFIG_LIBRARIES})
++  target_link_libraries(OpenSCAD PRIVATE Fontconfig::Fontconfig)
+ 
+   find_package(GLIB2 2.26 REQUIRED QUIET)
+   message(STATUS "Glib: ${GLIB2_VERSION}")
+@@ -389,7 +385,7 @@ message(STATUS "Freetype: ${FREETYPE_VERSION_STRING}")
+ target_include_directories(OpenSCAD SYSTEM PRIVATE ${FREETYPE_INCLUDE_DIRS})
+ target_link_libraries(OpenSCAD PRIVATE ${FREETYPE_LIBRARIES})
+ 
+-find_package(LibXml2 2.9 REQUIRED QUIET)
++find_package(LibXml2 REQUIRED QUIET)
+ message(STATUS "LibXml2: ${LIBXML2_VERSION_STRING}")
+ target_include_directories(OpenSCAD SYSTEM PRIVATE ${LIBXML2_INCLUDE_DIR})
+ target_link_libraries(OpenSCAD PRIVATE ${LIBXML2_LIBRARIES})
+@@ -1203,7 +1199,7 @@ if (SORT_BUILD)
+ endif()
+ 
+ target_sources(OpenSCAD PRIVATE ${Sources} ${RESOURCE_FILES})
+-find_program(SHELL_EXE NAMES sh bash $ENV{SHELL})
++find_program(SHELL_EXE NAMES sh bash $ENV{SHELL} REQUIRED)
+ add_custom_command(TARGET OpenSCAD POST_BUILD
+     COMMAND "${SHELL_EXE}"
+     ARGS "${CMAKE_CURRENT_LIST_DIR}/scripts/translation-make.sh" "${SUFFIX_WITH_DASH}"
+@@ -1351,7 +1347,9 @@ endif()
+ 
+ include(CPack)
+ 
+-add_sanitizers(OpenSCAD)
++#add_sanitizers(OpenSCAD)
++
++add_definitions("-DNOMINMAX" "-UUSE_GLEW" "-DUSE_GLAD")
+ 
+ if(INFO)
+   include("cmake/Modules/info.cmake")
+diff --git a/cmake/Modules/FindCairo.cmake b/cmake/Modules/FindCairo.cmake
+index 159c01c652..a920754255 100644
+--- a/cmake/Modules/FindCairo.cmake
++++ b/cmake/Modules/FindCairo.cmake
+@@ -30,26 +30,23 @@
+ 
+ find_package(PkgConfig)
+ 
+-if (APPLE)
+-  pkg_check_modules(PC_CAIRO QUIET cairo)
++pkg_check_modules(PC_CAIRO QUIET cairo)
+ 
+-  find_path(CAIRO_INCLUDE_DIRS
+-    NAMES cairo.h
+-    HINTS ${PC_CAIRO_INCLUDEDIR}
+-          ${PC_CAIRO_INCLUDE_DIRS}
+-    PATH_SUFFIXES cairo
+-  )
++find_path(CAIRO_INCLUDE_DIRS
++  NAMES cairo.h
++  HINTS ${PC_CAIRO_INCLUDEDIR}
++        ${PC_CAIRO_INCLUDE_DIRS}
++  PATH_SUFFIXES include include/cairo
++)
+ 
+-  find_library(CAIRO_LIBRARIES
+-    NAMES cairo
+-    HINTS ${PC_CAIRO_LIBDIR}
+-          ${PC_CAIRO_LIBRARY_DIRS}
+-  )
++find_library(CAIRO_LIBRARIES
++  NAMES cairo
++  HINTS ${PC_CAIRO_LIBDIR}
++        ${PC_CAIRO_LIBRARY_DIRS}
++  PATH_SUFFIXES lib
++)
+ 
+-  set(CAIRO_INCLUDEDIR "${CAIRO_INCLUDE_DIRS}")
+-else ()
+-  pkg_check_modules(CAIRO QUIET cairo)
+-endif ()
++set(CAIRO_INCLUDEDIR "${CAIRO_INCLUDE_DIRS}")
+ 
+ message(STATUS "CAIRO_INCLUDEDIR: ${CAIRO_INCLUDEDIR}")
+ 
+diff --git a/cmake/Modules/FindCryptoPP.cmake b/cmake/Modules/FindCryptoPP.cmake
+index 34bf9ad8c8..02b3f707d0 100644
+--- a/cmake/Modules/FindCryptoPP.cmake
++++ b/cmake/Modules/FindCryptoPP.cmake
+@@ -6,13 +6,13 @@
+ 
+ find_package(PkgConfig REQUIRED QUIET)
+ 
+-pkg_check_modules(PC_CRYPTOPP QUIET libcrypto++>=5.6.0)
++pkg_check_modules(PC_CRYPTOPP QUIET cryptopp)
+ 
+-find_path(CRYPTOPP_INCLUDE_DIRS NAMES crypto++/sha.h
++find_path(CRYPTOPP_INCLUDE_DIRS NAMES cryptopp/sha.h
+   HINTS ${PC_CRYPTOPP_INCLUDE_DIRS} ${PC_CRYPTOPP_INCLUDEDIR}
+ )
+ 
+-find_library(CRYPTOPP_LIBRARIES NAMES crypto++
++find_library(CRYPTOPP_LIBRARIES NAMES cryptopp
+   HINTS ${PC_CRYPTOPP_LIBRARY_DIRS} ${PC_CRYPTOPP_LIBDIR}
+ )
+ 
+diff --git a/cmake/Modules/FindFontConfig.cmake b/cmake/Modules/FindFontConfig.cmake
+deleted file mode 100644
+index e30401c7ba..0000000000
+--- a/cmake/Modules/FindFontConfig.cmake
++++ /dev/null
+@@ -1,71 +0,0 @@
+-# - Try to find the  Fontconfig
+-# Once done this will define
+-#
+-#  FONTCONFIG_FOUND - system has Fontconfig
+-#  FONTCONFIG_INCLUDE_DIR - The include directory to use for the fontconfig headers
+-#  FONTCONFIG_LIBRARIES - Link these to use FONTCONFIG
+-#  FONTCONFIG_DEFINITIONS - Compiler switches required for using FONTCONFIG
+-
+-# Copyright (c) 2006,2007 Laurent Montel, <montel@kde.org>
+-#
+-# Redistribution and use in source and binary forms, with or without
+-# modification, are permitted provided that the following conditions
+-# are met:
+-#
+-# 1. Redistributions of source code must retain the copyright
+-#    notice, this list of conditions and the following disclaimer.
+-# 2. Redistributions in binary form must reproduce the copyright
+-#    notice, this list of conditions and the following disclaimer in the
+-#    documentation and/or other materials provided with the distribution.
+-# 3. The name of the author may not be used to endorse or promote products 
+-#    derived from this software without specific prior written permission.
+-#
+-# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+-# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+-# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+-# IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+-# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+-# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+-# THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-#
+-
+-if (FONTCONFIG_LIBRARIES AND FONTCONFIG_INCLUDE_DIR)
+-
+-  # in cache already
+-  set(FONTCONFIG_FOUND TRUE)
+-
+-else (FONTCONFIG_LIBRARIES AND FONTCONFIG_INCLUDE_DIR)
+-
+-  if (NOT WIN32)
+-    # use pkg-config to get the directories and then use these values
+-    # in the FIND_PATH() and FIND_LIBRARY() calls
+-    find_package(PkgConfig REQUIRED QUIET)
+-    pkg_check_modules(PC_FONTCONFIG QUIET fontconfig)
+-
+-    set(FONTCONFIG_DEFINITIONS ${PC_FONTCONFIG_CFLAGS_OTHER})
+-  endif (NOT WIN32)
+-
+-  find_path(FONTCONFIG_INCLUDE_DIR fontconfig/fontconfig.h
+-    PATHS
+-    ${PC_FONTCONFIG_INCLUDEDIR}
+-    ${PC_FONTCONFIG_INCLUDE_DIRS}
+-    /usr/X11/include
+-  )
+-
+-  find_library(FONTCONFIG_LIBRARIES NAMES fontconfig
+-    PATHS
+-    ${PC_FONTCONFIG_LIBDIR}
+-    ${PC_FONTCONFIG_LIBRARY_DIRS}
+-  )
+-
+-  set(FONTCONFIG_VERSION ${PC_FONTCONFIG_VERSION})
+-
+-  include(FindPackageHandleStandardArgs)
+-  find_package_handle_standard_args(FontConfig DEFAULT_MSG FONTCONFIG_LIBRARIES FONTCONFIG_INCLUDE_DIR)
+-  
+-  mark_as_advanced(FONTCONFIG_LIBRARIES FONTCONFIG_INCLUDE_DIR)
+-
+-endif (FONTCONFIG_LIBRARIES AND FONTCONFIG_INCLUDE_DIR)
+diff --git a/cmake/Modules/FindOpenCSG.cmake b/cmake/Modules/FindOpenCSG.cmake
+index 123bf70369..3cd0f7cbe3 100644
+--- a/cmake/Modules/FindOpenCSG.cmake
++++ b/cmake/Modules/FindOpenCSG.cmake
+@@ -7,10 +7,12 @@ if (NOT OPENCSG_INCLUDE_DIR)
+   message(STATUS "OPENCSG_DIR: " ${OPENCSG_DIR})
+   find_path(OPENCSG_INCLUDE_DIR
+             opencsg.h
+-            HINTS ${OPENCSG_DIR}/include)
++            HINTS ${OPENCSG_DIR}/include
++            PATH_SUFFIXES include/opencsg)
+   find_library(OPENCSG_LIBRARY
+                opencsg
+-               HINTS ${OPENCSG_DIR}/lib)
++               HINTS ${OPENCSG_DIR}/lib
++               PATH_SUFFIXES lib)
+   if (NOT OPENCSG_INCLUDE_DIR OR NOT OPENCSG_LIBRARY)
+     message(FATAL_ERROR "OpenCSG not found")
+   else()
+diff --git a/cmake/Modules/FindQt6QScintilla.cmake b/cmake/Modules/FindQt6QScintilla.cmake
+index 374ecc7a0d..4e21db901b 100644
+--- a/cmake/Modules/FindQt6QScintilla.cmake
++++ b/cmake/Modules/FindQt6QScintilla.cmake
+@@ -46,7 +46,7 @@
+ find_path ( QT6QSCINTILLA_INCLUDE_DIR
+   NAMES qsciscintilla.h
+   HINTS ${Qt6Widgets_INCLUDE_DIRS}
+-  PATH_SUFFIXES qt6 Qsci
++  PATH_SUFFIXES include/qt6 Qsci
+ )
+ 
+ set ( QT6QSCINTILLA_INCLUDE_DIRS ${QT6QSCINTILLA_INCLUDE_DIR} )
+@@ -82,6 +82,7 @@ endif ()
+ find_library ( QT6QSCINTILLA_LIBRARY
+   NAMES qt6scintilla2 qscintilla2-qt6 qscintilla2 qscintilla2_qt6
+   HINTS ${Qt6Widgets_LIBRARIES}
++  PATH_SUFFIXES lib
+ )
+ 
+ set ( QT6QSCINTILLA_LIBRARIES ${QT6QSCINTILLA_LIBRARY} )
+diff --git a/resources/openscad_win32.rc b/resources/openscad_win32.rc
+index e902bd81ba..276b59a562 100644
+--- a/resources/openscad_win32.rc
++++ b/resources/openscad_win32.rc
+@@ -5,7 +5,7 @@
+ # endif
+ 
+ #include "winuser.h"
+-1 RT_MANIFEST "scripts/winmanifest.xml"
++//1 RT_MANIFEST "scripts/winmanifest.xml"
+ 
+ VS_VERSION_INFO VERSIONINFO
+ 	FILEVERSION 0,0,0,0
+diff --git a/src/geometry/Geometry.h b/src/geometry/Geometry.h
+index 7358036f7c..9ddb289173 100644
+--- a/src/geometry/Geometry.h
++++ b/src/geometry/Geometry.h
+@@ -4,6 +4,7 @@
+ #include <string>
+ #include <list>
+ #include <memory>
++#include <cassert>
+ 
+ #include "linalg.h"
+ 
+diff --git a/src/geometry/linalg.h b/src/geometry/linalg.h
+index b9072b01dc..4971a6dce3 100644
+--- a/src/geometry/linalg.h
++++ b/src/geometry/linalg.h
+@@ -11,12 +11,12 @@ using Eigen::Vector3d;
+ using Eigen::Vector3f;
+ using Eigen::Vector3i;
+ 
+-#ifdef _MSC_VER
++#if 0
+   #include <Eigen/StdVector> // https://eigen.tuxfamily.org/dox/group__TopicStlContainers.html
+   #if !EIGEN_HAS_CXX11_CONTAINERS
+     #warning "Eigen has detected no support for CXX11 containers and has redefined std::vector"
+   #endif
+-using VectorOfVector2d = std::vector<Vector2d, Eigen::aligned_allocator<Vector2d>>;
++  using VectorOfVector2d = std::vector<Vector2d, Eigen::aligned_allocator<Vector2d>>;
+ #else
+ using VectorOfVector2d = std::vector<Vector2d>;
+ #endif
