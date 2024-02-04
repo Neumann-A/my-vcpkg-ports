@@ -5,9 +5,9 @@
   "homepage": "https://github.com/Tinche/aiofiles",
   "license": "Apache-2.0",
   "dependencies": [
+    "python-hatchling",
     "python-setuptools",
     "python3",
-    "python-hatchling",
     {
       "name": "vcpkg-python-scripts",
       "host": true

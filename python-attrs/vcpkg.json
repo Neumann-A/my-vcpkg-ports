@@ -7,8 +7,8 @@
   "dependencies": [
     "python-attrs",
     "python-hatch-fancy-pypi-readme",
-    "python-hatchling",
     "python-hatch-vcs",
+    "python-hatchling",
     "python-setuptools",
     "python3",
     {

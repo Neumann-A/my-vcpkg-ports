@@ -4,9 +4,9 @@
   "description": "Assembly Constraints and Multibody Dynamics code ",
   "homepage": "https://github.com/Ondsel-Development/OndselSolver",
   "dependencies": [
-  {
-    "name": "vcpkg-cmake",
-    "host": true
-  }
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    }
   ]
 }

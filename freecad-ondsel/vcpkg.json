@@ -5,8 +5,6 @@
   "homepage": "https://www.ondsel.com",
   "license": "GPL-2.0-or-later",
   "dependencies": [
-    "ondselsolver",
-    "yaml-cpp",
     "boost-assign",
     "boost-convert",
     "boost-date-time",
@@ -23,6 +21,7 @@
     "freetype",
     "matplotlib-cpp",
     "netgen",
+    "ondselsolver",
     {
       "name": "opencascade",
       "default-features": false
@@ -71,6 +70,7 @@
       "name": "vcpkg-cmake-config",
       "host": true
     },
-    "xerces-c"
+    "xerces-c",
+    "yaml-cpp"
   ]
 }
