@@ -90,7 +90,7 @@ file(RENAME "${CURRENT_PACKAGES_DIR}/data" "${CURRENT_PACKAGES_DIR}/tools/${PORT
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/tools/${PORT}/Mod/Material/InitGui.py" "import MatGui" "os.add_dll_directory(App.getHomePath())\n        import MatGui")
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/tools/${PORT}/Mod/Draft/WorkingPlane.py" "from PySide2 import QtWidgets" "from PySide6 import QtWidgets")
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin/Lib/site-packages/freecad/__init__.py" "\"${CURRENT_PACKAGES_DIR}/bin\"" "os.path.dirname(os.path.realpath(__file__)) + \"/../../../\"")
-
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/tools/${PORT}/Mod/OpenSCAD/OpenSCADCommands.py" "int(QtGui.QDialogButtonBox.Close)" "QtGui.QDialogButtonBox.Close.value")
 #file(TOUCH "${CURRENT_PACKAGES_DIR}/tools/${PORT}/data/Mod/Material/StandardMaterial/Tools/NotEmpty")
 
 file(REMOVE "${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin/Lib/site-packages/pybind11/share/pkgconfig/pybind11.pc")
