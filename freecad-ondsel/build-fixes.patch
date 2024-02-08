@@ -1,0 +1,147 @@
+diff --git a/src/Mod/Assembly/App/CMakeLists.txt b/src/Mod/Assembly/App/CMakeLists.txt
+index 724f22e1f8..1f59aa950d 100644
+--- a/src/Mod/Assembly/App/CMakeLists.txt
++++ b/src/Mod/Assembly/App/CMakeLists.txt
+@@ -1,12 +1,15 @@
+ 
++find_library(OndselSolver_LIB NAMES OndselSolver PATH_SUFFIXES lib REQUIRED)
++find_path(OndselSolver_INC NAMES ASMTAngleJoint.h PATH_SUFFIXES include/OndselSolver REQUIRED)
++
+ include_directories(
+     ${CMAKE_BINARY_DIR}
+     ${CMAKE_SOURCE_DIR}/src
+-    ${CMAKE_SOURCE_DIR}/src/3rdParty/OndselSolver
+     ${CMAKE_BINARY_DIR}/src
+     ${CMAKE_CURRENT_BINARY_DIR}
+     ${OCC_INCLUDE_DIR}
+     ${PYTHON_INCLUDE_DIRS}
++    #${OndselSolver_INC}
+ )
+ link_directories(${OCC_LIBRARY_DIR})
+ 
+@@ -14,7 +17,7 @@ set(Assembly_LIBS
+     Part
+     PartDesign
+     FreeCADApp
+-	OndselSolver
++    ${OndselSolver_LIB}
+ )
+ 
+ generate_from_xml(AssemblyObjectPy)
+diff --git a/src/Mod/Assembly/App/PreCompiled.h b/src/Mod/Assembly/App/PreCompiled.h
+index f70a22f5f1..081407229f 100644
+--- a/src/Mod/Assembly/App/PreCompiled.h
++++ b/src/Mod/Assembly/App/PreCompiled.h
+@@ -35,6 +35,7 @@
+ // standard
+ #include <cinttypes>
+ #include <cmath>
++#include <ios>
+ #include <iomanip>
+ #include <map>
+ #include <sstream>
+diff --git a/src/Mod/Assembly/CommandInsertLink.py b/src/Mod/Assembly/CommandInsertLink.py
+index 70e19b11df..fd824d3ca7 100644
+--- a/src/Mod/Assembly/CommandInsertLink.py
++++ b/src/Mod/Assembly/CommandInsertLink.py
+@@ -259,7 +259,8 @@ class TaskAssemblyInsertLink(QtCore.QObject):
+         # Start moving the part if user brings mouse on view
+         self.initMove()
+ 
+-        self.form.partList.setItemSelected(item, False)
++        item.setSelected(False)
++        #self.form.partList.setItemSelected(item, False)
+ 
+     def increment_counter(self, item):
+         text = item.text()
+diff --git a/src/Mod/Fem/App/HypothesisPy.cpp b/src/Mod/Fem/App/HypothesisPy.cpp
+index c02d5ed235..f9ee5f5c19 100644
+--- a/src/Mod/Fem/App/HypothesisPy.cpp
++++ b/src/Mod/Fem/App/HypothesisPy.cpp
+@@ -25,9 +25,8 @@
+ // HypothesisPy.h must be included as first file to avoid compiler warning,
+ // see: https://forum.freecad.org/viewtopic.php?p=633192#p633192
+ #include "HypothesisPy.h"
+-
++#include <SMESH_version.h>  // needed for SMESH_VERSION_MAJOR
+ #ifndef _PreComp_
+-#include <SMESH_Version.h>  // needed for SMESH_VERSION_MAJOR
+ #include <StdMeshers_Arithmetic1D.hxx>
+ #include <StdMeshers_AutomaticLength.hxx>
+ #include <StdMeshers_CompositeSegment_1D.hxx>
+@@ -1180,8 +1179,9 @@ StdMeshers_MEFISTO_2DPy::StdMeshers_MEFISTO_2DPy(int hypId, int studyId, SMESH_G
+     : SMESH_HypothesisPyBase(new StdMeshers_MEFISTO_2D(hypId, studyId, gen))
+ {}
+ #endif
+-#endif
+ StdMeshers_MEFISTO_2DPy::~StdMeshers_MEFISTO_2DPy() = default;
++#endif
++
+ 
+ // ---------------------------------------------------------------------------
+ 
+diff --git a/src/Mod/Fem/App/PreCompiled.h b/src/Mod/Fem/App/PreCompiled.h
+index 240207ea65..f25d417345 100644
+--- a/src/Mod/Fem/App/PreCompiled.h
++++ b/src/Mod/Fem/App/PreCompiled.h
+@@ -60,7 +60,7 @@
+ #include <SMDS_MeshElement.hxx>
+ #include <SMDS_MeshGroup.hxx>
+ #include <SMDS_MeshNode.hxx>
+-#include <SMDS_PolyhedralVolumeOfNodes.hxx>
++//#include <SMDS_PolyhedralVolumeOfNodes.hxx>
+ #include <SMESHDS_Group.hxx>
+ #include <SMESHDS_GroupBase.hxx>
+ #include <SMESHDS_Mesh.hxx>
+@@ -113,6 +113,7 @@
+ #include <BRepAdaptor_Curve.hxx>
+ #include <BRep_Tool.hxx>
+ #include <Bnd_Box.hxx>
++#include <Standard_Version.hxx>
+ #if OCC_VERSION_HEX < 0x070600
+ #include <BRepAdaptor_HSurface.hxx>
+ #endif
+diff --git a/src/Mod/Material/App/MaterialLoader.cpp b/src/Mod/Material/App/MaterialLoader.cpp
+index fc0e6f14c7..fbee0649e7 100644
+--- a/src/Mod/Material/App/MaterialLoader.cpp
++++ b/src/Mod/Material/App/MaterialLoader.cpp
+@@ -20,8 +20,10 @@
+  **************************************************************************/
+ 
+ #include "PreCompiled.h"
+-#ifndef _PreComp_
++
+ #include <QDirIterator>
++
++#ifndef _PreComp_
+ #include <QFileInfo>
+ #include <QList>
+ #include <QMetaType>
+diff --git a/src/Mod/Part/App/OpenCascadeAll.h b/src/Mod/Part/App/OpenCascadeAll.h
+index 410a370230..7466ded2cb 100644
+--- a/src/Mod/Part/App/OpenCascadeAll.h
++++ b/src/Mod/Part/App/OpenCascadeAll.h
+@@ -27,7 +27,6 @@
+ 
+ // Standard*
+ #include <Standard_AbortiveTransaction.hxx>
+-#include <Standard_Address.hxx>
+ #include <Standard_Boolean.hxx>
+ #include <Standard_Byte.hxx>
+ #include <Standard_Character.hxx>
+@@ -41,7 +40,6 @@
+ #include <Standard_DomainError.hxx>
+ #include <Standard_ErrorHandler.hxx>
+ #include <Standard_ExtCharacter.hxx>
+-#include <Standard_ExtString.hxx>
+ #include <Standard_Failure.hxx>
+ #include <Standard_GUID.hxx>
+ #include <Standard_ImmutableObject.hxx>
+@@ -50,7 +48,6 @@
+ #include <Standard_LicenseError.hxx>
+ #include <Standard_LicenseNotFound.hxx>
+ #include <Standard_Macro.hxx>
+-#include <Standard_math.hxx>
+ #include <Standard_MultiplyDefined.hxx>
+ #include <Standard_NegativeValue.hxx>
+ #include <Standard_NoMoreObject.hxx>

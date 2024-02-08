@@ -20,7 +20,13 @@
     "eigen3",
     "freetype",
     "matplotlib-cpp",
-    "netgen",
+    {
+      "name": "netgen",
+      "default-features": false,
+      "features": [
+        "python"
+      ]
+    },
     "ondselsolver",
     {
       "name": "opencascade",
@@ -31,6 +37,7 @@
       "default-features": false
     },
     "opengl",
+    "openscad",
     "orocos-kdl",
     {
       "name": "pcl",

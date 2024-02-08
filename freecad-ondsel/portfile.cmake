@@ -7,6 +7,7 @@ vcpkg_from_github(
     PATCHES 
       diff.patch
       freecad.patch
+      build-fixes.patch
 )
 
 vcpkg_add_to_path("${CURRENT_INSTALLED_DIR}/tools/Qt6/bin")
@@ -48,6 +49,26 @@ vcpkg_cmake_configure(
 vcpkg_cmake_install()
 
 vcpkg_copy_tools(TOOL_NAMES FreeCAD FreeCADCmd  DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin" AUTO_CLEAN)
+vcpkg_copy_tool_dependencies("${CURRENT_PACKAGES_DIR}/tools/${PORT}/lib")
+
+file(GLOB_RECURSE bin_files "${CURRENT_PACKAGES_DIR}/tools/${PORT}/**/*.exe")
+file(GLOB_RECURSE pyd_files "${CURRENT_PACKAGES_DIR}/tools/${PORT}/**/*.pyd")
+file(GLOB_RECURSE dll_files "${CURRENT_PACKAGES_DIR}/tools/${PORT}/**/*.dll")
+
+file(GET_RUNTIME_DEPENDENCIES
+  RESOLVED_DEPENDENCIES_VAR res_deps
+  UNRESOLVED_DEPENDENCIES_VAR unres_deps
+  EXECUTABLES ${bin_files}
+  LIBRARIES ${pyd_files} ${dll_files}
+  DIRECTORIES "${CURRENT_INSTALLED_DIR}/bin"
+  #POST_INCLUDE_REGEXES "${CURRENT_INSTALLED_DIR}/bin"
+  POST_EXCLUDE_REGEXES "/[Ww][Ii][Nn][Dd][Oo][Ww][Ss]/" "system32" "^(ext|api)-ms-win"
+)
+
+message(STATUS "res_deps:${res_deps}")
+message(STATUS "unres_deps:${unres_deps}")
+
+file(COPY ${res_deps} DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin")
 
 file(COPY "${CURRENT_INSTALLED_DIR}/tools/Qt6/bin/qt.conf" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin")
 file(COPY "${CURRENT_INSTALLED_DIR}/tools/Qt6/bin/QtWebEngineProcess${VCPKG_TARGET_EXECUTABLE_SUFFIX}" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin")
@@ -55,13 +76,20 @@ file(COPY "${CURRENT_INSTALLED_DIR}/${PYTHON3_SITE}/../" DESTINATION "${CURRENT_
 file(COPY "${CURRENT_INSTALLED_DIR}/tools/python3/DLLs" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}/lib")
 
 
+file(COPY "${CURRENT_PACKAGES_DIR}/bin/" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin")
+file(REMOVE "${CURRENT_PACKAGES_DIR}/bin/") # E57Format could probably stay in lib/bin
 
-file(COPY "${CURRENT_PACKAGES_DIR}/lib/" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}/lib" FILES_MATCHING PATTERN "*.pyd")
+file(COPY "${CURRENT_PACKAGES_DIR}/lib/" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}/lib")
+file(REMOVE "${CURRENT_PACKAGES_DIR}/lib/") # E57Format could probably stay in lib/bin
 
 file(RENAME "${CURRENT_PACKAGES_DIR}/Mod" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/Mod")
 file(RENAME "${CURRENT_PACKAGES_DIR}/Ext" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/Ext")
 file(RENAME "${CURRENT_PACKAGES_DIR}/doc" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/doc")
 file(RENAME "${CURRENT_PACKAGES_DIR}/data" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/data")
+
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/tools/${PORT}/Mod/Material/InitGui.py" "import MatGui" "os.add_dll_directory(App.getHomePath())\n        import MatGui")
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/tools/${PORT}/Mod/Draft/WorkingPlane.py" "from PySide2 import QtWidgets" "from PySide6 import QtWidgets")
+vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/tools/${PORT}/bin/Lib/site-packages/freecad/__init__.py" "\"${CURRENT_PACKAGES_DIR}/bin\"" "os.path.dirname(os.path.realpath(__file__)) + \"/../../../\"")
 
 #file(TOUCH "${CURRENT_PACKAGES_DIR}/tools/${PORT}/data/Mod/Material/StandardMaterial/Tools/NotEmpty")
 
