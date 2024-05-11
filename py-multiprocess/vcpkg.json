@@ -1,0 +1,16 @@
+{
+  "name": "py-multiprocess",
+  "version": "0.70.15",
+  "description": "better multiprocessing and multithreading in Python",
+  "homepage": "http://multiprocess.rtfd.io/",
+  "license": null,
+  "dependencies": [
+    "py-dill",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

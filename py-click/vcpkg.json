@@ -1,0 +1,15 @@
+{
+  "name": "py-click",
+  "version": "8.1.7",
+  "description": "Python composable command line interface toolkit",
+  "homepage": "https://click.palletsprojects.com/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

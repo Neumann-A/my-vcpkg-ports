@@ -1,0 +1,17 @@
+{
+  "name": "py-scikit-build-core",
+  "version": "0.6.1",
+  "description": "A next generation Python CMake adaptor and Python API for plugins",
+  "homepage": "https://scikit-build-core.readthedocs.io/",
+  "license": "Apache-2.0",
+  "dependencies": [
+    "py-hatch-vcs",
+    "py-hatchling",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

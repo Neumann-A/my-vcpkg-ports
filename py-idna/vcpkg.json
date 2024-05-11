@@ -1,0 +1,15 @@
+{
+  "name": "py-idna",
+  "version": "3.4",
+  "description": "Internationalized Domain Names for Python (IDNA 2008 and UTS #46)",
+  "homepage": "https://github.com/kjd/idna",
+  "license": "Apache-2.0",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

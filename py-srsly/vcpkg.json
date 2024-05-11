@@ -1,0 +1,15 @@
+{
+  "name": "py-srsly",
+  "version": "2.4.8",
+  "description": "Modern high-performance serialization utilities for Python (JSON, MessagePack, Pickle)",
+  "homepage": "https://github.com/explosion/srsly",
+  "license": "MIT",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

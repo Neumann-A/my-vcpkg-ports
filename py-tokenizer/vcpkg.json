@@ -1,0 +1,15 @@
+{
+  "name": "py-tokenizer",
+  "version": "3.4.3",
+  "description": "A tokenizer for Icelandic text",
+  "homepage": "https://github.com/mideind/Tokenizer",
+  "license": "MIT",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

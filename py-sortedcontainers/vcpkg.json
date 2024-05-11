@@ -1,0 +1,15 @@
+{
+  "name": "py-sortedcontainers",
+  "version": "2.1.0",
+  "description": "Python Sorted Container Types: Sorted List, Sorted Dict, and Sorted Set",
+  "homepage": "http://www.grantjenks.com/docs/sortedcontainers/",
+  "license": "Apache-2.0",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

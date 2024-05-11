@@ -1,0 +1,16 @@
+{
+  "name": "py-anyio",
+  "version": "4.0.0",
+  "description": "High level asynchronous concurrency and networking framework that works on top of either trio or asyncio",
+  "homepage": "https://github.com/agronholm/anyio",
+  "license": "MIT",
+  "dependencies": [
+    "py-setuptools",
+    "py-setuptools-scm",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

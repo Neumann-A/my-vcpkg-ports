@@ -1,0 +1,32 @@
+{
+  "name": "py-safetensors",
+  "version": "0.4.1",
+  "description": "Simple, safe way to store and distribute tensors",
+  "homepage": "https://huggingface.co/docs/safetensors",
+  "license": "Apache-2.0",
+  "dependencies": [
+    {
+      "name": "libtorch",
+      "default-features": false,
+      "features": [
+        "python"
+      ]
+    },
+    "numpy",
+    "py-maturin",
+    "py-packaging",
+    "py-pyyaml",
+    "py-requests",
+    "py-setuptools",
+    "py-typing-extensions",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    },
+    {
+      "name": "vcpkg-rust",
+      "host": true
+    }
+  ]
+}

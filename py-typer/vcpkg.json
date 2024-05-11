@@ -1,0 +1,16 @@
+{
+  "name": "py-typer",
+  "version": "0.9.0",
+  "description": "Typer, build great CLIs. Easy to code. Based on Python type hints.",
+  "homepage": "https://typer.tiangolo.com/",
+  "license": "MIT",
+  "dependencies": [
+    "py-flit-core",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

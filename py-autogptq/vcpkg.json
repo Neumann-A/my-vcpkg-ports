@@ -1,0 +1,21 @@
+{
+  "name": "py-autogptq",
+  "version": "0.6.0",
+  "description": "An easy-to-use LLMs quantization package with user-friendly apis, based on GPTQ algorithm",
+  "homepage": "https://github.com/PanQiWei/AutoGPTQ",
+  "license": "MIT",
+  "dependencies": [
+    "numpy",
+    "py-accelerate",
+    "py-datasets",
+    "py-gekko",
+    "py-peft",
+    "py-setuptools",
+    "py-transformers",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

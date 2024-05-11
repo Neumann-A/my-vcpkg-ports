@@ -1,0 +1,16 @@
+{
+  "name": "py-murmurhash",
+  "version": "1.0.10",
+  "description": "Cython bindings for MurmurHash2",
+  "homepage": "https://github.com/explosion/murmurhash",
+  "license": "MIT",
+  "dependencies": [
+    "murmurhash",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

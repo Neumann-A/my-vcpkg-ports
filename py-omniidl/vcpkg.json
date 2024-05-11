@@ -1,0 +1,15 @@
+{
+  "name": "py-omniidl",
+  "version": "4.2.2",
+  "description": "omniidl backend code",
+  "homepage": "http://omniorb.sourceforge.net/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

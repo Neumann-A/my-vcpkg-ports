@@ -1,0 +1,15 @@
+{
+  "name": "py-tqdm",
+  "version": "4.66.1",
+  "description": "A Fast, Extensible Progress Bar for Python and CLI",
+  "homepage": "https://tqdm.github.io/",
+  "license": null,
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

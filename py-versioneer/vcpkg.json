@@ -1,0 +1,15 @@
+{
+  "name": "py-versioneer",
+  "version": "0.29",
+  "description": "version-string management for VCS-controlled trees",
+  "homepage": "https://github.com/python-versioneer/python-versioneer",
+  "license": "Unlicense",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

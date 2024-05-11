@@ -1,0 +1,16 @@
+{
+  "name": "py-poetry",
+  "version": "1.7.0",
+  "description": "Python packaging and dependency management made easy",
+  "homepage": "https://python-poetry.org/",
+  "license": "MIT",
+  "dependencies": [
+    "py-poetry-core",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

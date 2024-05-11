@@ -1,0 +1,19 @@
+{
+  "name": "py-hatchling",
+  "version": "1.18.0",
+  "description": "Modern, extensible Python project management",
+  "homepage": "hatch.pypa.io/latest/",
+  "license": "MIT",
+  "dependencies": [
+    "py-editables",
+    "py-pathspec",
+    "py-trove-classifiers",
+    "py-wheel",
+    "pytest-dev-pluggy",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

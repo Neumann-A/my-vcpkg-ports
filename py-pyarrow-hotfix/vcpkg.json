@@ -1,0 +1,15 @@
+{
+  "name": "py-pyarrow-hotfix",
+  "version": "0.6",
+  "description": "Hotfix for pyarrow",
+  "homepage": "https://github.com/pitrou/pyarrow-hotfix",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "py-pyarrow",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

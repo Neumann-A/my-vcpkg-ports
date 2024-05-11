@@ -24,7 +24,7 @@
           "host": true,
           "platform": "windows"
         },
-        "python-setuptools",
+        "py-setuptools",
         "python3",
         {
           "name": "vcpkg-python-scripts",

@@ -1,0 +1,17 @@
+{
+  "name": "py-pyyaml",
+  "version": "6.0.1",
+  "description": "YAML parser and emitter for Python",
+  "homepage": "https://pyyaml.org/",
+  "dependencies": [
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

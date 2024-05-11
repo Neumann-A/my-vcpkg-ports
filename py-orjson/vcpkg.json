@@ -1,0 +1,17 @@
+{
+  "name": "py-orjson",
+  "version": "3.9.10",
+  "description": "Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy",
+  "homepage": "https://www.uvicorn.org/",
+  "license": null,
+  "dependencies": [
+    "py-maturin",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    },
+    "vcpkg-rust"
+  ]
+}

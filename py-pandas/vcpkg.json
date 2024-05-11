@@ -1,0 +1,24 @@
+{
+  "name": "py-pandas",
+  "version": "2.1.2",
+  "description": "The fundamental package for scientific computing with Python.",
+  "homepage": "https://pandas.pydata.org/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    {
+      "name": "py-cython",
+      "host": true
+    },
+    "py-pytz",
+    "py-versioneer",
+    "python3",
+    {
+      "name": "vcpkg-get-python-packages",
+      "host": true
+    },
+    {
+      "name": "vcpkg-tool-meson",
+      "host": true
+    }
+  ]
+}

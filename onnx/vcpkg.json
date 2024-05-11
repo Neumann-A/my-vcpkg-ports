@@ -28,8 +28,8 @@
     "python": {
       "description": "Build Python binaries",
       "dependencies": [
+        "py-googlesearch",
         "pybind11",
-        "python-googlesearch",
         "python3"
       ]
     }

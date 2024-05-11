@@ -1,0 +1,15 @@
+{
+  "name": "py-psutil",
+  "version": "5.9.6",
+  "description": "Cross-platform lib for process and system monitoring in Python ",
+  "homepage": "https://github.com/giampaolo/psutil",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "py-tomli-wheel",
+  "version": "2.0.1",
+  "description": "A simple, correct Python build frontend ",
+  "homepage": "py-build.readthedocs.io/en/stable/",
+  "license": "MIT",
+  "dependencies": [
+    "py-wheel",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

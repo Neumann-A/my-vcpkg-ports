@@ -1,0 +1,16 @@
+{
+  "name": "py-urllib3",
+  "version": "2.0.7",
+  "description": "urllib3 is a user-friendly HTTP client library for Python",
+  "homepage": "https://urllib3.readthedocs.io/",
+  "license": "Apache-2.0",
+  "dependencies": [
+    "py-hatchling",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "py-pydantic",
+  "version": "2.4.2",
+  "description": "Data validation using Python type hints",
+  "homepage": "https://github.com/pydantic/pydantic",
+  "license": "MIT",
+  "dependencies": [
+    "py-annotated-types",
+    "py-hatch-fancy-pypi-readme",
+    "py-pydantic-core",
+    "py-setuptools",
+    "py-wasabi",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

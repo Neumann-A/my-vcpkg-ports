@@ -1,0 +1,15 @@
+{
+  "name": "py-hypothesis",
+  "version": "6.74.0",
+  "description": "About Hypothesis is a powerful, flexible, and easy to use library for property-based testing.",
+  "homepage": "https://hypothesis.works/",
+  "license": "MIT",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

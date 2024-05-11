@@ -14,7 +14,7 @@
       ]
     },
     "numpy",
-    "python-setuptools",
+    "py-setuptools",
     "python3",
     {
       "name": "python3",

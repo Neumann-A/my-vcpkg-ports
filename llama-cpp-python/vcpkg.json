@@ -6,9 +6,9 @@
   "license": "MIT",
   "dependencies": [
     "llama-cpp",
-    "python-diskcache",
-    "python-pyproject-metadata",
-    "python-scikit-build-core",
+    "py-diskcache",
+    "py-pyproject-metadata",
+    "py-scikit-build-core",
     "python3",
     {
       "name": "vcpkg-python-scripts",

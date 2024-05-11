@@ -1,0 +1,16 @@
+{
+  "name": "py-aiosignal",
+  "version": "1.3.1",
+  "description": "aiosignal: a list of registered asynchronous callbacks",
+  "homepage": "https://aiosignal.readthedocs.io/",
+  "license": null,
+  "dependencies": [
+    "py-frozenlist",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "py-colorama",
+  "version": "0.4.6",
+  "description": "Simple cross-platform colored terminal text in Python ",
+  "homepage": "https://requests.readthedocs.io/en/latest/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "py-hatchling",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

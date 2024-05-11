@@ -1,0 +1,15 @@
+{
+  "name": "py-cblis",
+  "version": "0.7.11",
+  "description": "Fast matrix-multiplication as a self-contained Python library – no system dependencies!",
+  "homepage": "https://github.com/explosion/cython-blis",
+  "license": null,
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

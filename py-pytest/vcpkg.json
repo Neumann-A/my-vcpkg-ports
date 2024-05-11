@@ -1,0 +1,19 @@
+{
+  "name": "py-pytest",
+  "version": "8.1.1",
+  "description": "The pytest framework makes it easy to write small tests, yet scales to support complex functional testing ",
+  "homepage": "https://docs.pytest.org",
+  "license": "MIT",
+  "dependencies": [
+    "py-attrs",
+    "py-hypothesis",
+    "py-iniconfig",
+    "py-pygments",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

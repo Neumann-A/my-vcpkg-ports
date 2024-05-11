@@ -1,0 +1,17 @@
+{
+  "name": "py-preshed",
+  "version": "3.0.9",
+  "description": "Cython hash tables that assume keys are pre-hashed",
+  "homepage": "https://github.com/explosion/preshed",
+  "license": "MIT",
+  "dependencies": [
+    "py-cymem",
+    "py-murmurhash",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

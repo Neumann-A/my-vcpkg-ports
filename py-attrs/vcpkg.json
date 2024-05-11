@@ -1,0 +1,19 @@
+{
+  "name": "py-attrs",
+  "version": "23.1.0",
+  "description": "Python Classes Without Boilerplate",
+  "homepage": "https://www.attrs.org/",
+  "license": "MIT",
+  "dependencies": [
+    "py-attrs",
+    "py-hatch-fancy-pypi-readme",
+    "py-hatch-vcs",
+    "py-hatchling",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

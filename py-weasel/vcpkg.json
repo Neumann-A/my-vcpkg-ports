@@ -1,0 +1,15 @@
+{
+  "name": "py-weasel",
+  "version": "0.3.4",
+  "description": "weasel: A small and easy workflow system",
+  "homepage": "https://github.com/explosion/weasel/",
+  "license": "MIT",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

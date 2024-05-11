@@ -1,0 +1,31 @@
+{
+  "name": "py-exllamav2",
+  "version": "0.0.8",
+  "description": "A fast inference library for running LLMs locally on modern consumer-class GPUs",
+  "homepage": "https://github.com/turboderp/exllamav2",
+  "license": "MIT",
+  "dependencies": [
+    {
+      "name": "libtorch",
+      "features": [
+        "python"
+      ]
+    },
+    "py-pandas",
+    "py-pygments",
+    "py-regex",
+    "py-setuptools",
+    "py-websockets",
+    "python3",
+    {
+      "name": "sentencepiece",
+      "features": [
+        "python"
+      ]
+    },
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

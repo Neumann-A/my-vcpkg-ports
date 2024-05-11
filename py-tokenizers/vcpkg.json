@@ -1,0 +1,17 @@
+{
+  "name": "py-tokenizers",
+  "version": "0.15.0",
+  "description": "Fast State-of-the-Art Tokenizers optimized for Research and Production",
+  "homepage": "https://huggingface.co/docs/tokenizers",
+  "license": "Apache-2.0",
+  "dependencies": [
+    "py-maturin",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    },
+    "vcpkg-rust"
+  ]
+}

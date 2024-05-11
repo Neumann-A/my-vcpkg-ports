@@ -1,0 +1,15 @@
+{
+  "name": "py-iniconfig",
+  "version": "2.0.0",
+  "description": "iniconfig: brain-dead simple parsing of ini files",
+  "homepage": "https://github.com/pytest-dev/iniconfig",
+  "license": "MIT",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

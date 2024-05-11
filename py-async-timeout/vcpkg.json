@@ -1,0 +1,15 @@
+{
+  "name": "py-async-timeout",
+  "version": "4.0.3",
+  "description": "asyncio-compatible timeout class",
+  "homepage": "https://github.com/aio-libs/async-timeout",
+  "license": null,
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "py-gekko",
+  "version": "1.0.6",
+  "description": "GEKKO Python for Machine Learning and Dynamic Optimization",
+  "homepage": "https://machinelearning.byu.edu/",
+  "license": null,
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

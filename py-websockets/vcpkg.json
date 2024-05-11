@@ -1,0 +1,15 @@
+{
+  "name": "py-websockets",
+  "version": "12.0",
+  "description": "Library for building WebSocket servers and clients in Python",
+  "homepage": "https://websockets.readthedocs.io/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

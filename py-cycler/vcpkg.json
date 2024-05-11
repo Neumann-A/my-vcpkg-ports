@@ -1,0 +1,15 @@
+{
+  "name": "py-cycler",
+  "version": "0.12.1",
+  "description": "cycler: composable cycles",
+  "homepage": "https://matplotlib.org/cycler/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

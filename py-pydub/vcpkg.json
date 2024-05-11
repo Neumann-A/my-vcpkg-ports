@@ -1,0 +1,15 @@
+{
+  "name": "py-pydub",
+  "version": "0.25.1",
+  "description": "Manipulate audio with a simple and easy high level interface",
+  "homepage": "https://github.com/jiaaro/pydub",
+  "license": "MIT",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

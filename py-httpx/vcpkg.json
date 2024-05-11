@@ -1,0 +1,27 @@
+{
+  "name": "py-httpx",
+  "version": "0.25.1",
+  "description": "A next generation HTTP client for Python.",
+  "homepage": "https://www.python-httpx.org/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "py-anyio",
+    "py-certifi",
+    "py-hatch",
+    "py-hatch-fancy-pypi-readme",
+    "py-hatch-requirements-txt",
+    "py-hatchling",
+    "py-httpcore",
+    "py-idna",
+    "py-sniffio",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    },
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

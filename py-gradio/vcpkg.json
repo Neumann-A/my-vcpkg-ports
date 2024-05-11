@@ -1,0 +1,29 @@
+{
+  "name": "py-gradio",
+  "version": "3.41.0",
+  "description": "Gradio is an open-source Python library that is used to build machine learning and data science demos and web applications",
+  "homepage": "http://www.gradio.app/",
+  "license": "Apache-2.0",
+  "dependencies": [
+    "numpy",
+    "py-aiofiles",
+    "py-altair",
+    "py-fastapi",
+    "py-ffmpy",
+    "py-hatch",
+    "py-hatch-fancy-pypi-readme",
+    "py-hatch-requirements-txt",
+    "py-hatchling",
+    "py-orjson",
+    "py-packaging",
+    "py-pandas",
+    "py-pillow",
+    "py-pydub",
+    "py-uvicorn",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

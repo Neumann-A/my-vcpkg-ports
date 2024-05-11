@@ -1,0 +1,17 @@
+{
+  "name": "py-setuptools-rust",
+  "version": "1.8.1",
+  "description": "Setuptools plugin for Rust support",
+  "homepage": "https://setuptools-rust.readthedocs.io/",
+  "license": "MIT",
+  "dependencies": [
+    "py-setuptools",
+    "py-setuptools-scm",
+    "py-wheel",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

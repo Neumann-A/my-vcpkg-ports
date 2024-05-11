@@ -1,0 +1,12 @@
+{
+  "name": "py-astunparse",
+  "version": "1.6.3",
+  "description": "An AST unparser for Python",
+  "homepage": "https://astunparse.readthedocs.io/en/latest/",
+  "license": null,
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    "vcpkg-python-scripts"
+  ]
+}

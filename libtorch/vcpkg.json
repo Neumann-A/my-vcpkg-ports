@@ -36,8 +36,8 @@
       "host": true
     },
     "pthreadpool",
+    "py-pyyaml",
     "pybind11",
-    "python-pyyaml",
     "python3",
     "sleef",
     {
@@ -126,11 +126,11 @@
       "description": "Build with python",
       "dependencies": [
         "numpy",
-        "python-astunparse",
-        "python-setuptools",
-        "python-six",
-        "python-sympy",
-        "python-typing-extensions",
+        "py-astunparse",
+        "py-setuptools",
+        "py-six",
+        "py-sympy",
+        "py-typing-extensions",
         "python3",
         "vcpkg-python-scripts"
       ]

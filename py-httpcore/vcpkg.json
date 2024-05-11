@@ -1,0 +1,23 @@
+{
+  "name": "py-httpcore",
+  "version": "1.0.2",
+  "description": "A minimal HTTP client.",
+  "homepage": "https://www.encode.io/httpcore/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "py-h11",
+    "py-hatch",
+    "py-hatch-fancy-pypi-readme",
+    "py-hatch-requirements-txt",
+    "py-hatchling",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    },
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

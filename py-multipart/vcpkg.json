@@ -1,0 +1,15 @@
+{
+  "name": "py-multipart",
+  "version": "0.0.6",
+  "description": "A streaming multipart parser for Python",
+  "homepage": "http://andrew-d.github.io/python-multipart/",
+  "license": null,
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

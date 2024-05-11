@@ -1,0 +1,16 @@
+{
+  "name": "py-aiofiles",
+  "version": "23.2.1",
+  "description": "aiofiles is an Apache2 licensed library, written in Python, for handling local disk files in asyncio applications",
+  "homepage": "https://github.com/Tinche/aiofiles",
+  "license": "Apache-2.0",
+  "dependencies": [
+    "py-hatchling",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

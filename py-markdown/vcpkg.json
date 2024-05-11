@@ -1,0 +1,15 @@
+{
+  "name": "py-markdown",
+  "version": "3.5.1",
+  "description": "A Python implementation of John Gruber’s Markdown with Extension support. ",
+  "homepage": "https://python-markdown.github.io/",
+  "license": null,
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

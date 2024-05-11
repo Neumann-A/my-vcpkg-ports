@@ -1,0 +1,29 @@
+{
+  "name": "py-spacy",
+  "version": "3.7.2",
+  "description": "Industrial-strength Natural Language Processing (NLP) in Python",
+  "homepage": "https://spacy.io/",
+  "license": "MIT",
+  "dependencies": [
+    "numpy",
+    "py-catalogue",
+    "py-click",
+    "py-confection",
+    "py-cython",
+    "py-jinja",
+    "py-langcodes",
+    "py-packaging",
+    "py-pip",
+    "py-preshed",
+    "py-setuptools",
+    "py-srsly",
+    "py-thinc",
+    "py-typer",
+    "py-weasel",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}
