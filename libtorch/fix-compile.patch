@@ -1,0 +1,26 @@
+diff --git a/aten/src/ATen/cpu/vec/vec_base.h b/aten/src/ATen/cpu/vec/vec_base.h
+index f68e9c6..1c1e442 100644
+--- a/aten/src/ATen/cpu/vec/vec_base.h
++++ b/aten/src/ATen/cpu/vec/vec_base.h
+@@ -150,7 +150,7 @@ public:
+   // versions GCC/Clang have buggy determinations on whether or not an
+   // identifier is odr-used or not, and in any case it's hard to tell if
+   // a variable is odr-used or not.  So best to just cut the problem at the root.
+-  static constexpr size_type size_T = sizeof(T);  // Workaround to compile with VS2022.
++  #define size_T sizeof(T);  // Workaround to compile with VS2022.
+   static constexpr size_type size() {
+     return VECTOR_WIDTH / size_T;
+   }
+diff --git a/c10/util/Logging.cpp b/c10/util/Logging.cpp
+index ff8e1d6..b2b5a53 100644
+--- a/c10/util/Logging.cpp
++++ b/c10/util/Logging.cpp
+@@ -285,7 +285,7 @@ void UpdateLoggingLevelsFromFlags() {
+ 
+ void ShowLogInfoToStderr() {
+   FLAGS_logtostderr = 1;
+-  FLAGS_minloglevel = std::min(FLAGS_minloglevel, google::GLOG_INFO);
++  FLAGS_minloglevel = std::min<google::int32>(FLAGS_minloglevel, google::GLOG_INFO);
+ }
+ } // namespace c10
+ 
