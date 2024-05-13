@@ -13,6 +13,7 @@ vcpkg_from_github(
         clang-cl.patch
         fix-api.patch
         fix-compile.patch
+        disable-cuda-check.patch
 )
 file(REMOVE_RECURSE "${SOURCE_PATH}/caffe2/core/macros.h") # We must use generated header files
 
@@ -279,3 +280,7 @@ string(REGEX REPLACE "\\\${NVTOOLEXT_HOME}/lib/x64/nvToolsExt64_1.lib" "" conten
 file(WRITE "${config}" "${contents}")
 
 vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/torch/csrc/autograd/custom_function.h" "struct TORCH_API Function" "struct Function")
+
+#  in py-exllamav2
+# E:\all\vcpkg\installed\x64-windows-release\tools\python3\Lib\site-packages\torch\utils\cpp_extension.py:383: UserWarning: Error checking compiler version for cl: Command 'cl' returned non-zero exit status 2.
+#  warnings.warn(f'Error checking compiler version for {compiler}: {error}')

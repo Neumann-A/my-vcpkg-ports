@@ -1,0 +1,27 @@
+diff --git a/cmake/public/cuda.cmake b/cmake/public/cuda.cmake
+index 3e1af83..61f3746 100644
+--- a/cmake/public/cuda.cmake
++++ b/cmake/public/cuda.cmake
+@@ -60,8 +60,7 @@ find_package(CUDAToolkit REQUIRED)
+ 
+ cmake_policy(POP)
+ 
+-if(NOT CMAKE_CUDA_COMPILER_VERSION STREQUAL CUDAToolkit_VERSION OR
+-    NOT CUDA_INCLUDE_DIRS STREQUAL CUDAToolkit_INCLUDE_DIR)
++if(0)
+   message(FATAL_ERROR "Found two conflicting CUDA installs:\n"
+                       "V${CMAKE_CUDA_COMPILER_VERSION} in '${CUDA_INCLUDE_DIRS}' and\n"
+                       "V${CUDAToolkit_VERSION} in '${CUDAToolkit_INCLUDE_DIR}'")
+diff --git a/aten/src/ATen/native/cuda/LinearAlgebra.cu b/aten/src/ATen/native/cuda/LinearAlgebra.cu
+index fb59f97..a6a566a 100644
+--- a/aten/src/ATen/native/cuda/LinearAlgebra.cu
++++ b/aten/src/ATen/native/cuda/LinearAlgebra.cu
+@@ -9,6 +9,8 @@
+ #include <ATen/native/ReduceOps.h>
+ #include <c10/core/Scalar.h>
+ 
++#include <thrust/swap.h>
++
+ namespace at::native {
+ 
+ namespace {
