@@ -1,6 +1,6 @@
 {
   "name": "py-pydantic-core",
-  "version": "2.14.1",
+  "version": "2.18.2",
   "description": "Core validation logic for pydantic written in rust",
   "homepage": "https://github.com/pydantic/pydantic-core",
   "license": "MIT",

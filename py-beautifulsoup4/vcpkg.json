@@ -1,0 +1,21 @@
+{
+  "name": "py-beautifulsoup4",
+  "version": "4.12.3",
+  "description": "Beautiful Soup is a library that makes it easy to scrape information from web pages. It sits atop an HTML or XML parser, providing Pythonic idioms for iterating, searching, and modifying the parse tree.",
+  "homepage": "https://pypi.org/project/beautifulsoup4",
+  "dependencies": [
+    {
+      "name": "py-hatchling",
+      "host": true
+    },
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

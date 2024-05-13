@@ -1,8 +1,8 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO pfmoore/editables
-    REF 87cec30b6bff6aa9d871d74d44e47dbf48e2a6ad
-    SHA512 e139bbe51772535e7d1bd9a1daeeb2b0df3651997961d0af434c51f0e0c9c846499cf28b1c7ba5c9224e162e25cb4311322a0655ac789888830b28588edd20b2
+    REF ${VERSION}
+    SHA512 ac39d2e6a51625697c517b85fec11b525b1a41f82cf4f55c7595fed19da867065a62eee5e3656706f7402d0499754f4a142da77d699c59dffc8b769fa1c3dbe2
     HEAD_REF master
 )
 
@@ -11,3 +11,5 @@ vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE.txt")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_python_test_import(MODULE "editables")

@@ -1,6 +1,6 @@
 {
   "name": "py-orjson",
-  "version": "3.9.10",
+  "version": "3.10.3",
   "description": "Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy",
   "homepage": "https://www.uvicorn.org/",
   "license": null,

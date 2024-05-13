@@ -87,8 +87,8 @@ index 0421bda81e..c09a14f947 100644
 +        LIBRARY DESTINATION lib
 +        RUNTIME DESTINATION bin)
  
- set(PYARROW_CPP_FLIGHT_SRCS ${PYARROW_CPP_SOURCE_DIR}/flight.cc)
- if(PYARROW_BUILD_FLIGHT)
+ set(PYARROW_CPP_ENCRYPTION_SRCS ${PYARROW_CPP_SOURCE_DIR}/parquet_encryption.cc)
+ if(NOT PYARROW_BUILD_PARQUET_ENCRYPTION)
 @@ -509,9 +510,9 @@ function(bundle_arrow_dependency library_name)
      get_filename_component(SHARED_LIB_NAME ${SHARED_LIB_PATH} NAME)
      message(STATUS "Bundle dependency ${library_name}: ${SHARED_LIB_REALPATH} as ${SHARED_LIB_NAME}"

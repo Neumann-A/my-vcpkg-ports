@@ -5,6 +5,10 @@
   "homepage": "https://pyyaml.org/",
   "dependencies": [
     {
+      "name": "py-cython",
+      "host": true
+    },
+    {
       "name": "py-setuptools",
       "host": true
     },

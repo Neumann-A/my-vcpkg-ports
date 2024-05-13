@@ -1,6 +1,6 @@
 {
   "name": "py-hatch-fancy-pypi-readme",
-  "version": "23.1.0",
+  "version": "24.1.0",
   "description": "Fancy PyPI READMEs with Hatch",
   "homepage": "https://github.com/hynek/hatch-fancy-pypi-readme",
   "license": "MIT",

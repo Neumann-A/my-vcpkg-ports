@@ -1,6 +1,6 @@
 {
   "name": "py-setuptools-rust",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "description": "Setuptools plugin for Rust support",
   "homepage": "https://setuptools-rust.readthedocs.io/",
   "license": "MIT",

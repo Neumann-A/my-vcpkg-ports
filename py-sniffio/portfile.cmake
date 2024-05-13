@@ -14,3 +14,5 @@ vcpkg_install_copyright(FILE_LIST
   "${SOURCE_PATH}/LICENSE.MIT")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_python_test_import(MODULE "sniffio")

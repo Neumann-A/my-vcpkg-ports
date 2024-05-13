@@ -1,6 +1,6 @@
 {
   "name": "py-langcodes",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "A Python library for working with and comparing language codes.",
   "homepage": "https://github.com/rspeer/langcodes",
   "license": "MIT",

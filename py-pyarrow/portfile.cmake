@@ -2,7 +2,7 @@ vcpkg_download_distfile(
     ARCHIVE_PATH
     URLS "https://archive.apache.org/dist/arrow/arrow-${VERSION}/apache-arrow-${VERSION}.tar.gz"
     FILENAME apache-arrow-${VERSION}.tar.gz
-    SHA512 dd6cf6cbb817a48ef5275bb409367e5904526a3c16a17a37ea75101085ea19a71ba6bf936a6f099012e7c528811db1728ef2f14dcb16a1056a22088839280ce0
+    SHA512 773f4f3eef603032c8ba0cfdc023bfd2a24bb5e41c82da354a22d7854ab153294ede1f4782cc32b27451cf1b58303f105bac61ceeb3568faea747b93e21d79e4
 )
 vcpkg_extract_source_archive(
     SOURCE_PATH
@@ -33,9 +33,10 @@ file(REMOVE_RECURSE ${includes}
 
 vcpkg_replace_string("${SOURCE_PATH}/python/setup.py" "self._run_cmake()" "")
 
-vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/python" OPTIONS -x 
-  -Cbdist_dir=${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel 
-  -C--build-dir=${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/python" 
+OPTIONS 
+  #-Cbdist_dir=${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel 
+  #-C--build-dir=${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel
 )
 
 #file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/")

@@ -1,6 +1,6 @@
 {
   "name": "py-jsonschema",
-  "version": "4.19.2",
+  "version": "4.22.0",
   "description": "An implementation of the JSON Schema specification for Python",
   "homepage": "https://python-jsonschema.readthedocs.io/",
   "license": "MIT",

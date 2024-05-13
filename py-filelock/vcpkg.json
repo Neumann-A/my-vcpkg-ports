@@ -1,6 +1,6 @@
 {
   "name": "py-filelock",
-  "version": "3.13.1",
+  "version": "3.14.0",
   "description": "A platform-independent file lock for Python.",
   "homepage": "https://py-filelock.readthedocs.io/",
   "license": "Unlicense",

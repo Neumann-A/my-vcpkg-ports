@@ -1,6 +1,6 @@
 {
   "name": "py-markdown",
-  "version": "3.5.1",
+  "version": "3.6",
   "description": "A Python implementation of John Gruber’s Markdown with Extension support. ",
   "homepage": "https://python-markdown.github.io/",
   "license": null,

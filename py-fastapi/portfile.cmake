@@ -2,12 +2,14 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO tiangolo/fastapi
     REF ${VERSION}
-    SHA512 bed93b84709c64e4f6d170faeade91643a9186962ff5d34bb659fb303ea439c4f52f5e9f1e15f4ca0dd56a5e753ccdaa9bf5372deeb7dbd26ae84f59c393e58a
+    SHA512 3b613e4b2e7253fa08c09f961e69d384d2f44d07dc7f045b669c3e78f21a161715f3e9a0cb813a1c6e793f4a322160ec3eeb4eef90ba59db64bde9baaa539c13
     HEAD_REF master
 )
 
-vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
+vcpkg_python_build_and_install_wheel(USE_BUILD SOURCE_PATH "${SOURCE_PATH}")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_python_test_import(MODULE "fastapi")

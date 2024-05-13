@@ -1,9 +1,8 @@
 {
   "name": "py-pip",
-  "version": "23.3.2",
-  "port-version": 1,
+  "version": "24.0",
   "description": "Tool for installing and managing Python packages",
-  "homepage": "https://pypi.org/project/setuptools",
+  "homepage": "https://pypi.org/project/pip",
   "dependencies": [
     {
       "name": "py-setuptools",

@@ -1,6 +1,6 @@
 {
   "name": "py-referencing",
-  "version": "0.31.0",
+  "version": "0.35.1",
   "description": "An implementation-agnostic implementation of JSON reference resolution",
   "homepage": "https://referencing.readthedocs.io/",
   "license": "MIT",
@@ -8,6 +8,7 @@
     "py-hatchling",
     "py-rpds-py",
     "py-setuptools",
+    "py-trove-classifiers",
     "python3",
     {
       "name": "vcpkg-python-scripts",

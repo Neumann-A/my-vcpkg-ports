@@ -1,6 +1,6 @@
 {
   "name": "py-hatch-requirements-txt",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A full-featured YAML processing framework for Python",
   "homepage": "https://pypi.org/project/PyYAML/",
   "license": "MIT",

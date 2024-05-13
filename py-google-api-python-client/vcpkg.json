@@ -1,6 +1,6 @@
 {
   "name": "py-google-api-python-client",
-  "version": "2.106.0",
+  "version": "2.129.0",
   "description": "The official Python client library for Google's discovery based APIs",
   "homepage": "https://googleapis.github.io/google-api-python-client/docs/",
   "license": "Apache-2.0",

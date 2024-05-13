@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO huggingface/tokenizers
     REF v${VERSION}
-    SHA512 2d355e67059a245613229965f9b0d65f6f149c552a5917ade142f150bc242da1425a025f72bc664dd17793a20fd5a6b880b43bfd3fc7fdc7db52ff9f54d1016c
+    SHA512 7d0eec43ed97ff12075d93a81345439cdd39ac41f2c4606d26aa01249fade8549c778f44e411556b1ebd142fe761fce63eb15cd159cc49cae9fc15a2233b10bd
     HEAD_REF main
 )
 
@@ -23,3 +23,5 @@ vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/bindings/python
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_python_test_import(MODULE "tokenizers")

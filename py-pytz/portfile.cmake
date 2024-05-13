@@ -1,15 +1,16 @@
-set(name pytz-${VERSION})
-set(wheelname ${name}-py2.py3-none-any.whl)
-
-vcpkg_download_distfile(
-    wheel
-    URLS https://files.pythonhosted.org/packages/32/4d/aaf7eff5deb402fd9a24a1449a8119f00d74ae9c2efa79f8ef9994261fc2/${wheelname}
-    FILENAME ${wheelname}
-    SHA512 a1c24246b1c0cb825944bce0c27a5eee27dd7a0acf3c07e6eca1e3c7b55473093ad560c0dab6c76c8adb2ad1630a092d9971533cd905b2d1cacbab37ffab5f96
+string(REGEX REPLACE "^py-" "" package "${PORT}")
+vcpkg_from_pythonhosted(
+    OUT_SOURCE_PATH SOURCE_PATH
+    PACKAGE_NAME    ${package}
+    VERSION         ${VERSION}
+    SHA512          cc1e4c9b34c62791cea277a0ce188d975e62135cb15bccfb49dc1a9366c7697ead9c67956846699f18b90db4c66e6c5fe1a91a524d01ae821c0eaa613550ea74
 )
 
-vcpkg_python_install_wheel(WHEEL "${wheel}")
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
-vcpkg_install_copyright(FILE_LIST "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/${name}.dist-info/LICENSE.txt")
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE.txt")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+string(REGEX REPLACE "-" "_" test_package "${package}")
+vcpkg_python_test_import(MODULE "${test_package}")

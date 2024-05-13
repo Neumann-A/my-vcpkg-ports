@@ -1,6 +1,6 @@
 {
   "name": "py-yarl",
-  "version": "1.9.2",
+  "version": "1.9.4",
   "description": "Yet another URL library",
   "homepage": "https://yarl.aio-libs.org/",
   "license": "Apache-2.0",

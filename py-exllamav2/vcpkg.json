@@ -1,6 +1,6 @@
 {
   "name": "py-exllamav2",
-  "version": "0.0.8",
+  "version": "0.0.21",
   "description": "A fast inference library for running LLMs locally on modern consumer-class GPUs",
   "homepage": "https://github.com/turboderp/exllamav2",
   "license": "MIT",
@@ -8,6 +8,7 @@
     {
       "name": "libtorch",
       "features": [
+        "cuda",
         "python"
       ]
     },

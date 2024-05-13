@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO huggingface/accelerate
     REF v${VERSION}
-    SHA512 ae3032a4f644dc09cb8a8f6ded9f010b5f77da0e47b0a656985fa4c2ba67a9581820aa668d43bed5f502494b5996a95f64831d25a6a3155553065062936601b8
+    SHA512 fb52d8d9e60f7de0e335638dd722f84831ba82db9abfc5abe28f211edcd34d3896cb0c04706cef0b00f55d0902b9aa11557819c757a781b4e3dae5652c7d9618
     HEAD_REF main
 )
 
@@ -11,3 +11,5 @@ vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_python_test_import(MODULE "accelerate")

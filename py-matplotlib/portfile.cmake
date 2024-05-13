@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO matplotlib/matplotlib
     REF v${VERSION}
-    SHA512 9309a12573019181bd3e150e954dae23bdbfb138ee4b2ffbc025691158568b8743ca8f9e337b7adb4c3c5b50fa8e085138a5022faab2d927cea39451347cfbc7
+    SHA512 28872872a8d809b18490699f0ed6b997b56a0c055a6d73213076b062620fca5b25d827df25252f65a0e3afeeea7dae8eab8d7e6965de5c4d115b9d94fa32813d
     HEAD_REF main
 )
 
@@ -10,7 +10,12 @@ set(ENV{PKG_CONFIG_PATH} "${CURRENT_INSTALLED_DIR}/lib/pkgconfig;${CURRENT_INSTA
 set(ENV{INCLUDE} "${CURRENT_INSTALLED_DIR}/include;$ENV{INCLUDE}")
 
 set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
-vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -Csetup-args=-Dsystem-freetype=true -Csetup-args=-Dsystem-qhull=true -x)
+vcpkg_python_build_and_install_wheel(
+  SOURCE_PATH "${SOURCE_PATH}" 
+  OPTIONS 
+    --config-json "{\"setup-args\" : { \"system-freetype\": true, \"system-qhull\": true  }}" 
+  #-Csetup-args=-Dsystem-freetype=true -Csetup-args=-Dsystem-qhull=true
+)
 
 file(GLOB licenses "${SOURCE_PATH}/LICENSE/*")
 
@@ -39,3 +44,5 @@ __version_tuple__ = version_tuple = (${version_major}, ${version_minor}, ${versi
 ")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_python_test_import(MODULE "matplotlib")

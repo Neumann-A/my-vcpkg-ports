@@ -1,6 +1,6 @@
 {
   "name": "py-pytz",
-  "version-string": "2023.3.post1",
+  "version-string": "2024.1",
   "description": "pytz brings the Olson tz database into Python. This library allows accurate and cross platform timezone calculations using Python 2.4 or higher.",
   "homepage": "https://pypi.org/project/PyYAML/",
   "license": "MIT",

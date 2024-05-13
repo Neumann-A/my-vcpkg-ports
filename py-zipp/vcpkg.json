@@ -1,0 +1,17 @@
+{
+  "name": "py-zipp",
+  "version": "3.18.1",
+  "description": "A pathlib-compatible Zipfile object wrapper. Official backport of the standard library Path object.",
+  "homepage": "https://pypi.org/project/zipp",
+  "dependencies": [
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

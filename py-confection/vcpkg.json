@@ -1,12 +1,13 @@
 {
   "name": "py-confection",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "confection is a lightweight library that offers a configuration system letting you conveniently describe arbitrary trees of objects.",
   "homepage": "https://github.com/explosion/confection",
   "license": "MIT",
   "dependencies": [
     "py-pydantic",
     "py-setuptools",
+    "py-srsly",
     "python3",
     {
       "name": "vcpkg-python-scripts",

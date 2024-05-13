@@ -1,8 +1,8 @@
 {
   "name": "py-pyarrow",
-  "version": "14.0.2",
+  "version": "16.0.0",
   "description": "Cross-language development platform for in-memory analytics",
-  "homepage": "https://github.com/dateutil/dateutil",
+  "homepage": "https://pypi.org/project/pyarrow/",
   "license": null,
   "dependencies": [
     {

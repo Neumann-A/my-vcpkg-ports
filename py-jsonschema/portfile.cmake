@@ -2,13 +2,15 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO python-jsonschema/jsonschema
     REF v${VERSION}
-    SHA512 03619b7823c15edee02a9d282d2f19bc8798e4a41210c4ff145f5e608e85219d7cf264c400bbe3fe97b5ab88967c15a9c63acaca39c2a692127a95722119d0e8
+    SHA512 bdc3369b16feb37bf2067e88e275cac218e346adc2a9de7f2ad214545a1f8ec43064943e09f2a5ee86376e7059fb426fc90704b704c7b048835f6e75a6c434f1
     HEAD_REF master
 )
 
 set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
-vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_python_test_import(MODULE "jsonschema")

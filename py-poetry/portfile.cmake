@@ -1,16 +1,16 @@
-vcpkg_download_distfile(
-    wheel
-    URLS https://github.com/python-poetry/poetry/releases/download/1.7.0/poetry-1.7.0-py3-none-any.whl
-    FILENAME poetry-1.7.0-py3-none-any.whl
-    SHA512 1a6e16082756dc448654757093bf2f29be9a19d4371fd842f73a616c896328987c6a358a101c52a2aa59523d503a0e33706bf3d56fe6e1d920ca224dbd6a94eb
+string(REGEX REPLACE "^py-" "" package "${PORT}")
+vcpkg_from_pythonhosted(
+    OUT_SOURCE_PATH SOURCE_PATH
+    PACKAGE_NAME    ${package}
+    VERSION         ${VERSION}
+    SHA512          72e604e246ec8426a29151caae81bf6b0495d17af519a41a7b934f8d50496dbf77605ea3f2e03bd41fb75a0c97d274987ac0359004544ea6ea19dcc118129e05
 )
 
-vcpkg_python_install_wheel(WHEEL "${wheel}")
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
-vcpkg_install_copyright(FILE_LIST "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/poetry-1.7.0.dist-info/LICENSE")
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
 
-
-
-
+string(REGEX REPLACE "-" "_" test_package "${package}")
+vcpkg_python_test_import(MODULE "${test_package}")

@@ -1,6 +1,6 @@
 {
   "name": "py-multidict",
-  "version": "6.0.4",
+  "version": "6.0.5",
   "description": "The multidict implementation",
   "homepage": "https://multidict.readthedocs.io/",
   "license": null,

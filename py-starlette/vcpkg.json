@@ -1,6 +1,6 @@
 {
   "name": "py-starlette",
-  "version": "0.32.0",
+  "version": "0.37.2",
   "description": "The little ASGI framework that shines",
   "homepage": "https://www.starlette.io/",
   "license": "MIT",

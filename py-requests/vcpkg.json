@@ -9,6 +9,7 @@
     "py-charset-normalizer",
     "py-idna",
     "py-setuptools",
+    "py-urllib3",
     "python3",
     {
       "name": "vcpkg-python-scripts",

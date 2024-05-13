@@ -1,10 +1,11 @@
 {
   "name": "py-importlib-metadata",
-  "version": "6.7.0",
+  "version": "7.1.0",
   "description": "Backport of the importlib.metadata module",
   "homepage": "importlib-metadata.readthedocs.io",
   "license": "MIT",
   "dependencies": [
+    "py-zipp",
     "python3",
     {
       "name": "vcpkg-python-scripts",

@@ -1,10 +1,8 @@
-set(ref a5acb6845bf25ec9163020ea02d95e473051569b)
-
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO pypa/setuptools_scm
-    REF "${ref}"
-    SHA512 cfbafa8a675f2c00a36583bee2ff38e4b603a79da545c8427bbb4d9c8d1d543fec8fffcd5e9a14c2d92a1965d115f4e77b4242169de5b9b92f6c9ada37fd1f89
+    REF "v${VERSION}"
+    SHA512 364dc9cb262eee7bf334306a041e72237e5091e99bd40f498df357f6807817f6e55d017483ec419cabd94edabe6bd2bd0c137a46ce4d1e124b3d852115cfe2d7
     HEAD_REF master
 )
  
@@ -42,3 +40,5 @@ vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
 
+
+vcpkg_python_test_import(MODULE "setuptools_scm")

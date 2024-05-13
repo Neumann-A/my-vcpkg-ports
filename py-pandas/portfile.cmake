@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO pandas-dev/pandas
     REF v${VERSION}
-    SHA512 4eae92e448c73c976ce29a6fda925996a0ee8b5fcb53bbd759943dfd516ad1808c7d5561c5b4f4b724981ee7692eaec652040cf962e8a5d3d7eb7e2cd618fd31
+    SHA512 17c481a596d74107b13c5082322e3602f9393e1db9a7950f837cb193cb9e62672904db2662cbbac5e590abd93785459f908c01cfbde19bebe38f6d65956a4763
     HEAD_REF main
 )
 
@@ -46,3 +46,7 @@ Version: ${VERSION}\n"
 )
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_python_test_import(MODULE "pandas")
+
+#warning: File E:\all\vcpkg\installed\x64-windows-release\tools/python3/Lib/site-packages/pandas/core/arrays/arrow/__pycache__/_arrow_utils.cpython-311.pyc was already present and will be overwritten

@@ -1,6 +1,6 @@
 {
   "name": "py-httpcore",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "A minimal HTTP client.",
   "homepage": "https://www.encode.io/httpcore/",
   "license": "BSD-3-Clause",

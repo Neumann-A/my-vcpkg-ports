@@ -1,6 +1,6 @@
 {
   "name": "py-peft",
-  "version": "0.7.1",
+  "version": "0.10.0",
   "description": "PEFT: State-of-the-art Parameter-Efficient Fine-Tuning",
   "homepage": "https://huggingface.co/docs/peft",
   "license": "Apache-2.0",

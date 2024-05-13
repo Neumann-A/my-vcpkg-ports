@@ -34,7 +34,7 @@ diff --git a/setuptools/_distutils/sysconfig.py b/setuptools/_distutils/sysconfi
 index a40a7231b3..7194f440b4 100644
 --- a/setuptools/_distutils/sysconfig.py	
 +++ b/setuptools/_distutils/sysconfig.py
-@@ -190,19 +190,22 @@ def _get_python_inc_from_config(plat_specific, spec_prefix):
+@@ -190,18 +190,21 @@ def _get_python_inc_from_config(plat_specific, spec_prefix):
  def _get_python_inc_posix_prefix(prefix):
      implementation = 'pypy' if IS_PYPY else 'python'
      python_dir = implementation + get_python_version() + build_flags
@@ -47,14 +47,13 @@ index a40a7231b3..7194f440b4 100644
 +    vcpkg_prefix = os.path.dirname(os.path.dirname(prefix))
 +    python_dir = 'python' + get_python_version()
      if python_build:
-         # Include both the include and PC dir to ensure we can find
-         # pyconfig.h
+         # Include both include dirs to ensure we can find pyconfig.h
          return (
 -            os.path.join(prefix, "include")
 +            os.path.join(vcpkg_prefix, "include", python_dir)
              + os.path.pathsep
--            + os.path.join(prefix, "PC")
-+            + os.path.join(vcpkg_prefix, "PC")
+-            + os.path.dirname(sysconfig.get_config_h_filename())
++            + os.path.join(vcpkg_prefix,os.path.dirname(sysconfig.get_config_h_filename()))
          )
 -    return os.path.join(prefix, "include")
 +    return os.path.join(vcpkg_prefix, "include", python_dir)

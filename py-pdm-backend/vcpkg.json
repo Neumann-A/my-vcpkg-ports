@@ -1,0 +1,15 @@
+{
+  "name": "py-pdm-backend",
+  "version": "2.3.0",
+  "description": "The build backend used by PDM that supports latest packaging standards.",
+  "homepage": "https://github.com/pdm-project/pdm-backend",
+  "license": "MIT",
+  "dependencies": [
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

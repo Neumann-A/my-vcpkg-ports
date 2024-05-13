@@ -1,8 +1,8 @@
-vcpkg_from_github(
+ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO pydantic/pydantic-core
     REF v${VERSION}
-    SHA512 57ac6c28c8ebc05d42158c21a9056e08bc6549b0b43b5de6d154c0f8791157287c305874c0df8d5a3495f6c1482b9c24e9b2bf3c690ff0808bc40be41de60e91
+    SHA512 082f693b875d89dc4ccaed1b97fd2211b4a414b3a1f54072a9a1130411a111da9ec1a4187883cc7c516265239ea50a48085862939bd68f0c46c1c8ce679f43b1
     HEAD_REF main
 )
 vcpkg_rust_install()
@@ -14,9 +14,11 @@ set(ENV{CARGO_PROFILE_RELEASE_BUILD_OVERRIDE_DEBUG} true)
 set(ENV{RUST_BACKTRACE} full)
 #set(PYO3_PYTHON "${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python3.11.exe" )
 #set(PYTHON_SYS_EXECUTEABLE "${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python3.11.exe")
-set(ENV{PYTHON_VERSION} 3.11)
+set(ENV{PYTHON_VERSION} "${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}")
 vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_python_test_import(MODULE "pydantic_core")

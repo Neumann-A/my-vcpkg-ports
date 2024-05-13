@@ -9,6 +9,7 @@
       "name": "py-setuptools",
       "host": true
     },
+    "py-sip",
     "python3",
     {
       "name": "vcpkg-python-scripts",

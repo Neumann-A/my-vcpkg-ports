@@ -1,6 +1,6 @@
 {
   "name": "py-jinja",
-  "version": "3.1.2",
+  "version": "3.1.4",
   "description": "A very fast and expressive template engine. ",
   "homepage": "https://jinja.palletsprojects.com/",
   "license": "BSD-3-Clause",

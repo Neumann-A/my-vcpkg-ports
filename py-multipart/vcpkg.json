@@ -1,6 +1,6 @@
 {
   "name": "py-multipart",
-  "version": "0.0.6",
+  "version": "0.0.9",
   "description": "A streaming multipart parser for Python",
   "homepage": "http://andrew-d.github.io/python-multipart/",
   "license": null,

@@ -1,13 +1,16 @@
-vcpkg_download_distfile(
-    wheel
-    URLS https://files.pythonhosted.org/packages/81/54/84d42a0bee35edba99dee7b59a8d4970eccdd44b99fe728ed912106fc781/filelock-3.13.1-py3-none-any.whl
-    FILENAME filelock-3.13.1-py3-none-any.whl
-    SHA512 8db4338ee7e7135dd2d41baeefbc8283f11919e669695ba4f37c16c6e64d5716aea91077367de9a97487529588924b7ecdf3b5077df30f0375e0f53fb1510ce8
+string(REGEX REPLACE "^py-" "" package "${PORT}")
+vcpkg_from_pythonhosted(
+    OUT_SOURCE_PATH SOURCE_PATH
+    PACKAGE_NAME    ${package}
+    VERSION         ${VERSION}
+    SHA512          51eda6394fcac86a12887fe1974022b9da921fb96a61887f7a91c5b15f083a4c9186600ec61b4e93b91b8c4799c50ca4b6c418416c6bf2b422ea3b41715258e4
 )
 
-vcpkg_python_install_wheel(WHEEL "${wheel}")
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
-vcpkg_install_copyright(FILE_LIST "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/filelock-3.13.1.dist-info/licenses/LICENSE")
-
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+string(REGEX REPLACE "-" "_" test_package "${package}")
+vcpkg_python_test_import(MODULE "${test_package}")

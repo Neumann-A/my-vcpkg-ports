@@ -1,6 +1,6 @@
 {
   "name": "py-tokenizers",
-  "version": "0.15.0",
+  "version": "0.19.1",
   "description": "Fast State-of-the-Art Tokenizers optimized for Research and Production",
   "homepage": "https://huggingface.co/docs/tokenizers",
   "license": "Apache-2.0",

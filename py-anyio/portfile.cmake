@@ -1,15 +1,16 @@
-set(name anyio-${VERSION})
-set(wheelname ${name}-py3-none-any.whl)
-
-vcpkg_download_distfile(
-    wheel
-    URLS https://files.pythonhosted.org/packages/36/55/ad4de788d84a630656ece71059665e01ca793c04294c463fd84132f40fe6/${wheelname}
-    FILENAME ${wheelname}
-    SHA512 f30761c1e8725b49c498273b90dba4b05c0fd157811994c806183062cb6647e773364ce45f0e1ff0b10e32fe6d0232ea5ad39476ccf37109d6b49603a09c11c2
+string(REGEX REPLACE "^py-" "" package "${PORT}")
+vcpkg_from_pythonhosted(
+    OUT_SOURCE_PATH SOURCE_PATH
+    PACKAGE_NAME    ${package}
+    VERSION         ${VERSION}
+    SHA512          26ff552a03b24b63c7c99cffcec61e97289eacba3ad2fc7a3c1dde8cfaffd9a8d621b867429901c12d7cef912d3807db134dbeb9c5ba619921160f6d5df4d02f
 )
 
-vcpkg_python_install_wheel(WHEEL "${wheel}")
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
-vcpkg_install_copyright(FILE_LIST "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/${name}.dist-info/LICENSE")
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+string(REGEX REPLACE "-" "_" test_package "${package}")
+vcpkg_python_test_import(MODULE "${test_package}")

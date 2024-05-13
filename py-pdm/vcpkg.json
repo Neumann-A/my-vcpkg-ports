@@ -1,0 +1,16 @@
+{
+  "name": "py-pdm",
+  "version": "2.15.2",
+  "description": "A modern Python package and dependency manager supporting the latest PEP standards",
+  "homepage": "https://github.com/pdm-project/pdm",
+  "license": "MIT",
+  "dependencies": [
+    "py-pdm-backend",
+    "py-setuptools",
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

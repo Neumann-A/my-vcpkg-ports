@@ -1,6 +1,6 @@
 {
   "name": "py-safetensors",
-  "version": "0.4.1",
+  "version": "0.4.3",
   "description": "Simple, safe way to store and distribute tensors",
   "homepage": "https://huggingface.co/docs/safetensors",
   "license": "Apache-2.0",

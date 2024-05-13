@@ -1,6 +1,6 @@
 {
   "name": "py-idna",
-  "version": "3.4",
+  "version": "3.7",
   "description": "Internationalized Domain Names for Python (IDNA 2008 and UTS #46)",
   "homepage": "https://github.com/kjd/idna",
   "license": "Apache-2.0",

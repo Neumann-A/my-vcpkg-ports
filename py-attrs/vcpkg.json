@@ -1,6 +1,6 @@
 {
   "name": "py-attrs",
-  "version": "23.1.0",
+  "version": "23.2.0",
   "description": "Python Classes Without Boilerplate",
   "homepage": "https://www.attrs.org/",
   "license": "MIT",

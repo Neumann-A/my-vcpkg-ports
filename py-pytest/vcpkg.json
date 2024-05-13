@@ -1,6 +1,6 @@
 {
   "name": "py-pytest",
-  "version": "8.1.1",
+  "version": "8.2.0",
   "description": "The pytest framework makes it easy to write small tests, yet scales to support complex functional testing ",
   "homepage": "https://docs.pytest.org",
   "license": "MIT",

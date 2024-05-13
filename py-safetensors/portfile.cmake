@@ -6,7 +6,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO huggingface/safetensors
     REF v${VERSION}
-    SHA512 f2170184050cb040444f8357f5a49c4c574a56de8f67ab4cc3cde6dee844ea953a146106202800dbc655523996674fdfb80676a7de240356c56ecc849197f747
+    SHA512 278469d7bc8a4285519cf8020891d0f0e107d8124ad2c24686ca8a19ef2f210c49d9483c502bd5aa5d73940a775ac3eb5e3b90f62825dd7845c351bbdc8c82c3
     HEAD_REF master
 )
 
@@ -19,3 +19,5 @@ vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}/bindings/python
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_python_test_import(MODULE "safetensors")

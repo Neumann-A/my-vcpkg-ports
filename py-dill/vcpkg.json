@@ -1,6 +1,6 @@
 {
   "name": "py-dill",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "serialize all of Python",
   "homepage": "http://dill.rtfd.io/",
   "license": null,

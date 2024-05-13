@@ -42,26 +42,32 @@ function(vcpkg_python_build_wheel)
   cmake_parse_arguments(
     PARSE_ARGV 0
     "arg"
-    "ISOLATE"
+    "ISOLATE;USE_BUILD"
     "SOURCE_PATH;OUTPUT_WHEEL"
     "OPTIONS"
   )
 
   set(build_ops "${arg_OPTIONS}")
 
-  if(NOT arg_ISOLATE)
-    list(APPEND build_ops "-n")
-  endif()
-
   set(z_vcpkg_wheeldir "${CURRENT_PACKAGES_DIR}/wheels")
 
   file(MAKE_DIRECTORY "${z_vcpkg_wheeldir}")
 
   message(STATUS "Building python wheel!")
-  vcpkg_execute_required_process(COMMAND "${PYTHON3}" -m gpep517 build-wheel --wheel-dir "${z_vcpkg_wheeldir}" --output-fd 1
-    LOGNAME "python-build-${TARGET_TRIPLET}"
-    WORKING_DIRECTORY "${arg_SOURCE_PATH}"
-  )
+  if(NOT arg_USE_BUILD)
+    vcpkg_execute_required_process(COMMAND "${PYTHON3}" -m gpep517 build-wheel --wheel-dir "${z_vcpkg_wheeldir}" --output-fd 1 ${build_ops}
+      LOGNAME "python-build-${TARGET_TRIPLET}"
+      WORKING_DIRECTORY "${arg_SOURCE_PATH}"
+    )
+  else()
+    if(NOT arg_ISOLATE)
+      list(APPEND build_ops "-n")
+    endif()
+    vcpkg_execute_required_process(COMMAND "${PYTHON3}" -m build -w ${build_ops} -o "${z_vcpkg_wheeldir}" "${arg_SOURCE_PATH}"
+      LOGNAME "python-build-${TARGET_TRIPLET}"
+      WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}"
+    )
+  endif()
   message(STATUS "Finished building python wheel!")
 
   file(GLOB WHEEL "${z_vcpkg_wheeldir}/*.whl")
@@ -114,12 +120,13 @@ function(vcpkg_python_build_and_install_wheel)
   cmake_parse_arguments(
     PARSE_ARGV 0
     "arg"
-    "ISOLATE"
+    "ISOLATE;USE_BUILD"
     "SOURCE_PATH"
     "OPTIONS"
   )
 
   set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
+  set(ENV{PDM_BUILD_SCM_VERSION} "${VERSION}")
 
   if("-x" IN_LIST arg_OPTIONS)
     message(WARNING "Python wheel will be ignoring dependencies")
@@ -129,7 +136,10 @@ function(vcpkg_python_build_and_install_wheel)
   if(arg_ISOLATE)
     set(opts ISOLATE)
   endif()
-
+  if(arg_USE_BUILD)
+    list(APPEND opts USE_BUILD)
+  endif()
+  
   vcpkg_python_build_wheel(${opts} SOURCE_PATH "${arg_SOURCE_PATH}" OUTPUT_WHEEL WHEEL OPTIONS ${arg_OPTIONS})
   vcpkg_python_install_wheel(WHEEL "${WHEEL}")
 endfunction()

@@ -5,8 +5,15 @@
   "homepage": "https://astunparse.readthedocs.io/en/latest/",
   "license": null,
   "dependencies": [
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
+    "py-six",
     "python3",
-    "vcpkg-python-scripts"
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
   ]
 }

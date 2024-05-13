@@ -2,13 +2,15 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO python-jsonschema/referencing
     REF v${VERSION}
-    SHA512 185847a1966c312b947efe80642db0b92d7723375ef6e19551bc50c5e9b5fa3a01ac949c6b6f063ce817b6de6b4d1d8997f78f4125abe2f12d0302e2282c1cb5
+    SHA512 b00990a33539a12b07176b9a033e0adbd04f10cb9e39c771e8f35eccb78873785869d2ee95a182decdc83e67d552e2a5b353fd10ff357543ab46b3b4d90482bc
     HEAD_REF main
 )
 
 set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
-vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}" OPTIONS -x)
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_python_test_import(MODULE "referencing")

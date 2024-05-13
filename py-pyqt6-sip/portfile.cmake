@@ -14,3 +14,4 @@ vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 vcpkg_python_test_import(MODULE "PyQt6.sip")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+

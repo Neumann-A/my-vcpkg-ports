@@ -1,6 +1,6 @@
 {
   "name": "py-huggingface-hub",
-  "version": "0.20.2",
+  "version": "0.23.0",
   "description": "All the open source things related to the Hugging Face Hub",
   "homepage": "https://huggingface.co/docs/huggingface_hub",
   "license": "Apache-2.0",
@@ -12,11 +12,15 @@
         "python"
       ]
     },
+    "py-filelock",
+    "py-fsspec",
     "py-packaging",
     "py-pyyaml",
     "py-requests",
     "py-setuptools",
+    "py-tqdm",
     "py-typing-extensions",
+    "py-versioneer",
     "python3",
     {
       "name": "vcpkg-python-scripts",

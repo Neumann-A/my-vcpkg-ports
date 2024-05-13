@@ -129,58 +129,58 @@ function(z_vcpkg_rust_install_packages out_rust_root)
 
     # i686-pc-windows-msvc
     z_vcpkg_rust_acquire_declare_package(
-        URL "https://static.rust-lang.org/dist/2023-12-28/rustc-1.75.0-i686-pc-windows-msvc.tar.xz"
-        SHA512 8f688515a0af5e35476986bbd97ccdf7d59d32e9b534d2dcee8cbb843a94f188e215519b8112ab7d73d4bc3fbe980b5147fa6f0a98f5e2dcc0654bef6113a725
+        URL "https://static.rust-lang.org/dist/2024-05-02/rustc-1.78.0-i686-pc-windows-msvc.tar.xz"
+        SHA512 759e8524c93d0136fbe20e05a016754e09d410c7b60796cc4a90c349626f90e12bbc362458fa547266f3805cfad987c533d8b4ee0f40edc9c6e1f09b0257b08f
     )
     z_vcpkg_rust_acquire_declare_package(
-        URL "https://static.rust-lang.org/dist/2023-12-28/rust-std-1.75.0-i686-pc-windows-msvc.tar.xz"
-        SHA512 e963297de71848f03c9b5f3dd7819fe701af91aaeced13ae079a23c50a4f62703f1cda8cbdc8117fa874f20aad82c0ad637432872833aa2c1ebff653d5bb61d2
+        URL "https://static.rust-lang.org/dist/2024-05-02/rust-std-1.78.0-i686-pc-windows-msvc.tar.xz"
+        SHA512 1d72d2c3ee3fbd18d064e481a696318f0d43be67e06eda78d9268c2e70802f6e1692bfe6680858fb788b9750c6d0cca6848f4a1ead9c4203b596b3000930c06f
     )
     z_vcpkg_rust_acquire_declare_package(
-        URL "https://static.rust-lang.org/dist/2023-12-28/cargo-1.75.0-i686-pc-windows-msvc.tar.xz"
-        SHA512 2c6ecf1115488c90041aa427098d7bbd8311aa2107539b3d63f4c35f8bab797decd09f986a7f9424344984c03998937fd9ed971534d3d106dc312afbf6140755
+        URL "https://static.rust-lang.org/dist/2024-05-02/cargo-1.78.0-i686-pc-windows-msvc.tar.xz"
+        SHA512 56c93eb802de9fd1894c814997eab33dda0f938ca0b8097db044b21dff581a98f88377e27ede3bf778a9d05198c0f1ce5e43b3a25a9c8627a4b905d2efecc31e
     )
 
     # x86_64-pc-windows-msvc
     z_vcpkg_rust_acquire_declare_package(
-        URL "https://static.rust-lang.org/dist/2023-12-28/rustc-1.75.0-x86_64-pc-windows-msvc.tar.xz"
-        SHA512 f611277b3901efffb12fdd49e06b5f566ad1884d0f1277136e499e1aceacf0443bd9b310787f89fa59381210fe86c33c8a5a8159ae775841b664006266110d25
+        URL "https://static.rust-lang.org/dist/2024-05-02/rustc-1.78.0-x86_64-pc-windows-msvc.tar.xz"
+        SHA512 b76d9dd3ac3424b3a9f55ea4d64ccffe9940978f764842fedbcae89f49ddaeebaaa214b4b84765653d4050e72af0b068609acbb7a3b0e3434f75d8630fd4da0c
     )
     z_vcpkg_rust_acquire_declare_package(
-        URL "https://static.rust-lang.org/dist/2023-12-28/rust-std-1.75.0-x86_64-pc-windows-msvc.tar.xz"
-        SHA512 77aa97514bf6432878e52421c80731fce68177dc1c050b32cc65fc04901e74f80a45033aa47ce06e5343a40a1d9f426ff217a29bfbc1f4d1b6454503ffa0e9f5
+        URL "https://static.rust-lang.org/dist/2024-05-02/rust-std-1.78.0-x86_64-pc-windows-msvc.tar.xz"
+        SHA512 45e8bc306c58866493e09750affe8eee78d3406341327171f80a7d003381c1646af7da26882975d9cb3951ae9ddcc1439ea13b1eef473281197c8ff6324b4017
     )
     z_vcpkg_rust_acquire_declare_package(
-        URL "https://static.rust-lang.org/dist/2023-12-28/cargo-1.75.0-x86_64-pc-windows-msvc.tar.xz"
-        SHA512 142a387ed0e59fe135cd612f73bf6bb59b86bd0c758600de1a45a4bd86145f1c2d43ba0363d524b81335c3a3e35e47ae0a70b72f7462951aa67c9be3e1691869
+        URL "https://static.rust-lang.org/dist/2024-05-02/cargo-1.78.0-x86_64-pc-windows-msvc.tar.xz"
+        SHA512 ce933972ceb6e64fd44d3fd4a04b91d00631c8437854ad2d6cbf023aadc13f13c92ed0b33e0c85d9c995761965e8f64ab8893ca4b3c46dd037fff4c91a9a29f9
     )
 
     # i686-unknown-linux-gnu
     z_vcpkg_rust_acquire_declare_package(
-        URL "https://static.rust-lang.org/dist/2023-12-28/rustc-1.75.0-i686-unknown-linux-gnu.tar.xz"
-        SHA512 e843cabbfb52fa7f5e938fa4d785d2bb5557c41537f0356a321e94f05e829202e81d3367d773aaa8f4e7ed764879f5aa0a0e18f7f2f90b5ffb8b51428ce86821
+        URL "https://static.rust-lang.org/dist/2024-05-02/rustc-1.78.0-i686-unknown-linux-gnu.tar.xz"
+        SHA512 6579fb70add24cb7d92f0243819ea468448aa1671c3a84f9409477aa16eb0d7ac0510811b334cd71ba38be7bb2da3ff682314249f82e14cd157ee0efa3074214
     )
     z_vcpkg_rust_acquire_declare_package(
-        URL "https://static.rust-lang.org/dist/2023-12-28/rust-std-1.75.0-i686-unknown-linux-gnu.tar.xz"
-        SHA512 2c09182f316b9f83e858fe9819c08597712beb705ee4981de353fa91f5a887e553cc213376b093d34ceb9429520ffd3a6ca69df8462e82e32298c2aa85bf9727
+        URL "https://static.rust-lang.org/dist/2024-05-02/rust-std-1.78.0-i686-unknown-linux-gnu.tar.xz"
+        SHA512 82dafd9bc177ded63364882dae86701503b3dd2620aaaf99449c88e7e69f9e14f429c5c6a6b81bebc51e8d896a7ad2d792636a988c18f3923e18a975c206ad00
     )
     z_vcpkg_rust_acquire_declare_package(
-        URL "https://static.rust-lang.org/dist/2023-12-28/cargo-1.75.0-i686-unknown-linux-gnu.tar.xz"
-        SHA512 f3816686664e015a537d1933418b25b8b912e64934d548d3773c1b186b37ac51d9ae3c77506de5090fa3eb10d5fc5a66e2f9c90533c8ed671f0e50b7adc256bf
+        URL "https://static.rust-lang.org/dist/2024-05-02/cargo-1.78.0-i686-unknown-linux-gnu.tar.xz"
+        SHA512 3f68beb090ef9e4314cdd833aec62ed3b41a54af16ab49368060052b6c1b05265f0de19774181d8fa00a941206b907a7009c5b7f2b74ef8635214a9f574d5974
     )
 
     # x86_64-unknown-linux-gnu
     z_vcpkg_rust_acquire_declare_package(
-        URL "https://static.rust-lang.org/dist/2023-12-28/rustc-1.75.0-x86_64-unknown-linux-gnu.tar.xz"
-        SHA512 e95c96772242d00bd14018c4461eaf826b6ac301314343e00de07d54d889802e7e14be7187e0496f8a5cc64aed016dc67bfc24efac9948001eb040cee2a3b1b9
+        URL "https://static.rust-lang.org/dist/2024-05-02/rustc-1.78.0-x86_64-unknown-linux-gnu.tar.xz"
+        SHA512 d3290a5764304d265713b0724d94f5d986aaa47c2a6407f6234daf7dd5d4eacfe4642559c72ce17e4d4395e55bbd40f19e88f0db6653963aa29cec8cf6c0f8e0
     )
     z_vcpkg_rust_acquire_declare_package(
-        URL "https://static.rust-lang.org/dist/2023-12-28/rust-std-1.75.0-x86_64-unknown-linux-gnu.tar.xz"
-        SHA512 abf6129f6c4319f0ca1bf741302a8bfde8405f190dacdea72cf57b670b84200d0e67c4ba28a61e2ce23b43c1126fd5cda8716cc80a2ad889a224e7806e37833b
+        URL "https://static.rust-lang.org/dist/2024-05-02/rust-std-1.78.0-x86_64-unknown-linux-gnu.tar.xz"
+        SHA512 8d88664cc73b2937d9124f593b08ba61ef14c027cefdd97973954a66886658567ea9eb9f505441e985ba1053d1bee7dba0cfa8cdd65456a3abec6fe809c65b87
     )
     z_vcpkg_rust_acquire_declare_package(
-        URL "https://static.rust-lang.org/dist/2023-12-28/cargo-1.75.0-x86_64-unknown-linux-gnu.tar.xz"
-        SHA512 bc36976aeab4396cff3214cccfad4445fde55289dbfa1aec3b60596bcb2aa6a44964022ef797013693c7cc07439aabae0fb6300ea2752589b44dc35abc4f3620
+        URL "https://static.rust-lang.org/dist/2024-05-02/cargo-1.78.0-x86_64-unknown-linux-gnu.tar.xz"
+        SHA512 feb72154e052d275cb9fe5c9bec6514ddfedf1872cd64c3f6665fec2e8f0e257a83b3273d8b11090f1ae810c71c204ebc7d1bec4352107b84c0e0e3babaf8859
     )
 
     if(NOT Z_VCPKG_RUST_PACKAGES STREQUAL "")

@@ -1,0 +1,17 @@
+{
+  "name": "py-expandvars",
+  "version": "0.12.0",
+  "description": "Expand system variables Unix style",
+  "homepage": "https://pypi.org/project/expandvars ",
+  "dependencies": [
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

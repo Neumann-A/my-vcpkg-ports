@@ -1,6 +1,6 @@
 {
   "name": "py-pyproject-metadata",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "PEP 621 metadata parsing",
   "homepage": "https://pep621.readthedocs.io/",
   "license": "MIT",

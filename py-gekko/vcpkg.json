@@ -1,6 +1,6 @@
 {
   "name": "py-gekko",
-  "version": "1.0.6",
+  "version": "1.1.1",
   "description": "GEKKO Python for Machine Learning and Dynamic Optimization",
   "homepage": "https://machinelearning.byu.edu/",
   "license": null,
