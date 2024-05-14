@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO python-trio/sniffio
     REF v${VERSION}
-    SHA512 3a9584eea20f5a69958f206fad9f01ef7fc40735f48a6cfaa11ba6eea1e7b8cc8c8053416595fe23276e162b0ab5dd6a41fb30bd9f7994f03b3d3242d5b40ef6
+    SHA512 34e2e0a2e1c43e4ce1e1b5cdfb16c4f872897bbc7da77a76b55dc9cae475d87fe1e35d7103cad68ddab93c8be743aaa312ec12b1ddd96ad968be027faa24839f
     HEAD_REF main
 )
 

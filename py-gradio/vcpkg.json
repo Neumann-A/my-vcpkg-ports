@@ -1,6 +1,6 @@
 {
   "name": "py-gradio",
-  "version": "3.41.0",
+  "version": "4.31.1",
   "description": "Gradio is an open-source Python library that is used to build machine learning and data science demos and web applications",
   "homepage": "http://www.gradio.app/",
   "license": "Apache-2.0",
@@ -22,6 +22,7 @@
     "py-uvicorn",
     "py-gradio-client",
     "py-matplotlib",
+    "py-tomlkit",
     "python3",
     {
       "name": "vcpkg-python-scripts",

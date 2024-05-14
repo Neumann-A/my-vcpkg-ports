@@ -4,7 +4,7 @@ vcpkg_from_pythonhosted(
     PACKAGE_NAME    ${package}
     VERSION         ${VERSION}
     FILENAME        gradio_client
-    SHA512          350711e9a51a4edd36ded181215a60430c76f3749bd941b1972525637f563e0ef799476cd7601533dad01c663a97f895b8e510b8914f57d3dc761e28d73b3f33
+    SHA512          ff5b2a58e1bd9f729e43cd5c35ba4beea49a42baefb8d95ece563fc4dfeda50037ac6cbe393e708248dfdfed030a2f1279bf52e288c630c0b09b72363eb389c1
 )
 
 vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")

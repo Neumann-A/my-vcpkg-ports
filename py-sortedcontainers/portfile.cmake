@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO grantjenks/python-sortedcontainers
     REF v${VERSION}
-    SHA512 1c56daea5d491dbeea9c677677a79ef5c4805325ea3d5da97005cd3b269003a99459550a793dfe65820f152c774371472ba471a7daf61c9d97b36744bafb013b
+    SHA512 f80185c6f95a85cc78f88f6f6cf389eb48be22cf94d5fcd84f3592873f17de37ec7f44c1627b7f02956ac4b4f74ca4febefc47d3c6232f70ee05dbb2449ad770
     HEAD_REF main
 )
 
