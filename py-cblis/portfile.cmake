@@ -2,27 +2,25 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO explosion/cython-blis
     REF v${VERSION}
-    SHA512 4c3eb39f4bee14f0eefd2af19cac2c4a9184b4ed2da3c8321550778d2c63a4672ec9eb15277e2fb05806965953c8e913051dcea21cd632b67ccd6c0c88f94811
+    SHA512 49ab87d80e082ce6ae1be24f1acd08e3bf75666eb978f0fb37e655e84e9d111d6ac0d6b1faaefec49cdbbc3c29c0d8d0d9acd96ba836319fef842950a5eca63c
     HEAD_REF main
     PATCHES
-        build.patch
+      build.patch
 )
 
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_BLIS_PATH
     REPO explosion/blis
-    REF e81f7291c52c04c4bdbee0aba3e39d703454eab5
-    SHA512 a4ab674e47759d6acb4b91f270ec55543112007bdf13e2d9ad419975e87b3142753c5fe5c9ca91fa6d1da8671ebcdcc38cadd64d1d3b3792d2d6fef9a0480b7b
+    REF 8137f660d8351c3a3c3b38f4606121578e128b70
+    SHA512 62d99f06544c658692cb1d95825fb6148781a9051c7a38e695e934f8baa566ffc52b5f479dc7e2f7e834951f5b4130f278508d2551011c41b50bbd8d4efd8091
     HEAD_REF main
-    PATCHES
-        flame-cpuid.patch
 )
 
 file(COPY "${SOURCE_BLIS_PATH}/" DESTINATION "${SOURCE_PATH}/flame-blis" )
 
 # Compiles something with clang?
 #vcpkg_replace_string( "cython<3.0" "cython")
-vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
+vcpkg_python_build_and_install_wheel(USE_BUILD SOURCE_PATH "${SOURCE_PATH}")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
