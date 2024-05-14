@@ -5,7 +5,7 @@ function(vcpkg_from_pythonhosted)
     PARSE_ARGV 0
     "arg"
     ""
-    "OUT_SOURCE_PATH;PACKAGE_NAME;VERSION;SHA512"
+    "OUT_SOURCE_PATH;PACKAGE_NAME;VERSION;SHA512;FILENAME"
     "PATCHES")
 
   if(DEFINED arg_UNPARSED_ARGUMENTS)
@@ -21,10 +21,13 @@ function(vcpkg_from_pythonhosted)
   if(NOT DEFINED arg_VERSION)
     message(FATAL_ERROR "VERSION must be specified.")
   endif()
-
+  if(NOT DEFINED arg_FILENAME)
+    set(arg_FILENAME "${arg_PACKAGE_NAME}")
+  endif()
+  
   string(SUBSTRING "${arg_PACKAGE_NAME}" 0 1 _PACKAGE_PREFIX)
   vcpkg_download_distfile(ARCHIVE
-    URLS "https://files.pythonhosted.org/packages/source/${_PACKAGE_PREFIX}/${arg_PACKAGE_NAME}/${arg_PACKAGE_NAME}-${arg_VERSION}.tar.gz"
+    URLS "https://files.pythonhosted.org/packages/source/${_PACKAGE_PREFIX}/${arg_PACKAGE_NAME}/${arg_FILENAME}-${arg_VERSION}.tar.gz"
     FILENAME "${arg_PACKAGE_NAME}-${arg_VERSION}.tar.gz"
     SHA512 ${arg_SHA512}
   )
