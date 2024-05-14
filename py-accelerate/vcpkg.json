@@ -7,6 +7,7 @@
   "dependencies": [
     "py-safetensors",
     "py-setuptools",
+    "py-transformers",
     "python3",
     {
       "name": "vcpkg-python-scripts",

@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO encode/uvicorn
     REF ${VERSION}
-    SHA512 98b58ce17a1f072f36923b1b616f818cbadd091256ce1281a5236268ba2378d212384d9c3390b5903edfda5c692a67935051379e31732df45422595a88c69232
+    SHA512 bb37940acc2eba2a649d07ba44890400332e5ad873ac03c6740c1bc730068ede39c2e6d9aefb0f100ec261d7ed2eef1596c99a060fd8000cff874b25bdbbbdfa
     HEAD_REF master
 )
 
@@ -11,3 +11,5 @@ vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE.md")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_python_test_import(MODULE "uvicorn")

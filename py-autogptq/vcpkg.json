@@ -1,6 +1,6 @@
 {
   "name": "py-autogptq",
-  "version": "0.6.0",
+  "version": "0.7.1",
   "description": "An easy-to-use LLMs quantization package with user-friendly apis, based on GPTQ algorithm",
   "homepage": "https://github.com/PanQiWei/AutoGPTQ",
   "license": "MIT",

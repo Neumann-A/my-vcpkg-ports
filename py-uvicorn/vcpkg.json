@@ -1,6 +1,6 @@
 {
   "name": "py-uvicorn",
-  "version": "0.24.0",
+  "version": "0.29.0",
   "description": "An ASGI web server, for Python",
   "homepage": "https://www.uvicorn.org/",
   "license": "BSD-3-Clause",

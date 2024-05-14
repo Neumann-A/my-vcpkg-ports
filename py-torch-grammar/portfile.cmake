@@ -1,15 +1,17 @@
-set(name torch_grammar-${VERSION})
-set(wheelname ${name}-py3-none-any.whl)
-
-vcpkg_download_distfile(
-    wheel
-    URLS https://files.pythonhosted.org/packages/2b/33/bca15f46a86414730e6f86ff8d6ef773f7d48ad7d2ae749cb4e40dc0b6fe/${wheelname}
-    FILENAME ${wheelname}
-    SHA512 781d7f664992d649a2ed944a6364200c8a669982e668d589bcecbf45998b6dd5c52d2c96350ea76886648330d48d1273ec35f085ac806669478bcbe1c77dad56
+string(REGEX REPLACE "^py-" "" package "${PORT}")
+vcpkg_from_pythonhosted(
+    OUT_SOURCE_PATH SOURCE_PATH
+    PACKAGE_NAME    ${package}
+    FILENAME        torch_grammar
+    VERSION         ${VERSION}
+    SHA512          f50db69a47c189cb70f0eb0bdf7b2dbddd244b04552165fce0384875a7246be72a4150b9f84cbef670559a911b50ee540b90aa1813a3c4396b978ab232b494f5
 )
 
-vcpkg_python_install_wheel(WHEEL "${wheel}")
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
-#vcpkg_install_copyright(FILE_LIST "${CURRENT_PACKAGES_DIR}/tools/python3/Lib/site-packages/${name}.dist-info/LICENSE")
+file(WRITE "${CURRENT_PACKAGES_DIR}/share/${PORT}/copyright" "MIT")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+string(REGEX REPLACE "-" "_" test_package "${package}")
+vcpkg_python_test_import(MODULE "${test_package}")

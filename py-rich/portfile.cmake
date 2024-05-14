@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO Textualize/rich
     REF v${VERSION}
-    SHA512 c5c432bd73b0c28d9585bce2e122d6b9da0a0744ea7824b4682948f11e153dfc615f5ed94d9531ced422298d352371fba5f25ddf16ca7a1d669f799ab361d984
+    SHA512 0c69101bc6c2a238a4c516812cda08299115b903b8282ee348b45b212a88fcbfbf69d11a3705a97bdb6192988ee3047804bb5b52b7950d860542cde8ce2d4bd2
     HEAD_REF master
 )
 
@@ -11,3 +11,5 @@ vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_python_test_import(MODULE "rich")

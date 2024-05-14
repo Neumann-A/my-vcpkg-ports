@@ -1,42 +1,18 @@
-string(REPLACE "python-" "" package "${PORT}")
-string(REPLACE "-" "_" package "${package}")
-set(name ${package}-${VERSION})
-
-vcpkg_download_distfile(
-    wheel_json
-    URLS https://pypi.python.org/pypi/${package}/json
-    FILENAME ${name}.json
-    ALWAYS_REDOWNLOAD
-    SKIP_SHA512
+string(REGEX REPLACE "^py-" "" package "${PORT}")
+vcpkg_from_pythonhosted(
+    OUT_SOURCE_PATH SOURCE_PATH
+    PACKAGE_NAME    ${package}
+    VERSION         ${VERSION}
+    FILENAME        gradio_client
+    SHA512          350711e9a51a4edd36ded181215a60430c76f3749bd941b1972525637f563e0ef799476cd7601533dad01c663a97f895b8e510b8914f57d3dc761e28d73b3f33
 )
 
-file(READ "${wheel_json}" wheel_index)
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
-string(JSON wheel_releases GET "${wheel_index}" "releases")
-string(JSON wheel_releases GET "${wheel_releases}" "${VERSION}")
-string(JSON wheel_release GET "${wheel_releases}" "0") # 0 is the bdist wheel
-string(JSON download_url GET "${wheel_release}" "url")
-
-string(JSON packagetype GET "${wheel_release}" "packagetype")
-string(JSON filename  GET "${wheel_release}" "filename")
-
-if(NOT "${packagetype}" STREQUAL "bdist_wheel")
-  message(FATAL_ERROR "Download is not a binary wheel")
-endif()
-if(NOT "${filename}" MATCHES "none-any")
-  message(FATAL_ERROR "Download is not an architecture independent wheel -> Building from source required")
-endif()
-
-vcpkg_download_distfile(
-    wheel
-    URLS ${download_url}
-    FILENAME ${filename}
-    SHA512 c1b1f66a53558cf7debdc21ac17bec32cf64249bcde7a8505ebeef47c27061814d0e249761abc1b78b12f0e0a49e014fa0f588e548e75962a7af4e83a2e78f6f
-)
-
-vcpkg_python_install_wheel(WHEEL "${wheel}")
-
-file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/share/${PORT}")
-file(TOUCH "${CURRENT_PACKAGES_DIR}\\share\\${PORT}\\copyright")
+# vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE.txt") # Will get installed by py-gradio
+file(WRITE "${CURRENT_PACKAGES_DIR}/share/py-gradio-client/copyright" "Apache-2.0 - see ../py-gradio/copyright")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+string(REGEX REPLACE "-" "_" test_package "${package}")
+vcpkg_python_test_import(MODULE "${test_package}")

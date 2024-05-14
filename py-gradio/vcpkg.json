@@ -20,6 +20,8 @@
     "py-pillow",
     "py-pydub",
     "py-uvicorn",
+    "py-gradio-client",
+    "py-matplotlib",
     "python3",
     {
       "name": "vcpkg-python-scripts",

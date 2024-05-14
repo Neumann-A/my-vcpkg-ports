@@ -59,3 +59,5 @@ vcpkg_qmake_build(BUILD_LOGNAME "install" TARGETS "install")
 vcpkg_restore_env_variables(VARS PATH)
 
 vcpkg_python_test_import(MODULE "PyQt6.QtCore")
+
+vcpkg_python_test_import(MODULE "PyQt-builder")

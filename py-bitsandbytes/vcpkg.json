@@ -1,0 +1,17 @@
+{
+  "name": "py-bitsandbytes",
+  "version": "0.43.1",
+  "description": "The bitsandbytes library is a lightweight Python wrapper around CUDA custom functions, in particular 8-bit optimizers, matrix multiplication (LLM.int8()), and 8 & 4-bit quantization functions.",
+  "homepage": "https://pypi.org/project/bitsandbytes",
+  "dependencies": [
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
+    "python3",
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
+  ]
+}

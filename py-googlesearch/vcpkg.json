@@ -5,6 +5,7 @@
   "homepage": "https://github.com/MarioVilas/googlesearch",
   "license": "BSD-3-Clause",
   "dependencies": [
+    "py-beautifulsoup4",
     "py-setuptools",
     "python3",
     {

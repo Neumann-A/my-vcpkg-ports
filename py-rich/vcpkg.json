@@ -1,6 +1,6 @@
 {
   "name": "py-rich",
-  "version": "13.7.0",
+  "version": "13.7.1",
   "description": "Rich is a Python library for rich text and beautiful formatting in the terminal",
   "homepage": "https://rich.readthedocs.io/en/latest/",
   "license": "MIT",

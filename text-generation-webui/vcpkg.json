@@ -23,7 +23,6 @@
     "py-requests",
     "py-rich",
     "py-safetensors",
-    "py-scipy",
     "py-tokenizers",
     "py-torch-grammar",
     "py-tqdm",
