@@ -51,6 +51,8 @@
       ]
     },
     "pivy",
+    "py-matplotlib",
+    "py-pip",
     {
       "name": "pybind11",
       "features": [
@@ -58,8 +60,6 @@
       ]
     },
     "pyside",
-    "python-matplotlib",
-    "python-pip",
     "python3",
     "qtsvg",
     {
