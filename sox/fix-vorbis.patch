@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6e79dc4..ddd4414 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -183,7 +183,7 @@ if (NOT HAVE_SYS_SOUNDCARD_H)
+ endif (NOT HAVE_SYS_SOUNDCARD_H)
+ optional(HAVE_WAVEAUDIO mmsystem.h winmm waveInGetDevCapsA waveaudio)
+ 
+-pkg_check_modules(OGG_VORBIS REQUIRED IMPORTED_TARGET ogg vorbis vorbisfile)
++pkg_check_modules(OGG_VORBIS REQUIRED IMPORTED_TARGET ogg vorbis vorbisfile vorbisenc)
+ set(HAVE_OGG_VORBIS 1)
+ list(APPEND optional_srcs vorbis)
+ list(APPEND optional_libs PkgConfig::OGG_VORBIS)

@@ -7,6 +7,7 @@ vcpkg_from_sourceforge(
     SHA512 b5c6203f4f5577503a034fe5b3d6a033ee97fe4d171c533933e2b036118a43a14f97c9668433229708609ccf9ee16abdeca3fc7501aa0aafe06baacbba537eca
     PATCHES
       fix-build.patch
+      fix-vorbis.patch
 )
 
 vcpkg_cmake_configure(
