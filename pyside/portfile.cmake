@@ -2,7 +2,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO qtproject/pyside-pyside-setup
     REF v${VERSION}
-    SHA512 5ec1fca08b450d734beaf61d32e125f717cfaddcff5942c4ea01a68d355019814e5940b1bd569615b3036673b80e5138dda63b723fb9214ceb54be571d2cd998
+    SHA512 ea9884ef1f289abe027f92d3684e6592f06ea1c4d9f6a2d75d4f3144da52a0e7d7224643f731d169b5163c1d7d13db0511deccaa6c5bfe14eeb6382cbc735664
     HEAD_REF master
     PATCHES 
       fix_build.patch
@@ -13,14 +13,15 @@ set(ENV{LLVM_INSTALL_DIR} "${CURRENT_HOST_INSTALLED_DIR}/tools/llvm")
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS 
-      "-DPYTHON_EXECUTABLE=${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}"
+      "-DPython_EXECUTABLE=${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}"
+      "-DPython3_EXECUTABLE=${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}"
       #-DSHIBOKEN_BUILD_TOOLS=OFF
       -DBUILD_TESTS=OFF
       -DNO_QT_TOOLS=yes
       #-DPYTHON_LIMITED_API=OFF
       #-DSHIBOKEN_PYTHON_LIMITED_API=OFF
       -DFORCE_LIMITED_API=OFF # Theoretically the default could be ON and OFF could be a feature 
-      -DNUMPY_INCLUDE_DIR="${CURRENT_INSTALLED_DIR}/tools/python3/Lib/site-packages/numpy/core/include"
+      -DNUMPY_INCLUDE_DIR="${CURRENT_INSTALLED_DIR}/${PYTHON3_SITE}/numpy/core/include"
 )
 
 

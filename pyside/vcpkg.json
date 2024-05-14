@@ -1,6 +1,6 @@
 {
   "name": "pyside",
-  "version": "6.6.0",
+  "version": "6.7.0",
   "description": "Qt For Python is the Python Qt bindings project, providing access to the complete Qt framework as well as to generator tools for rapidly generating bindings for any C++ libraries.",
   "homepage": "https://wiki.qt.io/Qt_for_Python",
   "license": null,

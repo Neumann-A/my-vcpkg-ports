@@ -38,7 +38,7 @@ index cca66be..f7d0cc6 100644
              target_link_options(${_module_name} PRIVATE LINKER:/OPT:REF)
          elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU|CLANG")
 @@ -243,7 +243,7 @@ macro(create_pyside_module)
-     if(NOT PYSIDE_IS_CROSS_BUILD)
+     if(NOT (PYSIDE_IS_CROSS_BUILD OR DISABLE_PYI))
          set(generate_pyi_options ${module_NAME} --sys-path
              "${pysidebindings_BINARY_DIR}"
 -            "${SHIBOKEN_PYTHON_MODULE_DIR}/..")     # use the layer above shiboken6
@@ -68,12 +68,12 @@ index d3497de..79523a7 100644
          _compiler = Compiler::Msvc;
      else if (name == u"g++")
          _compiler = Compiler::Gpp;
-@@ -339,7 +339,7 @@ QByteArrayList emulatedCompilerOptions()
+@@ -339,7 +339,6 @@ QByteArrayList emulatedCompilerOptions()
          result.append(QByteArrayLiteral("-fdelayed-template-parsing"));
          result.append(QByteArrayLiteral("-Wno-microsoft-enum-value"));
+         result.append("/Zc:__cplusplus"_ba);
          // Fix yvals_core.h:  STL1000: Unexpected compiler version, expected Clang 7 or newer (MSVC2017 update)
 -        result.append(QByteArrayLiteral("-D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH"));
-+        // result.append(QByteArrayLiteral("-D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH"));
          if (needsClangBuiltinIncludes())
              appendClangBuiltinIncludes(&headerPaths);
          break;
