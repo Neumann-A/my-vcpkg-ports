@@ -4,7 +4,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO pytorch/pytorch
     REF "v${VERSION}"
-    SHA512 a8961d78ad785b13c959a0612563a60e0de17a7c8bb9822ddea9a24072796354d07e81c47b6cc8761b21a6448845b088cf80e1661d9e889b0ed5474d3dc76756
+    SHA512 67f7e9a096c3ffb952206ebf9105bedebb68c24ad82456083adf1d1d210437fcaa9dd52b68484cfc97d408c9eebc9541c76868c34a7c9982494dc3f424cfb07c
     HEAD_REF master
     PATCHES
         cmake-fixes.patch
@@ -13,15 +13,15 @@ vcpkg_from_github(
         clang-cl.patch
         fix-api.patch
         fix-compile.patch
-        disable-cuda-check.patch
+        #disable-cuda-check.patch
 )
 file(REMOVE_RECURSE "${SOURCE_PATH}/caffe2/core/macros.h") # We must use generated header files
 
 vcpkg_from_github(
     OUT_SOURCE_PATH src_kineto
     REPO pytorch/kineto
-    REF 49e854d805d916b2031e337763928d2f8d2e1fbf
-    SHA512 ae63d48dc5b8ac30c38c2ace60f16834c7e9275fa342dc9f109d4fbc87b7bd674664f6413c36d0c1ab5a7da786030a4108d83daa4502b2f30239283ea3acdb16
+    REF 3f30237e868ca92b46b309da17d84b37be373a6e
+    SHA512 33afc04463ac5f254eb723c9ed0988c6d6789b3d8cb9bb6f31a7ba2ade8cef98fd3bdff37915e0148d70676741b4f5084ed15e58252af2c6ef4c6eb7bdf5eaed
     HEAD_REF main
     PATCHES 
       kineto.patch
@@ -31,8 +31,8 @@ file(COPY "${src_kineto}/" DESTINATION "${SOURCE_PATH}/third_party/kineto")
 vcpkg_from_github(
     OUT_SOURCE_PATH src_cudnn
     REPO NVIDIA/cudnn-frontend # new port ?
-    REF 12f35fa2be5994c1106367cac2fba21457b064f4
-    SHA512 a7e4bf58f82ca0b767df35da1b3588e2639ea2ef22ed0c47e989fb4cde5a28b0605b228b42fcaefbdf721bfbb91f2a9e7d41352ff522bd80b63db6d27e44ec20
+    REF 150798fe976556078f443fdb059a1ff0361f58a2
+    SHA512 f7f5f4f6d0011ffe3691aa442aab53a48d87f5a4dbeeeb156b188de634267382b7bc5c9f2ca665eaf2408d7a29bd05850df2905135c8bf51fa66ff94b19c8135
     HEAD_REF main
 )
 file(COPY "${src_cudnn}/" DESTINATION "${SOURCE_PATH}/third_party/cudnn_frontend")
@@ -41,8 +41,8 @@ file(COPY "${src_cudnn}/" DESTINATION "${SOURCE_PATH}/third_party/cudnn_frontend
 vcpkg_from_github(
     OUT_SOURCE_PATH src_cutlass
     REPO NVIDIA/cutlass # new port ?
-    REF 6f47420213f757831fae65c686aa471749fa8d60
-    SHA512 f3b3c43fbd7942f96407669405385c9a99274290e99f86cab5bb8657664bf1951e4da27f3069500a4825c427adeec883e05e81302b58390df3a3adb8c08e31ed
+    REF bbe579a9e3beb6ea6626d9227ec32d0dae119a49
+    SHA512 b7d3cc102d28acee55821a0731d1741572635e677f037c5f78f4a526be4ec4faf8bba7f31226ccb6ac006d40d87c963a72fd9ff495b9fa18131520d1601d2e7a
     HEAD_REF main
 )
 file(COPY "${src_cutlass}/" DESTINATION "${SOURCE_PATH}/third_party/cutlass")
@@ -79,8 +79,6 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
   FEATURES
     dist    USE_DISTRIBUTED # MPI, Gloo, TensorPipe
     zstd    USE_ZSTD
-    fftw3   USE_FFTW
-    fftw3   AT_FFTW_ENABLED
     fbgemm  USE_FBGEMM
     opencv  USE_OPENCV
     # These are alternatives !
@@ -97,6 +95,7 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     cuda    USE_NVRTC
     cuda    AT_CUDA_ENABLED
     cuda    AT_CUDNN_ENABLED
+    #tensorrt USE_TENSORRT
     vulkan  USE_VULKAN
     #vulkan  USE_VULKAN_SHADERC_RUNTIME
     vulkan  USE_VULKAN_RELAXED_PRECISION
