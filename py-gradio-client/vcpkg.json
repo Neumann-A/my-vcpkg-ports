@@ -7,16 +7,24 @@
   "dependencies": [
     "numpy",
     "py-fsspec",
-    "py-hatch",
+    {
+      "name": "py-hatch",
+      "host": true
+    },
     "py-hatch-fancy-pypi-readme",
     "py-hatch-requirements-txt",
-    "py-hatchling",
+    {
+      "name": "py-hatchling",
+      "host": true
+    },
     "py-httpx",
-    "py-packaging",
+    {
+      "name": "py-packaging",
+      "host": true
+    },
     "py-pandas",
     "py-rich",
     "py-websockets",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

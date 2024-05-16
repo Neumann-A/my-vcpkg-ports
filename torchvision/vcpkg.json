@@ -41,7 +41,10 @@
       "description": "Build python extension",
       "dependencies": [
         "py-pillow",
-        "py-setuptools",
+        {
+          "name": "py-setuptools",
+          "host": true
+        },
         "python3",
         "vcpkg-python-scripts"
       ]

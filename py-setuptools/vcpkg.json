@@ -5,9 +5,11 @@
   "homepage": "https://pypi.org/project/setuptools/",
   "license": "MIT",
   "dependencies": [
-    "py-packaging",
+    {
+      "name": "py-packaging",
+      "host": true
+    },
     "py-wheel",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

@@ -27,12 +27,14 @@
     "py-idna",
     "py-regex",
     "py-safetensors",
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-spacy",
     "py-tokenizers",
     "py-tqdm",
     "py-urllib3",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

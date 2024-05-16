@@ -6,9 +6,14 @@
   "license": null,
   "dependencies": [
     "py-semantic-version",
-    "py-setuptools",
-    "py-setuptools-rust",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
+    {
+      "name": "py-setuptools-rust",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

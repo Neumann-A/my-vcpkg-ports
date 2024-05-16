@@ -5,9 +5,14 @@
   "homepage": "https://huggingface.co/docs/tokenizers",
   "license": "Apache-2.0",
   "dependencies": [
-    "py-maturin",
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-maturin",
+      "host": true
+    },
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

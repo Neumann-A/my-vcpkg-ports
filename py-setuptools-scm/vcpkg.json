@@ -5,11 +5,16 @@
   "homepage": "https://github.com/pypa/setuptools_scm",
   "license": "MIT",
   "dependencies": [
-    "py-packaging",
-    "py-setuptools",
+    {
+      "name": "py-packaging",
+      "host": true
+    },
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-tomli",
     "py-typing-extensions",
-    "python3",
     "vcpkg-get-python-packages",
     {
       "name": "vcpkg-python-scripts",

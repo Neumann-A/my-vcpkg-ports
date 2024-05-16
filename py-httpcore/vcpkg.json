@@ -6,11 +6,16 @@
   "license": "BSD-3-Clause",
   "dependencies": [
     "py-h11",
-    "py-hatch",
+    {
+      "name": "py-hatch",
+      "host": true
+    },
     "py-hatch-fancy-pypi-readme",
     "py-hatch-requirements-txt",
-    "py-hatchling",
-    "python3",
+    {
+      "name": "py-hatchling",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

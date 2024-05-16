@@ -12,7 +12,6 @@
     "py-dateutil",
     "py-pytz",
     "py-versioneer",
-    "python3",
     {
       "name": "vcpkg-get-python-packages",
       "host": true

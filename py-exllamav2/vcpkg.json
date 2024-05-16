@@ -15,9 +15,11 @@
     "py-pandas",
     "py-pygments",
     "py-regex",
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-websockets",
-    "python3",
     {
       "name": "sentencepiece",
       "features": [

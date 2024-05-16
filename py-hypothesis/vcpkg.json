@@ -5,9 +5,11 @@
   "homepage": "https://hypothesis.works/",
   "license": "MIT",
   "dependencies": [
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-sortedcontainers",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

@@ -5,8 +5,10 @@
   "homepage": "https://github.com/python-versioneer/python-versioneer",
   "license": "Unlicense",
   "dependencies": [
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

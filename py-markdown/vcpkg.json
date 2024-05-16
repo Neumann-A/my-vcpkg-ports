@@ -5,7 +5,10 @@
   "homepage": "https://python-markdown.github.io/",
   "license": null,
   "dependencies": [
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "python3",
     {
       "name": "vcpkg-python-scripts",

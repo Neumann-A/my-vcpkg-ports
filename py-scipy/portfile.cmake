@@ -4,7 +4,7 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO scipy/scipy
     REF v${VERSION}
-    SHA512 0424b185d128681c357ed7334ab58ba1bd9969ce842487253ae98d0e1b9d2a26e247d7ef17deaafc2d6559f7a3bf5af488ef095a653390061adaf9065fe60cbe
+    SHA512 a8c15274282444c62b42b456225fd496e6b7f52aa7aa35d349c6d6a9f2c5fd077042d24be643ee722d915add400f8df35cccc71b19dce3d3f297180ce0923e56
     HEAD_REF main
     PATCHES
 
@@ -73,3 +73,5 @@ Version: 1.26.1
 )
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+vcpkg_python_test_import(MODULE "scipy")

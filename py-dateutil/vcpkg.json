@@ -5,9 +5,11 @@
   "homepage": "https://github.com/dateutil/dateutil",
   "license": null,
   "dependencies": [
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-six",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

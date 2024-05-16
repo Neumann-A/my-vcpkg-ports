@@ -5,7 +5,10 @@
   "homepage": "https://matplotlib.org/cycler/",
   "license": "BSD-3-Clause",
   "dependencies": [
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "python3",
     {
       "name": "vcpkg-python-scripts",

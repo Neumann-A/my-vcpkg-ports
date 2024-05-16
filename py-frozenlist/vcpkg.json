@@ -6,8 +6,10 @@
   "license": "Apache-2.0",
   "dependencies": [
     "py-expandvars",
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

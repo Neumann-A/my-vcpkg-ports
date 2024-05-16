@@ -9,9 +9,11 @@
     "py-async-timeout",
     "py-attrs",
     "py-multidict",
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-yarl",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

@@ -5,9 +5,11 @@
   "homepage": "https://einops.rocks/",
   "license": "MIT",
   "dependencies": [
-    "py-hatchling",
+    {
+      "name": "py-hatchling",
+      "host": true
+    },
     "py-wheel",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

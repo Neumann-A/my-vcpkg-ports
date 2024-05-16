@@ -7,7 +7,12 @@
   "license": "BSD-3-Clause",
   "supports": "!(arm & windows)",
   "dependencies": [
-    "python3",
+    {
+      "name": "python3",
+      "features": [
+        "extensions"
+      ]
+    },
     {
       "name": "vcpkg-cmake",
       "host": true
@@ -21,8 +26,14 @@
     "scripts": {
       "description": "Install pybind python scripts",
       "dependencies": [
-        "py-setuptools",
-        "python3",
+        {
+          "name": "py-setuptools",
+          "host": true
+        },
+        {
+          "name": "python3",
+          "host": true
+        },
         {
           "name": "vcpkg-python-scripts",
           "host": true

@@ -5,11 +5,13 @@
   "description": "Python bindings for the Qt cross platform application toolkit",
   "homepage": "https://www.riverbankcomputing.com/software/pyqt/",
   "dependencies": [
-    "py-packaging",
+    {
+      "name": "py-packaging",
+      "host": true
+    },
     "py-ply",
     "py-pyqt-builder",
     "py-pyqt6-sip",
-    "python3",
     {
       "name": "qtactiveqt",
       "platform": "windows"

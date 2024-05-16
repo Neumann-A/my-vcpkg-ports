@@ -5,11 +5,16 @@
   "homepage": "https://referencing.readthedocs.io/",
   "license": "MIT",
   "dependencies": [
-    "py-hatchling",
+    {
+      "name": "py-hatchling",
+      "host": true
+    },
     "py-rpds-py",
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-trove-classifiers",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

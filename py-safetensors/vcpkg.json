@@ -13,13 +13,21 @@
       ]
     },
     "numpy",
-    "py-maturin",
-    "py-packaging",
+    {
+      "name": "py-maturin",
+      "host": true
+    },
+    {
+      "name": "py-packaging",
+      "host": true
+    },
     "py-pyyaml",
     "py-requests",
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-typing-extensions",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

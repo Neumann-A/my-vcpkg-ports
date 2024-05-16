@@ -7,8 +7,10 @@
   "dependencies": [
     "py-cymem",
     "py-murmurhash",
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

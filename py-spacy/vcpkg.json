@@ -9,19 +9,30 @@
     "py-catalogue",
     "py-click",
     "py-confection",
-    "py-cython",
+    {
+      "name": "py-cython",
+      "host": true
+    },
     "py-jinja",
     "py-langcodes",
-    "py-packaging",
-    "py-pip",
+    {
+      "name": "py-packaging",
+      "host": true
+    },
+    {
+      "name": "py-pip",
+      "host": true
+    },
     "py-preshed",
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-srsly",
     "py-thinc",
     "py-tqdm",
     "py-typer",
     "py-weasel",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

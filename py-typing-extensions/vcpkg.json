@@ -5,8 +5,10 @@
   "homepage": "https://github.com/python/typing_extensions",
   "license": null,
   "dependencies": [
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

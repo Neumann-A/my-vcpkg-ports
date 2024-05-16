@@ -5,9 +5,14 @@
   "homepage": "https://www.uvicorn.org/",
   "license": null,
   "dependencies": [
-    "py-maturin",
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-maturin",
+      "host": true
+    },
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

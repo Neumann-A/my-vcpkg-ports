@@ -6,11 +6,16 @@
   "license": "MIT",
   "dependencies": [
     "py-attrs",
-    "py-hatchling",
+    {
+      "name": "py-hatchling",
+      "host": true
+    },
     "py-jsonschema-specifications",
     "py-referencing",
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

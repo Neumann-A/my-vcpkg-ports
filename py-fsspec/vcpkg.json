@@ -5,10 +5,10 @@
   "homepage": "https://github.com/fsspec/filesystem_spec",
   "license": "BSD-3-Clause",
   "dependencies": [
-    "py-build",
-    "py-pyproject-hooks",
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

@@ -5,10 +5,25 @@
   "homepage": "https://github.com/mesonbuild/meson-python",
   "license": "MIT",
   "dependencies": [
-    "py-pyproject-metadata",
-    "py-setuptools",
-    "py-tomli",
-    "python3",
+    {
+      "name": "py-pyproject-metadata",
+      "host": true
+    },
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
+    {
+      "name": "py-tomli",
+      "host": true
+    },
+    {
+      "name": "python3",
+      "default-features": false,
+      "features": [
+        "extensions"
+      ]
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

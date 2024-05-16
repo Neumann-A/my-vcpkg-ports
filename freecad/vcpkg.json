@@ -44,7 +44,10 @@
     },
     "pivy",
     "py-matplotlib",
-    "py-pip",
+    {
+      "name": "py-pip",
+      "host": true
+    },
     {
       "name": "pybind11",
       "features": [

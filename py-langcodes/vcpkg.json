@@ -7,8 +7,10 @@
   "dependencies": [
     "py-language-data",
     "py-poetry",
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

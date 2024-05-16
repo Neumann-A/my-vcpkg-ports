@@ -6,8 +6,10 @@
   "license": "BSD-3-Clause",
   "dependencies": [
     "py-beautifulsoup4",
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

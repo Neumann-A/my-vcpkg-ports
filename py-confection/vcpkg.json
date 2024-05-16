@@ -6,9 +6,11 @@
   "license": "MIT",
   "dependencies": [
     "py-pydantic",
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-srsly",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

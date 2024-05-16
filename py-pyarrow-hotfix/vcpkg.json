@@ -6,7 +6,6 @@
   "license": "BSD-3-Clause",
   "dependencies": [
     "py-pyarrow",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

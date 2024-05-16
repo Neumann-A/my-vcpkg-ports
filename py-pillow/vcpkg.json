@@ -20,8 +20,10 @@
       "name": "pkgconf",
       "host": true
     },
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "tiff",
     {
       "name": "vcpkg-python-scripts",

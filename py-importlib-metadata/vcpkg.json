@@ -14,7 +14,6 @@
       "host": true
     },
     "py-zipp",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

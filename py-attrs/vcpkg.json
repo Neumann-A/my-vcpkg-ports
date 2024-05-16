@@ -7,10 +7,18 @@
   "dependencies": [
     "py-attrs",
     "py-hatch-fancy-pypi-readme",
-    "py-hatch-vcs",
-    "py-hatchling",
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-hatch-vcs",
+      "host": true
+    },
+    {
+      "name": "py-hatchling",
+      "host": true
+    },
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

@@ -6,8 +6,10 @@
   "license": null,
   "dependencies": [
     "py-mpmath",
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

@@ -11,17 +11,22 @@
     "py-cycler",
     "py-dateutil",
     "py-kiwisolver",
-    "py-meson",
+    {
+      "name": "py-meson",
+      "host": true
+    },
     "py-pillow",
     "py-pyparsing",
-    "py-setuptools-scm",
+    {
+      "name": "py-setuptools-scm",
+      "host": true
+    },
     {
       "name": "pybind11",
       "features": [
         "scripts"
       ]
     },
-    "python3",
     "qhull",
     {
       "name": "vcpkg-python-scripts",

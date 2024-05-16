@@ -5,11 +5,16 @@
   "homepage": "https://jsonschema-specifications.readthedocs.io/",
   "license": "MIT",
   "dependencies": [
-    "py-hatchling",
+    {
+      "name": "py-hatchling",
+      "host": true
+    },
     "py-referencing",
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-trove-classifiers",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

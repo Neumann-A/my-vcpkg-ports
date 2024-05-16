@@ -5,8 +5,10 @@
   "homepage": "http://www.grantjenks.com/docs/sortedcontainers/",
   "license": "Apache-2.0",
   "dependencies": [
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

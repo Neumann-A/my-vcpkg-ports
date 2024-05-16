@@ -33,7 +33,6 @@ vcpkg_execute_required_process(
     LOGNAME "git-fetch-${TARGET_TRIPLET}"
 )
 
-#SETUPTOOLS_SCM_PRETEND_VERSION
 vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}") #OPTIONS -Cconfig=toml -Cextras=toml)#-C--build-option=[toml])
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")

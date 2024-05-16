@@ -8,16 +8,21 @@
     "numpy",
     "py-aiohttp",
     "py-huggingface-hub",
-    "py-packaging",
+    {
+      "name": "py-packaging",
+      "host": true
+    },
     "py-pandas",
     "py-pillow",
     "py-pyarrow",
     "py-pyarrow-hotfix",
     "py-pyyaml",
     "py-requests",
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-xxhash",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

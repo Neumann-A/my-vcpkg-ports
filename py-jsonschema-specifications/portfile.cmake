@@ -7,7 +7,6 @@ vcpkg_from_github(
 
 )
 
-set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
 vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING")

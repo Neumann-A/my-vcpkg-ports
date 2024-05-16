@@ -5,8 +5,10 @@
   "homepage": "https://www.starlette.io/",
   "license": "MIT",
   "dependencies": [
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

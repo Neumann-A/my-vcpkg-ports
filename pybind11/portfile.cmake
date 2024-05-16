@@ -24,7 +24,6 @@ file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/usage" DESTINATION "${CURRENT_PACKAGES_D
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 if("scripts" IN_LIST FEATURES)
-set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
 
 vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 

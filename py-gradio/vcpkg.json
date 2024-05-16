@@ -11,19 +11,27 @@
     "py-fastapi",
     "py-ffmpy",
     "py-gradio-client",
-    "py-hatch",
+    {
+      "name": "py-hatch",
+      "host": true
+    },
     "py-hatch-fancy-pypi-readme",
     "py-hatch-requirements-txt",
-    "py-hatchling",
+    {
+      "name": "py-hatchling",
+      "host": true
+    },
     "py-matplotlib",
     "py-orjson",
-    "py-packaging",
+    {
+      "name": "py-packaging",
+      "host": true
+    },
     "py-pandas",
     "py-pillow",
     "py-pydub",
     "py-tomlkit",
     "py-uvicorn",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

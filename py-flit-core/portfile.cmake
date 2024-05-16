@@ -6,11 +6,8 @@ vcpkg_from_github(
     HEAD_REF main
 )
 
-set(PYTHON3_BASEDIR "${CURRENT_INSTALLED_DIR}/tools/python3")
-find_program(PYTHON3 NAMES python${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR} python${PYTHON3_VERSION_MAJOR} python PATHS "${PYTHON3_BASEDIR}" NO_DEFAULT_PATH)
-
-message(STATUS "Building dist with '${PYTHON3}'!")
-execute_process(COMMAND "${PYTHON3}" "${SOURCE_PATH}/flit_core/build_dists.py"
+message(STATUS "Building dist with '${VCPKG_PYTHON3_EXECUTABLE}'!")
+execute_process(COMMAND "${VCPKG_PYTHON3_EXECUTABLE}" "${SOURCE_PATH}/flit_core/build_dists.py"
   COMMAND_ERROR_IS_FATAL ANY
   #WORKING_DIRECTORY  "${wheeldir}"
 )
@@ -19,7 +16,7 @@ file(GLOB wheel "${SOURCE_PATH}/flit_core/dist/*.whl")
 
 file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE})
 message(STATUS "Installing wheel!")
-execute_process(COMMAND "${PYTHON3}" "${SOURCE_PATH}/flit_core/bootstrap_install.py" "${wheel}" -i "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}"
+execute_process(COMMAND "${VCPKG_PYTHON3_EXECUTABLE}" "${SOURCE_PATH}/flit_core/bootstrap_install.py" "${wheel}" -i "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}"
   COMMAND_ERROR_IS_FATAL ANY
   #WORKING_DIRECTORY  "${wheeldir}"
 )

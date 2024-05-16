@@ -5,10 +5,15 @@
   "homepage": "pluggy.readthedocs.io/en/latest/",
   "license": "MIT",
   "dependencies": [
-    "py-setuptools",
-    "py-setuptools-scm",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
+    {
+      "name": "py-setuptools-scm",
+      "host": true
+    },
     "py-tomli",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

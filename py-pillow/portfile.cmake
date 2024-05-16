@@ -13,11 +13,10 @@ set(ENV{INCLIB} "${CURRENT_INSTALLED_DIR}/lib;$ENV{INCLIB}")
 set(ENV{LIB} "${CURRENT_INSTALLED_DIR}/lib;$ENV{LIB}")
 
 vcpkg_python_build_and_install_wheel(
-  USE_BUILD
   SOURCE_PATH "${SOURCE_PATH}" 
   OPTIONS 
-    #--config-json "{\"raqm\": \"disable\"}"
-    -C raqm=disable # linkage issues. Without pc file missing linakge to harfbuzz fribidi
+    --config-json "{\"raqm\": \"disable\"}"
+    #-C raqm=disable # linkage issues. Without pc file missing linakge to harfbuzz fribidi
 )
 
 

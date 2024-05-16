@@ -5,8 +5,10 @@
   "homepage": "https://markupsafe.palletsprojects.com/",
   "license": "BSD-3-Clause",
   "dependencies": [
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

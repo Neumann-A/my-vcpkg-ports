@@ -5,8 +5,10 @@
   "homepage": "https://github.com/cpburnz/python-pathspec",
   "license": "MPL-2.0",
   "dependencies": [
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

@@ -5,9 +5,14 @@
   "homepage": "https://urllib3.readthedocs.io/",
   "license": "Apache-2.0",
   "dependencies": [
-    "py-hatchling",
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-hatchling",
+      "host": true
+    },
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "vcpkg-python-scripts",
       "host": true

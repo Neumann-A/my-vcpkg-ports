@@ -8,9 +8,11 @@
     "py-annotated-types",
     "py-hatch-fancy-pypi-readme",
     "py-pydantic-core",
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-wasabi",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

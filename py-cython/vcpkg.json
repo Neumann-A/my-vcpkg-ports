@@ -5,8 +5,19 @@
   "homepage": "https://cython.org/",
   "license": "Apache-2.0",
   "dependencies": [
-    "py-setuptools",
-    "python3",
-    "vcpkg-python-scripts"
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
+    {
+      "name": "python3",
+      "features": [
+        "extensions"
+      ]
+    },
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
+    }
   ]
 }

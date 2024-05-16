@@ -31,14 +31,13 @@
     "opencl",
     "pocketfft",
     "protobuf",
-    {
-      "name": "protobuf",
-      "host": true
-    },
     "pthreadpool",
     "py-pyyaml",
     "pybind11",
-    "python3",
+    {
+      "name": "python3",
+      "host": true
+    },
     "sleef",
     {
       "name": "vcpkg-cmake",
@@ -120,12 +119,23 @@
       "dependencies": [
         "numpy",
         "py-astunparse",
-        "py-setuptools",
+        {
+          "name": "py-setuptools",
+          "host": true
+        },
         "py-six",
         "py-sympy",
         "py-typing-extensions",
-        "python3",
-        "vcpkg-python-scripts"
+        {
+          "name": "python3",
+          "features": [
+            "extensions"
+          ]
+        },
+        {
+          "name": "vcpkg-python-scripts",
+          "host": true
+        }
       ]
     },
     "vulkan": {

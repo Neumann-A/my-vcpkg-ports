@@ -6,10 +6,12 @@
   "license": "MIT",
   "dependencies": [
     "py-multipart",
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-starlette",
     "py-typing-extensions",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

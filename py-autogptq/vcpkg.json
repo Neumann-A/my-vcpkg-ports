@@ -10,9 +10,11 @@
     "py-datasets",
     "py-gekko",
     "py-peft",
-    "py-setuptools",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     "py-transformers",
-    "python3",
     {
       "name": "vcpkg-python-scripts",
       "host": true

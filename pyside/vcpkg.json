@@ -14,11 +14,19 @@
       ]
     },
     "numpy",
-    "py-setuptools",
-    "python3",
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
     {
       "name": "python3",
       "host": true
+    },
+    {
+      "name": "python3",
+      "features": [
+        "extensions"
+      ]
     },
     "qt3d",
     "qt5compat",
