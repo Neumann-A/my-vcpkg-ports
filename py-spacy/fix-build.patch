@@ -11,7 +11,7 @@ index 336c079..84571ca 100644
      "cymem>=2.0.2,<2.1.0",
      "preshed>=3.0.2,<3.1.0",
      "murmurhash>=0.28.0,<1.1.0",
--    "thinc>=8.1.8,<8.3.0",
+-    "thinc>=8.2.2,<8.3.0",
      "numpy>=1.15.0; python_version < '3.9'",
      "numpy>=1.25.0; python_version >= '3.9'",
  ]
@@ -31,7 +31,7 @@ index ab9e39e..fe84ed5 100644
      cymem>=2.0.2,<2.1.0
      preshed>=3.0.2,<3.1.0
 -    murmurhash>=0.28.0,<1.1.0
--    thinc>=8.1.8,<8.3.0
+-    thinc>=8.2.2,<8.3.0
 +    murmurhash>=0.28.0
  install_requires =
      # Our libraries
@@ -41,7 +41,7 @@ index ab9e39e..fe84ed5 100644
 +    murmurhash>=0.28.0
      cymem>=2.0.2,<2.1.0
      preshed>=3.0.2,<3.1.0
--    thinc>=8.1.8,<8.3.0
+-    thinc>=8.2.2,<8.3.0
 -    wasabi>=0.9.1,<1.2.0
      srsly>=2.4.3,<3.0.0
      catalogue>=2.0.6,<2.1.0

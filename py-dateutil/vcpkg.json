@@ -1,6 +1,6 @@
 {
   "name": "py-dateutil",
-  "version": "2.8.2",
+  "version": "2.9.0",
   "description": "Useful extensions to the standard Python datetime features",
   "homepage": "https://github.com/dateutil/dateutil",
   "license": null,

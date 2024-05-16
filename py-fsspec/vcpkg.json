@@ -1,6 +1,6 @@
 {
   "name": "py-fsspec",
-  "version": "2024.3.1",
+  "version": "2024.5.0",
   "description": "A specification that python filesystems should adhere to",
   "homepage": "https://github.com/fsspec/filesystem_spec",
   "license": "BSD-3-Clause",

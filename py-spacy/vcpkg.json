@@ -1,6 +1,6 @@
 {
   "name": "py-spacy",
-  "version": "3.7.2",
+  "version": "3.7.4",
   "description": "Industrial-strength Natural Language Processing (NLP) in Python",
   "homepage": "https://spacy.io/",
   "license": "MIT",
@@ -18,6 +18,7 @@
     "py-setuptools",
     "py-srsly",
     "py-thinc",
+    "py-tqdm",
     "py-typer",
     "py-weasel",
     "python3",

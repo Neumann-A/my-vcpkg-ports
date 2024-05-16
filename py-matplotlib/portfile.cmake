@@ -2,18 +2,25 @@ vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO matplotlib/matplotlib
     REF v${VERSION}
-    SHA512 28872872a8d809b18490699f0ed6b997b56a0c055a6d73213076b062620fca5b25d827df25252f65a0e3afeeea7dae8eab8d7e6965de5c4d115b9d94fa32813d
+    SHA512 c430aa68991cae985416c1d9cd2ffc0ede4756e229d25abbc4349e44ab6d2b2af021326bf1dca928d4d7b65679dcd503a7134de8f685443346a9a76f92ff1655
     HEAD_REF main
 )
 
 set(ENV{PKG_CONFIG_PATH} "${CURRENT_INSTALLED_DIR}/lib/pkgconfig;${CURRENT_INSTALLED_DIR}/share/pkgconfig")
 set(ENV{INCLUDE} "${CURRENT_INSTALLED_DIR}/include;$ENV{INCLUDE}")
 
-set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
+set(PYTHON3 "${CURRENT_HOST_INSTALLED_DIR}/tools/python3/python${VCPKG_HOST_EXECUTABLE_SUFFIX}")
+vcpkg_mesonpy_prepare_build_options(OUTPUT meson_opts)
+
+z_vcpkg_setup_pkgconfig_path(CONFIG "RELEASE")
+
+list(APPEND meson_opts  "--python.platlibdir" "${CURRENT_INSTALLED_DIR}/lib")
+list(JOIN meson_opts "\",\""  meson_opts)
+
 vcpkg_python_build_and_install_wheel(
-  SOURCE_PATH "${SOURCE_PATH}" 
+  SOURCE_PATH "${SOURCE_PATH}"
   OPTIONS 
-    --config-json "{\"setup-args\" : { \"system-freetype\": true, \"system-qhull\": true  }}" 
+    --config-json "{\"setup-args\" : [\"-Dsystem-freetype=true\", \"-Dsystem-qhull=true\", \"${meson_opts}\" ] }" 
   #-Csetup-args=-Dsystem-freetype=true -Csetup-args=-Dsystem-qhull=true
 )
 

@@ -19,6 +19,7 @@
     "py-peft",
     "py-pillow",
     "py-psutil",
+    "py-pygments",
     "py-pyyaml",
     "py-requests",
     "py-rich",

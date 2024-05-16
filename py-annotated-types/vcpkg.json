@@ -5,6 +5,7 @@
   "homepage": "https://github.com/annotated-types/annotated-types",
   "license": "MIT",
   "dependencies": [
+    "py-hatchling",
     "py-setuptools",
     "python3",
     {

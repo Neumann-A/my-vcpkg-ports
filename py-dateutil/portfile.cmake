@@ -1,15 +1,16 @@
-set(name python_dateutil-${VERSION})
-set(wheelname ${name}-py2.py3-none-any.whl)
-
-vcpkg_download_distfile(
-    wheel
-    URLS https://files.pythonhosted.org/packages/36/7a/87837f39d0296e723bb9b62bbb257d0355c7f6128853c78955f57342a56d/${wheelname}
-    FILENAME ${wheelname}
-    SHA512 aa5cbf32cc20465a94a48b6156ec87ebf3a0b543c16b68fa346fde6b481bcbc07c3429b4171bdfcc45f2eeef9933e1bb03bdfdf453f4aed237cc88cc452317c3
+string(REGEX REPLACE "^py-" "" package "${PORT}")
+vcpkg_from_pythonhosted(
+    OUT_SOURCE_PATH SOURCE_PATH
+    PACKAGE_NAME    python-${package}
+    VERSION         ${VERSION}
+    SHA512          7dd550d646477c8c3953a42aabe4c0aa3f4d1f74f6fed018a1a429270f41aa2c6832df264e67510d380d149eaa436c1b613544c8026c180c2241f15205ca6d36
 )
 
-vcpkg_python_install_wheel(WHEEL "${wheel}")
+vcpkg_python_build_and_install_wheel(SOURCE_PATH "${SOURCE_PATH}")
 
-vcpkg_install_copyright(FILE_LIST "${CURRENT_PACKAGES_DIR}/${PYTHON3_SITE}/${name}.dist-info/LICENSE")
+vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 
 set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+
+string(REGEX REPLACE "-" "_" test_package "${package}")
+vcpkg_python_test_import(MODULE "${test_package}")

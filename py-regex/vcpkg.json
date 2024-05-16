@@ -1,6 +1,6 @@
 {
   "name": "py-regex",
-  "version-string": "2024.5.10",
+  "version-string": "2024.5.15",
   "description": "This regex implementation is backwards-compatible with the standard 're' module, but offers additional functionality.",
   "homepage": "https://github.com/mrabarnett/mrab-regex",
   "license": "MIT",

@@ -5,6 +5,14 @@
   "homepage": "importlib-metadata.readthedocs.io",
   "license": "MIT",
   "dependencies": [
+    {
+      "name": "py-setuptools",
+      "host": true
+    },
+    {
+      "name": "py-setuptools-scm",
+      "host": true
+    },
     "py-zipp",
     "python3",
     {

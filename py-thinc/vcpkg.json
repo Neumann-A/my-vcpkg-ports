@@ -1,6 +1,6 @@
 {
   "name": "py-thinc",
-  "version": "8.2.1",
+  "version": "8.2.3",
   "description": "A refreshing functional take on deep learning, compatible with your favorite libraries",
   "homepage": "https://thinc.ai/",
   "license": "MIT",

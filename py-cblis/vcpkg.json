@@ -5,6 +5,8 @@
   "homepage": "https://github.com/explosion/cython-blis",
   "license": null,
   "dependencies": [
+    "py-build",
+    "py-pyproject-hooks",
     "py-setuptools",
     "python3",
     {
