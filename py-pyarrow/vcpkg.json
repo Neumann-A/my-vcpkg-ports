@@ -1,6 +1,6 @@
 {
   "name": "py-pyarrow",
-  "version": "16.0.0",
+  "version": "16.1.0",
   "description": "Cross-language development platform for in-memory analytics",
   "homepage": "https://pypi.org/project/pyarrow/",
   "license": null,
