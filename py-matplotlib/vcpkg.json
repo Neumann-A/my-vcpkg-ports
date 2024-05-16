@@ -14,6 +14,7 @@
     "py-meson",
     "py-pillow",
     "py-pyparsing",
+    "py-setuptools-scm",
     {
       "name": "pybind11",
       "features": [
