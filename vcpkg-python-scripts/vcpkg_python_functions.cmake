@@ -58,7 +58,7 @@ function(vcpkg_python_build_wheel)
 
   message(STATUS "Building python wheel!")
   if(NOT arg_USE_BUILD)
-    vcpkg_execute_required_process(COMMAND "${PYTHON3}" -m gpep517 build-wheel --wheel-dir "${z_vcpkg_wheeldir}" --output-fd 1 ${build_ops}
+    vcpkg_execute_required_process(COMMAND "${PYTHON3}" -m gpep517 build-wheel --wheel-dir "${z_vcpkg_wheeldir}" --output-fd 2 ${build_ops}
       LOGNAME "python-build-${TARGET_TRIPLET}"
       WORKING_DIRECTORY "${arg_SOURCE_PATH}"
     )
