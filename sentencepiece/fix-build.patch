@@ -40,10 +40,14 @@ index 1c7726e3a5..85203db86e 100644
  endif()
  
  set(SPM_SRCS
-@@ -220,24 +248,25 @@ endif()
+@@ -220,28 +248,29 @@ endif()
  if (SPM_ENABLE_SHARED)
    add_library(sentencepiece SHARED ${SPM_SRCS})
    add_library(sentencepiece_train SHARED ${SPM_TRAIN_SRCS})
+   if (ANDROID)
+     target_link_libraries(sentencepiece log)
+     target_link_libraries(sentencepiece_train log)
+   endif()
 -endif()
 -
 +else()
