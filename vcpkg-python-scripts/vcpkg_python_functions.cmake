@@ -1,4 +1,7 @@
 set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
+set(ENV{PDM_BUILD_SCM_VERSION} "${VERSION}")
+
+set(z_vcpkg_python_func_python "${VCPKG_PYTHON3_EXECUTABLE}")
 
 function(vcpkg_from_pythonhosted)
   cmake_parse_arguments(
@@ -58,7 +61,7 @@ function(vcpkg_python_build_wheel)
 
   message(STATUS "Building python wheel!")
   if(NOT arg_USE_BUILD)
-    vcpkg_execute_required_process(COMMAND "${PYTHON3}" -m gpep517 build-wheel --wheel-dir "${z_vcpkg_wheeldir}" --output-fd 2 ${build_ops}
+    vcpkg_execute_required_process(COMMAND "${z_vcpkg_python_func_python}" -m gpep517 build-wheel --wheel-dir "${z_vcpkg_wheeldir}" --output-fd 1 ${build_ops}
       LOGNAME "python-build-${TARGET_TRIPLET}"
       WORKING_DIRECTORY "${arg_SOURCE_PATH}"
     )
@@ -66,7 +69,7 @@ function(vcpkg_python_build_wheel)
     if(NOT arg_ISOLATE)
       list(APPEND build_ops "-n")
     endif()
-    vcpkg_execute_required_process(COMMAND "${PYTHON3}" -m build -w ${build_ops} -o "${z_vcpkg_wheeldir}" "${arg_SOURCE_PATH}"
+    vcpkg_execute_required_process(COMMAND "${z_vcpkg_python_func_python}" -m build -w ${build_ops} -o "${z_vcpkg_wheeldir}" "${arg_SOURCE_PATH}"
       LOGNAME "python-build-${TARGET_TRIPLET}"
       WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}"
     )
@@ -95,7 +98,7 @@ function(vcpkg_python_install_wheel)
   endif()
 
   message(STATUS "Installing python wheel:'${arg_WHEEL}'")
-  vcpkg_execute_required_process(COMMAND "${PYTHON3}" -m installer 
+  vcpkg_execute_required_process(COMMAND "${z_vcpkg_python_func_python}" -m installer 
     --prefix "${install_prefix}" 
     --destdir "${CURRENT_PACKAGES_DIR}" "${arg_WHEEL}"
     LOGNAME "python-installer-${TARGET_TRIPLET}"
@@ -131,10 +134,6 @@ function(vcpkg_python_build_and_install_wheel)
   set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
   set(ENV{PDM_BUILD_SCM_VERSION} "${VERSION}")
 
-  if("-x" IN_LIST arg_OPTIONS)
-    message(WARNING "Python wheel will be ignoring dependencies")
-  endif()
-
   set(opts "")
   if(arg_ISOLATE)
     set(opts ISOLATE)
@@ -145,28 +144,4 @@ function(vcpkg_python_build_and_install_wheel)
   
   vcpkg_python_build_wheel(${opts} SOURCE_PATH "${arg_SOURCE_PATH}" OUTPUT_WHEEL WHEEL OPTIONS ${arg_OPTIONS})
   vcpkg_python_install_wheel(WHEEL "${WHEEL}")
-endfunction()
-
-function(vcpkg_python_test_import)
-  cmake_parse_arguments(
-    PARSE_ARGV 0
-    "arg"
-    ""
-    "MODULE"
-    ""
-  )
-
-  message(STATUS "Testing package!")
-  
-  set(DLL_DIR "${CURRENT_INSTALLED_DIR}/bin")
-  configure_file("${CURRENT_HOST_INSTALLED_DIR}/share/vcpkg-python-scripts/import_test.py.in" "${CURRENT_BUILDTREES_DIR}/import_test.py" @ONLY)
-
-  message(STATUS "Site packages: ${PYTHON3_SITEPACKAGES}")
-  set(ENV{PYTHONPATH} "${PYTHON3_SITEPACKAGES}")
-
-  vcpkg_execute_required_process(COMMAND "${PYTHON3}" "${CURRENT_BUILDTREES_DIR}/import_test.py"
-    LOGNAME "python-test-import-${TARGET_TRIPLET}"
-    WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}"
-  )
-  message(STATUS "Finished testing package!")
 endfunction()
