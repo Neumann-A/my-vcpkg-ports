@@ -20,13 +20,7 @@
     "py-httpcore",
     "py-idna",
     "py-sniffio",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    },
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts",
+    "vcpkg-python-scripts"
   ]
 }

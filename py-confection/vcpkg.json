@@ -11,9 +11,6 @@
       "host": true
     },
     "py-srsly",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts"
   ]
 }

@@ -27,9 +27,6 @@
     "py-tqdm",
     "py-typing-extensions",
     "py-versioneer",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts"
   ]
 }

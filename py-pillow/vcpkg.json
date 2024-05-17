@@ -25,10 +25,7 @@
       "host": true
     },
     "tiff",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    },
+    "vcpkg-python-scripts",
     "zlib"
   ]
 }

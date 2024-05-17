@@ -10,9 +10,6 @@
     "py-trove-classifiers",
     "py-wheel",
     "pytest-dev-pluggy",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts"
   ]
 }

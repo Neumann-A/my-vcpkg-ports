@@ -9,10 +9,7 @@
       "name": "py-setuptools",
       "host": true
     },
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    },
+    "vcpkg-python-scripts",
     "xxhash"
   ]
 }

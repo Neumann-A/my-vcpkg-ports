@@ -3,11 +3,13 @@
   "version-date": "2024-05-16",
   "documentation": "https://vcpkg.io/en/docs/README.html",
   "license": "MIT",
-  "supports": "native",
   "dependencies": [
-    "py-build",
+    {
+      "name": "py-crossenv",
+      "host": true,
+      "platform": "!native"
+    },
     "py-gpep517",
-    "py-pyproject-hooks",
     {
       "name": "python3",
       "host": true,
@@ -20,6 +22,10 @@
       "features": [
         "extensions"
       ]
+    },
+    {
+      "name": "vcpkg-python-scripts",
+      "host": true
     }
   ]
 }

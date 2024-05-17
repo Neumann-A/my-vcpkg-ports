@@ -33,9 +33,6 @@
     "py-tqdm",
     "py-typer",
     "py-weasel",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts"
   ]
 }

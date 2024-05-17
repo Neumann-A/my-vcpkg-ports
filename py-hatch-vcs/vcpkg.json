@@ -17,9 +17,6 @@
       "name": "py-setuptools-scm",
       "host": true
     },
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts"
   ]
 }

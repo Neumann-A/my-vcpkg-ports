@@ -19,9 +19,6 @@
     },
     "py-toolz",
     "py-typing-extensions",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts"
   ]
 }

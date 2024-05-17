@@ -16,13 +16,6 @@
       "name": "py-hatchling",
       "host": true
     },
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    },
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts"
   ]
 }

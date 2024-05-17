@@ -48,10 +48,14 @@ function(vcpkg_python_build_wheel)
   cmake_parse_arguments(
     PARSE_ARGV 0
     "arg"
-    "ISOLATE;USE_BUILD"
+    ""
     "SOURCE_PATH;OUTPUT_WHEEL"
-    "OPTIONS"
+    "OPTIONS;ENVIRONMENT"
   )
+
+  # These are common variables used by python backends
+  set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
+  set(ENV{PDM_BUILD_SCM_VERSION} "${VERSION}")
 
   set(build_ops "${arg_OPTIONS}")
 
@@ -60,20 +64,38 @@ function(vcpkg_python_build_wheel)
   file(MAKE_DIRECTORY "${z_vcpkg_wheeldir}")
 
   message(STATUS "Building python wheel!")
-  if(NOT arg_USE_BUILD)
-    vcpkg_execute_required_process(COMMAND "${z_vcpkg_python_func_python}" -m gpep517 build-wheel --wheel-dir "${z_vcpkg_wheeldir}" --output-fd 1 ${build_ops}
-      LOGNAME "python-build-${TARGET_TRIPLET}"
-      WORKING_DIRECTORY "${arg_SOURCE_PATH}"
-    )
-  else()
-    if(NOT arg_ISOLATE)
-      list(APPEND build_ops "-n")
-    endif()
-    vcpkg_execute_required_process(COMMAND "${z_vcpkg_python_func_python}" -m build -w ${build_ops} -o "${z_vcpkg_wheeldir}" "${arg_SOURCE_PATH}"
-      LOGNAME "python-build-${TARGET_TRIPLET}"
-      WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}"
-    )
+
+   list(JOIN arg_ENVIRONMENT " " env)
+  if(CMAKE_HOST_WIN32)
+    set(env "")
+    set(env_backup_vars "")
+    foreach(envvarline IN LISTS arg_ENVIRONMENT)
+      if(envvarline MATCHES "([^=]+)=(.+)")
+        list(APPEND env_backup_vars "${CMAKE_MATCH_1}")
+        if(DEFINED ENV{${CMAKE_MATCH_1}})
+          set(env_bak_${CMAKE_MATCH_1} "$ENV{${CMAKE_MATCH_1}}")
+        endif()
+        set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
+      else()
+        message(FATAL_ERROR "'${envvarline}' is not a valid line for setting an environment variable!")
+      endif()
+    endforeach()
   endif()
+
+  vcpkg_execute_required_process(
+    COMMAND ${env} "${z_vcpkg_python_func_python}" -m gpep517 build-wheel --wheel-dir "${z_vcpkg_wheeldir}" --output-fd 1 ${build_ops}
+    LOGNAME "python-build-${TARGET_TRIPLET}"
+    WORKING_DIRECTORY "${arg_SOURCE_PATH}"
+  )
+
+  foreach(env_var IN LISTS env_backup_vars)
+    if(DEFINED env_bak_${env_var})
+      set(ENV{${env_var}} "${env_bak_${env_var}}")
+    else()
+      unset(ENV{${env_var}})
+    endif()
+  endforeach()
+
   message(STATUS "Finished building python wheel!")
 
   file(GLOB WHEEL "${z_vcpkg_wheeldir}/*.whl")
@@ -126,22 +148,17 @@ function(vcpkg_python_build_and_install_wheel)
   cmake_parse_arguments(
     PARSE_ARGV 0
     "arg"
-    "ISOLATE;USE_BUILD"
+    ""
     "SOURCE_PATH"
-    "OPTIONS"
+    "OPTIONS;ENVIRONMENT"
   )
-
-  set(ENV{SETUPTOOLS_SCM_PRETEND_VERSION} "${VERSION}")
-  set(ENV{PDM_BUILD_SCM_VERSION} "${VERSION}")
-
-  set(opts "")
-  if(arg_ISOLATE)
-    set(opts ISOLATE)
-  endif()
-  if(arg_USE_BUILD)
-    list(APPEND opts USE_BUILD)
-  endif()
-  
-  vcpkg_python_build_wheel(${opts} SOURCE_PATH "${arg_SOURCE_PATH}" OUTPUT_WHEEL WHEEL OPTIONS ${arg_OPTIONS})
-  vcpkg_python_install_wheel(WHEEL "${WHEEL}")
+  vcpkg_python_build_wheel(
+    OUTPUT_WHEEL wheel
+    ENVIRONMENT ${arg_ENVIORNMENT}
+    SOURCE_PATH "${arg_SOURCE_PATH}"
+    OPTIONS ${arg_OPTIONS}
+  )
+  vcpkg_python_install_wheel(
+    WHEEL "${wheel}"
+  )
 endfunction()

@@ -16,10 +16,7 @@
     "py-tomli",
     "py-typing-extensions",
     "vcpkg-get-python-packages",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    },
+    "vcpkg-python-scripts",
     "vcpkg-tool-mecurial"
   ]
 }

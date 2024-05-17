@@ -6,9 +6,6 @@
   "license": "MIT",
   "dependencies": [
     "py-gpep517",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts"
   ]
 }

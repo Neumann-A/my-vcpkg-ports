@@ -24,10 +24,7 @@
         "extensions"
       ]
     },
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    },
+    "vcpkg-python-scripts",
     {
       "name": "vcpkg-tool-meson",
       "host": true

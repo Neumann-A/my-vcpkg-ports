@@ -22,10 +22,7 @@
     "qtsvg",
     "qtwebchannel",
     "qtwebsockets",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    },
+    "vcpkg-python-scripts",
     {
       "name": "vcpkg-qmake",
       "host": true

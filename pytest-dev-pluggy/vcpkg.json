@@ -14,9 +14,6 @@
       "host": true
     },
     "py-tomli",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts"
   ]
 }

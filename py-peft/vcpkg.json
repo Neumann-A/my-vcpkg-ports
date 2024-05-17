@@ -20,9 +20,6 @@
       "host": true
     },
     "py-transformers",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts"
   ]
 }

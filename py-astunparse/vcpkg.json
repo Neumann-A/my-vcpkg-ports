@@ -10,9 +10,6 @@
       "host": true
     },
     "py-six",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts"
   ]
 }

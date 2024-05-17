@@ -14,10 +14,7 @@
       "name": "py-setuptools-rust",
       "host": true
     },
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    },
+    "vcpkg-python-scripts",
     {
       "name": "vcpkg-rust",
       "host": true

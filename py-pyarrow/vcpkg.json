@@ -26,9 +26,6 @@
       "name": "vcpkg-cmake",
       "host": true
     },
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts"
   ]
 }

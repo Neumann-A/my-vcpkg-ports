@@ -14,9 +14,6 @@
       "host": true
     },
     "py-wheel",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts"
   ]
 }

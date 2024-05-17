@@ -35,9 +35,6 @@
     "py-tokenizers",
     "py-tqdm",
     "py-urllib3",
-    {
-      "name": "vcpkg-python-scripts",
-      "host": true
-    }
+    "vcpkg-python-scripts"
   ]
 }
