@@ -6,7 +6,10 @@
   "license": "MIT",
   "dependencies": [
     "py-language-data",
-    "py-poetry",
+    {
+      "name": "py-poetry",
+      "host": true
+    },
     {
       "name": "py-setuptools",
       "host": true

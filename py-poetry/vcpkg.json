@@ -5,7 +5,10 @@
   "homepage": "https://python-poetry.org/",
   "license": "MIT",
   "dependencies": [
-    "py-poetry-core",
+    {
+      "name": "py-poetry-core",
+      "host": true
+    },
     {
       "name": "py-setuptools",
       "host": true
