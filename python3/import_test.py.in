@@ -1,4 +1,6 @@
 import os
-os.add_dll_directory('@DLL_DIR@') if os.name == 'nt' else None
 
-from @arg_MODULE@ import *
+if os.name == 'nt':
+@PYTHON_DLL_SEARCH_DIRS@
+
+@PYTHON_IMPORTS@
